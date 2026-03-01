@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>About Us — Quezonian Educational College, Inc.</title>
+
+    <!-- Bootstrap 5 CDN -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"
+      integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="/public/css/style.css" />
+  </head>
+
+  <body class="page-shell page-about">
+    <div class="container-fluid p-0 d-flex h-100">
+      <!-- Sidebar -->
+      <div
+        id="bdSidebar"
+        class="page-shell sb-bg d-flex flex-column align-items-center flex-shrink-0 p-3 text-white offcanvas-md offcanvas-start"
+      >
+        <img
+          src="/public/assets/images/logo.png"
+          alt="Quezonian Educational College logo"
+          class="mb-3 mx-auto d-block"
+          style="width: 65px; height: auto"
+        />
+
+        <ul class="mynav nav nav-pills flex-column mb-auto">
+          <li class="nav-item mb-2">
+            <a href="/public/index.html">
+              <i class="bi bi-house"></i> Home
+            </a>
+          </li>
+
+          <li class="nav-item mb-2">
+            <a href="./course.html">
+              <i class="bi bi-mortarboard"></i> Courses
+            </a>
+          </li>
+
+          <li class="nav-item mb-2">
+            <a href="./enrollment.html">
+              <i class="bi bi-folder"></i> Enrollment
+            </a>
+          </li>
+
+          <li class="nav-item mb-2">
+            <a href="./about-us.html" class="active">
+              <i class="bi bi-people"></i> About us
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Main Content -->
+      <main class="bg-light flex-fill">
+        <!-- MOBILE HEADER -->
+        <header
+          class="page-about header p-3 d-md-none d-flex align-items-center justify-content-between "
+        >
+          <div class="d-flex align-items-center">
+            <a
+              href="#"
+              class="text-white me-2"
+              data-bs-toggle="offcanvas"
+              data-bs-target="#bdSidebar"
+            >
+              <i class="bi bi-list"></i>
+            </a>
+            <img
+              class="header-logo ms-2"
+              src="/public/assets/images/logo.png"
+              alt="QECi Logo"
+              style="width: 40px"
+            />
+            <div class="ms-2">
+              <small class="d-block text-secondary"
+                >Online Registration System</small
+              >
+              <strong class="fw-semibold">About Us</strong>
+            </div>
+          </div>
+          <!-- Notification Bell -->
+          <div class="dropdown">
+            <button
+              class="btn btn-link text-white p-0 position-relative"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <i class="bi bi-bell fs-5"></i>
+              <span
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                >4</span
+              >
+            </button>
+            <ul
+              class="dropdown-menu dropdown-menu-end shadow"
+              style="min-width: 300px"
+            >
+              <li><h6 class="dropdown-header">Notifications</h6></li>
+              <li>
+                <a class="dropdown-item small" href="./notifications.html"
+                  ><i class="bi bi-envelope-check text-primary"></i> Application
+                  Received</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item small" href="./notifications.html"
+                  ><i class="bi bi-check-circle text-success"></i> Documents
+                  Verified</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item small" href="./notifications.html"
+                  ><i class="bi bi-exclamation-triangle text-warning"></i>
+                  Missing Document</a
+                >
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+              <li>
+                <a
+                  class="dropdown-item text-center small text-primary"
+                  href="./notifications.html"
+                  >View All Notifications</a
+                >
+              </li>
+            </ul>
+          </div>
+        </header>
+
+        <!-- DESKTOP HEADER -->
+        <nav class="d-none d-md-block p-3">
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="text-white fw-semibold">Quezonian Educational College Inc.</span>
+            <div>
+              <a href="./notifications.html" class="me-3 text-decoration-none text-white">
+                <i class="bi bi-bell fs-5"></i>
+              </a>
+              <a href="./profile.html" class="text-decoration-none text-white">
+                <i class="bi bi-person fs-5"></i>
+              </a>
+            </div>
+          </div>
+        </nav>
+
+        <!-- Hero -->
+        <section class="hero py-5 text-white px-4 pt-4">
+          <div class="container-fluid">
+            <div class="row align-items-center g-4">
+              <div class="col-lg-7">
+                <p
+                  class="text-uppercase small fw-semibold letter-spacing-1 mb-2"
+                >
+                  Quezonian Educational College, Inc.
+                </p>
+                <h1 class="display-5 fw-bold mb-3">
+                  Building futures since 1985
+                </h1>
+                <p class="lead mb-4">
+                  From Senior High School to college programs, QECI has
+                  empowered thousands of Atimonan learners with accessible,
+                  values-driven education for four decades.
+                </p>
+                <a href="#history" class="btn btn-gold fw-semibold px-4 py-2"
+                  >Discover our story</a
+                >
+              </div>
+              <div class="col-lg-5">
+                <div
+                  class="card bg-white text-dark shadow border-0"
+                  style="border-left: 4px solid var(--qeci-gold)"
+                >
+                  <div class="card-body">
+                    <h3 class="h5 fw-bold mb-3 text-gold">Fast facts</h3>
+                    <ul class="list-unstyled mb-0">
+                      <li class="mb-2">
+                        <i
+                          class="bi bi-calendar3 me-2"
+                          style="color: var(--qeci-gold)"
+                        ></i
+                        >Founded March 1985
+                      </li>
+                      <li class="mb-2">
+                        <i
+                          class="bi bi-geo-alt me-2"
+                          style="color: var(--qeci-gold)"
+                        ></i
+                        >Dr. Soler St., Atimonan, Quezon
+                      </li>
+                      <li class="mb-2">
+                        <i
+                          class="bi bi-people me-2"
+                          style="color: var(--qeci-gold)"
+                        ></i
+                        >4,000+ alumni worldwide
+                      </li>
+                      <li>
+                        <i
+                          class="bi bi-journal-check me-2"
+                          style="color: var(--qeci-gold)"
+                        ></i
+                        >Senior High & Collegiate tracks
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- History -->
+        <section
+          id="history"
+          class="px-4 pb-4"
+          style="background: var(--qeci-navy); color: #fff; padding: 4rem 0"
+        >
+          <div class="container-fluid">
+            <div class="row g-4">
+              <div class="col-lg-5">
+                <h2 class="h3 text-gold fw-bold">Our story</h2>
+                <div class="divider"></div>
+                <p class="text-white-75">
+                  Founded in 1985, QECI has continuously adapted to the needs of
+                  the Quezon province—expanding academic offerings, investing in
+                  modern facilities, and strengthening community partnerships.
+                </p>
+              </div>
+              <div class="col-lg-7">
+                <div class="timeline">
+                  <div class="timeline-item">
+                    <span class="timeline-year">1985</span>
+                    <p class="mb-0 text-white-75">
+                      Established by local educators determined to provide
+                      affordable higher education.
+                    </p>
+                  </div>
+                  <div class="timeline-item">
+                    <span class="timeline-year">1998</span>
+                    <p class="mb-0 text-white-75">
+                      Expanded to include full bachelor programs in business and
+                      education.
+                    </p>
+                  </div>
+                  <div class="timeline-item">
+                    <span class="timeline-year">2016</span>
+                    <p class="mb-0 text-white-75">
+                      Introduced Senior High School strands aligned with the
+                      K-12 curriculum.
+                    </p>
+                  </div>
+                  <div class="timeline-item">
+                    <span class="timeline-year">2025</span>
+                    <p class="mb-0 text-white-75">
+                      Celebrated 40 years with a renewed digital transformation
+                      roadmap.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Mission and Vision -->
+        <section class="px-4 pt-4 pb-4">
+          <div class="container-fluid">
+            <div class="row g-4">
+              <div class="col-lg-6" id="mission">
+                <div
+                  class="card h-100 shadow border-0"
+                  style="border-left: 5px solid var(--qeci-gold)"
+                >
+                  <div class="card-body">
+                    <h3 class="card-title h4 text-gold fw-bold">Mission</h3>
+                    <div class="divider"></div>
+                    <p class="mb-3">
+                      Deliver excellent, affordable learning that nurtures
+                      God-loving, service-responsive, and highly skilled
+                      individuals who contribute to social transformation and
+                      national development.
+                    </p>
+                    <ul class="small mb-0">
+                      <li class="mb-2">
+                        ✓ Champion academic rigor tempered with compassion
+                      </li>
+                      <li class="mb-2">
+                        ✓ Promote civic involvement and servant leadership
+                      </li>
+                      <li>✓ Equip learners with future-ready competencies</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6" id="vision">
+                <div
+                  class="card h-100 shadow border-0"
+                  style="border-left: 5px solid var(--qeci-navy)"
+                >
+                  <div class="card-body">
+                    <h3 class="card-title h4" style="color: var(--qeci-navy)">
+                      Vision
+                    </h3>
+                    <div class="divider"></div>
+                    <p class="mb-3">
+                      To be a strong partner in building a progressive,
+                      inclusive, and sustainable society by forming globally
+                      competitive leaders with a heart for service and a
+                      profound love for God and country.
+                    </p>
+                    <ul class="small mb-0">
+                      <li class="mb-2">
+                        ✓ Inclusive education rooted in local identity
+                      </li>
+                      <li class="mb-2">
+                        ✓ Global readiness guided by ethical leadership
+                      </li>
+                      <li>✓ Innovation dedicated to community upliftment</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Core Values -->
+        <section
+          class="px-4 pt-4 pb-4"
+          style="background: rgba(2, 27, 58, 0.02)"
+        >
+          <div class="container-fluid">
+            <div class="text-center mb-5">
+              <h2 class="h3 fw-bold text-gold">Core values</h2>
+              <div class="divider mx-auto"></div>
+              <p class="text-muted mb-0">
+                These principles guide every classroom interaction and community
+                initiative.
+              </p>
+            </div>
+            <div class="row g-4">
+              <div class="col-md-6 col-lg-3">
+                <div
+                  class="p-4 rounded-4 h-100 text-center core-value bg-white border-0 shadow-sm"
+                >
+                  <i class="bi bi-check-circle-fill display-5 mb-3"></i>
+                  <h5 style="color: var(--qeci-navy)">Quality</h5>
+                  <p class="small mb-0 text-muted">
+                    We maintain the highest standards in all our programs and
+                    services.
+                  </p>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-3">
+                <div
+                  class="p-4 rounded-4 h-100 text-center core-value bg-white border-0 shadow-sm"
+                >
+                  <i class="bi bi-lightbulb-fill display-5 mb-3"></i>
+                  <h5 style="color: var(--qeci-navy)">Excellence</h5>
+                  <p class="small mb-0 text-muted">
+                    We challenge ourselves to pursue academic and professional
+                    excellence.
+                  </p>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-3">
+                <div
+                  class="p-4 rounded-4 h-100 text-center core-value bg-white border-0 shadow-sm"
+                >
+                  <i class="bi bi-person-fill display-5 mb-3"></i>
+                  <h5 style="color: var(--qeci-navy)">Character</h5>
+                  <p class="small mb-0 text-muted">
+                    We develop strong moral and ethical character rooted in
+                    values and principles.
+                  </p>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-3">
+                <div
+                  class="p-4 rounded-4 h-100 text-center core-value bg-white border-0 shadow-sm"
+                >
+                  <i class="bi bi-shield-check display-5 mb-3"></i>
+                  <h5 style="color: var(--qeci-navy)">Integrity</h5>
+                  <p class="small mb-0 text-muted">
+                    We act with honesty, accountability, and respect in all
+                    relationships.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="page-shell footer py-4 border-top text-white">
+          <div class="container">
+            <!-- Quick Links -->
+            <div
+              class="row mb-4 pb-4 border-bottom"
+              style="border-bottom-color: rgba(212, 175, 55, 0.2) !important"
+            >
+              <div class="col-md-3 mb-3 mb-md-0">
+                <h6 class="fw-bold mb-3 text-gold">Navigation</h6>
+                <ul class="list-unstyled">
+                  <li>
+                    <a
+                      href="/public/index.html"
+                      class="text-white-50 text-decoration-none"
+                      >Home</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      href="./course.html"
+                      class="text-white-50 text-decoration-none"
+                      >Courses</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      href="./enrollment.html"
+                      class="text-white-50 text-decoration-none"
+                      >Enrollment</a
+                    >
+                  </li>
+                </ul>
+              </div>
+              <div class="col-md-3 mb-3 mb-md-0">
+                <h6 class="fw-bold mb-3 text-gold">Account</h6>
+                <ul class="list-unstyled">
+                  <li>
+                    <a
+                      href="./profile.html"
+                      class="text-white-50 text-decoration-none"
+                      >Profile</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      href="./notifications.html"
+                      class="text-white-50 text-decoration-none"
+                      >Notifications</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      href="./about-us.html"
+                      class="text-white-50 text-decoration-none"
+                      >About Us</a
+                    >
+                  </li>
+                </ul>
+              </div>
+              <div class="col-md-3 mb-3 mb-md-0">
+                <h6 class="fw-bold mb-3 text-gold">Support</h6>
+                <ul class="list-unstyled">
+                  <li>
+                    <a
+                      href="mailto:registrar@qeci.edu.ph"
+                      class="text-white-50 text-decoration-none"
+                      >Email Registrar</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      href="tel:+639123456789"
+                      class="text-white-50 text-decoration-none"
+                      >Call Us</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      href="/public/index.html"
+                      class="text-white-50 text-decoration-none"
+                      >FAQs</a
+                    >
+                  </li>
+                </ul>
+              </div>
+              <div class="col-md-3">
+                <h6 class="fw-bold mb-3 text-gold">Follow Us</h6>
+                <ul class="list-unstyled">
+                  <li>
+                    <a
+                      href="https://www.facebook.com/qeci.quezonian"
+                      class="text-white-50 text-decoration-none"
+                      ><i class="bi bi-facebook me-2"></i>Facebook</a
+                    >
+                  </li>
+                  <li>
+                    <a href="#" class="text-white-50 text-decoration-none"
+                      >Privacy Policy</a
+                    >
+                  </li>
+                  <li>
+                    <a href="#" class="text-white-50 text-decoration-none"
+                      >Terms of Service</a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <!-- Footer Info -->
+            <div class="text-center">
+              <strong class="text-gold"
+                >Quezonian Educational College, Inc.</strong
+              ><br />
+              <small class="text-white-75"
+                >Dr. Soler Street, Brgy. Zone II, Atimonan, Quezon</small
+              ><br />
+              <small class="text-white-75"
+                >&copy; 2025 QECI. All rights reserved.</small
+              >
+            </div>
+          </div>
+        </footer>
+      </main>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

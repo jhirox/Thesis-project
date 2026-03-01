@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Overview</title>
+
+    <link rel="stylesheet" href="/public/vendor/adminlte/css/adminlte.min.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="/public/css/style.css" />
+    
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+      integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/fontawesome.min.css"
+      integrity="sha512-M5Kq4YVQrjg5c2wsZSn27Dkfm/2ALfxmun0vUE3mPiJyK53hQBHYCVAtvMYEC7ZXmYLg8DVG4tF8gD27WmDbsg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body
+    class="page-dash layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary"
+  >
+    <!--begin::App Wrapper-->
+    <div class="app-wrapper">
+      <!--begin::Header-->
+      <nav
+        class="app-header navbar navbar-expand bg-primary-subtle shadow"
+        data-bs-theme="dark"
+      >
+        <!--begin::Container-->
+        <div class="container-fluid">
+          <!--begin::Start Navbar Links-->
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                data-lte-toggle="sidebar"
+                href="#"
+                role="button"
+              >
+                <i class="fa-solid fa-bars"></i>
+              </a>
+            </li>
+          </ul>
+          <!--end::Start Navbar Links-->
+          <!--begin::End Navbar Links-->
+          <ul class="navbar-nav ms-auto">
+            <!--begin::User Menu Dropdown-->
+            <li class="nav-item dropdown user-menu">
+              <a
+                href="#"
+                class="nav-link dropdown-toggle"
+                data-bs-toggle="dropdown"
+              >
+                <img
+                  src="https://lh3.googleusercontent.com/a/ACg8ocJZRFDYP52Px5s5A5hCDSPAwCHlrEebkZDNYbMcQnSSdvacvufz=s360-c-no"
+                  class="user-image rounded-circle shadow"
+                  alt="User Image"
+                />
+                <span class="d-none d-md-inline" id="user-full-name"></span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+                <!--begin::User Image-->
+                <li class="user-header text-bg-primary">
+                  <img
+                    src="https://lh3.googleusercontent.com/a/ACg8ocJZRFDYP52Px5s5A5hCDSPAwCHlrEebkZDNYbMcQnSSdvacvufz=s360-c-no"
+                    class="rounded-circle shadow"
+                    alt="User Image"
+                  />
+                  <p>
+                    Nathaniel Amandy - Front-end
+                    <small>Member since Nov. 2025</small>
+                  </p>
+                </li>
+                <!--end::User Image-->
+                <!--begin::Menu Body-->
+                <!--end::Menu Body-->
+                <!--begin::Menu Footer-->
+                <li class="user-footer">
+                  <a href="#" class="btn btn-default btn-flat">Profile</a>
+                  <a
+                    href="../auth/login.html"
+                    class="btn btn-default btn-flat float-end"
+                    id="sign-out"
+                    >Sign out</a
+                  >
+                </li>
+                <!--end::Menu Footer-->
+              </ul>
+            </li>
+            <!--end::User Menu Dropdown-->
+          </ul>
+          <!--end::End Navbar Links-->
+        </div>
+        <!--end::Container-->
+      </nav>
+      <!--end::Header-->
+      <!--begin::Sidebar-->
+      <aside class="app-sidebar bg-primary-subtle shadow" data-bs-theme="dark">
+        <!--begin::Sidebar Brand-->
+        <div class="sidebar-brand justify-content-center">
+          <!--begin::Brand Link-->
+          <a href="#" class="brand-link text-decoration-none">
+            <!--begin::Brand Image-->
+            <img class="page-dash logo" src="/public/assets/images/logo.png" alt="logo">
+            <!--end::Brand Image-->
+            <!--begin::Brand Text-->
+            <span class="brand-text fw-light fw-bold">Dashboard</span>
+            <!--end::Brand Text-->
+          </a>
+          <!--end::Brand Link-->
+        </div>
+        <!--end::Sidebar Brand-->
+        <!--begin::Sidebar Wrapper-->
+        <div class="sidebar-wrapper">
+          <nav class="mt-2">
+            <!--begin::Sidebar Menu-->
+            <ul
+              class="nav sidebar-menu flex-column"
+              data-lte-toggle="treeview"
+              role="navigation"
+              aria-label="Main navigation"
+              data-accordion="false"
+              id="navigation"
+            >
+              <h5 class="text-white pt-2">Main</h5>
+              <li class="nav-item">
+                <a href="./dashboard.html" class="nav-link active">
+                  <i class="nav-icon fa-solid fa-house"></i>
+                  <p>Dashboard Overview</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./registrar.html" class="nav-link">
+                  <i class="nav-icon fa-solid fa-user-graduate"></i>
+                  <p>Registrar</p>
+                </a>
+              </li>
+              <li class="nav-item active">
+                <a href="./application-queue.html" class="nav-link">
+                  <i class="nav-icon fa-solid fa-list"></i>
+                  <p>Application Queue</p>
+                </a>
+              </li>
+              <li class="nav-item active">
+                <a href="./application-evaluation.html" class="nav-link">
+                  <i class="nav-icon fa-solid fa-file-circle-check"></i>
+                  <p>Application Evaluation</p>
+                </a>
+              </li>
+              <h5 class="text-white pt-4">Management</h5>
+              <li class="nav-item active">
+                <a href="./accounts.html" class="nav-link">
+                  <i class="nav-icon fa-solid fa-users"></i>
+                  <p>Accounts</p>
+                </a>
+              </li>
+              <li class="nav-item active">
+                <a href="./notification.html" class="nav-link">
+                  <i class="nav-icon fa-regular fa-bell"></i>
+                  <p>Notifications</p>
+                </a>
+              </li>
+              <li class="nav-item active">
+                <a href="./rep-and-analytics.html" class="nav-link">
+                  <i class="nav-icon fa-solid fa-chart-pie"></i>
+                  <p>Reports and Analytics</p>
+                </a>
+              </li>
+            </ul>
+            <!--end::Sidebar Menu-->
+          </nav>
+        </div>
+        <!--end::Sidebar Wrapper-->
+      </aside>
+      <!--end::Sidebar-->
+      <!--begin::App Main-->
+      <main
+        class="app-main bg-primary-subtle shadow text-white"
+        data-bs-theme="dark"
+      >
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <!--begin::Container-->
+          <div class="container-fluid">
+            <!--begin::Row-->
+            <div class="row">
+              <div class="col-sm-6">
+                <h3 class="mx-3 fw-bold fs-2">
+                  Academic Registration Dashboard
+                </h3>
+              </div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                  <li class="breadcrumb-item"><a href="#">Home</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">
+                    Dashboard
+                  </li>
+                </ol>
+              </div>
+            </div>
+            <!--end::Row-->
+          </div>
+          <!--end::Container-->
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <!-- SUMMARY CARDS -->
+          <div class="row top-cards g-3 mb-4 px-4 py-3 pt-0">
+            <div class="col-sm-6 col-md-3">
+              <div
+                class="card card-total p-3 bg-primary-subtle"
+                data-bs-theme="dark"
+              >
+                <div class="d-flex justify-content-between align-items-center">
+                  <h6>Total Applications</h6>
+                  <span class="material-symbols-outlined text-primary"
+                    >group</span
+                  >
+                </div>
+                <h3>1,247</h3>
+                <small
+                  ><span class="text-primary">+12%</span> from last week</small
+                >
+              </div>
+            </div>
+
+            <div class="col-sm-6 col-md-3">
+              <div
+                class="card card-pending p-3 bg-primary-subtle"
+                data-bs-theme="dark"
+              >
+                <div class="d-flex justify-content-between align-items-center">
+                  <h6>Pending Review</h6>
+                  <span class="material-symbols-outlined text-warning"
+                    >schedule</span
+                  >
+                </div>
+                <h3>69</h3>
+                <small
+                  ><span class="text-warning">+12%</span> from last week</small
+                >
+              </div>
+            </div>
+
+            <div class="col-sm-6 col-md-3">
+              <div
+                class="card card-approved p-3 bg-primary-subtle"
+                data-bs-theme="dark"
+              >
+                <div class="d-flex justify-content-between align-items-center">
+                  <h6>Approved Today</h6>
+                  <span class="material-symbols-outlined text-success"
+                    >check_circle</span
+                  >
+                </div>
+                <h3>69</h3>
+                <small
+                  ><span class="text-success">+12%</span> from last week</small
+                >
+              </div>
+            </div>
+
+            <div class="col-sm-6 col-md-3">
+              <div
+                class="card card-rejected p-3 bg-primary-subtle"
+                data-bs-theme="dark"
+              >
+                <div class="d-flex justify-content-between align-items-center">
+                  <h6>Rejected Today</h6>
+                  <span class="material-symbols-outlined text-danger"
+                    >warning</span
+                  >
+                </div>
+                <h3>7</h3>
+                <small
+                  ><span class="text-danger">+5%</span> from last week</small
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-4 px-4">
+            <div class="col-lg-7">
+              <div class="chart-card rounded-2 p-3">
+                <h6>Total Application Volume</h6>
+                <div id="barchart" style="width: 100%; height: 250px"></div>
+              </div>
+            </div>
+            <div class="col-lg-5">
+              <div class="chart-card rounded-2 p-3">
+                <h6>Student Courses</h6>
+                <div id="piechart" style="width: 100%; height: 250px"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RECENT APPLICATIONS -->
+          <div class="px-4">
+            <div class="recent-applications p-3">
+              <h6>Recent Applications</h6>
+
+              <!-- Example Cards -->
+              <div
+                class="card p-3 d-flex flex-row justify-content-between align-items-center"
+              >
+                <div>
+                  <strong>Yuri Oflaria</strong><br />
+                  <small>APP-2025-001</small>
+                </div>
+                <div
+                  class="d-flex justify-content-center align-items-center gap-3"
+                >
+                  <span class="status-badge status-pending">Pending</span>
+                  <small class="text-muted">2 hours ago</small>
+                </div>
+              </div>
+
+              <div
+                class="card p-3 d-flex flex-row justify-content-between align-items-center"
+              >
+                <div>
+                  <strong>Drex Saniel</strong><br />
+                  <small>APP-2025-002</small>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                  <span class="status-badge status-approved">Approved</span>
+                  <small class="text-muted">4 hours ago</small>
+                </div>
+              </div>
+
+              <div
+                class="card p-3 d-flex flex-row justify-content-between align-items-center"
+              >
+                <div>
+                  <strong>Zairus Jester</strong><br />
+                  <small>APP-2025-003</small>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                  <span class="status-badge status-approved">Approved</span>
+                  <small class="text-muted">6 hours ago</small>
+                </div>
+              </div>
+
+              <div
+                class="card p-3 d-flex flex-row justify-content-between align-items-center"
+              >
+                <div>
+                  <strong>Gerick Ocampo</strong><br />
+                  <small>APP-2025-004</small>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                  <span class="status-badge status-rejected">Rejected</span>
+                  <small class="text-muted">12 hours ago</small>
+                </div>
+              </div>
+              <div class="justify-content-center d-flex">
+                <button class="btn btn-light w-100% mt-3">
+                  View All Applications
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="quick-actions col-lg-10 px-4 py-3">
+            <h6>Quick Actions</h6>
+            <button
+              class="btn text-white mb-2"
+              style="background-color: #0d004e"
+            >
+              <i class="fa-solid fa-calendar-days me-2"></i>Schedule Review
+              Session
+            </button>
+            <button
+              class="btn text-white mb-2"
+              style="background-color: #0d004e"
+            >
+              <i class="fa-solid fa-file-lines me-2"></i>Generate Daily Report
+            </button>
+            <button
+              class="btn text-white mb-2"
+              style="background-color: #0d004e"
+            >
+              <i class="fa-solid fa-bell me-2"></i>Send Bulk Notifications
+            </button>
+            <button
+              class="btn text-white mb-2"
+              style="background-color: #0d004e"
+            >
+              <i class="fa-solid fa-user-plus me-2"></i>Add New Accounts
+            </button>
+          </div>
+        </div>
+
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+      <!--begin::Footer-->
+      <footer class="app-footer bg-primary-subtle" data-bs-theme="dark">
+        <!--begin::To the end-->
+        <div class="float-end d-none d-sm-inline">Anything you want</div>
+        <!--end::To the end-->
+        <!--begin::Copyright-->
+        <strong>
+          Copyright &copy; 2014-2025&nbsp;
+          <a href="#" class="text-decoration-none">Nathaniel Amandy</a>.
+        </strong>
+        <br />
+        All rights reserved.
+        <!--end::Copyright-->
+      </footer>
+      <!--end::Footer-->
+    </div>
+    <!--end::App Wrapper-->
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+    <script src="/public/js/core/adminlte.min.js"></script>
+
+    <script src="/public/js/utils/app.js"></script>
+
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <script src="https://code.highcharts.com/themes/adaptive.js"></script>
+    <script src="https://unpkg.com/singledivui/dist/singledivui.min.js"></script>
+    <script src="/public/js/charts.js"></script>
+
+  </body>
+</html>

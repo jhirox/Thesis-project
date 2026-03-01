@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registrar</title>
+    <link rel="icon" href="/public/assets/images/logo.png" />
+
+    <link rel="stylesheet" href="/public/vendor/adminlte/css/adminlte.min.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="/public/css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+      integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/fontawesome.min.css"
+      integrity="sha512-M5Kq4YVQrjg5c2wsZSn27Dkfm/2ALfxmun0vUE3mPiJyK53hQBHYCVAtvMYEC7ZXmYLg8DVG4tF8gD27WmDbsg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body
+    class="page-registrar layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary"
+  >
+    <!--begin::App Wrapper-->
+    <div class="app-wrapper">
+      <!--begin::Header-->
+      <nav
+        class="app-header navbar navbar-expand bg-primary-subtle shadow"
+        data-bs-theme="dark"
+      >
+        <!--begin::Container-->
+        <div class="container-fluid">
+          <!--begin::Start Navbar Links-->
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                data-lte-toggle="sidebar"
+                href="#"
+                role="button"
+              >
+                <i class="fa-solid fa-bars"></i>
+              </a>
+            </li>
+          </ul>
+          <!--end::Start Navbar Links-->
+          <!--begin::End Navbar Links-->
+          <ul class="navbar-nav ms-auto">
+            <!--begin::User Menu Dropdown-->
+            <li class="nav-item dropdown user-menu">
+              <a
+                href="#"
+                class="nav-link dropdown-toggle"
+                data-bs-toggle="dropdown"
+              >
+                <img
+                  src="https://lh3.googleusercontent.com/a/ACg8ocJZRFDYP52Px5s5A5hCDSPAwCHlrEebkZDNYbMcQnSSdvacvufz=s360-c-no"
+                  class="user-image rounded-circle shadow"
+                  alt="User Image"
+                />
+                <span class="d-none d-md-inline" id="user-full-name"></span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+                <!--begin::User Image-->
+                <li class="user-header">
+                  <img
+                    src="https://lh3.googleusercontent.com/a/ACg8ocJZRFDYP52Px5s5A5hCDSPAwCHlrEebkZDNYbMcQnSSdvacvufz=s360-c-no"
+                    class="rounded-circle shadow"
+                    alt="User Image"
+                  />
+                  <p>
+                    Registrar - Quezonian Educational College
+                    <small>Member since Nov. 2025</small>
+                  </p>
+                </li>
+                <!--end::User Image-->
+                <!--begin::Menu Body-->
+                <!--end::Menu Body-->
+                <!--begin::Menu Footer-->
+                <li class="user-footer">
+                  <a href="#" class="btn btn-default btn-flat">Profile</a>
+                  <a
+                    href="../auth/login.html"
+                    class="btn btn-default btn-flat float-end"
+                    id="sign-out"
+                    >Sign out</a
+                  >
+                </li>
+                <!--end::Menu Footer-->
+              </ul>
+            </li>
+            <!--end::User Menu Dropdown-->
+          </ul>
+          <!--end::End Navbar Links-->
+        </div>
+        <!--end::Container-->
+      </nav>
+      <!--end::Header-->
+      <!--begin::Sidebar-->
+      <aside class="app-sidebar bg-primary-subtle shadow" data-bs-theme="dark">
+        <!--begin::Sidebar Brand-->
+        <div class="sidebar-brand justify-content-center">
+          <!--begin::Brand Link-->
+          <a href="#" class="brand-link text-decoration-none">
+            <!--begin::Brand Image-->
+            <img
+              class="page-registrar logo"
+              src="/public/assets/images/logo.png"
+              alt="logo"
+            />
+            <!--end::Brand Image-->
+            <!--begin::Brand Text-->
+            <span class="brand-text fw-light fw-bold">QEC Registrar</span>
+            <!--end::Brand Text-->
+          </a>
+          <!--end::Brand Link-->
+        </div>
+        <!--end::Sidebar Brand-->
+        <!--begin::Sidebar Wrapper-->
+        <div class="sidebar-wrapper">
+          <nav class="mt-2">
+            <!--begin::Sidebar Menu-->
+            <ul
+              class="nav sidebar-menu flex-column"
+              data-lte-toggle="treeview"
+              role="navigation"
+              aria-label="Main navigation"
+              data-accordion="false"
+              id="navigation"
+            >
+              <h5 class="text-white pt-2">Main</h5>
+              <li class="nav-item">
+                <a href="./dashboard.html" class="nav-link">
+                  <i class="nav-icon fa-solid fa-house"></i>
+                  <p>Dashboard Overview</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./registrar.html" class="nav-link active">
+                  <i class="nav-icon fa-solid fa-user-graduate"></i>
+                  <p>Registrar</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./application-queue.html" class="nav-link">
+                  <i class="nav-icon fa-solid fa-list"></i>
+                  <p>Application Queue</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./application-evaluation.html" class="nav-link">
+                  <i class="nav-icon fa-solid fa-file-circle-check"></i>
+                  <p>Application Evaluation</p>
+                </a>
+              </li>
+              <h5 class="text-white pt-4">Management</h5>
+              <li class="nav-item">
+                <a href="./notification.html" class="nav-link">
+                  <i class="nav-icon fa-regular fa-bell"></i>
+                  <p>Notifications</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./rep-and-analytics.html" class="nav-link">
+                  <i class="nav-icon fa-solid fa-chart-pie"></i>
+                  <p>Reports and Analytics</p>
+                </a>
+              </li>
+            </ul>
+            <!--end::Sidebar Menu-->
+          </nav>
+        </div>
+        <!--end::Sidebar Wrapper-->
+      </aside>
+      <!--end::Sidebar-->
+      <!--begin::App Main-->
+      <main
+        class="app-main bg-primary-subtle shadow text-white"
+        data-bs-theme="dark"
+      >
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <!--begin::Container-->
+          <div class="container-fluid">
+            <!--begin::Row-->
+            <div class="row">
+              <div class="col-sm-6">
+                <h3 class="mx-3 fw-bold fs-2">Registrar Screen</h3>
+              </div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                  <li class="breadcrumb-item"><a href="#">Home</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">
+                    Registrar
+                  </li>
+                </ol>
+              </div>
+            </div>
+            <!--end::Row-->
+          </div>
+          <!--end::Container-->
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <!-- Filters Row -->
+          <div class="px-4 py-3 mb-3">
+            <div class="card p-4 bg-primary-subtle shadow">
+                <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                  <label class="form-label fw-semibold mb-2">Search</label>
+                  <input
+                    id="filter-search"
+                    type="text"
+                    class="form-control"
+                    placeholder="Student ID / Name"
+                  />
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label fw-semibold mb-2">Course</label>
+                  <select id="filter-course" class="form-select">
+                    <option value="">All Courses</option>
+                    <option>BSCS</option>
+                    <option>BSBA FM</option>
+                    <option>BEED</option>
+                    <option>BSBA HRDM</option>
+                    <option>BSBA MKT</option>
+                    <option>BSED MATH</option>
+                    <option>BSED FIL</option>
+                    <option>BSED ENG</option>
+                    <option>BSCRIM</option>
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label fw-semibold mb-2">Year Level</label>
+                  <select id="filter-year" class="form-select">
+                    <option value="">All Years</option>
+                    <option>1st Year</option>
+                    <option>2nd Year</option>
+                    <option>3rd Year</option>
+                    <option>4th Year</option>
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label fw-semibold mb-2">Status</label>
+                  <select id="filter-status" class="form-select">
+                    <option value="">All Status</option>
+                    <option>Enrolled</option>
+                    <option>Pending</option>
+                    <option>Dropped</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label fw-semibold mb-2"
+                    >Quick Actions</label
+                  >
+                  <div class="d-flex gap-2">
+                    <button
+                      class="btn btn-primary flex-fill"
+                      data-bs-toggle="modal"
+                      data-bs-target="#addStudentModal"
+                    >
+                      <i class="fa-solid fa-user-plus me-2"></i>Add Student
+                    </button>
+                    <button class="btn btn-secondary flex-fill">
+                      <i class="fa-solid fa-file-export me-2"></i>Report
+                    </button>
+                  </div>
+                  <button
+                    class="btn btn-info w-100 mt-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#addAdminModal"
+                  >
+                    <i class="fa-solid fa-user-shield me-2"></i>Add Admin
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Split View -->
+          <div class="row g-3 px-4 py-3 align-items-start">
+            <!-- Center Panel -->
+            <div class="col-lg-9">
+              <div class="card p-0 bg-primary-subtle shadow h-100">
+                <div class="card-header border-bottom bg-primary-subtle shadow">
+                  <h6 class="mb-0 fw-bold fs-5">Student Records</h6>
+                </div>
+                <div class="card-body p-0">
+                  <div class="table-responsive">
+                    <table
+                      class="table table-bordered table-hover align-middle mb-0"
+                    >
+                      <thead class="table-header">
+                        <tr
+                          
+                        >
+                          <th scope="col" class="px-4 py-3 fw-bold text-white">
+                            Student ID
+                          </th>
+                          <th scope="col" class="px-4 py-3 fw-bold text-white">
+                            Name
+                          </th>
+                          <th scope="col" class="px-4 py-3 fw-bold text-white">
+                            Program / Year
+                          </th>
+                          <th scope="col" class="px-4 py-3 fw-bold text-white">
+                            Status
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 fw-bold text-white text-end"
+                          >
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody id="student-records-tbody" class="table-body">
+                        <tr data-program="BSCS" data-year="1st Year" data-status="Enrolled">
+                          <td class="px-4 py-3">2025001</td>
+                          <td class="px-4 py-3">Yuri Oflaria</td>
+                          <td class="px-4 py-3">BSCS / 1st Year</td>
+                          <td class="px-4 py-3">
+                            <span class="badge bg-success">Enrolled</span>
+                          </td>
+                          <td class="px-4 py-3 text-end">
+                            <button class="btn btn-sm btn-outline-primary me-1 btn-view">
+                              View
+                            </button>
+                            <button class="btn btn-sm btn-outline-warning me-1">
+                              Edit
+                            </button>
+                            <button class="btn btn-sm btn-outline-success me-1">
+                              Approve
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger">
+                              Reject
+                            </button>
+                          </td>
+                        </tr>
+                        <tr data-program="BSCS" data-year="2nd Year" data-status="Pending">
+                          <td class="px-4 py-3">2025002</td>
+                          <td class="px-4 py-3">Drex Saniel</td>
+                          <td class="px-4 py-3">BSCS / 2nd Year</td>
+                          <td class="px-4 py-3">
+                            <span class="badge bg-warning">Pending</span>
+                          </td>
+                          <td class="px-4 py-3 text-end">
+                            <button class="btn btn-sm btn-outline-primary me-1 btn-view">
+                              View
+                            </button>
+                            <button class="btn btn-sm btn-outline-warning me-1">
+                              Edit
+                            </button>
+                            <button class="btn btn-sm btn-outline-success me-1">
+                              Approve
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger">
+                              Reject
+                            </button>
+                          </td>
+                        </tr>
+                        <tr data-program="BSCS" data-year="1st Year" data-status="Dropped">
+                          <td class="px-4 py-3">2025003</td>
+                          <td class="px-4 py-3">Zairus Jester</td>
+                          <td class="px-4 py-3">BSCS / 1st Year</td>
+                          <td class="px-4 py-3">
+                            <span class="badge bg-danger">Dropped</span>
+                          </td>
+                          <td class="px-4 py-3 text-end">
+                            <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
+                            <button class="btn btn-sm btn-outline-warning me-1">Edit</button>
+                            <button class="btn btn-sm btn-outline-success me-1">Approve</button>
+                            <button class="btn btn-sm btn-outline-danger">Reject</button>
+                          </td>
+                        </tr>
+                        <tr data-program="BSBA" data-year="3rd Year" data-status="Enrolled">
+                          <td class="px-4 py-3">2025004</td>
+                          <td class="px-4 py-3">Ana Santos</td>
+                          <td class="px-4 py-3">BSBA / 3rd Year</td>
+                          <td class="px-4 py-3">
+                            <span class="badge bg-success">Enrolled</span>
+                          </td>
+                          <td class="px-4 py-3 text-end">
+                            <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
+                            <button class="btn btn-sm btn-outline-warning me-1">Edit</button>
+                            <button class="btn btn-sm btn-outline-success me-1">Approve</button>
+                            <button class="btn btn-sm btn-outline-danger">Reject</button>
+                          </td>
+                        </tr>
+                        <tr data-program="BSED" data-year="2nd Year" data-status="Pending">
+                          <td class="px-4 py-3">2025005</td>
+                          <td class="px-4 py-3">Miguel Reyes</td>
+                          <td class="px-4 py-3">BSED / 2nd Year</td>
+                          <td class="px-4 py-3">
+                            <span class="badge bg-warning">Pending</span>
+                          </td>
+                          <td class="px-4 py-3 text-end">
+                            <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
+                            <button class="btn btn-sm btn-outline-warning me-1">Edit</button>
+                            <button class="btn btn-sm btn-outline-success me-1">Approve</button>
+                            <button class="btn btn-sm btn-outline-danger">Reject</button>
+                          </td>
+                        </tr>
+                        <tr data-program="BSED" data-year="4th Year" data-status="Enrolled">
+                          <td class="px-4 py-3">2025006</td>
+                          <td class="px-4 py-3">Liza Morales</td>
+                          <td class="px-4 py-3">BSED / 4th Year</td>
+                          <td class="px-4 py-3">
+                            <span class="badge bg-success">Enrolled</span>
+                          </td>
+                          <td class="px-4 py-3 text-end">
+                            <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
+                            <button class="btn btn-sm btn-outline-warning me-1">Edit</button>
+                            <button class="btn btn-sm btn-outline-success me-1">Approve</button>
+                            <button class="btn btn-sm btn-outline-danger">Reject</button>
+                          </td>
+                        </tr>
+                        <tr data-program="BSCS" data-year="2nd Year" data-status="Pending">
+                          <td class="px-4 py-3">2025007</td>
+                          <td class="px-4 py-3">Carlos Dela Cruz</td>
+                          <td class="px-4 py-3">BSCS / 2nd Year</td>
+                          <td class="px-4 py-3">
+                            <span class="badge bg-warning">Pending</span>
+                          </td>
+                          <td class="px-4 py-3 text-end">
+                            <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
+                            <button class="btn btn-sm btn-outline-warning me-1">Edit</button>
+                            <button class="btn btn-sm btn-outline-success me-1">Approve</button>
+                            <button class="btn btn-sm btn-outline-danger">Reject</button>
+                          </td>
+                        </tr>
+                        <tr data-program="BSBA" data-year="1st Year" data-status="Enrolled">
+                          <td class="px-4 py-3">2025008</td>
+                          <td class="px-4 py-3">Marian Cruz</td>
+                          <td class="px-4 py-3">BSBA / 1st Year</td>
+                          <td class="px-4 py-3">
+                            <span class="badge bg-success">Enrolled</span>
+                          </td>
+                          <td class="px-4 py-3 text-end">
+                            <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
+                            <button class="btn btn-sm btn-outline-warning me-1">Edit</button>
+                            <button class="btn btn-sm btn-outline-success me-1">Approve</button>
+                            <button class="btn btn-sm btn-outline-danger">Reject</button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div
+                  class="card-footer border-top border-secondary-subtle bg-transparent"
+                >
+                  <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center mb-0">
+                      <li class="page-item">
+                        <a class="page-link" href="#">Previous</a>
+                      </li>
+                      <li class="page-item active">
+                        <a class="page-link" href="#">1</a>
+                      </li>
+                      <li class="page-item">
+                        <a class="page-link" href="#">2</a>
+                      </li>
+                      <li class="page-item">
+                        <a class="page-link" href="#">3</a>
+                      </li>
+                      <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </div>
+            <!-- Right Sidebar -->
+            <div class="col-lg-3">
+              <div class="card p-4 bg-primary-subtle shadow h-100">
+                <div class="position-sticky" style="top:1rem">
+                  <h6 class="fw-bold mb-3">Student Details</h6>
+                  <div id="student-details">
+                  <div class="text-center mb-3">
+                    <img
+                      src="/public/assets/images/yuriphoto.jpg"
+                      class="img-fluid rounded-circle mb-2"
+                      style="width: 120px; height: 120px; object-fit: cover"
+                      alt="Profile Photo"
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <p class="mb-2"><strong>Name:</strong> Yuri Oflaria</p>
+                    <p class="mb-2"><strong>ID:</strong> 2025001</p>
+                    <p class="mb-2"><strong>Program:</strong> BSCS</p>
+                    <p class="mb-3"><strong>Year:</strong> 1st Year</p>
+                  </div>
+                  <hr class="border-secondary-subtle" />
+                  <h6 class="fw-bold mb-2 mt-3">Enrollment History</h6>
+                  <ul class="mb-3">
+                    <li>Enrolled in 2025</li>
+                    <li>Completed Orientation</li>
+                  </ul>
+                  <hr class="border-secondary-subtle" />
+                  <h6 class="fw-bold mb-2 mt-3">Current Subjects</h6>
+                  <ul class="mb-3">
+                    <li class="mb-1">
+                      Math 101 - <span class="badge bg-success">Approved</span>
+                    </li>
+                    <li class="mb-1">
+                      CS 101 - <span class="badge bg-warning">Waitlisted</span>
+                    </li>
+                  </ul>
+                  <hr class="border-secondary-subtle" />
+                  <h6 class="fw-bold mb-2 mt-3">Registrar Notes</h6>
+                  <textarea
+                    class="form-control mb-3"
+                    rows="3"
+                    placeholder="Add notes here..."
+                  >
+                    Good standing student.</textarea
+                  >
+                  <button class="btn btn-success w-100 mb-2">
+                    <i class="fa-solid fa-check me-2"></i>Approve Enrollment
+                  </button>
+                  <button class="btn btn-warning w-100 mb-2">
+                    <i class="fa-solid fa-pause me-2"></i>Hold
+                  </button>
+                  <button class="btn btn-danger w-100">
+                    <i class="fa-solid fa-times me-2"></i>Reject
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Notifications Panel -->
+          <div class="px-4 py-3">
+            <div class="alert alert-info border border-info-subtle">
+              <i class="fa-solid fa-info-circle me-2"></i>
+              <strong>Notifications:</strong> 3 pending approvals, 1 system
+              update.
+            </div>
+          </div>
+        </div>
+        <!--end::App Content-->
+
+        <!-- Add Student Modal -->
+        <div
+          class="modal fade"
+          id="addStudentModal"
+          tabindex="-1"
+          aria-labelledby="addStudentModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content bg-primary-subtle text-white">
+              <div class="modal-header border-bottom border-secondary-subtle">
+                <h5 class="modal-title fw-bold" id="addStudentModalLabel">
+                  <i class="fa-solid fa-user-plus me-2"></i>Add New Student
+                </h5>
+                <button
+                  type="button"
+                  class="btn-close btn-close-white"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <form id="addStudentForm">
+                <div class="modal-body">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label for="studentId" class="form-label fw-semibold"
+                        >Student ID</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="studentId"
+                        placeholder="e.g., 2025004"
+                        required
+                      />
+                    </div>
+                    <div class="col-md-6">
+                      <label for="studentName" class="form-label fw-semibold"
+                        >Full Name</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="studentName"
+                        placeholder="Enter full name"
+                        required
+                      />
+                    </div>
+                    <div class="col-md-6">
+                      <label for="studentProgram" class="form-label fw-semibold"
+                        >Program</label
+                      >
+                      <select class="form-select" id="studentProgram" required>
+                        <option value="">Select Program</option>
+                        <option value="BSCS">BSCS</option>
+                        <option value="BEED">BEED</option>
+                        <option value="BSBA">BSBA FM</option>
+                        <option value="BSBA">BSBA MKT</option>
+                        <option value="BSBA">BSBA HRDM</option>
+                        <option value="BSED">BSED ENG</option>
+                        <option value="BSED">BSED FIL</option>
+                        <option value="BSED">BSED MATH</option>
+                        <option value="BSED">BSCRIM</option>
+                      </select>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="studentYear" class="form-label fw-semibold"
+                        >Year Level</label
+                      >
+                      <select class="form-select" id="studentYear" required>
+                        <option value="">Select Year Level</option>
+                        <option value="1st Year">1st Year</option>
+                        <option value="2nd Year">2nd Year</option>
+                        <option value="3rd Year">3rd Year</option>
+                        <option value="4th Year">4th Year</option>
+                      </select>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="studentStatus" class="form-label fw-semibold"
+                        >Status</label
+                      >
+                      <select class="form-select" id="studentStatus" required>
+                        <option value="">Select Status</option>
+                        <option value="Enrolled">Enrolled</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Dropped">Dropped</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer border-top border-secondary-subtle">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-plus me-2"></i>Add Student
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <!-- Add Admin Modal -->
+        <div
+          class="modal fade"
+          id="addAdminModal"
+          tabindex="-1"
+          aria-labelledby="addAdminModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content bg-primary-subtle text-white">
+              <div class="modal-header border-bottom border-secondary-subtle">
+                <h5 class="modal-title fw-bold" id="addAdminModalLabel">
+                  <i class="fa-solid fa-user-shield me-2"></i>Add New Admin
+                </h5>
+                <button
+                  type="button"
+                  class="btn-close btn-close-white"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <form id="addAdminForm">
+                <div class="modal-body">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label for="adminId" class="form-label fw-semibold"
+                        >Admin ID</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="adminId"
+                        placeholder="e.g., ADM001"
+                        required
+                      />
+                    </div>
+                    <div class="col-md-6">
+                      <label for="adminName" class="form-label fw-semibold"
+                        >Full Name</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="adminName"
+                        placeholder="Enter full name"
+                        required
+                      />
+                    </div>
+                    <div class="col-md-6">
+                      <label for="adminEmail" class="form-label fw-semibold"
+                        >Email</label
+                      >
+                      <input
+                        type="email"
+                        class="form-control"
+                        id="adminEmail"
+                        placeholder="Enter email"
+                        required
+                      />
+                    </div>
+                    <div class="col-md-6">
+                      <label for="adminRole" class="form-label fw-semibold"
+                        >Role</label
+                      >
+                      <select class="form-select" id="adminRole" required>
+                        <option value="">Select Role</option>
+                        <option value="Registrar">Registrar</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Super Admin">Super Admin</option>
+                      </select>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="adminPassword" class="form-label fw-semibold"
+                        >Password</label
+                      >
+                      <input
+                        type="password"
+                        class="form-control"
+                        id="adminPassword"
+                        placeholder="Enter password"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer border-top border-secondary-subtle">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-plus me-2"></i>Add Admin
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </main>
+      <!--end::App Main-->
+      <!--begin::Footer-->
+      <footer class="app-footer bg-primary-subtle" data-bs-theme="dark">
+        <!--begin::To the end-->
+        <div class="float-end d-none d-sm-inline">Anything you want</div>
+        <!--end::To the end-->
+        <!--begin::Copyright-->
+        <strong>
+          Copyright &copy; 2014-2025&nbsp;
+          <a href="#" class="text-decoration-none">Lance Jimenez</a>.
+        </strong>
+        <br />
+        All rights reserved.
+        <!--end::Copyright-->
+      </footer>
+      <!--end::Footer-->
+    </div>
+    <!--end::App Wrapper-->
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="/public/js/utils/app.js"></script>
+
+    <script src="/public/js/core/adminlte.min.js"></script>
+    
+
+    <script>
+      // Add Student Function
+      document
+        .getElementById("addStudentForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          addStudentToTable();
+        });
+
+      function addStudentToTable() {
+        // Get form values
+        const studentId = document.getElementById("studentId").value;
+        const studentName = document.getElementById("studentName").value;
+        const studentProgram = document.getElementById("studentProgram").value;
+        const studentYear = document.getElementById("studentYear").value;
+        const studentStatus = document.getElementById("studentStatus").value;
+
+        // Validate form
+        if (
+          !studentId ||
+          !studentName ||
+          !studentProgram ||
+          !studentYear ||
+          !studentStatus
+        ) {
+          alert("Please fill in all fields.");
+          return;
+        }
+
+        // Get status badge class
+        let statusBadgeClass = "bg-secondary";
+        if (studentStatus === "Enrolled") {
+          statusBadgeClass = "bg-success";
+        } else if (studentStatus === "Pending") {
+          statusBadgeClass = "bg-warning";
+        } else if (studentStatus === "Dropped") {
+          statusBadgeClass = "bg-danger";
+        }
+
+        // Get tbody element
+        const tbody = document.getElementById("student-records-tbody");
+
+        // Create new row
+        const newRow = document.createElement("tr");
+        newRow.className = "border-bottom border-secondary-subtle";
+        newRow.innerHTML = `
+          <td class="px-4 py-3 fw-semibold">${studentId}</td>
+          <td class="px-4 py-3 fw-semibold">${studentName}</td>
+          <td class="px-4 py-3">${studentProgram} / ${studentYear}</td>
+          <td class="px-4 py-3">
+            <span class="badge ${statusBadgeClass}">${studentStatus}</span>
+          </td>
+          <td class="px-4 py-3 text-end">
+            <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
+            <button class="btn btn-sm btn-outline-warning me-1" onclick="editStudent(this)">Edit</button>
+            <button class="btn btn-sm btn-outline-success me-1">Approve</button>
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteStudent(this)">Reject</button>
+          </td>
+        `;
+
+        // set data attributes for filtering
+        newRow.dataset.program = studentProgram;
+        newRow.dataset.year = studentYear;
+        newRow.dataset.status = studentStatus;
+
+        // Insert at the beginning of tbody
+        tbody.insertBefore(newRow, tbody.firstChild);
+
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(
+          document.getElementById("addStudentModal")
+        );
+        modal.hide();
+
+        // Reset form
+        document.getElementById("addStudentForm").reset();
+
+        // Show success message
+        alert("Student added successfully!");
+      }
+
+      // Delegated handler for View buttons — populate right pane
+      document.getElementById('student-records-tbody').addEventListener('click', function(e){
+        const btn = e.target.closest('.btn-view');
+        if(!btn) return;
+        const row = btn.closest('tr');
+        if(!row) return;
+
+        // remove highlight from previous
+        const prev = document.querySelector('#student-records-tbody tr.table-primary');
+        if(prev) prev.classList.remove('table-primary');
+        row.classList.add('table-primary');
+
+        const cells = row.querySelectorAll('td');
+        const sid = cells[0] ? cells[0].textContent.trim() : '';
+        const name = cells[1] ? cells[1].textContent.trim() : '';
+        const progYear = cells[2] ? cells[2].textContent.trim() : '';
+        const [program, year] = progYear.split('/').map(s=>s? s.trim(): '');
+
+        const details = document.getElementById('student-details');
+        details.innerHTML = `
+          <div class="text-center mb-3">
+            <img src="/public/images/yuriphoto.jpg" class="img-fluid rounded-circle mb-2" style="width: 120px; height: 120px; object-fit: cover" alt="Profile Photo" />
+          </div>
+          <div class="mb-3">
+            <p class="mb-2"><strong>Name:</strong> ${name}</p>
+            <p class="mb-2"><strong>ID:</strong> ${sid}</p>
+            <p class="mb-2"><strong>Program:</strong> ${program || '--'}</p>
+            <p class="mb-3"><strong>Year:</strong> ${year || '--'}</p>
+          </div>
+          <hr class="border-secondary-subtle" />
+          <h6 class="fw-bold mb-2 mt-3">Enrollment History</h6>
+          <ul class="mb-3">
+            <li>Enrolled in 2025</li>
+          </ul>
+          <hr class="border-secondary-subtle" />
+          <h6 class="fw-bold mb-2 mt-3">Current Subjects</h6>
+          <ul class="mb-3">
+            <li class="mb-1">--</li>
+          </ul>
+          <hr class="border-secondary-subtle" />
+          <h6 class="fw-bold mb-2 mt-3">Registrar Notes</h6>
+          <textarea class="form-control mb-3" rows="3" placeholder="Add notes here..."></textarea>
+          <button class="btn btn-success w-100 mb-2"><i class="fa-solid fa-check me-2"></i>Approve Enrollment</button>
+          <button class="btn btn-warning w-100 mb-2"><i class="fa-solid fa-pause me-2"></i>Hold</button>
+          <button class="btn btn-danger w-100"><i class="fa-solid fa-times me-2"></i>Reject</button>
+        `;
+      });
+
+      // Filtering logic
+      function applyFilters(){
+        const q = (document.getElementById('filter-search').value||'').trim().toLowerCase();
+        const course = (document.getElementById('filter-course').value||'').trim();
+        const year = (document.getElementById('filter-year').value||'').trim();
+        const status = (document.getElementById('filter-status').value||'').trim();
+
+        const rows = document.querySelectorAll('#student-records-tbody tr');
+        rows.forEach(r=>{
+          const id = (r.children[0] && r.children[0].textContent||'').toLowerCase();
+          const name = (r.children[1] && r.children[1].textContent||'').toLowerCase();
+          const program = (r.dataset.program||'');
+          const ryear = (r.dataset.year||'');
+          const rstatus = (r.dataset.status||'');
+
+          let visible = true;
+          if(q){
+            visible = id.includes(q) || name.includes(q);
+          }
+          if(visible && course){
+            visible = program.toLowerCase() === course.toLowerCase();
+          }
+          if(visible && year){
+            visible = ryear.toLowerCase() === year.toLowerCase();
+          }
+          if(visible && status){
+            visible = rstatus.toLowerCase() === status.toLowerCase();
+          }
+
+          r.style.display = visible ? '' : 'none';
+        });
+      }
+
+      // wire filter inputs
+      document.getElementById('filter-search').addEventListener('keyup', applyFilters);
+      document.getElementById('filter-course').addEventListener('change', applyFilters);
+      document.getElementById('filter-year').addEventListener('change', applyFilters);
+      document.getElementById('filter-status').addEventListener('change', applyFilters);
+
+      // Delete student function
+      function deleteStudent(button) {
+        if (confirm("Are you sure you want to remove this student?")) {
+          const row = button.closest("tr");
+          row.remove();
+        }
+      }
+
+      // Edit student function (placeholder)
+      function editStudent(button) {
+        const row = button.closest("tr");
+        const cells = row.querySelectorAll("td");
+        // You can implement edit functionality here
+        alert("Edit functionality coming soon!");
+      }
+      // Add Admin Function
+      document
+        .getElementById("addAdminForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          addAdmin();
+        });
+      function addAdmin() {
+        // Get form values
+        const adminId = document.getElementById("adminId").value;
+        const adminName = document.getElementById("adminName").value;
+        const adminEmail = document.getElementById("adminEmail").value;
+        const adminRole = document.getElementById("adminRole").value;
+        const adminPassword = document.getElementById("adminPassword").value;
+        // Validate form
+        if (
+          !adminId ||
+          !adminName ||
+          !adminEmail ||
+          !adminRole ||
+          !adminPassword
+        ) {
+          alert("Please fill in all fields.");
+          return;
+        }
+        // Here you can add logic to save the admin, e.g., send to server
+        // For now, just show success
+        alert("Admin added successfully!");
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(
+          document.getElementById("addAdminModal")
+        );
+        modal.hide();
+        // Reset form
+        document.getElementById("addAdminForm").reset();
+      }
+    </script>
+  </body>
+</html>

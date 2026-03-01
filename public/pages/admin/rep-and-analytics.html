@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reports and Analytics</title>
+    <link rel="icon" href="/public/assets/images/logo.png" />
+
+    <link rel="stylesheet" href="/public/vendor/adminlte/css/adminlte.min.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="/public/css/style.css" />
+    
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+      integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/fontawesome.min.css"
+      integrity="sha512-M5Kq4YVQrjg5c2wsZSn27Dkfm/2ALfxmun0vUE3mPiJyK53hQBHYCVAtvMYEC7ZXmYLg8DVG4tF8gD27WmDbsg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body
+    class="page-reports layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary"
+  >
+    <!--begin::App Wrapper-->
+    <div class="app-wrapper">
+      <!--begin::Header-->
+      <nav
+        class="app-header navbar navbar-expand bg-primary-subtle shadow"
+        data-bs-theme="dark"
+      >
+        <!--begin::Container-->
+        <div class="container-fluid">
+          <!--begin::Start Navbar Links-->
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                data-lte-toggle="sidebar"
+                href="#"
+                role="button"
+              >
+                <i class="fa-solid fa-bars"></i>
+              </a>
+            </li>
+          </ul>
+          <!--end::Start Navbar Links-->
+          <!--begin::End Navbar Links-->
+          <ul class="navbar-nav ms-auto">
+            <!--begin::User Menu Dropdown-->
+            <li class="nav-item dropdown user-menu">
+              <a
+                href="#"
+                class="nav-link dropdown-toggle"
+                data-bs-toggle="dropdown"
+              >
+                <img
+                  src="https://lh3.googleusercontent.com/a/ACg8ocJZRFDYP52Px5s5A5hCDSPAwCHlrEebkZDNYbMcQnSSdvacvufz=s360-c-no"
+                  class="user-image rounded-circle shadow"
+                  alt="User Image"
+                />
+                <span class="d-none d-md-inline" id="user-full-name"></span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+                <!--begin::User Image-->
+                <li class="user-header">
+                  <img
+                    src="https://lh3.googleusercontent.com/a/ACg8ocJZRFDYP52Px5s5A5hCDSPAwCHlrEebkZDNYbMcQnSSdvacvufz=s360-c-no"
+                    class="rounded-circle shadow"
+                    alt="User Image"
+                  />
+                  <p>
+                    Nathaniel Amandy - Front-end
+                    <small>Member since Nov. 2025</small>
+                  </p>
+                </li>
+                <!--end::User Image-->
+                <!--begin::Menu Body-->
+                <!--end::Menu Body-->
+                <!--begin::Menu Footer-->
+                <li class="user-footer">
+                  <a href="#" class="btn btn-default btn-flat">Profile</a>
+                  <a
+                    href="../auth/login.html"
+                    class="btn btn-default btn-flat float-end"
+                    id="sign-out"
+                    >Sign out</a
+                  >
+                </li>
+                <!--end::Menu Footer-->
+              </ul>
+            </li>
+            <!--end::User Menu Dropdown-->
+          </ul>
+          <!--end::End Navbar Links-->
+        </div>
+        <!--end::Container-->
+      </nav>
+      <!--end::Header-->
+      <!--begin::Sidebar-->
+      <aside class="app-sidebar bg-primary-subtle shadow" data-bs-theme="dark">
+        <!--begin::Sidebar Brand-->
+        <div class="sidebar-brand justify-content-center">
+          <!--begin::Brand Link-->
+          <a href="#" class="brand-link text-decoration-none">
+            <!--begin::Brand Image-->
+            <img class="page-reports logo" src="/public/assets/images/logo.png" alt="logo">
+            <!--end::Brand Image-->
+            <!--begin::Brand Text-->
+            <span class="brand-text fw-light fw-bold">Dashboard</span>
+            <!--end::Brand Text-->
+          </a>
+          <!--end::Brand Link-->
+        </div>
+        <!--end::Sidebar Brand-->
+        <!--begin::Sidebar Wrapper-->
+        <div class="sidebar-wrapper">
+          <nav class="mt-2">
+            <!--begin::Sidebar Menu-->
+            <ul
+              class="nav sidebar-menu flex-column"
+              data-lte-toggle="treeview"
+              role="navigation"
+              aria-label="Main navigation"
+              data-accordion="false"
+              id="navigation"
+            >
+              <h5 class="text-white pt-2">Main</h5>
+              <li class="nav-item">
+                <a href="./dashboard.html" class="nav-link">
+                  <i class="nav-icon fa-solid fa-house"></i>
+                  <p>Dashboard Overview</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./registrar.html" class="nav-link">
+                  <i class="nav-icon fa-solid fa-user-graduate"></i>
+                  <p>Registrar</p>
+                </a>
+              </li>
+              <li class="nav-item active">
+                <a href="./application-queue.html" class="nav-link">
+                  <i class="nav-icon fa-solid fa-list"></i>
+                  <p>Application Queue</p>
+                </a>
+              </li>
+              <li class="nav-item active">
+                <a href="./application-evaluation.html" class="nav-link">
+                  <i class="nav-icon fa-solid fa-file-circle-check"></i>
+                  <p>Application Evaluation</p>
+                </a>
+              </li>
+              <h5 class="text-white pt-4">Management</h5>
+              <li class="nav-item active">
+                <a href="./accounts.html" class="nav-link">
+                  <i class="nav-icon fa-solid fa-users"></i>
+                  <p>Accounts</p>
+                </a>
+              </li>
+              <li class="nav-item active">
+                <a href="./notification.html" class="nav-link">
+                  <i class="nav-icon fa-regular fa-bell"></i>
+                  <p>Notifications</p>
+                </a>
+              </li>
+              <li class="nav-item active">
+                <a href="./rep-and-analytics.html" class="nav-link active">
+                  <i class="nav-icon fa-solid fa-chart-pie"></i>
+                  <p>Reports and Analytics</p>
+                </a>
+              </li>
+            </ul>
+            <!--end::Sidebar Menu-->
+          </nav>
+        </div>
+        <!--end::Sidebar Wrapper-->
+      </aside>
+      <!--end::Sidebar-->
+      <!--begin::App Main-->
+      <main
+        class="app-main bg-primary-subtle shadow text-white"
+        data-bs-theme="dark"
+      >
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <!--begin::Container-->
+          <div class="container-fluid">
+            <!--begin::Row-->
+            <div class="row">
+              <div class="col-sm-6">
+                <h3 class="mx-3 fw-bold fs-2">Reports and Analytics</h3>
+              </div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                  <li class="breadcrumb-item"><a href="#">Home</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">
+                    Reports and Analytics
+                  </li>
+                </ol>
+              </div>
+            </div>
+            <!--end::Row-->
+          </div>
+          <!--end::Container-->
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <!-- Stats Cards -->
+        <div class="row top-cards g-3 mb-4 px-4 py-3 pt-0">
+            <div class="col-sm-6 col-md-4">
+              <div
+                class="card card-total p-3 bg-primary-subtle shadow"
+                data-bs-theme="dark"
+              >
+                <div class="d-flex justify-content-between align-items-center">
+                  <h6>Total Applications</h6>
+                  <span class="material-symbols-outlined text-primary"
+                    >group</span
+                  >
+                </div>
+                <h3>1,247</h3>
+                <small
+                  ><span class="text-primary fw-semibold">+12%</span> from last month</small
+                >
+              </div>
+            </div>
+
+            <div class="col-sm-6 col-md-4">
+              <div
+                class="card card-approved p-3 bg-primary-subtle shadow"
+                data-bs-theme="dark"
+              >
+                <div class="d-flex justify-content-between align-items-center">
+                  <h6>Approval Rate</h6>
+                  <span class="material-symbols-outlined text-success"
+                    >trending_up</span
+                  >
+                </div>
+                <h3>68.5%</h3>
+                <small
+                  ><span class="text-success fw-semibold">+5.2%</span> from last month</small
+                >
+              </div>
+            </div>
+
+            <div class="col-sm-6 col-md-4">
+              <div
+                class="card card-pending p-3 bg-primary-subtle shadow"
+                data-bs-theme="dark"
+              >
+                <div class="d-flex justify-content-between align-items-center">
+                  <h6>Pending Review</h6>
+                  <span class="material-symbols-outlined text-warning"
+                    >schedule</span
+                  >
+                </div>
+                <h3>39</h3>
+                <small
+                  ><span class="text-warning fw-semibold">+5%</span> from last week</small
+                >
+              </div>
+            </div>
+          </div>
+
+        <!-- ============ TABS ============ -->
+        <div class="tabs-container mx-4 mb-2">
+          <button
+            class="tab-btn active"
+            type="button"
+            onclick="showPage('application-analytics')"
+          >
+            Application Analytics
+          </button>
+          <button
+            class="tab-btn"
+            type="button"
+            onclick="showPage('student-analytics')"
+          >
+            Student Analytics
+          </button>
+          <button
+            class="tab-btn"
+            type="button"
+            onclick="showPage('course-performance')"
+          >
+            Courses Performance
+          </button>
+          <button
+            class="tab-btn"
+            type="button"
+            onclick="showPage('custom-reports')"
+          >
+            Custom Reports
+          </button>
+        </div>
+
+        <!-- ============ APPLICATION ANALYTICS ============ -->
+        <div id="application-analytics" class="content-page px-4 py-3"> 
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="chart-card mb-4">
+                  <div class="card-header">
+                    <h5 class="fw-bold">Application Trends</h5>
+                    <small>Monthly volume & approval rates</small>
+                  </div>
+                  <div class="card-body">
+                    <div id="application-chart" style="height:300px;"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-6">
+                <div class="chart-card mb-4">
+                  <div class="card-header">
+                    <h5 class="fw-bold">Applications by Course</h5>
+                  </div>
+                  <div class="card-body">
+                    <div id="application-course-chart" style="height:300px;"></div>
+                  </div>
+                </div>
+              </div>
+              
+              <!--Start of status breakdown-->
+              <div class="col-12">
+                <div class="chart-card mb-4">
+                  <div class="card-header">
+                    <h5 class="fw-bold">Application Status Breakdown</h5>
+                  </div>
+                  <div class="card-body">
+                    <div class="progress-group mb-3">
+                      <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span><strong>Approved Application</strong></span>
+                        <span>
+                          <strong>854 applicants</strong> 
+                          <span class="text-muted ms-2">(68.5%)</span>
+                        </span>
+                      </div>
+                      <div class="progress progress-sm">
+                        <div class="progress-bar bg-success" style="width:68.5%"></div>
+                      </div>
+                      <small class="text-muted">854 out of 1,247 total applications</small>
+                    </div>
+
+                    <div class="progress-group mb-3">
+                      <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span><strong>Pending Application</strong></span>
+                        <span>
+                          <strong>310 applicants</strong> 
+                          <span class="text-muted ms-2">(24.9%)</span>
+                        </span>
+                      </div>
+                      <div class="progress progress-sm">
+                        <div class="progress-bar bg-warning" style="width:24.9%"></div>
+                      </div>
+                      <small class="text-muted">310 out of 1,247 total applications</small>
+                    </div>
+
+                    <div class="progress-group">
+                      <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span><strong>Rejected Application</strong></span>
+                        <span>
+                          <strong>83 applicants</strong> 
+                          <span class="text-muted ms-2">(6.7%)</span>
+                        </span>
+                      </div>
+                      <div class="progress progress-sm">
+                        <div class="progress-bar bg-danger" style="width:6.7%"></div>
+                      </div>
+                      <small class="text-muted">83 out of 1,247 total applications</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--ENd of status break down-->
+            </div>
+        </div>
+
+        <!-- ============ STUDENT ANALYTICS ============ -->
+        <div id="student-analytics" class="content-page d-none px-4 py-3">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="chart-card mb-4">
+                  <div class="card-header">
+                    <h5 class="card-title">Student Enrollment Trends</h5>
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                        <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                        <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                      </button>
+                      <div class="btn-group">
+                        <button
+                          type="button"
+                          class="btn btn-tool dropdown-toggle"
+                          data-bs-toggle="dropdown"
+                        >
+                          <i class="bi bi-wrench"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end" role="menu">
+                          <a href="#" class="dropdown-item">Action</a>
+                          <a href="#" class="dropdown-item">Another action</a>
+                          <a href="#" class="dropdown-item"> Something else here </a>
+                          <a class="dropdown-divider"></a>
+                          <a href="#" class="dropdown-item">Separated link</a>
+                        </div>
+                      </div>
+                      <button type="button" class="btn btn-tool" data-lte-toggle="card-remove">
+                        <i class="bi bi-x-lg"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                    <!--begin::Row-->
+                    <div class="row">
+                      <div class="col-md-12">
+                        <p class="text-center mb-3">
+                          <strong>Enrollment & Retention: Jan 2023 - Aug 2024</strong>
+                        </p>
+                        <div id="enrollment-retention-chart" style="height:400px;"></div>
+                      </div>
+                      <!-- /.col -->
+                    </div>
+                    <!--end::Row-->
+                  </div>
+                  <!-- ./card-body -->
+                  <!-- /.card-footer -->
+                </div>
+                <!-- /.card -->
+              </div>
+              <!-- /.col -->
+            </div>
+
+            <!-- Student Metrics Card -->
+            <div class="row">
+              <div class="col-md-12">
+                <div class="chart-card mb-4">
+                  <div class="card-header">
+                    <h5 class="fw-bold">Student Metrics</h5>
+                    <small>Key performance indicators and statistics</small>
+                  </div>
+                  <div class="card-body">
+                    <div class="row">
+                      <!-- Left Column - Progress Metrics -->
+                      <div class="col-md-6">
+                        <p class="text-center mb-4"><strong>Performance Metrics</strong></p>
+                        
+                        <div class="progress-group mb-4">
+                          <div class="d-flex justify-content-between mb-2">
+                            <span><i class="fa-solid fa-graduation-cap me-2"></i>Course Completion Rate</span>
+                            <span><b>85.2%</b></span>
+                          </div>
+                          <div class="progress progress-lg">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 85.2%" aria-valuenow="85.2" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                          <small class="text-muted">1,245 / 1,460 students completed</small>
+                        </div>
+
+                        <div class="progress-group mb-4">
+                          <div class="d-flex justify-content-between mb-2">
+                            <span><i class="fa-solid fa-star me-2"></i>Student Satisfaction</span>
+                            <span><b>91.5%</b></span>
+                          </div>
+                          <div class="progress progress-lg">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: 91.5%" aria-valuenow="91.5" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                          <small class="text-muted">Based on 1,200 survey responses</small>
+                        </div>
+
+                        <div class="progress-group mb-4">
+                          <div class="d-flex justify-content-between mb-2">
+                            <span><i class="fa-solid fa-trophy me-2"></i>Graduation Rate</span>
+                            <span><b>78.8%</b></span>
+                          </div>
+                          <div class="progress progress-lg">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: 78.8%" aria-valuenow="78.8" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                          <small class="text-muted">945 / 1,200 students graduated</small>
+                        </div>
+
+                        <div class="progress-group mb-4">
+                          <div class="d-flex justify-content-between mb-2">
+                            <span><i class="fa-solid fa-chart-line me-2"></i>Average GPA</span>
+                            <span><b>3.42</b></span>
+                          </div>
+                          <div class="progress progress-lg">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: 85.5%" aria-valuenow="85.5" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                          <small class="text-muted">Out of 4.0 scale</small>
+                        </div>
+                      </div>
+
+                      <!-- Right Column - Statistics Cards -->
+                      <div class="col-md-6">
+                        <p class="text-center mb-4"><strong>Student Statistics</strong></p>
+                        
+                        <div class="row g-3">
+                          <div class="col-6">
+                            <div class="card bg-primary-subtle p-3 text-center">
+                              <h3 class="mb-1">8,835</h3>
+                              <small class="text-muted">
+                                <i class="fa-solid fa-users me-1"></i>Total Enrolled
+                              </small>
+                            </div>
+                          </div>
+                          <div class="col-6">
+                            <div class="card bg-primary-subtle p-3 text-center">
+                              <h3 class="mb-1">7,245</h3>
+                              <small class="text-muted">
+                                <i class="fa-solid fa-user-check me-1"></i>Active Students
+                              </small>
+                            </div>
+                          </div>
+                          <div class="col-6">
+                            <div class="card bg-primary-subtle p-3 text-center">
+                              <h3 class="mb-1">1,590</h3>
+                              <small class="text-muted">
+                                <i class="fa-solid fa-user-clock me-1"></i>On Leave
+                              </small>
+                            </div>
+                          </div>
+                          <div class="col-6">
+                            <div class="card bg-primary-subtle p-3 text-center">
+                              <h3 class="mb-1">540</h3>
+                              <small class="text-muted">
+                                <i class="fa-solid fa-user-plus me-1"></i>New This Month
+                              </small>
+                            </div>
+                          </div>
+                          <div class="col-6">
+                            <div class="card bg-primary-subtle p-3 text-center">
+                              <h3 class="mb-1">4,235</h3>
+                              <small class="text-muted">
+                                <i class="fa-solid fa-user-graduate me-1"></i>Male Students
+                              </small>
+                            </div>
+                          </div>
+                          <div class="col-6">
+                            <div class="card bg-primary-subtle p-3 text-center">
+                              <h3 class="mb-1">4,600</h3>
+                              <small class="text-muted">
+                                <i class="fa-solid fa-user-graduate me-1"></i>Female Students
+                              </small>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Additional Metrics -->
+                        <div class="mt-4">
+                          <p class="text-center mb-3"><strong>Retention Metrics</strong></p>
+                          <div class="row text-center">
+                            <div class="col-4">
+                              <div class="border-end">
+                                <h5 class="text-success mb-1">94.2%</h5>
+                                <small class="text-muted">Current Retention</small>
+                              </div>
+                            </div>
+                            <div class="col-4">
+                              <div class="border-end">
+                                <h5 class="text-info mb-1">+2.7%</h5>
+                                <small class="text-muted">vs Last Year</small>
+                              </div>
+                            </div>
+                            <div class="col-4">
+                              <h5 class="text-warning mb-1">5.8%</h5>
+                              <small class="text-muted">Dropout Rate</small>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+
+        <!-- ============ COURSE PERFORMANCE ============ -->
+        <div id="course-performance" class="content-page d-none px-4 py-3">
+            <div class="chart-card mb-4">
+              <div class="card-header">
+                <h5 class="fw-bold">Program Performance Comparison</h5>
+              </div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-bordered table-hover mb-0">
+                    <thead class="table-header">
+                      <tr>
+                        <th class="px-4 py-3 fw-semibold">Course</th>
+                        <th class="px-4 py-3 fw-semibold">Application</th>
+                        <th class="px-4 py-3 fw-semibold">Acceptance Rate</th>
+                        <th class="px-4 py-3 fw-semibold">Student Retention Rate</th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-body">
+                      <tr>
+                        <td class="px-4 py-3">BSCS</td>
+                        <td class="px-4 py-3">320</td>
+                        <td class="px-4 py-3">78%</td>
+                        <td class="px-4 py-3">92%</td>
+                      </tr>
+                      <tr>
+                        <td class="px-4 py-3">BSBA</td>
+                        <td class="px-4 py-3">210</td>
+                        <td class="px-4 py-3">71%</td>
+                        <td class="px-4 py-3">88%</td>
+                      </tr>
+                      <tr>
+                        <td class="px-4 py-3">BSED English</td>
+                        <td class="px-4 py-3">180</td>
+                        <td class="px-4 py-3">50%</td>
+                        <td class="px-4 py-3">85%</td>
+                      </tr>
+                      <tr>
+                        <td class="px-4 py-3">BSED Filipino</td>
+                        <td class="px-4 py-3">180</td>
+                        <td class="px-4 py-3">50%</td>
+                        <td class="px-4 py-3">82%</td>
+                      </tr>
+                      <tr>
+                        <td class="px-4 py-3">BSED</td>
+                        <td class="px-4 py-3">180</td>
+                        <td class="px-4 py-3">50%</td>
+                        <td class="px-4 py-3">80%</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+        </div>
+
+        <!-- ============ CUSTOM REPORTS ============ -->
+        <div id="custom-reports" class="content-page d-none px-4 py-3">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="chart-card mb-4">
+                  <div class="card-header">
+                    <h5 class="fw-bold">Create Custom Report</h5>
+                    <small>Generate customized reports based on specific criteria</small>
+                  </div>
+                  <div class="card-body">
+                    <form id="custom-report-form">
+                      <!-- Report Type Selection -->
+                      <div class="row mb-4">
+                        <div class="col-md-6">
+                          <label for="report-type" class="form-label fw-semibold">
+                            <i class="fa-solid fa-file-lines me-2"></i>Report Type
+                          </label>
+                          <select class="form-select" id="report-type" required>
+                            <option value="">Select report type...</option>
+                            <option value="applications">Application Analytics</option>
+                            <option value="enrollment">Enrollment Trends</option>
+                            <option value="retention">Student Retention</option>
+                            <option value="performance">Course Performance</option>
+                            <option value="demographics">Student Demographics</option>
+                            <option value="comprehensive">Comprehensive Report</option>
+                          </select>
+                        </div>
+                        <div class="col-md-6">
+                          <label for="export-format" class="form-label fw-semibold">
+                            <i class="fa-solid fa-download me-2"></i>Export Format
+                          </label>
+                          <select class="form-select" id="export-format" required>
+                            <option value="pdf">PDF</option>
+                            <option value="excel">Excel (XLSX)</option>
+                            <option value="csv">CSV</option>
+                            <option value="html">HTML</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <!-- Date Range -->
+                      <div class="row mb-4">
+                        <div class="col-md-6">
+                          <label for="start-date" class="form-label fw-semibold">
+                            <i class="fa-solid fa-calendar me-2"></i>Start Date
+                          </label>
+                          <input type="date" class="form-control" id="start-date" required>
+                        </div>
+                        <div class="col-md-6">
+                          <label for="end-date" class="form-label fw-semibold">
+                            <i class="fa-solid fa-calendar me-2"></i>End Date
+                          </label>
+                          <input type="date" class="form-control" id="end-date" required>
+                        </div>
+                      </div>
+
+                      <!-- Filter Options -->
+                      <div class="row mb-4">
+                        <div class="col-md-6">
+                          <label for="course-filter" class="form-label fw-semibold">
+                            <i class="fa-solid fa-book me-2"></i>Filter by Course
+                          </label>
+                          <select class="form-select" id="course-filter" multiple>
+                            <option value="all">All Courses</option>
+                            <option value="BSCS">BSCS</option>
+                            <option value="BSBA">BSBA</option>
+                            <option value="BSED English">BSED English</option>
+                            <option value="BSED Filipino">BSED Filipino</option>
+                            <option value="BSIT">BSIT</option>
+                            <option value="BSA">BSA</option>
+                          </select>
+                          <small class="text-muted">Hold Ctrl/Cmd to select multiple</small>
+                        </div>
+                        <div class="col-md-6">
+                          <label for="status-filter" class="form-label fw-semibold">
+                            <i class="fa-solid fa-filter me-2"></i>Filter by Status
+                          </label>
+                          <select class="form-select" id="status-filter" multiple>
+                            <option value="all">All Statuses</option>
+                            <option value="approved">Approved</option>
+                            <option value="pending">Pending</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="enrolled">Enrolled</option>
+                            <option value="active">Active</option>
+                            <option value="graduated">Graduated</option>
+                          </select>
+                          <small class="text-muted">Hold Ctrl/Cmd to select multiple</small>
+                        </div>
+                      </div>
+
+                      <!-- Metrics to Include -->
+                      <div class="mb-4">
+                        <label class="form-label fw-semibold">
+                          <i class="fa-solid fa-chart-bar me-2"></i>Metrics to Include
+                        </label>
+                        <div class="row">
+                          <div class="col-md-4">
+                            <div class="form-check mb-2">
+                              <input class="form-check-input" type="checkbox" id="metric-applications" value="applications" checked>
+                              <label class="form-check-label" for="metric-applications">
+                                Application Statistics
+                              </label>
+                            </div>
+                            <div class="form-check mb-2">
+                              <input class="form-check-input" type="checkbox" id="metric-enrollment" value="enrollment" checked>
+                              <label class="form-check-label" for="metric-enrollment">
+                                Enrollment Trends
+                              </label>
+                            </div>
+                            <div class="form-check mb-2">
+                              <input class="form-check-input" type="checkbox" id="metric-retention" value="retention" checked>
+                              <label class="form-check-label" for="metric-retention">
+                                Retention Rates
+                              </label>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-check mb-2">
+                              <input class="form-check-input" type="checkbox" id="metric-performance" value="performance" checked>
+                              <label class="form-check-label" for="metric-performance">
+                                Course Performance
+                              </label>
+                            </div>
+                            <div class="form-check mb-2">
+                              <input class="form-check-input" type="checkbox" id="metric-demographics" value="demographics">
+                              <label class="form-check-label" for="metric-demographics">
+                                Demographics
+                              </label>
+                            </div>
+                            <div class="form-check mb-2">
+                              <input class="form-check-input" type="checkbox" id="metric-satisfaction" value="satisfaction">
+                              <label class="form-check-label" for="metric-satisfaction">
+                                Student Satisfaction
+                              </label>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-check mb-2">
+                              <input class="form-check-input" type="checkbox" id="metric-gpa" value="gpa">
+                              <label class="form-check-label" for="metric-gpa">
+                                GPA Statistics
+                              </label>
+                            </div>
+                            <div class="form-check mb-2">
+                              <input class="form-check-input" type="checkbox" id="metric-graduation" value="graduation">
+                              <label class="form-check-label" for="metric-graduation">
+                                Graduation Rates
+                              </label>
+                            </div>
+                            <div class="form-check mb-2">
+                              <input class="form-check-input" type="checkbox" id="metric-completion" value="completion">
+                              <label class="form-check-label" for="metric-completion">
+                                Course Completion
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Additional Options -->
+                      <div class="row mb-4">
+                        <div class="col-md-6">
+                          <label for="group-by" class="form-label fw-semibold">
+                            <i class="fa-solid fa-layer-group me-2"></i>Group By
+                          </label>
+                          <select class="form-select" id="group-by">
+                            <option value="none">No Grouping</option>
+                            <option value="course">Course</option>
+                            <option value="month">Month</option>
+                            <option value="year">Year</option>
+                            <option value="status">Status</option>
+                            <option value="gender">Gender</option>
+                          </select>
+                        </div>
+                        <div class="col-md-6">
+                          <label for="sort-by" class="form-label fw-semibold">
+                            <i class="fa-solid fa-sort me-2"></i>Sort By
+                          </label>
+                          <select class="form-select" id="sort-by">
+                            <option value="date">Date (Newest First)</option>
+                            <option value="date-asc">Date (Oldest First)</option>
+                            <option value="name">Name (A-Z)</option>
+                            <option value="name-desc">Name (Z-A)</option>
+                            <option value="value">Value (Highest First)</option>
+                            <option value="value-asc">Value (Lowest First)</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <!-- Report Title and Description -->
+                      <div class="mb-4">
+                        <label for="report-title" class="form-label fw-semibold">
+                          <i class="fa-solid fa-heading me-2"></i>Report Title
+                        </label>
+                        <input type="text" class="form-control" id="report-title" placeholder="Enter custom report title (optional)">
+                      </div>
+                      <div class="mb-4">
+                        <label for="report-description" class="form-label fw-semibold">
+                          <i class="fa-solid fa-align-left me-2"></i>Report Description
+                        </label>
+                        <textarea class="form-control" id="report-description" rows="3" placeholder="Add a description or notes for this report (optional)"></textarea>
+                      </div>
+
+                      <!-- Action Buttons -->
+                      <div class="d-flex gap-2 justify-content-end">
+                        <button type="button" class="btn btn-secondary" onclick="resetCustomReportForm()">
+                          <i class="fa-solid fa-rotate me-2"></i>Reset Form
+                        </button>
+                        <button type="button" class="btn btn-info" onclick="previewCustomReport()">
+                          <i class="fa-solid fa-eye me-2"></i>Preview Report
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                          <i class="fa-solid fa-file-export me-2"></i>Generate Report
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+
+                <!-- Recent Reports -->
+                <div class="chart-card mb-4">
+                  <div class="card-header">
+                    <h5 class="fw-bold">Recent Reports</h5>
+                  </div>
+                  <div class="card-body p-0">
+                    <div class="table-responsive">
+                      <table class="table table-bordered table-hover mb-0">
+                        <thead class="table-header">
+                          <tr>
+                            <th class="px-4 py-3 fw-semibold">Report Name</th>
+                            <th class="px-4 py-3 fw-semibold">Type</th>
+                            <th class="px-4 py-3 fw-semibold">Date Range</th>
+                            <th class="px-4 py-3 fw-semibold">Format</th>
+                            <th class="px-4 py-3 fw-semibold">Generated</th>
+                            <th class="px-4 py-3 fw-semibold text-end">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody class="table-body">
+                          <tr>
+                            <td class="px-4 py-3">Monthly Enrollment Report</td>
+                            <td class="px-4 py-3"><span class="badge bg-primary">Enrollment</span></td>
+                            <td class="px-4 py-3">Jan 2024 - Aug 2024</td>
+                            <td class="px-4 py-3">PDF</td>
+                            <td class="px-4 py-3">2 days ago</td>
+                            <td class="px-4 py-3 text-end">
+                              <button class="btn btn-sm btn-outline-primary me-2">
+                                <i class="fa-solid fa-download"></i>
+                              </button>
+                              <button class="btn btn-sm btn-outline-danger">
+                                <i class="fa-solid fa-trash"></i>
+                              </button>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="px-4 py-3">Application Analytics Q2</td>
+                            <td class="px-4 py-3"><span class="badge bg-success">Applications</span></td>
+                            <td class="px-4 py-3">Apr 2024 - Jun 2024</td>
+                            <td class="px-4 py-3">Excel</td>
+                            <td class="px-4 py-3">1 week ago</td>
+                            <td class="px-4 py-3 text-end">
+                              <button class="btn btn-sm btn-outline-primary me-2">
+                                <i class="fa-solid fa-download"></i>
+                              </button>
+                              <button class="btn btn-sm btn-outline-danger">
+                                <i class="fa-solid fa-trash"></i>
+                              </button>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="px-4 py-3">Student Retention Analysis</td>
+                            <td class="px-4 py-3"><span class="badge bg-warning">Retention</span></td>
+                            <td class="px-4 py-3">Jan 2023 - Aug 2024</td>
+                            <td class="px-4 py-3">PDF</td>
+                            <td class="px-4 py-3">2 weeks ago</td>
+                            <td class="px-4 py-3 text-end">
+                              <button class="btn btn-sm btn-outline-primary me-2">
+                                <i class="fa-solid fa-download"></i>
+                              </button>
+                              <button class="btn btn-sm btn-outline-danger">
+                                <i class="fa-solid fa-trash"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+      <!--begin::Footer-->
+      <footer class="app-footer bg-primary-subtle" data-bs-theme="dark">
+        <!--begin::To the end-->
+        <div class="float-end d-none d-sm-inline">Anything you want</div>
+        <!--end::To the end-->
+        <!--begin::Copyright-->
+        <strong>
+          Copyright &copy; 2014-2025&nbsp;
+          <a href="#" class="text-decoration-none">Nathaniel Amandy</a>.
+        </strong>
+        <br />
+        All rights reserved.
+        <!--end::Copyright-->
+      </footer>
+      <!--end::Footer-->
+    </div>
+    <!--end::App Wrapper-->
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="/public/js/utils/app.js"></script>
+
+    <script src="/public/js/core/adminlte.min.js"></script>
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+    <script src="/public/js/charts.js"></script>
+
+  </body>
+</html>

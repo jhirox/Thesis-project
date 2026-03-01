@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Accounts</title>
+    <link rel="icon" href="/public/assets/images/logo.png" />
+
+    <link rel="stylesheet" href="/public/vendor/adminlte/css/adminlte.min.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="/public/css/style.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+      integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/fontawesome.min.css"
+      integrity="sha512-M5Kq4YVQrjg5c2wsZSn27Dkfm/2ALfxmun0vUE3mPiJyK53hQBHYCVAtvMYEC7ZXmYLg8DVG4tF8gD27WmDbsg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body
+    class="page-acc layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary text-white"
+  >
+    <!--begin::App Wrapper-->
+    <div class="app-wrapper">
+      <!--begin::Header-->
+      <nav
+        class="app-header navbar navbar-expand bg-primary-subtle shadow"
+        data-bs-theme="dark"
+      >
+        <!--begin::Container-->
+        <div class="container-fluid">
+          <!--begin::Start Navbar Links-->
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                data-lte-toggle="sidebar"
+                href="#"
+                role="button"
+              >
+                <i class="fa-solid fa-bars"></i>
+              </a>
+            </li>
+          </ul>
+          <!--end::Start Navbar Links-->
+          <!--begin::End Navbar Links-->
+          <ul class="navbar-nav ms-auto">
+            <!--begin::User Menu Dropdown-->
+            <li class="nav-item dropdown user-menu">
+              <a
+                href="#"
+                class="nav-link dropdown-toggle"
+                data-bs-toggle="dropdown"
+              >
+                <img
+                  src="https://lh3.googleusercontent.com/a/ACg8ocJZRFDYP52Px5s5A5hCDSPAwCHlrEebkZDNYbMcQnSSdvacvufz=s360-c-no"
+                  class="user-image rounded-circle shadow"
+                  alt="User Image"
+                />
+                <span class="d-none d-md-inline" id="user-full-name"></span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+                <!--begin::User Image-->
+                <li class="user-header">
+                  <img
+                    src="https://lh3.googleusercontent.com/a/ACg8ocJZRFDYP52Px5s5A5hCDSPAwCHlrEebkZDNYbMcQnSSdvacvufz=s360-c-no"
+                    class="rounded-circle shadow"
+                    alt="User Image"
+                  />
+                  <p>
+                    Nathaniel Amandy - Front-end
+                    <small>Member since Nov. 2025</small>
+                  </p>
+                </li>
+                <!--end::User Image-->
+                <!--begin::Menu Body-->
+                <!--end::Menu Body-->
+                <!--begin::Menu Footer-->
+                <li class="user-footer">
+                  <a href="#" class="btn btn-default btn-flat">Profile</a>
+                  <a
+                    href="../auth/login.html"
+                    class="btn btn-default btn-flat float-end"
+                    id="sign-out"
+                    >Sign out</a
+                  >
+                </li>
+                <!--end::Menu Footer-->
+              </ul>
+            </li>
+            <!--end::User Menu Dropdown-->
+          </ul>
+          <!--end::End Navbar Links-->
+        </div>
+        <!--end::Container-->
+      </nav>
+      <!--end::Header-->
+      <!--begin::Sidebar-->
+      <aside class="app-sidebar bg-primary-subtle shadow" data-bs-theme="dark">
+        <!--begin::Sidebar Brand-->
+        <div class="sidebar-brand justify-content-center">
+          <!--begin::Brand Link-->
+          <a href="#" class="brand-link text-decoration-none">
+            <!--begin::Brand Image-->
+            <img
+              class="page-acc logo"
+              src="/public/assets/images/logo.png"
+              alt="logo"
+            />
+            <!--end::Brand Image-->
+            <!--begin::Brand Text-->
+            <span class="brand-text fw-light fw-bold">Dashboard</span>
+            <!--end::Brand Text-->
+          </a>
+          <!--end::Brand Link-->
+        </div>
+        <!--end::Sidebar Brand-->
+        <!--begin::Sidebar Wrapper-->
+        <div class="sidebar-wrapper">
+          <nav class="mt-2">
+            <!--begin::Sidebar Menu-->
+            <ul
+              class="nav sidebar-menu flex-column"
+              data-lte-toggle="treeview"
+              role="navigation"
+              aria-label="Main navigation"
+              data-accordion="false"
+              id="navigation"
+            >
+              <h5 class="text-white pt-2">Main</h5>
+              <li class="nav-item">
+                <a href="./dashboard.html" class="nav-link">
+                  <i class="nav-icon fa-solid fa-house"></i>
+                  <p>Dashboard Overview</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./registrar.html" class="nav-link">
+                  <i class="nav-icon fa-solid fa-user-graduate"></i>
+                  <p>Registrar</p>
+                </a>
+              </li>
+              <li class="nav-item active">
+                <a href="./application-queue.html" class="nav-link">
+                  <i class="nav-icon fa-solid fa-list"></i>
+                  <p>Application Queue</p>
+                </a>
+              </li>
+              <li class="nav-item active">
+                <a href="./application-evaluation.html" class="nav-link">
+                  <i class="nav-icon fa-solid fa-file-circle-check"></i>
+                  <p>Application Evaluation</p>
+                </a>
+              </li>
+              <h5 class="text-white pt-4">Management</h5>
+              <li class="nav-item active">
+                <a href="./accounts.html" class="nav-link active">
+                  <i class="nav-icon fa-solid fa-users"></i>
+                  <p>Accounts</p>
+                </a>
+              </li>
+              <li class="nav-item active">
+                <a href="./notification.html" class="nav-link">
+                  <i class="nav-icon fa-regular fa-bell"></i>
+                  <p>Notifications</p>
+                </a>
+              </li>
+              <li class="nav-item active">
+                <a href="./rep-and-analytics.html" class="nav-link">
+                  <i class="nav-icon fa-solid fa-chart-pie"></i>
+                  <p>Reports and Analytics</p>
+                </a>
+              </li>
+            </ul>
+            <!--end::Sidebar Menu-->
+          </nav>
+        </div>
+        <!--end::Sidebar Wrapper-->
+      </aside>
+      <!--end::Sidebar-->
+      <!--begin::App Main-->
+      <main class="app-main bg-primary-subtle shadow" data-bs-theme="dark">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <!--begin::Container-->
+          <div class="container-fluid">
+            <!--begin::Row-->
+            <div class="row">
+              <div class="col-sm-6">
+                <h3 class="mx-3 fw-bold fs-2">Accounts</h3>
+              </div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                  <li class="breadcrumb-item"><a href="#">Home</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">
+                    Dashboard
+                  </li>
+                </ol>
+              </div>
+            </div>
+            <!--end::Row-->
+          </div>
+          <!--end::Container-->
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <!-- <div class="d-flex justify-content-end align-items-center mb-3 px-2">
+              <button class="btn btn-dark">
+                <i class="fa-solid fa-user-plus me-2"></i> Add New Account
+              </button>
+          </div> -->
+
+          <!-- Stats -->
+          <div class="row top-cards g-3 mb-4 px-4 py-3 pt-0">
+            <div class="col-sm-6 col-md-3">
+              <div
+                class="card card-total p-3 bg-primary-subtle shadow"
+                data-bs-theme="dark"
+              >
+                <div class="d-flex justify-content-between align-items-center">
+                  <h6>Total Applications</h6>
+                  <span class="material-symbols-outlined text-primary"
+                    >group</span
+                  >
+                </div>
+                <h3>1,247</h3>
+                <small
+                  ><span class="text-primary">+12%</span> from last week</small
+                >
+              </div>
+            </div>
+
+            <div class="col-sm-6 col-md-3">
+              <div
+                class="card card-pending p-3 bg-primary-subtle shadow"
+                data-bs-theme="dark"
+              >
+                <div class="d-flex justify-content-between align-items-center">
+                  <h6>Active Accounts</h6>
+                  <span class="material-symbols-outlined text-warning"
+                    >schedule</span
+                  >
+                </div>
+                <h3>39</h3>
+                <small
+                  ><span class="text-warning">+5%</span> from last week</small
+                >
+              </div>
+            </div>
+
+            <div class="col-sm-6 col-md-3">
+              <div
+                class="card card-rejected p-3 bg-primary-subtle shadow"
+                data-bs-theme="dark"
+              >
+                <div class="d-flex justify-content-between align-items-center">
+                  <h6>Rejected</h6>
+                  <span class="material-symbols-outlined text-danger"
+                    >check_circle</span
+                  >
+                </div>
+                <h3>69</h3>
+                <small
+                  ><span class="text-danger">+12%</span> from last week</small
+                >
+              </div>
+            </div>
+
+            <div class="col-sm-6 col-md-3">
+              <div
+                class="card card-approved p-3 bg-primary-subtle shadow"
+                data-bs-theme="dark"
+              >
+                <div class="d-flex justify-content-between align-items-center">
+                  <h6>New this Month</h6>
+                  <span class="material-symbols-outlined text-success"
+                    >warning</span
+                  >
+                </div>
+                <h3>7</h3>
+                <small
+                  ><span class="text-success">+5%</span> from last week</small
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- ============ TABS ============ -->
+          <div class="tabs-container mx-4">
+            <button
+              class="tab-btn active"
+              type="button"
+              onclick="showPage('overview')"
+            >
+              Account Overview
+            </button>
+            <button
+              class="tab-btn"
+              type="button"
+              onclick="showPage('active')"
+            >
+              Active
+            </button>
+            <button
+              class="tab-btn"
+              type="button"
+              onclick="showPage('inactive')"
+            >
+              Inactive
+            </button>
+          </div>
+
+          <!-- ============ ACCOUNT OVERVIEW ============ -->
+          <div id="overview" class="content-page px-4 py-2">
+              <div
+                class="section-card px-3 py-2 pt-4 justify-content-between flex-wrap"
+              >
+                <h4 class="fw-bold">Account Overview</h4>
+                <p class="text-muted mb-2">
+                  All accounts — Active, Rejected, and Inactive
+                </p>
+                <hr />
+
+                <!-- ============ FILTERS ============ -->
+                <div class="row gap-2 mb-3">
+                  <div class="col-md-3">
+                    <input
+                      type="text"
+                      class="form-control bg-primary-subtle text-white border-secondary-subtle"
+                      id="searchInput"
+                      placeholder="Search by name or email..."
+                      onkeyup="filterTable()"
+                    />
+                  </div>
+                  <div class="col-md-2">
+                    <select
+                      class="form-select bg-primary-subtle text-white border-secondary-subtle"
+                      id="courseFilter"
+                      onchange="filterTable()"
+                    >
+                      <option value="">All Courses</option>
+                      <option value="BSCS">BSCS</option>
+                      <option value="BSIT">BSBA HRDM</option>
+                      <option value="BSIS">BSED Filipino</option>
+                      <option value="BSCE">BSED Mathematics</option>
+                      <option value="BSED English">BSED English</option>
+                      <option value="BSCRIM">BSCRIM</option>
+                      <option value="BSBA FM">BSBA FM</option>
+                      <option value="BSBA MARKETING">BSBA MARKETING</option>
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <select
+                      class="form-select bg-primary-subtle text-white border-secondary-subtle"
+                      id="studentTypeFilter"
+                      onchange="filterTable()"
+                    >
+                      <option value="">All Types</option>
+                      <option value="Regular">Regular</option>
+                      <option value="Irregular">Irregular</option>
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <select
+                      class="form-select bg-primary-subtle text-white border-secondary-subtle"
+                      id="statusFilter"
+                      onchange="filterTable()"
+                    >
+                      <option value="">All Status</option>
+                      <option value="Active">Active</option>
+                      <option value="Inactive">Inactive</option>
+                      <option value="Rejected">Rejected</option>
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <input
+                      type="date"
+                      class="form-control bg-primary-subtle text-white border-secondary-subtle"
+                      id="loginFromDate"
+                      onchange="filterTable()"
+                      title="From date"
+                    />
+                  </div>
+                  <div class="col-md-2">
+                    <input
+                      type="date"
+                      class="form-control bg-primary-subtle text-white border-secondary-subtle"
+                      id="loginToDate"
+                      onchange="filterTable()"
+                      title="To date"
+                    />
+                  </div>
+                  <div class="col-md-3 ">
+                    <button
+                      class="btn btn-primary w-100"
+                      onclick="resetFilters()"
+                      type="button"
+                    >
+                      Reset Filters
+                    </button>
+                  </div>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="table table-bordered table-hover align-middle border ">
+                    <thead class="table-header">
+                      <tr>
+                        <th scope="col" class="px-4 py-3 fw-bold text-white">Account</th>
+                        <th scope="col" class="px-4 py-3 fw-bold text-white">Course</th>
+                        <th scope="col" class="px-4 py-3 fw-bold text-white">Type of Student</th>
+                        <th scope="col" class="px-4 py-3 fw-bold text-white">Last Login</th>
+                        <th scope="col" class="px-4 py-3 fw-bold text-white">Status</th>
+                        <th scope="col" class="px-4 py-3 fw-bold text-white text-end">Action</th>
+                      </tr>
+                    </thead>
+
+                    <tbody class="table-body">
+                      <!-- John Ocampo (Active) -->
+                      <tr class="border-bottom border-secondary-subtle">
+                        <td class="px-4 py-3">
+                          <div class="d-flex align-items-center">
+                            <img
+                              src="/public/assets/images/johnpic.jpg"
+                              alt="John photo"
+                              class="profile-img me-3"
+                            />
+                            <div>
+                              <div class="fw-semibold">John Ocampo</div>
+                              <small class="text-muted">john@gmail.com</small>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="px-4 py-3 fw-semibold">BSCS</td>
+                        <td class="px-4 py-3 fw-semibold">Regular</td>
+                        <td class="px-4 py-3 fw-semibold">2025-09-30</td>
+                        <td class="px-4 py-3">
+                          <span class="status-badge status-active bg-success">Active</span>
+                        </td>
+                        <td class="px-4 py-3 text-end">
+                          <i class="fa-solid fa-edit me-3 text-info" title="Edit" style="cursor: pointer;"></i>
+                          <i class="fa-solid fa-lock me-3 text-warning" title="Lock" style="cursor: pointer;"></i>
+                          <i class="fa-solid fa-ban text-danger" title="Reject" style="cursor: pointer;"></i>
+                        </td>
+                      </tr>
+
+                      <!-- Mark Delacruz (Rejected) -->
+                      <tr class="border-bottom border-secondary-subtle">
+                        <td class="px-4 py-3">
+                          <div class="d-flex align-items-center">
+                            <img
+                              src="/public/assets/images/markphoto.jpg"
+                              alt="Mark photo"
+                              class="profile-img me-3"
+                            />
+                            <div>
+                              <div class="fw-semibold">Mark Delacruz</div>
+                              <small class="text-muted">mark@gmail.com</small>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="px-4 py-3 fw-semibold">BSCS</td>
+                        <td class="px-4 py-3 fw-semibold">Irregular</td>
+                        <td class="px-4 py-3 fw-semibold">2025-09-30</td>
+                        <td class="px-4 py-3">
+                          <span class="status-badge status-rejected bg-danger">Rejected</span>
+                        </td>
+                        <td class="px-4 py-3 text-end">
+                          <i class="fa-solid fa-edit me-3 text-info" title="Edit" style="cursor: pointer;"></i>
+                          <i class="fa-solid fa-lock me-3 text-warning" title="Lock" style="cursor: pointer;"></i>
+                          <i class="fa-solid fa-ban text-danger" title="Reject" style="cursor: pointer;"></i>
+                        </td>
+                      </tr>
+
+                      <!-- Nathaniel Amandy (Inactive) -->
+                      <tr class="border-bottom border-secondary-subtle">
+                        <td class="px-4 py-3">
+                          <div class="d-flex align-items-center">
+                            <img
+                              src="/public/assets/images/nathphoto.jpg"
+                              alt="Nathaniel photo"
+                              class="profile-img me-3"
+                            />
+                            <div>
+                              <div class="fw-semibold">Nathaniel Amandy</div>
+                              <small class="text-muted">nat@gmail.com</small>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="px-4 py-3 fw-semibold">BSCS</td>
+                        <td class="px-4 py-3 fw-semibold">Regular</td>
+                        <td class="px-4 py-3 fw-semibold">2025-09-30</td>
+                        <td class="px-4 py-3">
+                          <span class="status-badge status-inactive bg-secondary">Inactive</span>
+                        </td>
+                        <td class="px-4 py-3 text-end">
+                          <i class="fa-solid fa-edit me-3 text-info" title="Edit" style="cursor: pointer;"></i>
+                          <i class="fa-solid fa-lock me-3 text-warning" title="Lock" style="cursor: pointer;"></i>
+                          <i class="fa-solid fa-ban text-danger" title="Reject" style="cursor: pointer;"></i>
+                        </td>
+                      </tr>
+
+                      <!-- Lance Jimenez (Inactive) -->
+                      <tr>
+                        <td class="px-4 py-3">
+                          <div class="d-flex align-items-center">
+                            <img
+                              src="/public/assets/images/lancephoto.png"
+                              alt="Lance photo"
+                              class="profile-img me-3"
+                            />
+                            <div>
+                              <div class="fw-semibold">Lance Jimenez</div>
+                              <small class="text-muted">ljay@gmail.com</small>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="px-4 py-3 fw-semibold">BSCS</td>
+                        <td class="px-4 py-3 fw-semibold">Regular</td>
+                        <td class="px-4 py-3 fw-semibold">2025-09-30</td>
+                        <td class="px-4 py-3">
+                          <span class="status-badge status-inactive bg-secondary">Inactive</span>
+                        </td>
+                        <td class="px-4 py-3 text-end">
+                          <i class="fa-solid fa-edit me-3 text-info" title="Edit" style="cursor: pointer;"></i>
+                          <i class="fa-solid fa-lock me-3 text-warning" title="Lock" style="cursor: pointer;"></i>
+                          <i class="fa-solid fa-ban text-danger" title="Reject" style="cursor: pointer;"></i>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+          </div>
+
+          <!-- ============ ACTIVE ============ -->
+          <div id="active" class="content-page d-none px-4 py-2">
+              <div class="section-card px-3 py-2 pt-4">
+                <h4 class="fw-bold">Active Student Accounts</h4>
+                <p class="text-muted mb-2">
+                  Currently active and engaged students
+                </p>
+                <hr />
+
+                <!-- ============ FILTERS ============ -->
+                <div class="row g-3 mb-3">
+                  <div class="col-md-3">
+                    <input
+                      type="text"
+                      class="form-control bg-primary-subtle text-white border-secondary-subtle"
+                      id="searchInputActive"
+                      placeholder="Search by name or email..."
+                      onkeyup="filterTableActive()"
+                    />
+                  </div>
+                  <div class="col-md-2">
+                    <select
+                      class="form-select bg-primary-subtle text-white border-secondary-subtle"
+                      id="courseFilterActive"
+                      onchange="filterTableActive()"
+                    >
+                      <option value="">All Courses</option>
+                      <option value="BSCS">BSCS</option>
+                      <option value="BSIT">BSBA HRDM</option>
+                      <option value="BSIS">BSED Filipino</option>
+                      <option value="BSCE">BSED Mathematics</option>
+                      <option value="BSED English">BSED English</option>
+                      <option value="BSCRIM">BSCRIM</option>
+                      <option value="BSBA FM">BSBA FM</option>
+                      <option value="BSBA MARKETING">BSBA MARKETING</option>
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <select
+                      class="form-select bg-primary-subtle text-white border-secondary-subtle"
+                      id="studentTypeFilterActive"
+                      onchange="filterTableActive()"
+                    >
+                      <option value="">All Types</option>
+                      <option value="Regular">Regular</option>
+                      <option value="Irregular">Irregular</option>
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <input
+                      type="date"
+                      class="form-control bg-primary-subtle text-white border-secondary-subtle"
+                      id="loginFromDateActive"
+                      onchange="filterTableActive()"
+                      title="From date"
+                    />
+                  </div>
+                  <div class="col-md-2">
+                    <input
+                      type="date"
+                      class="form-control bg-primary-subtle text-white border-secondary-subtle"
+                      id="loginToDateActive"
+                      onchange="filterTableActive()"
+                      title="To date"
+                    />
+                  </div>
+                  <div class="col-md-3">
+                    <button
+                      class="btn btn-primary w-100"
+                      onclick="resetFiltersActive()"
+                      type="button"
+                    >
+                      Reset Filters
+                    </button>
+                  </div>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="table table-bordered table-hover align-middle mb-3">
+                    <thead class="table-header">
+                      <tr>
+                        <th scope="col" class="px-4 py-3 fw-bold text-white">Account</th>
+                        <th scope="col" class="px-4 py-3 fw-bold text-white">Course</th>
+                        <th scope="col" class="px-4 py-3 fw-bold text-white">Type of Student</th>
+                        <th scope="col" class="px-4 py-3 fw-bold text-white">Last Login</th>
+                        <th scope="col" class="px-4 py-3 fw-bold text-white">Status</th>
+                        <th scope="col" class="px-4 py-3 fw-bold text-white text-end">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-body">
+                      <tr class="border-bottom border-secondary-subtle">
+                        <td class="px-4 py-3">
+                          <div class="d-flex align-items-center">
+                            <img
+                              src="/public/assets/images/johnpic.jpg"
+                              alt="John photo"
+                              class="profile-img me-3"
+                            />
+                            <div>
+                              <div class="fw-semibold">John Ocampo</div>
+                              <small class="text-muted">john@gmail.com</small>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="px-4 py-3 fw-semibold">BSCS</td>
+                        <td class="px-4 py-3 fw-semibold">Regular</td>
+                        <td class="px-4 py-3 fw-semibold">2025-01-15</td>
+                        <td class="px-4 py-3">
+                          <span class="status-badge status-active bg-success">Active</span>
+                        </td>
+                        <td class="px-4 py-3 text-end">
+                          <i class="fa-solid fa-edit me-3 text-info" title="Edit" style="cursor: pointer;"></i>
+                          <i class="fa-solid fa-lock me-3 text-warning" title="Lock" style="cursor: pointer;"></i>
+                          <i class="fa-solid fa-ban text-danger" title="Reject" style="cursor: pointer;"></i>
+                        </td>
+                      </tr>
+                      <tr class="border-bottom border-secondary-subtle">
+                        <td class="px-4 py-3">
+                          <div class="d-flex align-items-center">
+                            <img
+                              src="/public/assets/images/johnpic.jpg"
+                              alt="John photo"
+                              class="profile-img me-3"
+                            />
+                            <div>
+                              <div class="fw-semibold">Sarah Martinez</div>
+                              <small class="text-muted">sarah.martinez@gmail.com</small>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="px-4 py-3 fw-semibold">BSBA</td>
+                        <td class="px-4 py-3 fw-semibold">Irregular</td>
+                        <td class="px-4 py-3 fw-semibold">2025-01-14</td>
+                        <td class="px-4 py-3">
+                          <span class="status-badge status-active bg-success">Active</span>
+                        </td>
+                        <td class="px-4 py-3 text-end">
+                          <i class="fa-solid fa-edit me-3 text-info" title="Edit" style="cursor: pointer;"></i>
+                          <i class="fa-solid fa-lock me-3 text-warning" title="Lock" style="cursor: pointer;"></i>
+                          <i class="fa-solid fa-ban text-danger" title="Reject" style="cursor: pointer;"></i>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="px-4 py-3">
+                          <div class="d-flex align-items-center">
+                            <img
+                              src="/public/assets/images/johnpic.jpg"
+                              alt="John photo"
+                              class="profile-img me-3"
+                            />
+                            <div>
+                              <div class="fw-semibold">Michael Chen</div>
+                              <small class="text-muted">michael.chen@gmail.com</small>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="px-4 py-3 fw-semibold">BSIT</td>
+                        <td class="px-4 py-3 fw-semibold">Regular</td>
+                        <td class="px-4 py-3 fw-semibold">2025-01-13</td>
+                        <td class="px-4 py-3">
+                          <span class="status-badge status-active bg-success">Active</span>
+                        </td>
+                        <td class="px-4 py-3 text-end">
+                          <i class="fa-solid fa-edit me-3 text-info" title="Edit" style="cursor: pointer;"></i>
+                          <i class="fa-solid fa-lock me-3 text-warning" title="Lock" style="cursor: pointer;"></i>
+                          <i class="fa-solid fa-ban text-danger" title="Reject" style="cursor: pointer;"></i>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+          </div>
+
+          <!-- ============ INACTIVE ============ -->
+          <div id="inactive" class="content-page d-none px-4 py-2">
+              <div class="section-card px-3 py-2 pt-4">
+                <h4 class="fw-bold">Inactive</h4>
+                <p class="text-muted mb-2">
+                  Accounts that are currently inactive
+                </p>
+                <hr />
+
+                <!-- ============ FILTERS ============ -->
+                <div class="row g-3 mb-3">
+                  <div class="col-md-3">
+                    <input
+                      type="text"
+                      class="form-control bg-primary-subtle text-white border-secondary-subtle"
+                      id="searchInputInactive"
+                      placeholder="Search by name or email..."
+                      onkeyup="filterTableInactive()"
+                    />
+                  </div>
+                  <div class="col-md-2">
+                    <select
+                      class="form-select bg-primary-subtle text-white border-secondary-subtle"
+                      id="courseFilterInactive"
+                      onchange="filterTableInactive()"
+                    >
+                      <option value="">All Courses</option>
+                      <option value="BSCS">BSCS</option>
+                      <option value="BSIT">BSBA HRDM</option>
+                      <option value="BSIS">BSED Filipino</option>
+                      <option value="BSCE">BSED Mathematics</option>
+                      <option value="BSED English">BSED English</option>
+                      <option value="BSCRIM">BSCRIM</option>
+                      <option value="BSBA FM">BSBA FM</option>
+                      <option value="BSBA MARKETING">BSBA MARKETING</option>
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <select
+                      class="form-select bg-primary-subtle text-white border-secondary-subtle"
+                      id="studentTypeFilterInactive"
+                      onchange="filterTableInactive()"
+                    >
+                      <option value="">All Types</option>
+                      <option value="Regular">Regular</option>
+                      <option value="Irregular">Irregular</option>
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <input
+                      type="date"
+                      class="form-control bg-primary-subtle text-white border-secondary-subtle"
+                      id="loginFromDateInactive"
+                      onchange="filterTableInactive()"
+                      title="From date"
+                    />
+                  </div>
+                  <div class="col-md-2">
+                    <input
+                      type="date"
+                      class="form-control bg-primary-subtle text-white border-secondary-subtle"
+                      id="loginToDateInactive"
+                      onchange="filterTableInactive()"
+                      title="To date"
+                    />
+                  </div>
+                  <div class="col-md-3">
+                    <button
+                      class="btn btn-primary w-100"
+                      onclick="resetFiltersInactive()"
+                      type="button"
+                    >
+                      Reset Filters
+                    </button>
+                  </div>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="table table-bordered table-hover align-middle mb-3">
+                    <thead class="table-header">
+                      <tr>
+                        <th scope="col" class="px-4 py-3 fw-bold text-white">Account</th>
+                        <th scope="col" class="px-4 py-3 fw-bold text-white">Course</th>
+                        <th scope="col" class="px-4 py-3 fw-bold text-white">Type of Student</th>
+                        <th scope="col" class="px-4 py-3 fw-bold text-white">Last Login</th>
+                        <th scope="col" class="px-4 py-3 fw-bold text-white">Status</th>
+                        <th scope="col" class="px-4 py-3 fw-bold text-white text-end">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-body">
+                      <tr class="border-bottom border-secondary-subtle">
+                        <td class="px-4 py-3">
+                          <div class="d-flex align-items-center">
+                            <img
+                              src="/public/assets/images/nathphoto.jpg"
+                              alt="Nathaniel photo"
+                              class="profile-img me-3"
+                            />
+                            <div>
+                              <div class="fw-semibold">Nathaniel Amandy</div>
+                              <small class="text-muted">nat@gmail.com</small>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="px-4 py-3 fw-semibold">BSCS</td>
+                        <td class="px-4 py-3 fw-semibold">Regular</td>
+                        <td class="px-4 py-3 fw-semibold">2024-11-25</td>
+                        <td class="px-4 py-3">
+                          <span class="status-badge status-inactive bg-secondary">Inactive</span>
+                        </td>
+                        <td class="px-4 py-3 text-end">
+                          <button class="btn btn-outline-secondary btn-sm me-2">
+                            Send Reminder
+                          </button>
+                          <button class="btn btn-outline-primary btn-sm">
+                            Activate
+                          </button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="px-4 py-3">
+                          <div class="d-flex align-items-center">
+                            <img
+                              src="/public/assets/images/lancephoto.png"
+                              alt="Lance photo"
+                              class="profile-img me-3"
+                            />
+                            <div>
+                              <div class="fw-semibold">Lance Jimenez</div>
+                              <small class="text-muted">lance.jimenez@gmail.com</small>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="px-4 py-3 fw-semibold">BSCS</td>
+                        <td class="px-4 py-3 fw-semibold">Regular</td>
+                        <td class="px-4 py-3 fw-semibold">2024-11-20</td>
+                        <td class="px-4 py-3">
+                          <span class="status-badge status-inactive bg-secondary">Inactive</span>
+                        </td>
+                        <td class="px-4 py-3 text-end">
+                          <button class="btn btn-outline-secondary btn-sm me-2">
+                            Send Reminder
+                          </button>
+                          <button class="btn btn-outline-primary btn-sm">
+                            Activate
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+          </div>
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+      <!--begin::Footer-->
+      <footer class="app-footer bg-primary-subtle shadow" data-bs-theme="dark">
+        <!--begin::To the end-->
+        <div class="float-end d-none d-sm-inline">Anything you want</div>
+        <!--end::To the end-->
+        <!--begin::Copyright-->
+        <strong>
+          Copyright &copy; 2014-2025&nbsp;
+          <a href="#" class="text-decoration-none">Yuri Oflaria</a>.
+        </strong>
+        <br />
+        All rights reserved.
+        <!--end::Copyright-->
+      </footer>
+      <!--end::Footer-->
+    </div>
+    <!--end::App Wrapper-->
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="/public/js/utils/app.js"></script>
+
+    <script src="/public/js/core/adminlte.min.js"></script>
+
+    <script src="/public/js/filters/dashboard.js"></script>
+  </body>
+</html>

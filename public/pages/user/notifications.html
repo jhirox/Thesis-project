@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notifications</title>
+    <link rel="icon" href="/public/assets/images/logo.png" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"
+      integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="/public/css/style.css" />
+  </head>
+  <body class="page-shell page-notifications">
+    <div class="container-fluid p-0 d-flex h-100">
+      <!-- SIDEBAR -->
+      <div
+        id="bdSidebar"
+        class="page-shell sb-bg d-flex flex-column align-items-center flex-shrink-0 p-3 text-white offcanvas-md offcanvas-start"
+      >
+        <img
+          src="/public/assets/images/logo.png"
+          alt="Quezonian Educational College logo"
+          class="mb-3 mx-auto d-block"
+          style="width: 65px; height: auto"
+        />
+
+        <ul class="mynav nav nav-pills flex-column mb-auto">
+          <li class="nav-item mb-2">
+            <a href="/public/index.html">
+              <i class="bi bi-house"></i> Home
+            </a>
+          </li>
+
+          <li class="nav-item mb-2">
+            <a href="./course.html">
+              <i class="bi bi-mortarboard"></i> Courses
+            </a>
+          </li>
+
+          <li class="nav-item mb-2">
+            <a href="./enrollment.html">
+              <i class="bi bi-folder"></i> Enrollment
+            </a>
+          </li>
+
+          <li class="nav-item mb-2">
+            <a href="./about-us.html">
+              <i class="bi bi-people"></i> About us
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- MAIN CONTENT -->
+      <main class="bg-light flex-fill">
+        <!-- MOBILE HEADER -->
+        <header
+          class="page-notifications header p-3 d-md-none d-flex align-items-center justify-content-between"
+        >
+          <div class="d-flex align-items-center">
+            <a
+              href="#"
+              class="text-white me-2"
+              data-bs-toggle="offcanvas"
+              data-bs-target="#bdSidebar"
+            >
+              <i class="bi bi-list"></i>
+            </a>
+            <img
+              class="header-logo ms-2"
+              src="/public/assets/images/logo.png"
+              alt="QECi Logo"
+              style="width: 40px"
+            />
+            <div class="ms-2">
+              <small class="d-block text-secondary"
+                >Online Registration System</small
+              >
+              <strong class="fw-semibold">Notifications</strong>
+            </div>
+          </div>
+          <!-- Notification Bell -->
+          <div class="dropdown">
+            <button
+              class="btn btn-link text-white p-0 position-relative"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <i class="bi bi-bell fs-5"></i>
+              <span
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                >4</span
+              >
+            </button>
+            <ul
+              class="dropdown-menu dropdown-menu-end shadow"
+              style="min-width: 300px"
+            >
+              <li><h6 class="dropdown-header">Notifications</h6></li>
+              <li>
+                <a class="dropdown-item small" href="./notifications.html"
+                  ><i class="bi bi-envelope-check text-primary"></i> Application
+                  Received</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item small" href="./notifications.html"
+                  ><i class="bi bi-check-circle text-success"></i> Documents
+                  Verified</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item small" href="./notifications.html"
+                  ><i class="bi bi-exclamation-triangle text-warning"></i>
+                  Missing Document</a
+                >
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+              <li>
+                <a
+                  class="dropdown-item text-center small text-primary"
+                  href="./notifications.html"
+                  >View All Notifications</a
+                >
+              </li>
+            </ul>
+          </div>
+        </header>
+
+        <!-- DESKTOP HEADER -->
+        <nav class="d-none d-md-block p-3">
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="text-white fw-semibold">Quezonian Educational College Inc.</span>
+            <div>
+              <a href="./notifications.html" class="me-3 text-decoration-underline text-gold">
+                <i class="bi bi-bell fs-5"></i>
+              </a>
+              <a href="./profile.html" class="text-decoration-none text-white">
+                <i class="bi bi-person fs-5"></i>
+              </a>
+            </div>
+          </div>
+        </nav>
+
+        <!-- NOTIFICATIONS SECTION -->
+        <section class="container-fluid py-5 px-4">
+          <div class="row mb-4">
+            <div class="col-12">
+              <div
+                class="d-flex justify-content-between align-items-center mb-4"
+              >
+                <div>
+                  <h4 class="fw-bold mb-1">All Notifications</h4>
+                  <p class="text-muted small mb-0">
+                    You have 4 new notifications
+                  </p>
+                </div>
+                <div class="d-flex flex-column-lg flex-sm-row gap-3">
+                  <button
+                    class="btn btn-outline-primary btn-sm w-100 w-sm-auto"
+                    onclick="markAllAsRead()"
+                  >
+                    <i class="bi bi-check-all"></i> Mark all as read
+                  </button>
+                  <button
+                    class="btn btn-outline-secondary btn-sm w-100 w-sm-auto"
+                    onclick="clearAllNotifications()"
+                  >
+                    <i class="bi bi-trash"></i> Clear
+                  </button>
+                </div>
+              </div>
+              <!-- Filter Tabs -->
+              <ul class="nav nav-tabs border-bottom mb-4" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button
+                    class="nav-link active"
+                    onclick="filterNotifications('all')"
+                    type="button"
+                  >
+                    All
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button
+                    class="nav-link"
+                    onclick="filterNotifications('unread')"
+                    type="button"
+                  >
+                    Unread
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button
+                    class="nav-link"
+                    onclick="filterNotifications('important')"
+                    type="button"
+                  >
+                    Important
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-12">
+              <!-- Notification Item - New -->
+              <div
+                class="card mb-3 shadow-sm border-start border-primary border-4 notification-item unread"
+                data-id="1"
+              >
+                <div class="card-body">
+                  <div class="d-flex align-items-start">
+                    <div class="flex-shrink-0 me-3">
+                      <div class="bg-primary bg-opacity-10 rounded-circle p-2">
+                        <i class="bi bi-envelope-check text-primary fs-5"></i>
+                      </div>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div
+                        class="d-flex justify-content-between align-items-start mb-2"
+                      >
+                        <div>
+                          <h6 class="fw-bold mb-1">
+                            Enrollment Application Received
+                            <span class="badge bg-primary">New</span>
+                          </h6>
+                          <p class="text-muted small mb-0">
+                            Your enrollment form has been successfully
+                            submitted.
+                          </p>
+                        </div>
+                        <button
+                          class="btn btn-sm btn-link text-danger"
+                          onclick="removeNotification(1)"
+                          style="text-decoration: none"
+                        >
+                          <i class="bi bi-x"></i>
+                        </button>
+                      </div>
+                      <p class="text-muted small mb-2">
+                        Your queue number is <strong>#QECI-2025-001</strong>.
+                        Please wait for the registrar's review. Track your
+                        application status in real-time.
+                      </p>
+                      <div
+                        class="d-flex justify-content-between align-items-center"
+                      >
+                        <small class="text-muted">
+                          <i class="bi bi-clock"></i> 2 hours ago
+                        </small>
+                        <a href="#" class="btn btn-sm btn-primary"
+                          >View Details</a
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Notification Item - Success -->
+              <div
+                class="card mb-3 shadow-sm border-start border-success border-4 notification-item"
+                data-id="2"
+              >
+                <div class="card-body">
+                  <div class="d-flex align-items-start">
+                    <div class="flex-shrink-0 me-3">
+                      <div class="bg-success bg-opacity-10 rounded-circle p-2">
+                        <i class="bi bi-check-circle text-success fs-5"></i>
+                      </div>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div
+                        class="d-flex justify-content-between align-items-start mb-2"
+                      >
+                        <div>
+                          <h6 class="fw-bold mb-1">Documents Verified</h6>
+                          <p class="text-muted small mb-0">
+                            All your submitted documents have been reviewed and
+                            approved.
+                          </p>
+                        </div>
+                        <button
+                          class="btn btn-sm btn-link text-danger"
+                          onclick="removeNotification(2)"
+                          style="text-decoration: none"
+                        >
+                          <i class="bi bi-x"></i>
+                        </button>
+                      </div>
+                      <p class="text-muted small mb-2">
+                        You can now proceed with the enrollment assessment.
+                        Check your email for the next steps.
+                      </p>
+                      <div
+                        class="d-flex justify-content-between align-items-center"
+                      >
+                        <small class="text-muted">
+                          <i class="bi bi-clock"></i> 1 day ago
+                        </small>
+                        <a href="#" class="btn btn-sm btn-success">Proceed</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Notification Item - Info -->
+              <div
+                class="card mb-3 shadow-sm border-start border-info border-4 notification-item"
+                data-id="3"
+              >
+                <div class="card-body">
+                  <div class="d-flex align-items-start">
+                    <div class="flex-shrink-0 me-3">
+                      <div class="bg-info bg-opacity-10 rounded-circle p-2">
+                        <i class="bi bi-info-circle text-info fs-5"></i>
+                      </div>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div
+                        class="d-flex justify-content-between align-items-start mb-2"
+                      >
+                        <div>
+                          <h6 class="fw-bold mb-1">
+                            Enrollment Period Reminder
+                          </h6>
+                          <p class="text-muted small mb-0">
+                            Enrollment for AY 2025-2026 is now open.
+                          </p>
+                        </div>
+                        <button
+                          class="btn btn-sm btn-link text-danger"
+                          onclick="removeNotification(3)"
+                          style="text-decoration: none"
+                        >
+                          <i class="bi bi-x"></i>
+                        </button>
+                      </div>
+                      <p class="text-muted small mb-2">
+                        Don't miss the deadline! Complete your enrollment before
+                        <strong>March 31, 2025</strong>. Limited slots
+                        available.
+                      </p>
+                      <div
+                        class="d-flex justify-content-between align-items-center"
+                      >
+                        <small class="text-muted">
+                          <i class="bi bi-clock"></i> 3 days ago
+                        </small>
+                        <a href="./enrollment.html" class="btn btn-sm btn-info"
+                          >Enroll Now</a
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Notification Item - Warning -->
+              <div
+                class="card mb-3 shadow-sm border-start border-warning border-4 notification-item"
+                data-id="4"
+              >
+                <div class="card-body">
+                  <div class="d-flex align-items-start">
+                    <div class="flex-shrink-0 me-3">
+                      <div class="bg-warning bg-opacity-10 rounded-circle p-2">
+                        <i
+                          class="bi bi-exclamation-triangle text-warning fs-5"
+                        ></i>
+                      </div>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div
+                        class="d-flex justify-content-between align-items-start mb-2"
+                      >
+                        <div>
+                          <h6 class="fw-bold mb-1">Missing Document Notice</h6>
+                          <p class="text-muted small mb-0">
+                            Please upload your PSA Birth Certificate.
+                          </p>
+                        </div>
+                        <button
+                          class="btn btn-sm btn-link text-danger"
+                          onclick="removeNotification(4)"
+                          style="text-decoration: none"
+                        >
+                          <i class="bi bi-x"></i>
+                        </button>
+                      </div>
+                      <p class="text-muted small mb-2">
+                        Your application is incomplete. Please submit the
+                        required document to continue processing.
+                      </p>
+                      <div
+                        class="d-flex justify-content-between align-items-center"
+                      >
+                        <small class="text-muted">
+                          <i class="bi bi-clock"></i> 5 days ago
+                        </small>
+                        <a href="./profile.html" class="btn btn-sm btn-warning"
+                          >Upload Now</a
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Notification Item - System -->
+              <div class="card mb-3 shadow-sm notification-item" data-id="5">
+                <div class="card-body">
+                  <div class="d-flex align-items-start">
+                    <div class="flex-shrink-0 me-3">
+                      <div
+                        class="bg-secondary bg-opacity-10 rounded-circle p-2"
+                      >
+                        <i class="bi bi-megaphone text-secondary fs-5"></i>
+                      </div>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div
+                        class="d-flex justify-content-between align-items-start mb-2"
+                      >
+                        <div>
+                          <h6 class="fw-bold mb-1">
+                            Welcome to QECI Online Registration
+                          </h6>
+                          <p class="text-muted small mb-0">
+                            Get started with your enrollment process.
+                          </p>
+                        </div>
+                        <button
+                          class="btn btn-sm btn-link text-danger"
+                          onclick="removeNotification(5)"
+                          style="text-decoration: none"
+                        >
+                          <i class="bi bi-x"></i>
+                        </button>
+                      </div>
+                      <p class="text-muted small mb-2">
+                        Thank you for choosing Quezonian Educational College,
+                        Inc. Start by completing your enrollment form and
+                        reviewing available courses.
+                      </p>
+                      <div
+                        class="d-flex justify-content-between align-items-center"
+                      >
+                        <small class="text-muted">
+                          <i class="bi bi-clock"></i> 1 week ago
+                        </small>
+                        <a href="./course.html" class="btn btn-sm btn-secondary"
+                          >Browse Courses</a
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State (if no notifications) -->
+          <div class="text-center py-5 d-none" id="emptyState">
+            <i class="bi bi-bell-slash display-4 text-muted"></i>
+            <h5 class="mt-3 text-muted">No notifications</h5>
+            <p class="text-muted">
+              You're all caught up! Check back later for updates.
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', () => {
+            const fullName = document.querySelector('#user-full-name');
+            const signOutBtn = document.querySelector('#sign-out');
+            const authUser = JSON.parse(localStorage.getItem('sessionUser'));
+            const timeout = localStorage.getItem('sessionTimeout');
+
+            const logout = () => {
+                localStorage.removeItem('sessionUser');
+                localStorage.removeItem('sessionTimeout');
+                window.location.href = "/public/pages/auth/login.html";
+            }
+
+            const isSessionValid = () => {
+                if(!timeout) return false;
+                if(Date.now() < Number(timeout)) {
+                    return true;
+                }
+            }
+
+            const checkSession = () => {
+                if(!authUser.isRemember && !isSessionValid()){
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Session Timeout!",
+                        footer: '<a href="./login.html">Please login to continue using our app</a>'
+                    });
+                    setTimeout(() => {
+                        logout();
+                    }, 5000);
+                }
+            }
+
+            if(authUser && authUser.user) {
+                fullName.textContent = authUser.user.fullname;
+                checkSession();
+            } else {
+                window.location.href = "/public/pages/auth/login.html";
+            }
+
+            // signOutBtn.addEventListener('click', () => {
+            //     localStorage.removeItem('sessionUser');
+            //     window.location.href = "./login.html";
+            // });
+            
+            signOutBtn.addEventListener('click', () => {
+                logout();
+            });
+
+            ['mousemove', 'keydown', 'click',].forEach(event => {
+                document.addEventListener(event, () => {
+                checkSession();
+            });
+        });
+    });
+    </script>
+
+    <!-- <script>
+      // Mark all notifications as read
+      function markAllAsRead() {
+        const notifications = document.querySelectorAll(
+          ".notification-item.unread"
+        );
+        notifications.forEach((notif) => {
+          notif.classList.remove("unread");
+        });
+        alert("All notifications marked as read");
+      }
+
+      // Remove individual notification
+      function removeNotification(id) {
+        const notif = document.querySelector(`[data-id="${id}"]`);
+        if (notif) {
+          notif.style.opacity = "0";
+          setTimeout(() => notif.remove(), 300);
+        }
+      }
+
+      // Clear all notifications
+      function clearAllNotifications() {
+        if (confirm("Are you sure you want to clear all notifications?")) {
+          document.querySelectorAll(".notification-item").forEach((notif) => {
+            notif.style.opacity = "0";
+            setTimeout(() => notif.remove(), 300);
+          });
+        }
+      }
+
+      // Filter notifications
+      function filterNotifications(type) {
+        const notifications = document.querySelectorAll(".notification-item");
+        notifications.forEach((notif) => {
+          if (type === "all") {
+            notif.style.display = "block";
+          } else if (type === "unread") {
+            notif.style.display = notif.classList.contains("unread")
+              ? "block"
+              : "none";
+          } else if (type === "important") {
+            const hasImportant =
+              notif.classList.contains("border-primary") ||
+              notif.classList.contains("border-warning");
+            notif.style.display = hasImportant ? "block" : "none";
+          }
+        });
+      }
+    </script> -->
+  </body>
+</html>
