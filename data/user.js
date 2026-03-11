@@ -1,6 +1,6 @@
 export const user_data = [
     {username: "admin@gmail.com", password: "P@ssw0rd", fullname: "Administrator"},
-    {username: "nathanielamandy@gmail.com", password: "P@ssw0rd", fullname: "Nathaniel Amandy"},
+    {username: "nathanielamandy01@gmail.com", password: "P@ssw0rd", fullname: "Nathaniel Amandy"},
     {username: "yuri@gmail.com", password: "P@ssw0rd", fullname: "Yuri Oflaria"},
     {username: "zairus@gmail.com", password: "P@ssw0rd", fullname: "Zairus Jester Gilles"},
     {username: "lance@gmail.com", password: "P@ssw0rd", fullname: "Lance Jimenez"},
