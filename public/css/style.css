@@ -20,7 +20,7 @@ body {
   font-family: "Open Sans", sans-serif;
   background-color: var(--qeci-light);
   color: #333;
-  height: 100vh;
+  min-height: 100vh;
 }
 
 :root {
@@ -28,6 +28,7 @@ body {
   --qeci-navy-2: #05263f;
   --qeci-gold: #d4af37;
   --qeci-light: #f5f7fb;
+  --qeci-primary: rgba(212, 175, 55, 0.12);
 }
 
 nav {
@@ -51,8 +52,15 @@ nav {
 
 .page-home .btn-outline-gold {
   color: var(--qeci-gold);
-  border-color: rgba(212, 175, 55, 0.18);
+  border-color: var(--qeci-gold);
   background: transparent;
+  transition: background .18s ease, color .18s ease, border-color .18s ease;
+}
+
+.page-home .btn-outline-gold:hover {
+  background: rgba(212, 175, 55, 0.12);
+  border-color: var(--qeci-gold);
+  color: var(--qeci-navy);
 }
 
 .page-home .office-card .border {
@@ -61,6 +69,16 @@ nav {
 
 .page-home .office-card h4 {
   color: var(--qeci-navy);
+}
+
+.page-home .office-card-item {
+  transition: transform .2s ease, box-shadow .2s ease;
+  cursor: pointer;
+}
+
+.page-home .office-card-item:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 32px rgba(2, 27, 58, 0.12);
 }
 
 .page-home .contact-tile {
@@ -93,18 +111,54 @@ body.page-enrollment-form {
 
 /* ===== Shared layout (sidebar pages) ===== */
 .page-shell #bdSidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
   width: 175px;
-  height: 100vh;
-  overflow-y: auto;
   color: var(--qeci-light);
   z-index: 1040;
 }
 
+@media (min-width: 768px) {
+  .page-shell #bdSidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .page-shell .bg-light.flex-fill {
+    margin-left: 175px;
+    width: calc(100% - 175px);
+  }
+}
+
+@media (max-width: 767.98px) {
+  .page-shell #bdSidebar {
+    width: 60%;
+    position: fixed;
+    height: 100%;
+    left: 0;
+    top: 0;
+  }
+  .page-shell .bg-light.flex-fill {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
 #bdSidebar .mynav a.active{
-  background: var(--qeci-gold); color: var(--qeci-navy) !important; font-weight:600;
+  background: transparent;
+  color: var(--qeci-gold) !important;
+  font-weight: 600;
+}
+
+/* Active state: no gold background; show a gold left indicator */
+#bdSidebar .mynav a.active::before {
+  background: var(--qeci-gold);
+  transform: translateX(-4px);
+}
+
+#bdSidebar .mynav a.active i {
+  color: var(--qeci-gold) !important;
 }
 
 .page-shell #bdSidebar::-webkit-scrollbar {
@@ -121,10 +175,6 @@ body.page-enrollment-form {
   border: 1px solid --qeci-primary;
 }
 
-.page-shell .bg-light.flex-fill {
-  margin-left: 175px;
-  width: calc(100% - 175px);
-}
 
 .page-shell .sb-bg {
   background-image: linear-gradient(180deg, var(--qeci-navy), var(--qeci-navy-2));
@@ -139,12 +189,41 @@ body.page-enrollment-form {
   width: 100%;
   display: block;
   border-radius: 5px;
-  padding: 8px 5px;
+  padding: 8px 12px;
+  transition: background .18s ease, color .18s ease, transform .12s ease, box-shadow .18s ease;
+  position: relative;
 }
 
-.page-shell .mynav li a.active,
+.page-shell .mynav li a::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background: transparent;
+  border-radius: 2px;
+  transition: width .18s ease;
+}
+
 .page-shell .mynav li a:hover {
-  background: var(--qeci-primary);
+  color: var(--qeci-gold);
+}
+
+.page-shell .mynav li a:hover::before {
+  background: var(--qeci-gold);
+  width: 100%;
+}
+
+.page-shell .mynav li a.active {
+  color: var(--qeci-gold) !important;
+  font-weight: 600;
+  font-size: 0.965rem;
+}
+
+.page-shell .mynav li a.active::before {
+  background: var(--qeci-gold);
+  width: 100%;
 }
 
 /* footer bg */
@@ -155,10 +234,10 @@ body.page-enrollment-form {
   width: 100%;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
   .page-shell #bdSidebar {
-    width: 40%;
-    height: auto;
+    width: 60%;
+    height: 100%;
     z-index: 1050;
   }
 
@@ -201,7 +280,8 @@ body.page-enrollment-form {
   border-color: var(--qeci-gold);
 }
 
-.page-about .btn-gold:hover {
+.page-about,
+.page-home, .btn-gold:hover {
   background: rgba(212, 175, 55, 0.9);
   color: var(--qeci-navy);
 }
@@ -286,11 +366,10 @@ footer .row {
 
 .page-course main,
 .page-profile main,
-.page-enrollment main,
-.page-course main {
+.page-enrollment main {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
 }
 
 .modal-header {
@@ -339,6 +418,32 @@ footer .row {
   font-size: 18px;
 }
 
+/* Mission & Vision cards hover (lift + shadow) */
+.page-about .card.h-100 {
+  transition: transform .2s ease, box-shadow .2s ease;
+  cursor: pointer;
+}
+
+.page-about .card.h-100:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 32px rgba(2, 27, 58, 0.12);
+}
+
+/* Enrollment cards hover (lift + shadow) */
+.page-enrollment .details .h-100,
+.page-enrollment .details .h-100.p-4.border.rounded-4.bg-white.shadow-sm,
+.page-enrollment .details .card {
+  transition: transform .2s ease, box-shadow .2s ease;
+  cursor: pointer;
+}
+
+.page-enrollment .details .h-100:hover,
+.page-enrollment .details .h-100.p-4.border.rounded-4.bg-white.shadow-sm:hover,
+.page-enrollment .details .card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 32px rgba(2, 27, 58, 0.12);
+}
+
 /* ===== Enrollment page ===== */
 .page-enrollment .bg-primary {
   background: linear-gradient(180deg, var(--qeci-navy), var(--qeci-navy-2)) !important;
@@ -365,6 +470,55 @@ footer .row {
   background: rgba(212, 175, 55, 0.08) !important;
   border-color: var(--qeci-gold) !important;
   color: var(--qeci-navy) !important;
+}
+
+/* Responsive downpayment card: full width on small, constrained on larger screens */
+.page-enrollment .card.w-50 {
+  width: 100% !important;
+  max-width: 880px;
+}
+
+@media (min-width: 768px) {
+  .page-enrollment .card.w-50 {
+    width: 80% !important;
+    max-width: 760px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .page-enrollment .card.w-50 {
+    width: 50% !important;
+    max-width: 720px;
+  }
+}
+
+/* Make the downpayment card navy and keep text readable */
+.page-enrollment .card.w-50 {
+  background: var(--qeci-navy) !important;
+  color: var(--qeci-light) !important;
+  border-left: 5px solid var(--qeci-gold) !important;
+}
+
+.page-enrollment .card.w-50 .card-body h5,
+.page-enrollment .card.w-50 .card-body h4,
+.page-enrollment .card.w-50 .card-body p,
+.page-enrollment .card.w-50 .card-body .small,
+.page-enrollment .card.w-50 .card-body .text-muted,
+.page-enrollment .card.w-50 .card-body ul,
+.page-enrollment .card.w-50 .card-body li {
+  color: var(--qeci-light) !important;
+}
+
+.page-enrollment .card.w-50 .rounded-circle {
+  background: rgba(255,255,255,0.04) !important;
+}
+
+.page-enrollment .card.w-50 .rounded-circle i {
+  color: var(--qeci-gold) !important;
+}
+
+.page-enrollment .card.w-50 hr {
+  border-color: rgba(255,255,255,0.06) !important;
 }
 
 .page-enrollment .welcome-card h1,
