@@ -31,8 +31,9 @@ body {
   --qeci-primary: rgba(212, 175, 55, 0.12);
 }
 
-nav {
-  background: linear-gradient(180deg, var(--qeci-navy), var(--qeci-navy-2));}
+.top-nav {
+  background: linear-gradient(180deg, var(--qeci-navy), var(--qeci-navy-2));
+}
 
 /* Home page scoped theme */
 .page-home .hero-bg {
@@ -908,5 +909,9 @@ span .icon:hover {
 .page-registrar .logo {
   width: 30px;
   height: auto;
+}
+
+.d-nav {
+  background-color: var(--qeci-navy);
 }
 
