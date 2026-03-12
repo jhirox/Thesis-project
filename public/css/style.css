@@ -134,7 +134,8 @@ body.page-enrollment-form {
 
 @media (max-width: 767.98px) {
   .page-shell #bdSidebar {
-    width: 60%;
+    width: auto;
+    max-width: 30%;
     position: fixed;
     height: 100%;
     left: 0;
@@ -378,12 +379,13 @@ footer .row {
   color: var(--qeci-light);
 }
 
-.page-course,
-.page-about,
-.page-enrollment,
-.page-notifications,
-.page-profile,
-.page-home .header {
+
+.page-home .header,
+.page-course .header,
+.page-about .header,
+.page-enrollment .header,
+.page-notifications .header,
+.page-profile .header {
   background-color: var(--qeci-navy);
   color: var(--qeci-light);
 }
