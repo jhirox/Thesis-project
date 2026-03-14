@@ -152,6 +152,12 @@
                   <p>Dashboard Overview</p>
                 </a>
               </li>
+              <li class="nav-item">
+                <a href="./registrar.html" class="nav-link">
+                  <i class="nav-icon fa-solid fa-user-graduate"></i>
+                  <p>Registrar</p>
+                </a>
+              </li>
               <li class="nav-item active">
                 <a href="./application-queue.html" class="nav-link">
                   <i class="nav-icon fa-solid fa-list"></i>
@@ -205,7 +211,7 @@
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Home</a></li>
                   <li class="breadcrumb-item active" aria-current="page">
-                    Notifications
+                    Dashboard
                   </li>
                 </ol>
               </div>
@@ -405,13 +411,13 @@
             </div>
 
             <!-- DRAFTS -->
-            <div class="chart-card">
+            <div class="card">
               <div class="card-header">
-                <h3 class="card-title fw-bold pb-2 fs-5">Saved Drafts</h3>
+                <h3 class="card-title fw-bold">Saved Drafts</h3>
               </div>
               <div class="card-body">
                 <table class="table table-bordered table-hover">
-                  <thead class="table-header">
+                  <thead class="table-dark">
                     <tr>
                       <th>Title</th>
                       <th>Student</th>
@@ -420,7 +426,7 @@
                       <th>Action</th>
                     </tr>
                   </thead>
-                  <tbody class="table-body">
+                  <tbody>
                     <tr>
                       <td>Exam Reminder</td>
                       <td>Nathaniel Amandy</td>
@@ -453,6 +459,8 @@
               <h4 class="fw-bold mb-3">Notification History</h4>
               <p class="mb-4 text-muted">View all sent and scheduled notifications</p>
 
+              <!-- history cards will be inserted here -->
+              <div id="historyCards">
               <!-- CARD 1 -->
               <div class="card mb-3 border border-secondary-subtle bg-primary-subtle">
                 <div class="card-body px-4 py-3">
@@ -469,9 +477,6 @@
                           </span>
                           <span class="text-muted small">
                             <i class="fa-solid fa-calendar me-1"></i> 2025-12-30
-                          </span>
-                          <span class="text-muted small">
-                            <i class="fa-solid fa-chart-pie me-1"></i> Open Rate: 78%
                           </span>
                         </div>
                       </div>
@@ -501,21 +506,19 @@
                           </span>
                           <span class="text-muted small">
                             <i class="fa-solid fa-calendar me-1"></i> 2025-12-30
-                          </span>
-                          <span class="text-muted small">
-                            <i class="fa-solid fa-chart-pie me-1"></i> Open Rate: 45%
-                          </span>
                         </div>
                       </div>
                     </div>
 
                     <div class="d-flex gap-2 ms-3">
-                      <button class="btn btn-outline-light btn-sm">View Details</button>
+                      <button class="btn btn-outline-light btn-sm btn-view-details">View Details</button>
                       <button class="btn btn-outline-light btn-sm">Duplicate</button>
                     </div>
                   </div>
                 </div>
               </div>
+
+              </div> <!-- end #historyCards -->
 
               <!-- CARD 3 -->
               <div class="card mb-3 border border-secondary-subtle bg-primary-subtle">
@@ -534,18 +537,39 @@
                           <span class="text-muted small">
                             <i class="fa-solid fa-calendar me-1"></i> 2025-12-30
                           </span>
-                          <span class="text-muted small">
-                            <i class="fa-solid fa-chart-pie me-1"></i> Open Rate: 78%
-                          </span>
                         </div>
                       </div>
                     </div>
 
                     <div class="d-flex gap-2 ms-3">
-                      <button class="btn btn-outline-light btn-sm">View Details</button>
+                      <button class="btn btn-outline-light btn-sm btn-view-details">View Details</button>
                       <button class="btn btn-outline-light btn-sm">Duplicate</button>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- details modal for notification history -->
+          <div class="modal fade" id="notificationDetailsModal" tabindex="-1" aria-labelledby="notificationDetailsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title fw-bold" id="notificationDetailsModalLabel">Notification Details</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <p><strong>Title:</strong> <span id="detailTitle"></span></p>
+                  <p><strong>Type:</strong> <span id="detailType"></span></p>
+                  <p><strong>Recipient:</strong> <span id="detailStudent"></span></p>
+                  <p><strong>Message:</strong></p>
+                  <p id="detailMessage"></p>
+                  <p><strong>Date sent:</strong> <span id="detailDate"></span></p>
+
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
               </div>
             </div>
@@ -783,6 +807,9 @@
 
         alert(`Notification sent to ${student}: "${message}"`);
 
+        // add to history
+        addHistoryCard(title, student, type, message);
+
         // Clear form
         titleField.value = "";
         studentField.value = "";
@@ -792,13 +819,125 @@
 
       // Send Now (from drafts table)
       function sendDraft(row) {
+        const title = row.cells[0].innerText;
         const student = row.cells[1].innerText;
+        const type = row.cells[2].innerText;
         const message = row.cells[3].innerText;
         alert(`Notification sent to ${student}: "${message}"`);
+        addHistoryCard(title, student, type, message);
         row.remove(); // remove draft after sending
       }
     </script>
 
+
+     <!-- DITO YUNG SA HISTORY NOTIFICATIONS, KAPAG NAG SEND KA NG NOTIFICATION, DAPAT LUMABAS SA HISTORY YUNG CARD NA MAY TITLE, STUDENT, TYPE, MESSAGE, DATE SENT -->
+     <!-- helper to render history cards and add them to the history container -->
+    <script>
+      function typeIcon(type) {
+        switch (type) {
+          case 'Reminder': return '🔔';
+          case 'Announcement': return '✔️';
+          case 'General': return '📢';
+          default: return '🔔';
+        }
+      }
+
+      function addHistoryCard(title, student, type, message) {
+        const container = document.getElementById('historyCards');
+        if (!container) return; // history pane might not be rendered yet
+
+        const sentDate = new Date().toISOString().split('T')[0];
+
+        const card = document.createElement('div');
+        card.className = 'card mb-3 border border-secondary-subtle bg-primary-subtle';
+        card.innerHTML = `
+          <div class="card-body px-4 py-3">
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="d-flex gap-3 flex-grow-1">
+                <span class="icon fs-4">${typeIcon(type)}</span>
+                <div class="flex-grow-1">
+                  <h5 class="fw-bold mb-2">${title}</h5>
+                  <p class="text-muted mb-3">${message}</p>
+
+                  <div class="d-flex flex-wrap gap-3">
+                    <span class="text-muted small">
+                      <i class="fa-solid fa-user me-1"></i> ${student || 'All Users'}
+                    </span>
+                    <span class="text-muted small">
+                      <i class="fa-solid fa-calendar me-1"></i> ${sentDate}
+                    </span>
+
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex gap-2 ms-3">
+                <button class="btn btn-outline-light btn-sm btn-view-details">View Details</button>
+                <button class="btn btn-outline-light btn-sm">Duplicate</button>
+              </div>
+            </div>
+          </div>`;
+
+        // attach listeners (keep the data so modal shows correct info)
+        attachCardListeners(card, { title, student, type, message, date: sentDate });
+
+        // add new notifications to the top of the history list
+        container.prepend(card);
+      }
+
+      // MODAL FOR VIEW DETAILS
+      // helper that binds the view-details button within a card to open the modal
+      function attachCardListeners(card, data) {
+        const btn = card.querySelector('.btn-view-details');
+        if (!btn) return;
+        btn.addEventListener('click', () => {
+          // if data passed in use it, otherwise extract from DOM
+          if (data) {
+            showHistoryDetails(data);
+          } else {
+            // fallback: read values from card element
+            const title = card.querySelector('h5')?.innerText || '';
+            const message = card.querySelector('p.text-muted.mb-3')?.innerText || '';
+            const recipient = card.querySelector('i.fa-user')?.parentElement?.textContent.trim() || '';
+            const date = card.querySelector('i.fa-calendar')?.parentElement?.textContent.trim() || '';
+
+
+            // determine type from icon
+            const icon = card.querySelector('.icon')?.textContent.trim();
+            let type = '';
+            if (icon === '🔔') type = 'Reminder';
+            else if (icon === '✔️') type = 'Announcement';
+            else if (icon === '📢') type = 'General';
+
+            showHistoryDetails({ title, student: recipient, type, message, date });
+          }
+        });
+      }
+
+      // function to display the details modal
+      function showHistoryDetails({title, student, type, message, date}) {
+        document.getElementById('detailTitle').innerText = title;
+        document.getElementById('detailStudent').innerText = student || 'All Users';
+        document.getElementById('detailType').innerText = type;
+        document.getElementById('detailMessage').innerText = message;
+        document.getElementById('detailDate').innerText = date || '';
+
+
+        const modalEl = document.getElementById('notificationDetailsModal');
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+      }
+
+      // initialize existing view buttons on load
+      function initializeViewDetails() {
+        document.querySelectorAll('.btn-view-details').forEach(btn => {
+          const card = btn.closest('.card');
+          if (card) attachCardListeners(card);
+        });
+      }
+
+      initializeViewDetails();
+    </script>
 
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
