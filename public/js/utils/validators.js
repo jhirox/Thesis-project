@@ -3,10 +3,10 @@ function validateFields(fieldName, fieldValue, options = {}) {
 
     let returnMsg = "";
 
-    if (fieldValue !== null && fieldValue !== undefined) fieldValue.trim();
+    if (fieldValue !== null && fieldValue !== undefined) fieldValue = fieldValue.trim();
     //   console.log('Validating field:', fieldValue);
 
-    if (required && fieldValue === "" && fieldValue.length === 0) {
+    if (required && fieldValue === "") {
         returnMsg = `${fieldName} is required`;
     }
 
@@ -37,10 +37,10 @@ const validate = (form, patterns) => {
             errorMessages.push(pattern.messages.required);
         }
 
-        if( value != "" & pattern.pattern && !pattern.pattern.test(value)) {
+        if (value !== "" && pattern.pattern && !pattern.pattern.test(value)) {
             errorMessages.push(pattern.messages.pattern);
         }
-});
+    });
 
     return errorMessages;
 
