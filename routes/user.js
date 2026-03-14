@@ -7,4 +7,5 @@ export const user_data = [
     {username: "john@gmail.com", password: "P@ssw0rd", fullname: "John Zandrex Saniel"},
     {username: "gerick@gmail.com", password: "P@ssw0rd", fullname: "Gerick Ocampo"},
     {username: "mark@gmail.com", password: "P@ssw0rd", fullname: "Mark Kenneth Delacruz"},
+    {username: "registrar@gmail.com", password: "P@ssw0rd", fullname: "Registrar User"},
 ]
