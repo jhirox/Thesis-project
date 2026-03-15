@@ -465,7 +465,7 @@
               <!-- CARD 1 -->
               <div class="card mb-3 border border-secondary-subtle bg-primary-subtle">
                 <div class="card-body px-4 py-3">
-                  <div class="d-flex justify-content-between align-items-start">
+                  <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start">
                     <div class="d-flex gap-3 flex-grow-1">
                       <span class="icon orange fs-4">🔔</span>
                       <div class="flex-grow-1">
@@ -483,7 +483,7 @@
                       </div>
                     </div>
 
-                    <div class="d-flex gap-2 ms-3">
+                    <div class="d-flex flex-wrap gap-2 ms-0 ms-sm-3 mt-3 mt-sm-0">
                       <button class="btn btn-outline-light btn-sm">View Details</button>
                       <button class="btn btn-outline-light btn-sm">Duplicate</button>
                     </div>
@@ -494,7 +494,7 @@
               <!-- CARD 2 -->
               <div class="card mb-3 border border-secondary-subtle bg-primary-subtle">
                 <div class="card-body px-4 py-3">
-                  <div class="d-flex justify-content-between align-items-start">
+                  <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start">
                     <div class="d-flex gap-3 flex-grow-1">
                       <span class="icon green fs-4">✔️</span>
                       <div class="flex-grow-1">
@@ -507,11 +507,12 @@
                           </span>
                           <span class="text-muted small">
                             <i class="fa-solid fa-calendar me-1"></i> 2025-12-30
+                          </span>
                         </div>
                       </div>
                     </div>
 
-                    <div class="d-flex gap-2 ms-3">
+                    <div class="d-flex flex-wrap gap-2 ms-0 ms-sm-3 mt-3 mt-sm-0">
                       <button class="btn btn-outline-light btn-sm btn-view-details">View Details</button>
                       <button class="btn btn-outline-light btn-sm">Duplicate</button>
                     </div>
@@ -524,7 +525,7 @@
               <!-- CARD 3 -->
               <div class="card mb-3 border border-secondary-subtle bg-primary-subtle">
                 <div class="card-body px-4 py-3">
-                  <div class="d-flex justify-content-between align-items-start">
+                  <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start">
                     <div class="d-flex gap-3 flex-grow-1">
                       <span class="icon red fs-4">⚠️</span>
                       <div class="flex-grow-1">
@@ -542,7 +543,7 @@
                       </div>
                     </div>
 
-                    <div class="d-flex gap-2 ms-3">
+                    <div class="d-flex flex-wrap gap-2 ms-0 ms-sm-3 mt-3 mt-sm-0">
                       <button class="btn btn-outline-light btn-sm btn-view-details">View Details</button>
                       <button class="btn btn-outline-light btn-sm">Duplicate</button>
                     </div>
@@ -853,7 +854,7 @@
         card.className = 'card mb-3 border border-secondary-subtle bg-primary-subtle';
         card.innerHTML = `
           <div class="card-body px-4 py-3">
-            <div class="d-flex justify-content-between align-items-start">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start">
               <div class="d-flex gap-3 flex-grow-1">
                 <span class="icon fs-4">${typeIcon(type)}</span>
                 <div class="flex-grow-1">
@@ -872,7 +873,7 @@
                 </div>
               </div>
 
-              <div class="d-flex gap-2 ms-3">
+              <div class="d-flex flex-wrap gap-2 ms-0 ms-sm-3 mt-3 mt-sm-0">
                 <button class="btn btn-outline-light btn-sm btn-view-details">View Details</button>
                 <button class="btn btn-outline-light btn-sm">Duplicate</button>
               </div>
