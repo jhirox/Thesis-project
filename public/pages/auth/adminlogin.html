@@ -22,7 +22,7 @@
                 <div class="page-credentials card text-white px-5 pt-4 pb-4">
                     <img class="page-credentials logo" src="/public/assets/images/logo.png" alt="logo">
                     <h4 class="text-center mb-4 fw-bold fs-3">Log in</h4>
-                    <form action="#" method="post" id="login-form">
+                    <form id="login-form" onsubmit="return false;">
                         <div class="mb-3">
                             <label for="email" class="form-label">Admin Email Address</label>
                             <div class="input-group">
@@ -43,7 +43,10 @@
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Login</button>
                         <div class="card-footer text-center pt-3">
-                            Login as an <a href="./login.html">Student</a> <br>
+                            Login as an:
+                            <a href="registrarlogin.html">Registrar</a> |
+                            <a href="./login.html">Student</a>
+                            <br>
                             Don't have an account? <a href="./adminsignup.html">Create</a>
                         </div>
                     </form>
@@ -59,15 +62,15 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script type="module">
-        import { user_data } from "/data/user.js";
-        import { validateFields, validate } from "/public/js/utils/validators.js";
-        import { loginPatterns } from "/public/js/utils/patterns.js";
+        import { user_data } from "../../data/user.js";
+        import { validateFields, validate } from "../../js/utils/validators.js";
+        import { loginPatterns } from "../../js/utils/patterns.js";
 
         const authUser = JSON.parse(localStorage.getItem('sessionUser'));
         const curTimeout = localStorage.getItem('sessionTimeout');
 
-        if(authUser && authUser != null && curTimeout && Date.now() < Number(curTimeout)){
-            window.location.href = "/public/pages/admin/dashboard.html";
+        if (authUser && authUser != null && curTimeout && Date.now() < Number(curTimeout)) {
+            window.location.href = "../admin/dashboard.html";
         }
 
         const timeout = 30 * 60 * 1000;
@@ -119,7 +122,7 @@
                             localStorage.setItem("sessionTimeout", Date.now() + timeout);
 
                             setTimeout(() => {
-                                window.location.href = "/public/pages/admin/dashboard.html";
+                                window.location.href = "../admin/dashboard.html";
                             }, 2000);
                         } else {
                             showError('Error storing session data.');
