@@ -939,6 +939,7 @@ body.page-credentials {
         .btn-signup-main:hover { transform: translateY(-1px); box-shadow: 0 7px 24px rgba(26,86,219,0.5); opacity: 0.95; }
         .btn-signup-main:active { transform: translateY(0); }
 
+/* END NG LOGIN SIGNUP CSS */
 
 .app-sidebar {
   background-color: #333333;
