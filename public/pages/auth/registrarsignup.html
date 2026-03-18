@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Signup</title>
+    <title>Registrar Sign Up</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -14,49 +14,197 @@
     <link rel="stylesheet" href="/public/css/style.css">
 
 </head>
-<body class="page-credentials text-white"> 
-    <div class="bg-image">
-        <div class="container d-flex justify-content-center align-items-center vh-100">
-            <div class="card shadow-lg px-5 pt-4 pb-4 text-white">
-                <img class="logo" src="/public/assets/images/logo.png" alt="logo">
-                <h4 class="text-center mb-4 fw-bold fs-3">Create Account</h4>
-                <form>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Registrar Email address</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                            <input type="email" class="form-control" id="email" placeholder="Enter email">
-                        </div>
+
+<body class="page-credentials">
+
+    <div class="login-split">
+
+        <!-- LEFT PANEL -->
+        <div class="login-left">
+            <div class="bg-blur"></div>
+            <div class="bg-overlay"></div>
+            <div class="left-content">
+                <div class="left-badge">
+                    <i class="bi bi-person-badge-fill"></i>
+                    <span>Registrar Access Only</span>
+                </div>
+                <h2 class="left-title">Registrar<br><span>Registration</span></h2>
+                <div class="left-divider"></div>
+                <p class="left-desc">
+                    Restricted access — for authorized registrar staff overseeing 
+                    online enrollment applications at Quezon Educational College, Inc.
+                </p>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="login-right">
+
+            <img class="login-logo" src="/public/assets/images/logo.png" alt="QEC Logo"
+                onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';">
+            <div id="logo-fallback" style="display:none; width:72px; height:72px; border-radius:50%; border:2px solid rgba(212,175,55,0.35); background:rgba(255,255,255,0.06); align-items:center; justify-content:center; font-size:26px; color:var(--qeci-gold); margin-bottom:10px;">
+                <i class="bi bi-mortarboard-fill"></i>
+            </div>
+
+            <h4>Registrar Sign Up</h4>
+            <div class="login-sub">Register your registrar account</div>
+
+            <form style="width:100%">
+
+                <div class="mb-3 fa-1">
+                    <label for="email" class="form-label">Registrar Email Address</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                        <input type="email" class="form-control" id="email" placeholder="Enter email">
                     </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                            <input type="password" class="form-control" id="password" placeholder="Password">
-                        </div>
+                </div>
+
+                <div class="mb-3 fa-2">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                        <input type="password" class="form-control" id="password" placeholder="Password">
                     </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Confirm Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                            <input type="password" class="form-control" id="password" placeholder="Password">
-                        </div>
+                </div>
+
+                <div class="mb-3 fa-3">
+                    <label for="confirm-password" class="form-label">Confirm Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                        <input type="password" class="form-control" id="confirm-password" placeholder="Confirm password">
                     </div>
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="remember">
-                        <label class="form-check-label" for="remember">I accept <a href="">Terms</a> and <a href="">Conditions</a></label>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Create Account</button>
-                    <div class="card-footer text-center pt-3">
-                        Already have an account? <a href="./registrarlogin.html">Login</a>
-                    </div>
-                </form>
+                </div>
+
+                <div class="mb-3 form-check fa-4">
+                    <input type="checkbox" class="form-check-input" id="terms">
+                    <label class="form-check-label" for="terms">
+                        I accept the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Terms and Conditions</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-signup-main fa-5">
+                    <i class="bi bi-person-plus me-2"></i>Create Registrar Account
+                </button>
+
+                <div class="login-footer-links fa-6">
+                    Already have an account? <a href="./registrarlogin.html">Login</a>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+
+    <!-- Terms & Conditions Modal -->
+    <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+            <div class="modal-content" style="background: linear-gradient(to bottom right, #001f3f, #003366); color: #fff; border: 1px solid rgba(255,255,255,0.08);">
+                <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+                    <h5 class="modal-title fw-bold" id="termsModalLabel" style="font-family:'Raleway',sans-serif; color: #d4af37;">
+                        <i class="bi bi-file-text me-2"></i>Terms and Conditions
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="font-size:0.85rem; line-height:1.8; color:rgba(255,255,255,0.75);">
+
+                    <p><strong style="color:#d4af37;">Effective Date:</strong> January 1, 2025</p>
+                    <p>Welcome to the <strong>Quezon Educational College, Inc. (QECi) Student Portal</strong>. 
+                        By creating an account and using this system, you agree to the following terms and conditions. Please read them carefully.</p>
+
+                    <hr style="border-color:rgba(255,255,255,0.1);">
+
+                    <h6 style="color:#d4af37;">1. Account Registration</h6>
+                    <p>You must provide accurate and complete information when creating your account. 
+                        You are responsible for keeping your login credentials confidential. 
+                        Notify the school immediately if you suspect unauthorized use of your account.</p>
+
+                    <h6 style="color:#d4af37;">2. Use of the Portal</h6>
+                    <p>This portal is intended for individuals who wish to enroll at Quezon Educational College, Inc. 
+                        You agree to use this portal only for your enrollment application and related processes. 
+                        Any misuse or fraudulent activity will result in immediate account suspension.</p>
+
+                    <h6 style="color:#d4af37;">3. Privacy and Data</h6>
+                    <p>QECi collects your personal information solely for enrollment and registration purposes. 
+                        Your data will not be shared with third parties without your consent, except as required by law or school regulations.</p>
+
+                    <h6 style="color:#d4af37;">4. Enrollment Application</h6>
+                    <p>All information submitted through this portal will be used for your enrollment application. 
+                        You must ensure that all submitted details and requirements are accurate and truthful. 
+                        Submission of false information will result in the cancellation of your application.</p>
+
+                    <h6 style="color:#d4af37;">5. System Availability</h6>
+                    <p>QECi strives to keep the portal available at all times but does not guarantee uninterrupted access. 
+                        The school reserves the right to perform maintenance or updates at any time without prior notice.</p>
+
+                    <h6 style="color:#d4af37;">6. Intellectual Property</h6>
+                    <p>All content, materials, and resources available through this portal are the intellectual property of 
+                        Quezon Educational College, Inc. and may not be reproduced, distributed, or used without written permission from the school.</p>
+
+                    <h6 style="color:#d4af37;">7. Termination of Access</h6>
+                    <p>QECi reserves the right to suspend or terminate your account at any time for violations of these terms, 
+                        school policies, or upon graduation, withdrawal, or dismissal from the institution.</p>
+
+                    <h6 style="color:#d4af37;">8. Changes to Terms</h6>
+                    <p>QECi may update these Terms and Conditions at any time. 
+                        Continued use of the portal after changes are posted constitutes your acceptance of the revised terms.</p>
+
+                    <h6 style="color:#d4af37;">9. Contact</h6>
+                    <p>For questions or concerns regarding these terms, please contact the Registrar's Office at 
+                        <strong>registrar@qeci.edu.ph</a></strong> or visit the campus at Atimonan, Quezon.</p>
+
+                    <hr style="border-color:rgba(255,255,255,0.1);">
+                    <p style="font-size:0.78rem; color:rgba(255,255,255,0.4);">By checking the "I accept" box, you confirm that you have read, understood, and agreed to these Terms and Conditions.</p>
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.08);">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-sm" id="acceptTermsBtn"
+                        style="background: linear-gradient(135deg,#16a34a,#14532d); color:#fff; border:none; padding: 6px 18px; border-radius:6px;">
+                        <i class="bi bi-check2-circle me-1"></i> I Accept
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" 
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" 
+        crossorigin="anonymous"></script>  
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.getElementById('acceptTermsBtn').addEventListener('click', () => {
+            document.getElementById('terms').checked = true;
+            bootstrap.Modal.getInstance(document.getElementById('termsModal')).hide();
+        });
+
+        document.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const terms = document.getElementById('terms').checked;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!email || !password || !confirmPassword) {
+                Swal.fire({ icon: 'warning', title: 'All Fields Required', text: 'Please fill in all fields before submitting.', confirmButtonColor: '#16a34a' }); return;
+            }
+            if (!emailRegex.test(email)) {
+                Swal.fire({ icon: 'error', title: 'Invalid Email', text: 'Please enter a valid email address.', confirmButtonColor: '#16a34a' }); return;
+            }
+            if (password.length < 8) {
+                Swal.fire({ icon: 'error', title: 'Password Too Short', text: 'Password must be at least 8 characters long.', confirmButtonColor: '#16a34a' }); return;
+            }
+            if (password.length > 32) {
+                Swal.fire({ icon: 'error', title: 'Password Too Long', text: 'Password must not exceed 32 characters.', confirmButtonColor: '#16a34a' }); return;
+            }
+            if (password !== confirmPassword) {
+                Swal.fire({ icon: 'error', title: 'Passwords Do Not Match', text: 'Please make sure your passwords match.', confirmButtonColor: '#16a34a' }); return;
+            }
+            if (!terms) {
+                Swal.fire({ icon: 'warning', title: 'Terms & Conditions', text: 'You must accept the Terms and Conditions to create an account.', confirmButtonColor: '#16a34a' }); return;
+            }
+        });
+    </script>
 </body>
 </html>

@@ -568,41 +568,376 @@ footer .row {
 }
 
 /* ===== Credentials (login/signup/admin) ===== */
-.page-credentials {
-  font-family: "Open Sans", sans-serif;
-}
+body.page-credentials {
+            background-color: var(--qeci-navy);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden;
+            padding: 16px;
+        }
 
-.page-credentials .bg-image {
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-blend-mode: overlay;
-  background-attachment: fixed;
-  background-position: center;
-}
+        /* Subtle animated background glow */
+        body.page-credentials::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(212,175,55,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(2,27,58,0.8) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
 
-.page-credentials .card {
-  background: linear-gradient(to bottom right, #001f3f, #003366);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  border-radius: 12px;
-  width: 100%;
-  max-width: 400px;
-}
+        /* ── Wrapper card (the split container) ── */
+        .login-split {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            width: 900px;
+            max-width: 96vw;
+            max-height: calc(100vh - 32px);
+            min-height: 0;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.06);
+            animation: loginSlideUp 0.65s cubic-bezier(0.16,1,0.3,1) both;
+        }
 
-.page-credentials .logo {
-  width: 100px;
-  height: auto;
-  display: block;
-  margin: 0 auto 20px;
-}
+        @keyframes loginSlideUp {
+            from { opacity: 0; transform: translateY(32px) scale(0.98); }
+            to   { opacity: 1; transform: translateY(0)   scale(1);    }
+        }
 
-.page-credentials form {
-  font-size: 0.8rem;
-}
+        /* ── LEFT PANEL ── */
+        .login-left {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 36px 32px;
+        }
 
-.page-credentials .scrollable-card {
-  max-height: 80vh;
-  overflow-y: auto;
-}
+        .login-left .bg-blur {
+            position: absolute;
+            inset: 0;
+            /* Replace this URL with your actual school photo: /public/assets/images/bg.jpg */
+            background: url(/public/assets/images/bg.jpg) center/cover no-repeat;
+            filter: blur(4px) brightness(0.35);
+            transform: scale(1.08);
+            transition: transform 10s ease;
+        }
+        .login-left:hover .bg-blur { transform: scale(1.13); }
+
+        .login-left .bg-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(2,27,58,0.1)  0%,
+                rgba(2,27,58,0.82) 100%
+            );
+        }
+
+        .login-left .left-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .left-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: rgba(212,175,55,0.12);
+            border: 1px solid rgba(212,175,55,0.28);
+            border-radius: 999px;
+            padding: 5px 14px;
+            margin-bottom: 18px;
+            font-size: 10.5px;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            color: var(--qeci-gold);
+            font-family: "Raleway", sans-serif;
+            font-weight: 600;
+            animation: fadeUp 0.8s 0.3s both;
+        }
+
+        .left-title {
+            font-family: "Raleway", sans-serif;
+            font-size: 2.1rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.25;
+            margin-bottom: 14px;
+            animation: fadeUp 0.8s 0.4s both;
+        }
+
+        .left-title span {
+            color: var(--qeci-gold);
+        }
+
+        .left-divider {
+            width: 44px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--qeci-gold), transparent);
+            border-radius: 2px;
+            margin-bottom: 14px;
+            animation: fadeUp 0.8s 0.45s both;
+        }
+
+        .left-desc {
+            color: rgba(255,255,255,0.55);
+            font-size: 0.86rem;
+            line-height: 1.75;
+            max-width: 290px;
+            animation: fadeUp 0.8s 0.5s both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0);    }
+        }
+
+        /* ── RIGHT PANEL ── */
+        .login-right {
+            width: 390px;
+            flex-shrink: 0;
+            background: linear-gradient(to bottom right, #001f3f, #003366);
+            border-left: 1px solid rgba(255,255,255,0.07);
+            padding: 28px 34px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-y: auto;
+            max-height: calc(100vh - 32px);
+        }
+
+        /* Logo */
+        .login-logo {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            border: 2px solid rgba(212,175,55,0.35);
+            box-shadow: 0 0 28px rgba(212,175,55,0.12);
+            object-fit: cover;
+            margin-bottom: 10px;
+            animation: fadeUp 0.7s 0.2s both;
+        }
+
+        .login-right h4 {
+            font-family: "Raleway", sans-serif;
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 2px;
+            animation: fadeUp 0.7s 0.28s both;
+        }
+
+        .login-right .login-sub {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 16px;
+            animation: fadeUp 0.7s 0.33s both;
+        }
+
+        /* Form fields */
+        .login-right .form-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.55);
+            margin-bottom: 5px;
+        }
+
+        .login-right .input-group-text {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-right: none;
+            color: rgba(255,255,255,0.4);
+        }
+
+        .login-right .form-control {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-left: none;
+            color: #fff;
+            font-size: 0.88rem;
+            font-family: "Open Sans", sans-serif;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .login-right .form-control::placeholder {
+            color: rgba(255,255,255,0.2);
+        }
+
+        .login-right .form-control:focus {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            border-color: var(--qeci-gold);
+            box-shadow: 0 0 0 3px rgba(212,175,55,0.12);
+        }
+
+        .login-right .input-group:focus-within .input-group-text {
+            border-color: var(--qeci-gold);
+        }
+
+        /* Remember me + forgot row */
+        .extras-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .login-right .form-check-label {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .login-right .form-check-input:checked {
+            background-color: var(--qeci-gold);
+            border-color: var(--qeci-gold);
+        }
+
+        .forgot-link {
+            font-size: 0.76rem;
+            color: rgba(212,175,55,0.8);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .forgot-link:hover { color: var(--qeci-gold); }
+
+        /* Login button */
+        .btn-login-main {
+            width: 100%;
+            padding: 11px;
+            background: linear-gradient(135deg, #1a56db, #0d3fa8);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-family: "Raleway", sans-serif;
+            font-weight: 600;
+            font-size: 0.92rem;
+            letter-spacing: 0.4px;
+            box-shadow: 0 4px 18px rgba(26,86,219,0.4);
+            transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        .btn-login-main:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 7px 24px rgba(26,86,219,0.5);
+            opacity: 0.95;
+        }
+        .btn-login-main:active { transform: translateY(0); }
+
+        /* Continue without account */
+        .btn-guest-login {
+            width: 100%;
+            padding: 10px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.13);
+            border-radius: 8px;
+            color: rgba(255,255,255,0.5);
+            font-family: "Open Sans", sans-serif;
+            font-size: 0.82rem;
+            transition: border-color 0.2s, color 0.2s, background 0.2s;
+            cursor: pointer;
+            margin-bottom: 18px;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+        .btn-guest-login:hover {
+            border-color: rgba(212,175,55,0.35);
+            color: rgba(255,255,255,0.85);
+            background: rgba(212,175,55,0.05);
+        }
+
+        /* Footer links */
+        .login-footer-links {
+            text-align: center;
+            font-size: 0.76rem;
+            color: rgba(255,255,255,0.38);
+            border-top: 1px solid rgba(255,255,255,0.07);
+            padding-top: 14px;
+            width: 100%;
+            line-height: 1.95;
+        }
+        .login-footer-links a {
+            color: rgba(212,175,55,0.85);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        .login-footer-links a:hover { color: var(--qeci-gold); }
+        .login-footer-links .sep {
+            color: rgba(255,255,255,0.18);
+            margin: 0 5px;
+        }
+
+        /* Staggered field animations */
+        .fa-1 { animation: fadeUp 0.7s 0.38s both; }
+        .fa-2 { animation: fadeUp 0.7s 0.45s both; }
+        .fa-3 { animation: fadeUp 0.7s 0.51s both; }
+        .fa-4 { animation: fadeUp 0.7s 0.57s both; }
+        .fa-5 { animation: fadeUp 0.7s 0.63s both; }
+        .fa-6 { animation: fadeUp 0.7s 0.69s both; }
+
+        /* ── Scrollbar (matches sidebar style) ── */
+        .login-right::-webkit-scrollbar {
+            width: 6px;
+        }
+        .login-right::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.04);
+            border-radius: 4px;
+        }
+        .login-right::-webkit-scrollbar-thumb {
+            background-color: var(--qeci-gold);
+            border-radius: 4px;
+            border: 1px solid rgba(212,175,55,0.3);
+        }
+        .login-right::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(212,175,55,0.8);
+        }
+
+        /* Responsive: hide left panel on small screens */
+        @media (max-width: 700px) {
+            .login-left { display: none; }
+            .login-right {
+                width: 100%;
+                border-radius: 16px;
+            }
+            .login-split {
+                border-radius: 16px;
+                min-height: unset;
+            }
+        }
+
+
+        .btn-signup-main {
+            width: 100%;
+            padding: 11px;
+            background: linear-gradient(135deg, #1a56db, #0d3fa8);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-family: "Raleway", sans-serif;
+            font-weight: 600;
+            font-size: 0.92rem;
+            letter-spacing: 0.4px;
+            box-shadow: 0 4px 18px rgba(26,86,219,0.4);
+            transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+            cursor: pointer;
+            margin-bottom: 18px;
+        }
+        .btn-signup-main:hover { transform: translateY(-1px); box-shadow: 0 7px 24px rgba(26,86,219,0.5); opacity: 0.95; }
+        .btn-signup-main:active { transform: translateY(0); }
 
 
 .app-sidebar {
