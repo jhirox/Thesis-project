@@ -380,6 +380,14 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+            const authUser = JSON.parse(localStorage.getItem('sessionUser'));
+            const curTimeout = localStorage.getItem('sessionTimeout');
+
+            if (!(authUser && authUser != null && curTimeout && Date.now() < Number(curTimeout))) {
+                window.location.href = "./login.html";
+                return;
+            }
+
             const form = document.getElementById("enrollForm");
             const agreeTerms = document.getElementById("agreeTerms");
             const queueNumber = document.getElementById("queueNumber");
