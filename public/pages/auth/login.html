@@ -125,7 +125,7 @@
             } else if (authUser.role === "registrar") {
                 window.location.href = "../registrar/registrardashboard.html";
             } else {
-                window.location.href = "../user/profile.html";
+                window.location.href = "/index.html";
             }
         }
 
@@ -167,15 +167,15 @@
                         const sessionUser = {
                             user: authUser,
                             loginTime: new Date().toISOString(),
-                            IsRemember: rememberCbx.checked,
-                            role: "user"
+                            role: "user",
+                            IsRemember: rememberCbx.checked
                         };
 
                         if (authUser != null) {
                             localStorage.setItem("sessionUser", JSON.stringify(sessionUser));
                             localStorage.setItem("sessionTimeout", Date.now() + timeout);
                             setTimeout(() => {
-                                window.location.href = "../user/profile.html";
+                                window.location.href = "/index.html";
                             }, 2000);
                         } else {
                             showError('Error storing session data.');
@@ -200,4 +200,3 @@
 
 </body>
 </html>
-
