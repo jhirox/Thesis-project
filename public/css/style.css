@@ -37,7 +37,7 @@ body {
 
 /* Home page scoped theme */
 .page-home .hero-bg {
-  background: linear-gradient(rgba(2, 27, 58, 0.64), rgba(5, 38, 63, 0.64)), url('/public/assets/images/bg.jpg');
+  background: linear-gradient(rgba(2, 27, 58, 0.64), rgba(5, 38, 63, 0.64)), url(../assets/images/bg.jpg);
   background-size: cover;
   background-position: center center;
   color: #fff;
