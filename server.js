@@ -20,7 +20,7 @@ const db = await mysql.createPool({
 
 // ✅ Test route
 app.get("/", (req, res) => {
-  res.send("API is running 🚀");
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // ✅ Example route (optional test)
