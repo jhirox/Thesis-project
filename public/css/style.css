@@ -626,7 +626,7 @@ body.page-credentials {
             position: absolute;
             inset: 0;
             /* Replace this URL with your actual school photo: /public/assets/images/bg.jpg */
-            background: url(/public/assets/images/bg.jpg) center/cover no-repeat;
+            background: url(../assets/images/bg.jpg) center/cover no-repeat;
             filter: blur(4px) brightness(0.35);
             transform: scale(1.08);
             transition: transform 10s ease;
