@@ -262,7 +262,7 @@ body.page-enrollment-form {
 
 /* ===== About page ===== */
 .page-about .hero {
-  background: linear-gradient(rgba(2, 27, 58, 0.72), rgba(5, 38, 63, 0.72)), url('/public/images/bg.jpg');
+  background: linear-gradient(rgba(2, 27, 58, 0.72), rgba(5, 38, 63, 0.72)), url(../assets/images/bg.jpg);
   background-size: cover;
   background-position: center;
   color: #fff;
