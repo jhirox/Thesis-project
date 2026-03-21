@@ -120,7 +120,13 @@
         const curTimeout = localStorage.getItem('sessionTimeout');
 
         if (authUser && authUser != null && curTimeout && Date.now() < Number(curTimeout)) {
-            window.location.href = "../user/profile.html";
+            if (authUser.role === "admin") {
+                window.location.href = "../admin/dashboard.html";
+            } else if (authUser.role === "registrar") {
+                window.location.href = "../registrar/registrardashboard.html";
+            } else {
+                window.location.href = "../user/profile.html";
+            }
         }
 
         const timeout = 30 * 60 * 1000;
@@ -161,7 +167,8 @@
                         const sessionUser = {
                             user: authUser,
                             loginTime: new Date().toISOString(),
-                            IsRemember: rememberCbx.checked
+                            IsRemember: rememberCbx.checked,
+                            role: "user"
                         };
 
                         if (authUser != null) {

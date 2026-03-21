@@ -488,7 +488,8 @@
         //     window.location.href = "./login.html";
         // });
 
-        signOutBtn.addEventListener("click", () => {
+        signOutBtn.addEventListener("click", (e) => {
+          e.preventDefault();
           logout();
         });
 
