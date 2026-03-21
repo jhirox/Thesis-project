@@ -4,11 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard</title>
-    <link rel="icon" href="/public/assets/images/logo.png" />
+    <link rel="icon" href="/assets/images/logo.png" />
 
     <link
       rel="stylesheet"
-      href="/public/vendor/adminlte/css/adminlte.min.css"
+      href="/vendor/adminlte/css/adminlte.min.css"
     />
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
@@ -16,7 +16,7 @@
       integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="/public/css/style.css" />
+    <link rel="stylesheet" href="/css/style.css" />
 
     <link
       rel="stylesheet"
@@ -125,7 +125,7 @@
             <!--begin::Brand Image-->
             <img
               class="page-queue logo"
-              src="/public/assets/images/logo.png"
+              src="/assets/images/logo.png"
               alt="logo"
             />
             <!--end::Brand Image-->
@@ -383,40 +383,20 @@
               </div>
             </div>
           </div>
-          <div class="quick-actions col-lg-10 px-4 py-3">
-            <h6>Quick Actions</h6>
-            <button
-              class="btn text-white mb-2"
-              style="background-color: #0d004e"
-            >
-              <i class="fa-solid fa-calendar-days me-2"></i>Schedule Review
-              Session
-            </button>
-            <a href="./rep-and-analytics.html">
-              <button
-                class="btn text-white mb-2"
-                style="background-color: #0d004e"
-              >
-                <i class="fa-solid fa-file-lines me-2"></i>Generate Daily Report
-              </button>
-            </a>
-            <a href="./notification.html">
-              <button
-                class="btn text-white mb-2"
-                style="background-color: #0d004e"
-              >
-                <i class="fa-solid fa-bell me-2"></i>Send Bulk Notifications
-              </button>
-            </a>
-            <a href="./registrar.html">
-              <button
-                class="btn text-white mb-2"
-                style="background-color: #0d004e"
-              >
-                <i class="fa-solid fa-user-plus me-2"></i>Add New Accounts
-              </button>
-            </a>
-          </div>
+          <div class="px-4">
+          <div class="quick-actions p-3">
+          <h6>Quick Actions</h6>
+          <a href="./application-queue.html">
+          <button class="btn text-white mb-2" style="background-color: rgba(255, 255, 255, 0.08);"><i class="fa-solid fa-calendar-days me-2"></i>Schedule Review Session</button>
+          </a>
+          <a href="./rep-and-analytics.html">
+          <button class="btn text-white mb-2" style="background-color: rgba(255, 255, 255, 0.08);"><i class="fa-solid fa-file-lines me-2"></i>Generate Daily Report</button>
+          </a>
+          <a href="./notifications.html">
+          <button class="btn text-white mb-2" style="background-color: rgba(255, 255, 255, 0.08);"><i class="fa-solid fa-bell me-2"></i>Send Bulk Notifications</button>
+          </a>
+        </div>
+        </div>
         </div>
         <!--end::App Content-->
       </main>
@@ -445,7 +425,7 @@
       crossorigin="anonymous"
     ></script>
 
-    <script src="/public/js/core/adminlte.min.js"></script>
+    <script src="/js/core/adminlte.min.js"></script>
 
     <script src="https://code.highcharts.com/highcharts.js"></script>
 
@@ -457,9 +437,9 @@
 
     <script src="https://unpkg.com/singledivui/dist/singledivui.min.js"></script>
 
-    <script src="/public/js/charts.js"></script>
+    <script src="/js/charts.js"></script>
 
-    <script src="/public/js/utils/app.js"></script>
+    <script src="/js/utils/app.js"></script>
 
     <script type="module">
       document.addEventListener("DOMContentLoaded", () => {
@@ -471,7 +451,7 @@
         const logout = () => {
           localStorage.removeItem("sessionUser");
           localStorage.removeItem("sessionTimeout");
-          window.location.href = "/public/pages/auth/adminlogin.html";
+          window.location.href = "/pages/auth/adminlogin.html";
         };
 
         const isSessionValid = () => {
@@ -500,7 +480,7 @@
           fullName.textContent = authUser.user.fullname;
           checkSession();
         } else {
-          window.location.href = "/public/pages/auth/adminlogin.html";
+          window.location.href = "/pages/auth/adminlogin.html";
         }
 
         // signOutBtn.addEventListener('click', () => {
@@ -521,3 +501,4 @@
     </script>
   </body>
 </html>
+
