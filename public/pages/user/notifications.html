@@ -485,22 +485,25 @@
                 }
             }
 
-            if(authUser && authUser.user) {
-                fullName.textContent = authUser.user.fullname;
-                checkSession();
-            } else {
-                window.location.href = "/pages/auth/login.html";
-            }
+           if(authUser && authUser.user) {
+    if (fullName) {
+        fullName.textContent = authUser.user.fullname;
+    }
+    checkSession();
+} else {
+    window.location.href = "/pages/auth/login.html";
+}
 
             // signOutBtn.addEventListener('click', () => {
             //     localStorage.removeItem('sessionUser');
             //     window.location.href = "./login.html";
             // });
             
-            signOutBtn.addEventListener('click', () => {
-                logout();
-            });
-
+            if (signOutBtn) {
+    signOutBtn.addEventListener('click', () => {
+        logout();
+    });
+}
             ['mousemove', 'keydown', 'click',].forEach(event => {
                 document.addEventListener(event, () => {
                 checkSession();
