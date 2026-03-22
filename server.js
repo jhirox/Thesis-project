@@ -57,6 +57,21 @@ app.get("/enrollment", (req, res) => {
   res.sendFile(path.join(__dirname, "public/pages/user/enrollment.html"));
 });
 
+// ✅ About Us page route (clean URL)
+app.get("/about-us", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/pages/user/about-us.html"));
+});
+
+// ✅ Profile page route (clean URL)
+app.get("/profile", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/pages/user/profile.html"));
+});
+
+// ✅ Notifications page route (clean URL)
+app.get("/notifications", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/pages/user/notifications.html"));
+});
+
 // ✅ Test DB
 app.get("/test-db", async (req, res) => {
   try {
