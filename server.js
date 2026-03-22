@@ -16,6 +16,24 @@ app.use(express.json());
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// ✅ Redirect legacy HTML paths to clean routes before static serving
+app.get(["/index.html", "/course.html", "/enrollment.html", "/about-us.html", "/profile.html", "/notifications.html"], (req, res) => {
+  const cleanMap = {
+    "index.html": "/",
+    "course.html": "/course",
+    "enrollment.html": "/enrollment",
+    "about-us.html": "/about-us",
+    "profile.html": "/profile",
+    "notifications.html": "/notifications"
+  };
+
+  const cleanPath = cleanMap[req.path.substring(1)];
+  if (cleanPath) {
+    return res.redirect(301, cleanPath);
+  }
+  res.status(404).send("Not Found");
+});
+
 // ✅ Serve static assets ONLY (CSS, JS, images)
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 app.use("/css", express.static(path.join(__dirname, "public/css")));
