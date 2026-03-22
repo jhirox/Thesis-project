@@ -44,6 +44,16 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
+// ✅ Course page route (clean URL)
+app.get("/course", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/pages/user/course.html"));
+});
+
+// ✅ Enrollment page route (clean URL)
+app.get("/enrollment", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/pages/user/enrollment.html"));
+});
+
 // ✅ Test DB
 app.get("/test-db", async (req, res) => {
   try {
