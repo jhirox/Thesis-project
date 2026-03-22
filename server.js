@@ -75,21 +75,22 @@ app.get("/notifications", (req, res) => {
   res.sendFile(path.join(__dirname, "public/pages/user/notifications.html"));
 });
 
-// ✅ Legacy/Direct HTML route support (e.g., /enrollment.html)
-app.get(["/course.html", "/enrollment.html", "/about-us.html", "/profile.html", "/notifications.html"], (req, res) => {
-  const map = {
-    "course.html": "public/pages/user/course.html",
-    "enrollment.html": "public/pages/user/enrollment.html",
-    "about-us.html": "public/pages/user/about-us.html",
-    "profile.html": "public/pages/user/profile.html",
-    "notifications.html": "public/pages/user/notifications.html"
+// ✅ Legacy/Direct HTML route support (e.g., /course.html -> /course)
+app.get(["/index.html", "/course.html", "/enrollment.html", "/about-us.html", "/profile.html", "/notifications.html"], (req, res) => {
+  const cleanMap = {
+    "index.html": "/",
+    "course.html": "/course",
+    "enrollment.html": "/enrollment",
+    "about-us.html": "/about-us",
+    "profile.html": "/profile",
+    "notifications.html": "/notifications"
   };
-  const target = map[req.path.substring(1)];
-  if (target) {
-    res.sendFile(path.join(__dirname, target));
-  } else {
-    res.status(404).send("Not Found");
+
+  const cleanPath = cleanMap[req.path.substring(1)];
+  if (cleanPath) {
+    return res.redirect(301, cleanPath);
   }
+  res.status(404).send("Not Found");
 });
 
 // ✅ Test DB
