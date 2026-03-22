@@ -21,6 +21,9 @@ app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 app.use("/css", express.static(path.join(__dirname, "public/css")));
 app.use("/js", express.static(path.join(__dirname, "public/js")));
 
+// ✅ Serve public root files (index.html, etc.) so /index.html works
+app.use(express.static(path.join(__dirname, "public")));
+
 // ✅ Serve page HTML files for direct paths like /pages/user/course.html
 app.use("/pages", express.static(path.join(__dirname, "public/pages")));
 
@@ -70,6 +73,23 @@ app.get("/profile", (req, res) => {
 // ✅ Notifications page route (clean URL)
 app.get("/notifications", (req, res) => {
   res.sendFile(path.join(__dirname, "public/pages/user/notifications.html"));
+});
+
+// ✅ Legacy/Direct HTML route support (e.g., /enrollment.html)
+app.get(["/course.html", "/enrollment.html", "/about-us.html", "/profile.html", "/notifications.html"], (req, res) => {
+  const map = {
+    "course.html": "public/pages/user/course.html",
+    "enrollment.html": "public/pages/user/enrollment.html",
+    "about-us.html": "public/pages/user/about-us.html",
+    "profile.html": "public/pages/user/profile.html",
+    "notifications.html": "public/pages/user/notifications.html"
+  };
+  const target = map[req.path.substring(1)];
+  if (target) {
+    res.sendFile(path.join(__dirname, target));
+  } else {
+    res.status(404).send("Not Found");
+  }
 });
 
 // ✅ Test DB
