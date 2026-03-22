@@ -461,7 +461,7 @@
             const logout = () => {
                 localStorage.removeItem('sessionUser');
                 localStorage.removeItem('sessionTimeout');
-                window.location.href = "/pages/auth/login.html";
+                window.location.href = "login.html";
             }
 
             const isSessionValid = () => {
@@ -489,7 +489,7 @@
                 fullName.textContent = authUser.user.fullname;
                 checkSession();
             } else {
-                window.location.href = "/pages/auth/login.html";
+                window.location.href = "login.html";
             }
 
             // signOutBtn.addEventListener('click', () => {
