@@ -42,6 +42,18 @@ app.use("/js", express.static(path.join(__dirname, "public/js")));
 // ✅ Serve public root files (index.html, etc.) so /index.html works
 app.use(express.static(path.join(__dirname, "public")));
 
+// ✅ Redirect any /pages/*.html path to clean route (e.g. /pages/user/notifications.html -> /notifications)
+app.get("/pages/*", (req, res, next) => {
+  if (!req.path.endsWith(".html")) return next();
+
+  const filename = path.basename(req.path, ".html");
+  if (filename === "index") {
+    return res.redirect(301, "/");
+  }
+
+  return res.redirect(301, `/${filename}`);
+});
+
 // ✅ Serve page HTML files for direct paths like /pages/user/course.html
 app.use("/pages", express.static(path.join(__dirname, "public/pages")));
 
