@@ -75,22 +75,31 @@ app.get("/notifications", (req, res) => {
   res.sendFile(path.join(__dirname, "public/pages/user/notifications.html"));
 });
 
-// ✅ Legacy/Direct HTML route support (e.g., /course.html -> /course)
-app.get(["/index.html", "/course.html", "/enrollment.html", "/about-us.html", "/profile.html", "/notifications.html"], (req, res) => {
-  const cleanMap = {
-    "index.html": "/",
-    "course.html": "/course",
-    "enrollment.html": "/enrollment",
-    "about-us.html": "/about-us",
-    "profile.html": "/profile",
-    "notifications.html": "/notifications"
-  };
+// ✅ Generic HTML to clean URL redirect for all existing paths
+import fs from "fs";
 
-  const cleanPath = cleanMap[req.path.substring(1)];
-  if (cleanPath) {
-    return res.redirect(301, cleanPath);
+app.get("/*.html", (req, res, next) => {
+  const requested = req.path;
+  const clean = requested.replace(/\.html$/, "");
+
+  // direct index redirect
+  if (clean === "/index") {
+    return res.redirect(301, "/");
   }
-  res.status(404).send("Not Found");
+
+  // map /pages/user/.. and /pages/... to the clean page route if exists
+  const pageName = path.basename(clean);
+  const candidateRoute = `/${pageName}`;
+
+  const publicFile = path.join(__dirname, "public", requested);
+  const pagesUserFile = path.join(__dirname, "public/pages/user", `${pageName}.html`);
+  const pagesFile = path.join(__dirname, "public/pages", requested.replace(/^\//, ""));
+
+  if (fs.existsSync(publicFile) || fs.existsSync(pagesUserFile) || fs.existsSync(pagesFile)) {
+    return res.redirect(301, candidateRoute);
+  }
+
+  return next();
 });
 
 // ✅ Test DB
