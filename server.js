@@ -52,6 +52,7 @@ app.get("/notifications", (req, res) => res.sendFile(path.join(__dirname, "publi
 app.get("/login", (req, res) => res.sendFile(path.join(__dirname, "public/pages/auth/login.html")));
 app.get("/dashboard", (req, res) => res.sendFile(path.join(__dirname, "public/pages/admin/dashboard.html")));
 app.get("/registrardashboard", (req, res) => res.sendFile(path.join(__dirname, "public/pages/registrar/registrardashboard.html")));
+app.get("/adminlogin", (req, res) => res.sendFile(path.join(__dirname, "public/pages/auth/adminlogin.html")));
 
 // ✅ Redirect legacy URLs to clean URLs
 app.get([
@@ -63,7 +64,8 @@ app.get([
   "/notifications.html",
   "/login.html",
   "/dashboard.html",
-  "/registrardashboard.html"
+  "/registrardashboard.html",
+  "/adminlogin.html"
 ], (req, res) => {
   const cleanMap = {
     "index.html": "/",
@@ -74,7 +76,8 @@ app.get([
     "notifications.html": "/notifications",
     "login.html": "/login",
     "dashboard.html": "/dashboard",
-    "registrardashboard.html": "/registrardashboard"
+    "registrardashboard.html": "/registrardashboard",
+    "adminlogin.html": "/adminlogin"
   };
   const cleanPath = cleanMap[req.path.substring(1)];
   if (cleanPath) {
