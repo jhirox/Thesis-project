@@ -21,6 +21,9 @@ app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 app.use("/css", express.static(path.join(__dirname, "public/css")));
 app.use("/js", express.static(path.join(__dirname, "public/js")));
 
+// ✅ Serve page HTML files for direct paths like /pages/user/course.html
+app.use("/pages", express.static(path.join(__dirname, "public/pages")));
+
 // ✅ Database connection (safe)
 let db;
 async function connectDB() {
