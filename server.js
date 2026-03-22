@@ -16,8 +16,10 @@ app.use(express.json());
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ✅ Serve frontend
-app.use(express.static(path.join(__dirname, "public")));
+// ✅ Serve static assets ONLY (CSS, JS, images)
+app.use("/assets", express.static(path.join(__dirname, "public/assets")));
+app.use("/css", express.static(path.join(__dirname, "public/css")));
+app.use("/js", express.static(path.join(__dirname, "public/js")));
 
 // ✅ Database connection (safe)
 let db;
