@@ -46,8 +46,8 @@ async function connectDB() {
 connectDB();
 
 // ✅ Home route
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+app.get("/Home", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/index.html"));
 });
 
 // ✅ Course page route (clean URL)
