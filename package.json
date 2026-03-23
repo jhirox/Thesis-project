@@ -2,10 +2,9 @@
   "name": "thesis-project",
   "version": "1.0.0",
   "description": "Thesis System Online Registration Management System",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "nodemon server.js"
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -14,7 +13,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/jhirox/Thesis-project/issues"
   },
@@ -24,8 +23,6 @@
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
-    "morgan": "^1.10.1",
-    "mysql2": "^3.19.1",
-    "nodemon": "^3.1.14"
+    "mysql2": "^3.19.1"
   }
 }
