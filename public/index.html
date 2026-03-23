@@ -515,19 +515,8 @@
           return;
         }
 
-        if (guestMode && !hasValidSession) {
-          // show guest prompt on homepage: login or continue as guest
-          const goLogin = confirm(
-            'You are browsing in Guest mode. Log in for full account features.\n\nPress OK to go to login, Cancel to continue as guest.'
-          );
-
-          if (goLogin) {
-            window.location.href = '/login.html';
-            return;
-          }
-          // allow browsing as guest when canceled
-        }
-        // If valid session exists, continue normally
+        // Guest mode is allowed to browse the homepage without forced login
+        // If session is valid or guest mode is true, allow access
       });
 
       // Logout function
