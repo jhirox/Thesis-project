@@ -88,9 +88,9 @@
                 <div class="login-footer-links fa-5">
                     <div>
                         Login as:
-                        <a href="./adminlogin.html">Admin</a>
+                        <a href="/adminlogin.html">Admin</a>
                         <span class="sep">|</span>
-                        <a href="./login.html">Student</a>
+                        <a href="/login.html">Student</a>
                     </div>
                     <div>
                         Don't have an account? <a href="/registrarsignup">Create</a>
@@ -117,11 +117,11 @@
 
         if (authUser && authUser != null && curTimeout && Date.now() < Number(curTimeout)) {
             if (authUser.role === "admin") {
-                window.location.href = "../admin/dashboard.html";
+                window.location.href = "/dashboard.html";
             } else if (authUser.role === "user") {
-                window.location.href = "../user/profile.html";
+                window.location.href = "/profile.html";
             } else {
-                window.location.href = "../registrar/registrardashboard.html";
+                window.location.href = "/registrardashboard.html";
             }
         }
 
