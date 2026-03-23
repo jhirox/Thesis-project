@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Profile</title>
-    <link rel="icon" href="/public/assets/images/logo.png" />
+    <link rel="icon" href="/assets/images/logo.png" />
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -28,7 +28,7 @@
         class="page-shell sb-bg d-flex flex-column align-items-center flex-shrink-0 p-3 text-white offcanvas-md offcanvas-start"
       >
         <img
-          src="/public/assets/images/logo.png"
+          src="/assets/images/logo.png"
           alt="Quezonian Educational College logo"
           class="mb-3 mx-auto d-block"
           style="width: 65px; height: auto"
@@ -36,13 +36,13 @@
 
         <ul class="mynav nav nav-pills flex-column mb-auto">
           <li class="nav-item mb-2">
-            <a href="/public/index.html">
+            <a href="/index.html">
               <i class="bi bi-house"></i> Home
             </a>
           </li>
 
           <li class="nav-item mb-2">
-            <a href="./course.html">
+            <a href="/course.html">
               <i class="bi bi-mortarboard"></i> Courses
             </a>
           </li>
@@ -54,7 +54,7 @@
           </li>
 
           <li class="nav-item mb-2">
-            <a href="./about-us.html">
+            <a href="/about-us.html">
               <i class="bi bi-people"></i> About us
             </a>
           </li>
@@ -78,7 +78,7 @@
             </a>
             <img
               class="header-logo ms-2"
-              src="/public/assets/images/logo.png"
+              src="/assets/images/logo.png"
               alt="QECi Logo"
               style="width: 40px"
             />
@@ -108,19 +108,19 @@
             >
               <li><h6 class="dropdown-header">Notifications</h6></li>
               <li>
-                <a class="dropdown-item small" href="/public/pages/user/notifications.html"
+                <a class="dropdown-item small" href="/notifications.html"
                   ><i class="bi bi-envelope-check text-primary"></i> Application
                   Received</a
                 >
               </li>
               <li>
-                <a class="dropdown-item small" href="/public/pages/user/notifications.html"
+                <a class="dropdown-item small" href="/notifications.html"
                   ><i class="bi bi-check-circle text-success"></i> Documents
                   Verified</a
                 >
               </li>
               <li>
-                <a class="dropdown-item small" href="/public/pages/user/notifications.html"
+                <a class="dropdown-item small" href="/notifications.html"
                   ><i class="bi bi-exclamation-triangle text-warning"></i>
                   Missing Document</a
                 >
@@ -129,7 +129,7 @@
               <li>
                 <a
                   class="dropdown-item text-center small text-primary"
-                  href="/public/pages/user/notifications.html"
+                  href="/notifications.html"
                   >View All Notifications</a
                 >
               </li>
@@ -142,10 +142,10 @@
           <div class="d-flex align-items-center justify-content-between">
             <span class="text-white fw-semibold">Quezonian Educational College Inc.</span>
             <div>
-              <a href="./notifications.html" class="me-3 text-decoration-none text-white">
+              <a href="/notifications.html" class="me-3 text-decoration-none text-white">
                 <i class="bi bi-bell fs-5"></i>
               </a>
-              <a href="./profile.html" class="text-decoration-underline text-gold">
+              <a href="/profile.html" class="text-decoration-underline text-gold">
                 <i class="bi bi-person fs-5"></i>
               </a>
             </div>
@@ -183,7 +183,7 @@
                       style="width: 120px; height: 120px"
                     >
                       <img
-                        src="/public/assets/images/nathphoto.jpg"
+                        src="/assets/images/nathphoto.jpg"
                         alt="Profile"
                         id="profileImg"
                         style="
@@ -382,7 +382,7 @@
                     </div>
                     <div class="text-end">
                       <a
-                        href="/public/pages/auth/enrollment-form.html"
+                        href="/enrollment-form.html"
                         class="btn btn-primary btn-sm"
                       >
                         <i class="bi bi-eye"></i> View Application
@@ -405,7 +405,7 @@
                   <div class="row g-3">
                     <div class="col-md-4">
                       <a
-                        href="/public/pages/auth/enrollment-form.html"
+                        href="/enrollment-form.html"
                         class="text-decoration-none"
                       >
                         <div
@@ -422,7 +422,7 @@
                     </div>
                     <div class="col-md-4">
                       <a
-                        href="/public/pages/user/notifications.html"
+                        href="/notifications.html"
                         class="text-decoration-none"
                       >
                         <div
@@ -436,7 +436,7 @@
                       </a>
                     </div>
                     <div class="col-md-4">
-                      <a href="/public/pages/user/course.html" class="text-decoration-none">
+                      <a href="/course.html" class="text-decoration-none">
                         <div
                           class="p-3 border rounded-3 text-center hover-shadow"
                         >
@@ -472,7 +472,7 @@
             const logout = () => {
                 localStorage.removeItem('sessionUser');
                 localStorage.removeItem('sessionTimeout');
-                window.location.href = "/public/pages/auth/login.html";
+                window.location.href = "/login.html";
             }
 
             const isSessionValid = () => {
@@ -488,7 +488,7 @@
                         icon: "error",
                         title: "Oops...",
                         text: "Session Timeout!",
-                        footer: '<a href="./login.html">Please login to continue using our app</a>'
+                        footer: '<a href="/login.html">Please login to continue using our app</a>'
                     });
                     setTimeout(() => {
                         logout();
@@ -500,7 +500,7 @@
                 fullName.textContent = authUser.user.fullname;
                 checkSession();
             } else {
-                window.location.href = "/public/pages/auth/login.html";
+                window.location.href = "/login.html";
             }
 
             // signOutBtn.addEventListener('click', () => {
