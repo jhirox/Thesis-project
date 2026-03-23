@@ -20,6 +20,8 @@ const __dirname = path.dirname(__filename);
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 app.use("/css", express.static(path.join(__dirname, "public/css")));
 app.use("/js", express.static(path.join(__dirname, "public/js")));
+app.use("/vendor", express.static(path.join(__dirname, "public/vendor")));
+app.use("/data", express.static(path.join(__dirname, "public/data")));
 
 // ✅ Serve root public files (index.html, etc.)
 app.use(express.static(path.join(__dirname, "public")));
