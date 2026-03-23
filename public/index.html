@@ -498,5 +498,31 @@
       crossorigin="anonymous"
     ></script>
     <script src="/js/buttons.js"></script>
+    <script>
+      // Session protection for index.html
+      document.addEventListener('DOMContentLoaded', function() {
+        const sessionUser = localStorage.getItem('sessionUser');
+        const sessionTimeout = localStorage.getItem('sessionTimeout');
+        const guestMode = localStorage.getItem('guestMode') === 'true';
+        const now = Date.now();
+
+        // Check if user has valid session or is in guest mode
+        const hasValidSession = sessionUser && sessionTimeout && now < parseInt(sessionTimeout);
+
+        if (!hasValidSession && !guestMode) {
+          // Redirect to login if neither condition is met
+          window.location.href = '/pages/auth/login.html';
+        }
+        // If either condition is true, allow access (no redirect)
+      });
+
+      // Logout function
+      function logout() {
+        localStorage.removeItem('sessionUser');
+        localStorage.removeItem('sessionTimeout');
+        localStorage.removeItem('guestMode');
+        window.location.href = '/pages/auth/login.html';
+      }
+    </script>
   </body>
 </html>
