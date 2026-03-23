@@ -115,7 +115,17 @@
         const curTimeout = localStorage.getItem('sessionTimeout');
 
         if (authUser && authUser != null && curTimeout && Date.now() < Number(curTimeout)) {
+<<<<<<< HEAD
             window.location.href = "../admin/dashboard.html";
+=======
+            if (authUser.role === "user") {
+                window.location.href = "../user/profile.html";
+            } else if (authUser.role === "registrar") {
+                window.location.href = "../registrar/registrardashboard.html";
+            } else {
+                window.location.href = "/dashboard.html";
+            }
+>>>>>>> 718cfc552c1846ca63c024f61440d29871b2cb25
         }
 
         const timeout = 30 * 60 * 1000;
@@ -163,7 +173,7 @@
                             localStorage.setItem("sessionUser", JSON.stringify(sessionUser));
                             localStorage.setItem("sessionTimeout", Date.now() + timeout);
                             setTimeout(() => {
-                                window.location.href = "../admin/dashboard.html";
+                                window.location.href = "/dashboard.html";
                             }, 2000);
                         } else {
                             showError('Error storing session data.');

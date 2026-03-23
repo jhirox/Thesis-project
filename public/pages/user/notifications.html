@@ -461,7 +461,11 @@
             const logout = () => {
                 localStorage.removeItem('sessionUser');
                 localStorage.removeItem('sessionTimeout');
+<<<<<<< HEAD
                 window.location.href = "/public/pages/auth/login.html";
+=======
+                window.location.href = "login.html";
+>>>>>>> 718cfc552c1846ca63c024f61440d29871b2cb25
             }
 
             const isSessionValid = () => {
@@ -489,7 +493,11 @@
                 fullName.textContent = authUser.user.fullname;
                 checkSession();
             } else {
+<<<<<<< HEAD
                 window.location.href = "/public/pages/auth/login.html";
+=======
+                window.location.href = "login.html";
+>>>>>>> 718cfc552c1846ca63c024f61440d29871b2cb25
             }
 
             // signOutBtn.addEventListener('click', () => {
