@@ -91,7 +91,7 @@
             </div>
           </div>
           <div>
-            <a href="/pages/user/profile.html" class="text-decoration-none text-white">
+            <a href="/profile.html" class="text-decoration-none text-white">
               <i class="bi bi-person fs-5"></i>
             </a>
           </div>
@@ -102,10 +102,10 @@
           <div class="d-flex align-items-center justify-content-between">
             <span class="text-white fw-semibold">Quezonian Educational College Inc.</span>
             <div>
-              <a href="/pages/user/notifications.html" class="me-3 text-decoration-none text-white">
+              <a href="/notifications.html" class="me-3 text-decoration-none text-white">
                 <i class="bi bi-bell fs-5"></i>
               </a>
-              <a href="/pages/user/profile.html" class="text-decoration-none text-white">
+              <a href="/profile.html" class="text-decoration-none text-white">
                 <i class="bi bi-person fs-5"></i>
               </a>
             </div>
@@ -139,7 +139,7 @@
                     >Start Enrollment</a
                   >
                   <a
-                    href="/pages/user/course.html"
+                    href="/course.html"
                     class="btn btn-outline-gold px-4 py-2 fw-semibold"
                     onclick="navigateToCourses()"
                     >Explore Courses</a
@@ -386,7 +386,7 @@
                   </li>
                   <li>
                     <a
-                      href="/pages/user/course.html"
+                      href="/course.html"
                       class="text-white-50 text-decoration-none"
                       >Courses</a
                     >
@@ -405,21 +405,21 @@
                 <ul class="list-unstyled">
                   <li>
                     <a
-                      href="/pages/user/profile.html"
+                      href="/profile.html"
                       class="text-white-50 text-decoration-none"
                       >Profile</a
                     >
                   </li>
                   <li>
                     <a
-                      href="/pages/user/notifications.html"
+                      href="/notifications.html"
                       class="text-white-50 text-decoration-none"
                       >Notifications</a
                     >
                   </li>
                   <li>
                     <a
-                      href="/pages/user/about-us.html"
+                      href="/about-us.html"
                       class="text-white-50 text-decoration-none"
                       >About Us</a
                     >
@@ -445,7 +445,7 @@
                   </li>
                   <li>
                     <a
-                      href="/pages/user/index.html"
+                      href="/index.html"
                       class="text-white-50 text-decoration-none"
                       >FAQs</a
                     >
@@ -511,7 +511,7 @@
 
         if (!hasValidSession && !guestMode) {
           // Redirect to login if neither condition is met
-          window.location.href = '/pages/auth/login.html';
+          window.location.href = '/login.html';
         }
         // If either condition is true, allow access (no redirect)
       });
@@ -521,7 +521,7 @@
         localStorage.removeItem('sessionUser');
         localStorage.removeItem('sessionTimeout');
         localStorage.removeItem('guestMode');
-        window.location.href = '/pages/auth/login.html';
+        window.location.href = '/login.html';
       }
     </script>
   </body>
