@@ -13,7 +13,7 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <link rel="stylesheet" href="/css/style.css">
-    <link rel="icon" href="/public/assets/images/logo.png" />
+    <link rel="icon" href="/assets/images/logo.png" />
 
 
 </head>
@@ -44,7 +44,7 @@
 
             <img
                 class="login-logo"
-                src="/public/assets/images/logo.png"
+                src="/assets/images/logo.png"
                 alt="QEC Logo"
                 onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';"
             >
@@ -116,7 +116,13 @@
         const curTimeout = localStorage.getItem('sessionTimeout');
 
         if (authUser && authUser != null && curTimeout && Date.now() < Number(curTimeout)) {
-            window.location.href = "../registrar/registrardashboard.html";
+            if (authUser.role === "admin") {
+                window.location.href = "../admin/dashboard.html";
+            } else if (authUser.role === "user") {
+                window.location.href = "../user/profile.html";
+            } else {
+                window.location.href = "../registrar/registrardashboard.html";
+            }
         }
 
         const timeout = 30 * 60 * 1000;
@@ -157,7 +163,8 @@
                         const sessionUser = {
                             user: authUser,
                             loginTime: new Date().toISOString(),
-                            IsRemember: rememberCbx.checked
+                            IsRemember: rememberCbx.checked,
+                            role: "registrar"
                         };
 
                         if (authUser != null) {
@@ -187,3 +194,4 @@
 
 </body>
 </html>
+
