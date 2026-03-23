@@ -92,12 +92,12 @@
                 <div class="login-footer-links fa-6">
                     <div>
                         Login as an:
-                        <a href="/pages/auth/adminlogin.html">Admin</a>
+                        <a href="/adminlogin.html">Admin</a>
                         <span class="sep">|</span>
-                        <a href="/pages/auth/registrarlogin.html">Registrar</a>
+                        <a href="/registrarlogin.html">Registrar</a>
                     </div>
                     <div>
-                        Don't have an account? <a href="/pages/auth/signup.html">Create</a>
+                        Don't have an account? <a href="/signup.html">Create</a>
                     </div>
                 </div>
 
@@ -128,7 +128,7 @@
         const curTimeout = localStorage.getItem('sessionTimeout');
 
         if (authUser && authUser != null && curTimeout && Date.now() < Number(curTimeout)) {
-            window.location.href = "/pages/user/profile.html";
+            window.location.href = "/profile.html";
         }
 
         const timeout = 30 * 60 * 1000;
@@ -176,7 +176,7 @@
                             localStorage.setItem("sessionUser", JSON.stringify(sessionUser));
                             localStorage.setItem("sessionTimeout", Date.now() + timeout);
                             setTimeout(() => {
-                                window.location.href = "/pages/user/profile.html";
+                                window.location.href = "/profile.html";
                             }, 2000);
                         } else {
                             showError('Error storing session data.');
