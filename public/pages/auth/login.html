@@ -44,7 +44,7 @@
             <!-- Logo -->
             <img
                 class="login-logo"
-                src="/public/assets/images/logo.png"
+                src="/assets/images/logo.png"
                 alt="QEC Logo"
                 onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';"
             >
@@ -110,6 +110,14 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Function to set guest mode (moved outside module for global access) -->
+    <script>
+        function setGuestMode() {
+            localStorage.setItem('guestMode', 'true');
+            window.location.href = '/index.html';
+        }
+    </script>
 
     <script type="module">
         import { user_data } from "/data/user.js";
@@ -187,12 +195,6 @@
                 });
             };
         });
-
-        // Function to set guest mode
-        function setGuestMode() {
-            localStorage.setItem('guestMode', 'true');
-            window.location.href = '/index.html';
-        }
     </script>
 
     <!-- <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script> -->
