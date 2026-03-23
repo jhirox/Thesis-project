@@ -448,7 +448,7 @@ footer .row {
 }
 
 /* ===== Enrollment page ===== */
-.page-enrollment .bg-primary {
+.page-enrollment .hero-bg{
   background: linear-gradient(rgba(2, 27, 58, 0.64), rgba(5, 38, 63, 0.64)), url(../assets/images/bg.jpg);
   background-size: cover;
   background-position: center center;
