@@ -115,7 +115,17 @@
         const curTimeout = localStorage.getItem('sessionTimeout');
 
         if (authUser && authUser != null && curTimeout && Date.now() < Number(curTimeout)) {
+<<<<<<< HEAD
             window.location.href = "../admin/dashboard.html";
+=======
+            if (authUser.role === "user") {
+                window.location.href = "../user/profile.html";
+            } else if (authUser.role === "registrar") {
+                window.location.href = "../registrar/registrardashboard.html";
+            } else {
+                window.location.href = "../admin/dashboard.html";
+            }
+>>>>>>> parent of 718cfc5 (fixing static routes files)
         }
 
         const timeout = 30 * 60 * 1000;
