@@ -5,8 +5,6 @@ import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import path from "path";
 import { fileURLToPath } from "url";
-import pool from "./config/db.js";
-
 
 dotenv.config();
 
@@ -26,23 +24,8 @@ app.use("/js", express.static(path.join(__dirname, "public/js")));
 // ✅ Serve root public files (index.html, etc.)
 app.use(express.static(path.join(__dirname, "public")));
 
-// // ✅ Database connection
-// let db;
-// async function connectDB() {
-//   try {
-//     db = await mysql.createPool({
-//       host: process.env.MYSQLHOST,
-//       user: process.env.MYSQLUSER,
-//       password: process.env.MYSQLPASSWORD,
-//       database: process.env.MYSQLDATABASE,
-//       port: process.env.MYSQLPORT
-//     });
-//     console.log("Database connected");
-//   } catch (err) {
-//     console.error("DB Error:", err.message);
-//   }
-// }
-// connectDB();
+// ✅ Database connection
+//
 
 // ✅ Routes for pages (clean URLs)
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public/index.html")));
@@ -89,32 +72,17 @@ app.get([
 });
 
 // ✅ Test DB
-// Example at line 103
-try {
-  const [rows] = await pool.query("SELECT 1");
-  console.log("✅ DB verified via query");
-} catch (err) {
-  console.error("❌ DB verification failed at startup, but server will keep running.");
-  console.error("Reason:", err.code); // This will show ECONNREFUSED
-}
-
-//listen
-pool
-  .query("SELECT 1")
-  .then(() => {
-  console.log("Database connected successfully!");
-  //listen
-  app.listen(PORT, () => {
-    console.log("Server running on port " + PORT);
-  });
-})
-.catch((err) => {
-  console.error(err);
+app.get("/test-db", async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT 1");
+    res.json({ message: "Database connected!", rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
-
 
 // ✅ Railway / local port
 const PORT = process.env.PORT || 3000;
-// app.listen(PORT, () => {
-//   console.log("Server running on port " + PORT);
-// });
+app.listen(PORT, () => {
+  console.log("Server running on port " + PORT);
+});
