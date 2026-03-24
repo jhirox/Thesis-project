@@ -89,14 +89,14 @@ app.get([
 });
 
 // ✅ Test DB
-app.get("/test-db", async (req, res) => {
-  try {
-    const [rows] = await db.query("SELECT 1");
-    res.json({ message: "Database connected!", rows });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+// Example at line 103
+try {
+  const [rows] = await pool.query("SELECT 1");
+  console.log("✅ DB verified via query");
+} catch (err) {
+  console.error("❌ DB verification failed at startup, but server will keep running.");
+  console.error("Reason:", err.code); // This will show ECONNREFUSED
+}
 
 //listen
 pool
