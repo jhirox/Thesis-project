@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import path from "path";
 import { fileURLToPath } from "url";
+import pool from "./config/db.js";
+
 
 dotenv.config();
 
@@ -24,23 +26,6 @@ app.use("/js", express.static(path.join(__dirname, "public/js")));
 // ✅ Serve root public files (index.html, etc.)
 app.use(express.static(path.join(__dirname, "public")));
 
-// ✅ Database connection
-let db;
-async function connectDB() {
-  try {
-    db = await mysql.createPool({
-      host: process.env.MYSQLHOST,
-      user: process.env.MYSQLUSER,
-      password: process.env.MYSQLPASSWORD,
-      database: process.env.MYSQLDATABASE,
-      port: process.env.MYSQLPORT
-    });
-    console.log("Database connected");
-  } catch (err) {
-    console.error("DB Error:", err.message);
-  }
-}
-connectDB();
 
 // ✅ Routes for pages (clean URLs)
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public/index.html")));
@@ -96,8 +81,20 @@ app.get("/test-db", async (req, res) => {
   }
 });
 
+//listen
+pool
+  .query("SELECT 1")
+  .then(() => {
+  console.log("Database connected successfully!");
+  //listen
+  app.listen(PORT, () => {
+    console.log("Server running on port " + PORT);
+  });
+})
+.catch((err) => {
+  console.error(error);
+});
+
+
 // ✅ Railway / local port
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log("Server running on port " + PORT);
-});
