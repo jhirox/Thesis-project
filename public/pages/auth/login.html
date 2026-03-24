@@ -44,7 +44,7 @@
             <!-- Logo -->
             <img
                 class="login-logo"
-                src="/public/assets/images/logo.png"
+                src="/assets/images/logo.png"
                 alt="QEC Logo"
                 onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';"
             >
@@ -85,19 +85,19 @@
                     <i class="bi bi-box-arrow-in-right me-2"></i>Login
                 </button>
 
-                <a href="/index.html" class="btn-guest-login fa-5">
+                <a href="#" class="btn-guest-login fa-5" onclick="setGuestMode(); return false;">
                     <i class="bi bi-person-walking me-1"></i> Continue without an Account
                 </a>
 
                 <div class="login-footer-links fa-6">
                     <div>
                         Login as an:
-                        <a href="/pages/auth/adminlogin.html">Admin</a>
+                        <a href="/adminlogin.html">Admin</a>
                         <span class="sep">|</span>
-                        <a href="/pages/auth/registrarlogin.html">Registrar</a>
+                        <a href="/registrarlogin.html">Registrar</a>
                     </div>
                     <div>
-                        Don't have an account? <a href="/pages/auth/signup.html">Create</a>
+                        Don't have an account? <a href="/signup">Create</a>
                     </div>
                 </div>
 
@@ -111,6 +111,14 @@
         crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <!-- Function to set guest mode (moved outside module for global access) -->
+    <script>
+        function setGuestMode() {
+            localStorage.setItem('guestMode', 'true');
+            window.location.href = '/index.html';
+        }
+    </script>
+
     <script type="module">
         import { user_data } from "/data/user.js";
         import { validateFields, validate } from "/js/utils/validators.js";
@@ -120,7 +128,7 @@
         const curTimeout = localStorage.getItem('sessionTimeout');
 
         if (authUser && authUser != null && curTimeout && Date.now() < Number(curTimeout)) {
-            window.location.href = "/pages/user/profile.html";
+            window.location.href = "/profile.html";
         }
 
         const timeout = 30 * 60 * 1000;
@@ -168,7 +176,7 @@
                             localStorage.setItem("sessionUser", JSON.stringify(sessionUser));
                             localStorage.setItem("sessionTimeout", Date.now() + timeout);
                             setTimeout(() => {
-                                window.location.href = "/pages/user/profile.html";
+                                window.location.href = "/profile.html";
                             }, 2000);
                         } else {
                             showError('Error storing session data.');

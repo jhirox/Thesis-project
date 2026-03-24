@@ -43,7 +43,7 @@
 
             <img
                 class="login-logo"
-                src="/public/assets/images/logo.png"
+                src="/assets/images/logo.png"
                 alt="QEC Logo"
                 onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';"
             >
@@ -87,12 +87,12 @@
                 <div class="login-footer-links fa-5">
                     <div>
                         Login as:
-                        <a href="/pages/auth/registrarlogin.html">Registrar</a>
+                        <a href="/registrarlogin.html">Registrar</a>
                         <span class="sep">|</span>
-                        <a href="/pages/auth/login.html">Student</a>
+                        <a href="/login.html">Student</a>
                     </div>
                     <div>
-                        Don't have an account? <a href="/pages/auth/adminsignup.html">Create</a>
+                        Don't have an account? <a href="/adminsignup">Create</a>
                     </div>
                 </div>
 
@@ -116,11 +116,11 @@
 
         if (authUser && authUser != null && curTimeout && Date.now() < Number(curTimeout)) {
             if (authUser.user.role === "user") {
-                window.location.href = "/pages/user/profile.html";
+                window.location.href = "/profile.html";
             } else if (authUser.user.role === "registrar") {
-                window.location.href = "/pages/registrar/registrardashboard.html";
+                window.location.href = "/registrardashboard.html";
             } else {
-                window.location.href = "/pages/admin/dashboard.html";
+                window.location.href = "/dashboard.html";
             }
         }
 
@@ -170,11 +170,11 @@
                             localStorage.setItem("sessionTimeout", Date.now() + timeout);
                             setTimeout(() => {
                                 if (authUser.role === "user") {
-                                    window.location.href = "/pages/user/profile.html";
+                                    window.location.href = "/profile.html";
                                 } else if (authUser.role === "registrar") {
-                                    window.location.href = "/pages/registrar/registrardashboard.html";
+                                    window.location.href = "/registrardashboard.html";
                                 } else {
-                                    window.location.href = "/pages/admin/dashboard.html";
+                                    window.location.href = "/dashboard.html";
                                 }
                             }, 2000);
                         } else {

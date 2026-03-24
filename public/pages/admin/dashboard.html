@@ -4,11 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard</title>
-    <link rel="icon" href="/public/assets/images/logo.png" />
+    <link rel="icon" href="/assets/images/logo.png" />
 
     <link
       rel="stylesheet"
-      href="/public/vendor/adminlte/css/adminlte.min.css"
+      href="/vendor/adminlte/css/adminlte.min.css"
     />
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
@@ -100,7 +100,7 @@
                 <li class="user-footer">
                   <a href="#" class="btn btn-default btn-flat">Profile</a>
                   <a
-                    href="../auth/adminlogin.html"
+                    href="/adminlogin.html"
                     class="btn btn-default btn-flat float-end"
                     id="sign-out"
                     >Sign out</a
@@ -125,7 +125,7 @@
             <!--begin::Brand Image-->
             <img
               class="page-queue logo"
-              src="/public/assets/images/logo.png"
+              src="/assets/images/logo.png"
               alt="logo"
             />
             <!--end::Brand Image-->
@@ -150,38 +150,38 @@
             >
               <h5 class="text-white pt-2">Main</h5>
               <li class="nav-item">
-                <a href="./dashboard.html" class="nav-link active">
+                <a href="/dashboard.html" class="nav-link active">
                   <i class="nav-icon fa-solid fa-house"></i>
                   <p>Dashboard Overview</p>
                 </a>
               </li>
               <li class="nav-item active">
-                <a href="./application-queue.html" class="nav-link">
+                <a href="/application-queue.html" class="nav-link">
                   <i class="nav-icon fa-solid fa-list"></i>
                   <p>Application Queue</p>
                 </a>
               </li>
               <li class="nav-item active">
-                <a href="./application-evaluation.html" class="nav-link">
+                <a href="/application-evaluation.html" class="nav-link">
                   <i class="nav-icon fa-solid fa-file-circle-check"></i>
                   <p>Application Evaluation</p>
                 </a>
               </li>
               <h5 class="text-white pt-4">Management</h5>
               <li class="nav-item active">
-                <a href="./accounts.html" class="nav-link">
+                <a href="/accounts.html" class="nav-link">
                   <i class="nav-icon fa-solid fa-users"></i>
                   <p>Accounts</p>
                 </a>
               </li>
               <li class="nav-item active">
-                <a href="./notification.html" class="nav-link">
+                <a href="/notification.html" class="nav-link">
                   <i class="nav-icon fa-regular fa-bell"></i>
                   <p>Notifications</p>
                 </a>
               </li>
               <li class="nav-item active">
-                <a href="./rep-and-analytics.html" class="nav-link">
+                <a href="/rep-and-analytics.html" class="nav-link">
                   <i class="nav-icon fa-solid fa-chart-pie"></i>
                   <p>Reports and Analytics</p>
                 </a>
@@ -375,7 +375,7 @@
                 </div>
               </div>
               <div class="justify-content-center d-flex">
-                <a href="./application-evaluation.html">
+                <a href="/application-evaluation.html">
                   <button class="btn btn-light w-100% mt-3">
                     View All Applications
                   </button>
@@ -392,7 +392,7 @@
               <i class="fa-solid fa-calendar-days me-2"></i>Schedule Review
               Session
             </button>
-            <a href="./rep-and-analytics.html">
+            <a href="/rep-and-analytics.html">
               <button
                 class="btn text-white mb-2"
                 style="background-color: #0d004e"
@@ -400,7 +400,7 @@
                 <i class="fa-solid fa-file-lines me-2"></i>Generate Daily Report
               </button>
             </a>
-            <a href="./notification.html">
+            <a href="/notification.html">
               <button
                 class="btn text-white mb-2"
                 style="background-color: #0d004e"
@@ -408,7 +408,7 @@
                 <i class="fa-solid fa-bell me-2"></i>Send Bulk Notifications
               </button>
             </a>
-            <a href="./registrar.html">
+            <a href="/registrar.html">
               <button
                 class="btn text-white mb-2"
                 style="background-color: #0d004e"
@@ -471,7 +471,7 @@
         const logout = () => {
           localStorage.removeItem("sessionUser");
           localStorage.removeItem("sessionTimeout");
-          window.location.href = "/public/pages/auth/adminlogin.html";
+          window.location.href = "/adminlogin.html";
         };
 
         const isSessionValid = () => {
@@ -500,7 +500,7 @@
           fullName.textContent = authUser.user.fullname;
           checkSession();
         } else {
-          window.location.href = "/public/pages/auth/adminlogin.html";
+          window.location.href = "/adminlogin.html";
         }
 
         // signOutBtn.addEventListener('click', () => {
