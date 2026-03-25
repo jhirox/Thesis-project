@@ -1287,7 +1287,7 @@ span .icon:hover {
 }
 
 .skeleton-sidebar-wrapper {
-  width: 280px;
+  width: 175px;
   background: linear-gradient(180deg, #e2e8f0, #cbd5e1);
   min-height: 100vh;
   border-right: 1px solid #e2e8f0;
