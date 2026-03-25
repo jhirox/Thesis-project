@@ -53,7 +53,7 @@ app.get([
   "/adminlogin.html"
 ], (req, res) => {
   const cleanMap = {
-    "index.html": "/home",
+    "index.html": "/",
     "course.html": "/course",
     "enrollment.html": "/enrollment",
     "about-us.html": "/about-us",
