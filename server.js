@@ -38,6 +38,7 @@ app.get("/login", (req, res) => res.sendFile(path.join(__dirname, "public/pages/
 app.get("/dashboard", (req, res) => res.sendFile(path.join(__dirname, "public/pages/admin/dashboard.html")));
 app.get("/registrardashboard", (req, res) => res.sendFile(path.join(__dirname, "public/pages/registrar/registrardashboard.html")));
 app.get("/adminlogin", (req, res) => res.sendFile(path.join(__dirname, "public/pages/auth/adminlogin.html")));
+app.get("/signup", (req, res) => res.sendFile(path.join(__dirname, "public/pages/auth/signup.html")));
 
 // ✅ Redirect legacy URLs to clean URLs
 app.get([
