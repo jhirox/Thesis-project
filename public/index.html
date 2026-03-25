@@ -532,6 +532,24 @@
       crossorigin="anonymous"
     ></script>
     <script src="/js/buttons.js"></script>
+
+    <!-- Skeleton Screen Script -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Hide skeleton after a short delay to ensure smooth transition
+        setTimeout(function() {
+          const skeleton = document.getElementById('skeleton-screen');
+          if (skeleton) {
+            skeleton.style.opacity = '0';
+            skeleton.style.transition = 'opacity 0.3s ease';
+            setTimeout(function() {
+              skeleton.style.display = 'none';
+            }, 300);
+          }
+        }, 800); // Show skeleton for 800ms
+      });
+    </script>
+
     <script>
       // Session protection for index.html
       document.addEventListener('DOMContentLoaded', function() {
