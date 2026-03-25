@@ -21,6 +21,83 @@
     <link rel="stylesheet" href="/css/style.css" />
   </head>
   <body class="page-shell page-profile">
+    <!-- SKELETON LOADING OVERLAY -->
+    <div id="skeleton-overlay" class="skeleton-overlay">
+      <div class="container-fluid p-0 d-flex h-100">
+        <!-- SIDEBAR SKELETON -->
+        <div class="page-shell sb-bg d-flex flex-column align-items-center flex-shrink-0 p-3 text-white offcanvas-md offcanvas-start" style="width: 175px;">
+          <div class="skeleton skeleton-circle mb-3" style="width: 65px; height: 65px;"></div>
+          <ul class="mynav nav nav-pills flex-column mb-auto">
+            <li class="nav-item mb-2">
+              <div class="skeleton skeleton-text" style="width: 120px; height: 20px;"></div>
+            </li>
+            <li class="nav-item mb-2">
+              <div class="skeleton skeleton-text" style="width: 120px; height: 20px;"></div>
+            </li>
+            <li class="nav-item mb-2">
+              <div class="skeleton skeleton-text" style="width: 120px; height: 20px;"></div>
+            </li>
+            <li class="nav-item mb-2">
+              <div class="skeleton skeleton-text" style="width: 120px; height: 20px;"></div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- MAIN CONTENT SKELETON -->
+        <main class="bg-light flex-fill">
+          <!-- MOBILE HEADER SKELETON -->
+          <header class="page-profile header p-3 d-md-none d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+              <div class="skeleton skeleton-circle me-2" style="width: 20px; height: 20px;"></div>
+              <div class="skeleton skeleton-circle ms-2" style="width: 40px; height: 40px;"></div>
+              <div class="ms-2">
+                <div class="skeleton skeleton-text" style="width: 150px; height: 14px;"></div>
+                <div class="skeleton skeleton-text" style="width: 80px; height: 16px;"></div>
+              </div>
+            </div>
+            <div class="dropdown">
+              <div class="skeleton skeleton-circle" style="width: 20px; height: 20px;"></div>
+            </div>
+          </header>
+
+          <!-- DESKTOP HEADER SKELETON -->
+          <nav class="top-nav d-none d-md-block p-3">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="skeleton skeleton-text" style="width: 300px; height: 20px;"></div>
+              <div>
+                <div class="skeleton skeleton-circle me-3" style="width: 20px; height: 20px;"></div>
+                <div class="skeleton skeleton-circle" style="width: 20px; height: 20px;"></div>
+              </div>
+            </div>
+          </nav>
+
+          <!-- PROFILE SECTION SKELETON -->
+          <section class="container-fluid py-5 pt-4">
+            <div class="row g-4">
+              <!-- PROFILE CARD SKELETON -->
+              <div class="profile-card col-12 col-lg-4">
+                <div class="skeleton skeleton-card" style="height: 350px;"></div>
+              </div>
+
+              <!-- INFORMATION CARDS SKELETON -->
+              <div class="col-12 col-lg-8">
+                <div class="skeleton skeleton-card mb-4" style="height: 300px;"></div>
+                <div class="skeleton skeleton-card mb-4" style="height: 200px;"></div>
+                <div class="skeleton skeleton-card mb-4" style="height: 100px;"></div>
+              </div>
+            </div>
+
+            <!-- QUICK ACTIONS SKELETON -->
+            <div class="row g-4 mt-2">
+              <div class="col-12">
+                <div class="skeleton skeleton-card" style="height: 200px;"></div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
     <div class="container-fluid p-0 d-flex h-100">
       <!-- SIDEBAR -->
       <div
@@ -36,25 +113,25 @@
 
         <ul class="mynav nav nav-pills flex-column mb-auto">
           <li class="nav-item mb-2">
-            <a href="/index.html">
+            <a href="/">
               <i class="bi bi-house"></i> Home
             </a>
           </li>
 
           <li class="nav-item mb-2">
-            <a href="/courses.html">
+            <a href="/courses">
               <i class="bi bi-mortarboard"></i> Courses
             </a>
           </li>
 
           <li class="nav-item mb-2">
-            <a href="/enrollment.html">
+            <a href="/enrollment">
               <i class="bi bi-folder"></i> Enrollment
             </a>
           </li>
 
           <li class="nav-item mb-2">
-            <a href="/about-us.html">
+            <a href="/about-us">
               <i class="bi bi-people"></i> About us
             </a>
           </li>
@@ -108,19 +185,19 @@
             >
               <li><h6 class="dropdown-header">Notifications</h6></li>
               <li>
-                <a class="dropdown-item small" href="/notifications.html"
+                <a class="dropdown-item small" href="/notifications"
                   ><i class="bi bi-envelope-check text-primary"></i> Application
                   Received</a
                 >
               </li>
               <li>
-                <a class="dropdown-item small" href="/notifications.html"
+                <a class="dropdown-item small" href="/notifications"
                   ><i class="bi bi-check-circle text-success"></i> Documents
                   Verified</a
                 >
               </li>
               <li>
-                <a class="dropdown-item small" href="/notifications.html"
+                <a class="dropdown-item small" href="/notifications"
                   ><i class="bi bi-exclamation-triangle text-warning"></i>
                   Missing Document</a
                 >
@@ -129,7 +206,7 @@
               <li>
                 <a
                   class="dropdown-item text-center small text-primary"
-                  href="/notifications.html"
+                  href="/notifications"
                   >View All Notifications</a
                 >
               </li>
@@ -142,10 +219,10 @@
           <div class="d-flex align-items-center justify-content-between">
             <span class="text-white fw-semibold">Quezonian Educational College Inc.</span>
             <div>
-              <a href="/notifications.html" class="me-3 text-decoration-none text-white">
+              <a href="/notifications" class="me-3 text-decoration-none text-white">
                 <i class="bi bi-bell fs-5"></i>
               </a>
-              <a href="/profile.html" class="text-decoration-underline text-gold">
+              <a href="/profile" class="text-decoration-underline text-gold">
                 <i class="bi bi-person fs-5"></i>
               </a>
             </div>
@@ -382,7 +459,7 @@
                     </div>
                     <div class="text-end">
                       <a
-                        href="/enrollment-form"
+                        href="/enrollment"
                         class="btn btn-primary btn-sm"
                       >
                         <i class="bi bi-eye"></i> View Application
@@ -405,7 +482,7 @@
                   <div class="row g-3">
                     <div class="col-md-4">
                       <a
-                        href="/enrollment-form"
+                        href="/enrollment"
                         class="text-decoration-none"
                       >
                         <div
@@ -460,6 +537,21 @@
       crossorigin="anonymous"
     ></script>
 
+    <!-- SKELETON HIDE SCRIPT -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+          const skeleton = document.getElementById('skeleton-overlay');
+          if (skeleton) {
+            skeleton.style.opacity = '0';
+            setTimeout(function() {
+              skeleton.style.display = 'none';
+            }, 300);
+          }
+        }, 800);
+      });
+    </script>
+
     
 
     <script type="module">
@@ -472,7 +564,7 @@
             const logout = () => {
                 localStorage.removeItem('sessionUser');
                 localStorage.removeItem('sessionTimeout');
-                window.location.href = "/login.html";
+                window.location.href = "/login";
             }
 
             const isSessionValid = () => {
@@ -488,7 +580,7 @@
                         icon: "error",
                         title: "Oops...",
                         text: "Session Timeout!",
-                        footer: '<a href="/login.html">Please login to continue using our app</a>'
+                        footer: '<a href="/login">Please login to continue using our app</a>'
                     });
                     setTimeout(() => {
                         logout();
@@ -500,7 +592,7 @@
                 fullName.textContent = authUser.user.fullname;
                 checkSession();
             } else {
-                window.location.href = "/login.html";
+                window.location.href = "/login";
             }
 
             // signOutBtn.addEventListener('click', () => {
