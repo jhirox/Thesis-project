@@ -54,7 +54,7 @@ app.get([
 ], (req, res) => {
   const cleanMap = {
     "index.html": "/",
-    "course.html": "/courses",
+    "courses.html": "/courses",
     "enrollment.html": "/enrollment",
     "about-us.html": "/about-us",
     "profile.html": "/profile",
