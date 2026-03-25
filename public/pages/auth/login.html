@@ -176,7 +176,7 @@
                             localStorage.setItem("sessionUser", JSON.stringify(sessionUser));
                             localStorage.setItem("sessionTimeout", Date.now() + timeout);
                             setTimeout(() => {
-                                window.location.href = "/profile.html";
+                                window.location.href = "/";
                             }, 2000);
                         } else {
                             showError('Error storing session data.');
