@@ -135,7 +135,7 @@ body.page-enrollment-form {
 @media (max-width: 767.98px) {
   .page-shell #bdSidebar {
     width: auto;
-    max-width: 60%;
+    max-width: 40%;
     position: fixed;
     height: 100%;
     left: 0;
