@@ -1257,10 +1257,10 @@ span .icon:hover {
 
 /* ===== SKELETON LOADING SCREEN ===== */
 .skeleton {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, #e5e7eb 25%, #d1d5db 50%, #e5e7eb 75%);
   background-size: 200% 100%;
   animation: skeleton-loading 1.5s infinite;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 @keyframes skeleton-loading {
@@ -1279,7 +1279,7 @@ span .icon:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  background: var(--qeci-light);
+  background: #ffffff;
   z-index: 9999;
   display: flex;
   align-items: center;
@@ -1288,9 +1288,9 @@ span .icon:hover {
 
 .skeleton-sidebar-wrapper {
   width: 280px;
-  background: var(--qeci-navy);
+  background: #f9fafb;
   min-height: 100vh;
-  color: #fff;
+  border-right: 1px solid #e5e7eb;
 }
 
 .skeleton-logo {
@@ -1307,15 +1307,17 @@ span .icon:hover {
 }
 
 .skeleton-main {
-  background: var(--qeci-light);
+  background: #ffffff;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  flex: 1;
 }
 
 .skeleton-header {
-  background: linear-gradient(180deg, var(--qeci-navy), var(--qeci-navy-2));
+  background: #f9fafb;
   height: 60px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .skeleton-title {
@@ -1330,12 +1332,10 @@ span .icon:hover {
 }
 
 .skeleton-hero-section {
-  background: linear-gradient(rgba(2, 27, 58, 0.64), rgba(5, 38, 63, 0.64)), url(../assets/images/bg.jpg);
-  background-size: cover;
-  background-position: center center;
-  color: #fff;
+  background: #f9fafb;
   padding: 4rem 0;
   min-height: 360px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .skeleton-text {
@@ -1367,8 +1367,9 @@ span .icon:hover {
 }
 
 .skeleton-office-section {
-  background: var(--qeci-navy);
+  background: #f9fafb;
   padding: 5rem 0;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .skeleton-office-card {
@@ -1378,7 +1379,9 @@ span .icon:hover {
 }
 
 .skeleton-contact-section {
-  background: #fff;
+  background: #ffffff;
+  padding: 3rem 0;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .skeleton-contact-tile {
@@ -1387,12 +1390,67 @@ span .icon:hover {
 }
 
 .skeleton-footer {
-  background: var(--qeci-navy);
-  color: #fff;
+  background: #f9fafb;
+  padding: 2rem 0;
 }
 
 .skeleton-link {
   width: 100px;
   height: 14px;
+}
+
+/* Mobile Responsive Skeleton */
+@media (max-width: 767px) {
+  .skeleton-sidebar-wrapper {
+    display: none; /* Hide sidebar on mobile */
+  }
+
+  .skeleton-main {
+    width: 100%;
+  }
+
+  .skeleton-header {
+    display: block !important; /* Show mobile header */
+    height: 70px;
+  }
+
+  .skeleton-hero-section {
+    padding: 2rem 0;
+    min-height: 250px;
+  }
+
+  .skeleton-office-section {
+    padding: 3rem 0;
+  }
+
+  .skeleton-office-card {
+    height: 160px;
+    margin-bottom: 1.5rem;
+  }
+
+  .skeleton-contact-tile {
+    height: 100px;
+    margin-bottom: 1rem;
+  }
+
+  .skeleton-text {
+    height: 14px;
+    margin-bottom: 6px;
+  }
+
+  .skeleton-text-large {
+    height: 28px;
+    margin-bottom: 10px;
+  }
+
+  .skeleton-button {
+    width: 100px;
+    height: 36px;
+  }
+
+  .skeleton-image {
+    width: 200px;
+    height: 200px;
+  }
 }
 
