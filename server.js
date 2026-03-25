@@ -42,7 +42,7 @@ app.get("/adminlogin", (req, res) => res.sendFile(path.join(__dirname, "public/p
 // ✅ Redirect legacy URLs to clean URLs
 app.get([
   "/index.html",
-  "/course.html",
+  "/courses.html",
   "/enrollment.html",
   "/about-us.html",
   "/profile.html",
