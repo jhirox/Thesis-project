@@ -22,131 +22,111 @@
     <link rel="stylesheet" href="/css/style.css" />
   </head>
   <body class="page-shell page-enrollment">
-    <!-- SKELETON LOADING OVERLAY -->
-    <div id="skeleton-overlay" class="skeleton-overlay">
+    <!-- SKELETON LOADING SCREEN -->
+    <div id="skeleton-screen" class="skeleton-screen">
       <div class="container-fluid p-0 d-flex h-100">
-        <!-- SIDEBAR SKELETON -->
-        <div class="page-shell sb-bg d-flex flex-column align-items-center flex-shrink-0 p-3 text-white offcanvas-md offcanvas-start" style="width: 175px;">
-          <div class="skeleton skeleton-circle mb-3" style="width: 65px; height: 65px;"></div>
-          <ul class="mynav nav nav-pills flex-column mb-auto">
-            <li class="nav-item mb-2">
-              <div class="skeleton skeleton-text" style="width: 120px; height: 20px;"></div>
-            </li>
-            <li class="nav-item mb-2">
-              <div class="skeleton skeleton-text" style="width: 120px; height: 20px;"></div>
-            </li>
-            <li class="nav-item mb-2">
-              <div class="skeleton skeleton-text" style="width: 120px; height: 20px;"></div>
-            </li>
-            <li class="nav-item mb-2">
-              <div class="skeleton skeleton-text" style="width: 120px; height: 20px;"></div>
-            </li>
-          </ul>
+        <!-- Skeleton Sidebar -->
+        <div class="skeleton-sidebar-wrapper d-none d-md-flex flex-column align-items-center flex-shrink-0 p-3">
+          <div class="skeleton skeleton-logo mb-3"></div>
+          <div class="skeleton skeleton-nav-item mb-2"></div>
+          <div class="skeleton skeleton-nav-item mb-2"></div>
+          <div class="skeleton skeleton-nav-item mb-2"></div>
+          <div class="skeleton skeleton-nav-item mb-2"></div>
         </div>
 
-        <!-- MAIN CONTENT SKELETON -->
-        <main class="bg-light flex-fill">
-          <!-- MOBILE HEADER SKELETON -->
-          <header class="page-enrollment header p-3 d-md-none d-flex align-items-center justify-content-between">
-            <div class="d-flex align-items-center">
-              <div class="skeleton skeleton-circle me-2" style="width: 20px; height: 20px;"></div>
-              <div class="skeleton skeleton-circle ms-2" style="width: 40px; height: 40px;"></div>
-              <div class="ms-2">
-                <div class="skeleton skeleton-text" style="width: 150px; height: 14px;"></div>
-                <div class="skeleton skeleton-text" style="width: 80px; height: 16px;"></div>
-              </div>
-            </div>
-            <div class="skeleton skeleton-circle" style="width: 20px; height: 20px;"></div>
-          </header>
-
-          <!-- DESKTOP HEADER SKELETON -->
-          <nav class="top-nav d-none d-md-block p-3">
+        <!-- Skeleton Main Content -->
+        <div class="skeleton-main flex-fill">
+          <!-- Skeleton Mobile Header -->
+          <div class="skeleton-header d-md-none p-3">
             <div class="d-flex align-items-center justify-content-between">
-              <div class="skeleton skeleton-text" style="width: 300px; height: 20px;"></div>
-              <div>
-                <div class="skeleton skeleton-circle me-3" style="width: 20px; height: 20px;"></div>
-                <div class="skeleton skeleton-circle" style="width: 20px; height: 20px;"></div>
+              <div class="d-flex align-items-center">
+                <div class="skeleton skeleton-icon me-2"></div>
+                <div class="skeleton skeleton-title ms-2"></div>
+              </div>
+              <div class="skeleton skeleton-icon"></div>
+            </div>
+          </div>
+
+          <!-- Skeleton Desktop Header -->
+          <div class="skeleton-header d-none d-md-block p-3">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="skeleton skeleton-title"></div>
+              <div class="d-flex gap-3">
+                <div class="skeleton skeleton-icon"></div>
+                <div class="skeleton skeleton-icon"></div>
               </div>
             </div>
-          </nav>
+          </div>
 
-          <!-- ENROLLMENT FORM SKELETON -->
-          <section class="container-fluid py-5 px-4">
-            <div class="row justify-content-center">
-              <div class="col-lg-8">
-                <!-- FORM HEADER SKELETON -->
-                <div class="card shadow-sm mb-4">
-                  <div class="card-header bg-white">
-                    <div class="skeleton skeleton-text mb-2" style="width: 250px; height: 24px;"></div>
-                    <div class="skeleton skeleton-text" style="width: 300px; height: 16px;"></div>
+          <!-- Skeleton Form Section -->
+          <div class="skeleton-office-section">
+            <div class="container">
+              <div class="text-center mb-5">
+                <div class="skeleton skeleton-text-large mb-2"></div>
+                <div class="skeleton skeleton-text mb-0"></div>
+              </div>
+              <div class="row">
+                <div class="col-lg-8 mx-auto">
+                  <div class="mb-4">
+                    <div class="skeleton skeleton-text mb-2"></div>
+                    <div class="skeleton skeleton-input"></div>
                   </div>
-                  <div class="card-body">
-                    <!-- FORM FIELDS SKELETON -->
-                    <div class="row g-3">
-                      <div class="col-md-6">
-                        <div class="skeleton skeleton-text mb-2" style="width: 80px; height: 14px;"></div>
-                        <div class="skeleton skeleton-input" style="height: 36px;"></div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="skeleton skeleton-text mb-2" style="width: 100px; height: 14px;"></div>
-                        <div class="skeleton skeleton-input" style="height: 36px;"></div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="skeleton skeleton-text mb-2" style="width: 90px; height: 14px;"></div>
-                        <div class="skeleton skeleton-input" style="height: 36px;"></div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="skeleton skeleton-text mb-2" style="width: 70px; height: 14px;"></div>
-                        <div class="skeleton skeleton-input" style="height: 36px;"></div>
-                      </div>
-                      <div class="col-12">
-                        <div class="skeleton skeleton-text mb-2" style="width: 60px; height: 14px;"></div>
-                        <div class="skeleton skeleton-input" style="height: 36px;"></div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="skeleton skeleton-text mb-2" style="width: 80px; height: 14px;"></div>
-                        <div class="skeleton skeleton-input" style="height: 36px;"></div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="skeleton skeleton-text mb-2" style="width: 50px; height: 14px;"></div>
-                        <div class="skeleton skeleton-input" style="height: 36px;"></div>
-                      </div>
-                    </div>
-
-                    <!-- FORM BUTTONS SKELETON -->
-                    <div class="d-flex justify-content-between mt-4">
-                      <div class="skeleton skeleton-button" style="width: 100px; height: 36px;"></div>
-                      <div class="skeleton skeleton-button" style="width: 120px; height: 36px;"></div>
-                    </div>
+                  <div class="mb-4">
+                    <div class="skeleton skeleton-text mb-2"></div>
+                    <div class="skeleton skeleton-input"></div>
                   </div>
-                </div>
-
-                <!-- REQUIREMENTS CARD SKELETON -->
-                <div class="card shadow-sm">
-                  <div class="card-header bg-white">
-                    <div class="skeleton skeleton-text" style="width: 200px; height: 24px;"></div>
+                  <div class="mb-4">
+                    <div class="skeleton skeleton-text mb-2"></div>
+                    <div class="skeleton skeleton-input"></div>
                   </div>
-                  <div class="card-body">
-                    <div class="row g-3">
-                      <div class="col-md-6">
-                        <div class="skeleton skeleton-card" style="height: 80px;"></div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="skeleton skeleton-card" style="height: 80px;"></div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="skeleton skeleton-card" style="height: 80px;"></div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="skeleton skeleton-card" style="height: 80px;"></div>
-                      </div>
-                    </div>
+                  <div class="mb-4">
+                    <div class="skeleton skeleton-text mb-2"></div>
+                    <div class="skeleton skeleton-input"></div>
+                  </div>
+                  <div class="text-center">
+                    <div class="skeleton skeleton-button"></div>
                   </div>
                 </div>
               </div>
             </div>
-          </section>
-        </main>
+          </div>
+
+          <!-- Skeleton Footer -->
+          <div class="skeleton-footer py-4">
+            <div class="container">
+              <div class="row mb-4 pb-4">
+                <div class="col-md-3 mb-3 mb-md-0">
+                  <div class="skeleton skeleton-text mb-3"></div>
+                  <div class="skeleton skeleton-link mb-2"></div>
+                  <div class="skeleton skeleton-link mb-2"></div>
+                  <div class="skeleton skeleton-link mb-0"></div>
+                </div>
+                <div class="col-md-3 mb-3 mb-md-0">
+                  <div class="skeleton skeleton-text mb-3"></div>
+                  <div class="skeleton skeleton-link mb-2"></div>
+                  <div class="skeleton skeleton-link mb-2"></div>
+                  <div class="skeleton skeleton-link mb-0"></div>
+                </div>
+                <div class="col-md-3 mb-3 mb-md-0">
+                  <div class="skeleton skeleton-text mb-3"></div>
+                  <div class="skeleton skeleton-link mb-2"></div>
+                  <div class="skeleton skeleton-link mb-2"></div>
+                  <div class="skeleton skeleton-link mb-0"></div>
+                </div>
+                <div class="col-md-3">
+                  <div class="skeleton skeleton-text mb-3"></div>
+                  <div class="skeleton skeleton-link mb-2"></div>
+                  <div class="skeleton skeleton-link mb-0"></div>
+                </div>
+              </div>
+              <div class="text-center">
+                <div class="skeleton skeleton-text mb-1"></div>
+                <div class="skeleton skeleton-text-small mb-1"></div>
+                <div class="skeleton skeleton-text-small mb-0"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -588,7 +568,7 @@
     <script>
       document.addEventListener('DOMContentLoaded', function() {
         setTimeout(function() {
-          const skeleton = document.getElementById('skeleton-overlay');
+          const skeleton = document.getElementById('skeleton-screen');
           if (skeleton) {
             skeleton.style.opacity = '0';
             setTimeout(function() {
