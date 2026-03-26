@@ -1,4 +1,4 @@
-const db = require("../config/db");
+import db from "../config/db.js";
 
 // get all students
 const getStudents = async (req, res) => {
@@ -13,7 +13,7 @@ const getStudents = async (req, res) => {
         res.status(200).send({
             success: true,
             message: 'Students retrieved successfully',
-            totalStudents: data[0].length, 
+            totalStudents: data[0].length,
             data: data[0],
         });
     } catch (error) {
@@ -58,4 +58,4 @@ const getStudentByID = async (req, res) => {
 };
 
 
-module.exports = { getStudents , getStudentByID };
+export { getStudents, getStudentByID };
