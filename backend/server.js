@@ -3,8 +3,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-import db from "../config/db.js";
-import studentRoutes from "../routes/studentRoutes.js";
+import db from "./src/config/db.js";
+import studentRoutes from "./src/routes/studentRoutes.js";
 
 dotenv.config();
 
@@ -18,7 +18,6 @@ const __dirname = path.dirname(__filename);
 app.use("/assets", express.static(path.join(__dirname, "../public/assets")));
 app.use("/css", express.static(path.join(__dirname, "../public/css")));
 app.use("/js", express.static(path.join(__dirname, "../public/js")));
-app.use(express.static(path.join(__dirname, "../public")));
 
 app.use("/api/students", studentRoutes);
 
@@ -33,6 +32,8 @@ app.get("/dashboard", (req, res) => res.sendFile(path.join(__dirname, "../public
 app.get("/registrardashboard", (req, res) => res.sendFile(path.join(__dirname, "../public/pages/registrar/registrardashboard.html")));
 app.get("/adminlogin", (req, res) => res.sendFile(path.join(__dirname, "../public/pages/auth/adminlogin.html")));
 app.get("/signup", (req, res) => res.sendFile(path.join(__dirname, "../public/pages/auth/signup.html")));
+
+app.use(express.static(path.join(__dirname, "../public")));
 
 app.get([
   "/index.html",
