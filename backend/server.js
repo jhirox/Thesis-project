@@ -22,7 +22,7 @@ app.use("/js", express.static(path.join(__dirname, "../public/js")));
 app.use("/api/students", studentRoutes);
 
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "../public/index.html")));
-app.get("/courses", (req, res) => res.sendFile(path.join(__dirname, "../public/pages/user/courses.html")));
+app.get("/courses", (req, res) => res.send("Courses page"));
 app.get("/enrollment", (req, res) => res.sendFile(path.join(__dirname, "../public/pages/user/enrollment.html")));
 app.get("/about-us", (req, res) => res.sendFile(path.join(__dirname, "../public/pages/user/about-us.html")));
 app.get("/profile", (req, res) => res.sendFile(path.join(__dirname, "../public/pages/user/profile.html")));
