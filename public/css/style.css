@@ -1340,6 +1340,27 @@ span .icon:hover {
   background: rgba(255, 255, 255, 0.6);
 }
 
+/* admin dashboard content-only skeleton */
+.app-content {
+  position: relative;
+}
+
+.app-content > #skeleton-screen {
+  position: absolute;
+  inset: 0;
+  background: rgba(248, 250, 252, 0.95);
+  z-index: 999;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 1rem;
+}
+
+.app-content > #skeleton-screen .skeleton {
+  background: linear-gradient(90deg, #e2e8f0 25%, #cbd5e1 50%, #e2e8f0 75%);
+}
+
 .skeleton-icon {
   width: 35px;
   height: 35px;
