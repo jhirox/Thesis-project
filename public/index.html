@@ -666,49 +666,5 @@
 
   setTimeout(hideSkeleton, 2000);
 </script>
-
-    <script>
-document.addEventListener('DOMContentLoaded', function() {
-  try {
-    const sessionUser = localStorage.getItem('sessionUser');
-    const sessionTimeout = localStorage.getItem('sessionTimeout');
-    const guestMode = localStorage.getItem('guestMode') === 'true';
-    const now = Date.now();
-
-    let hasValidSession = false;
-
-    if (sessionUser && sessionTimeout) {
-      const timeout = parseInt(sessionTimeout, 10);
-      if (!isNaN(timeout)) {
-        hasValidSession = now < timeout;
-        
-        // IF SESSION EXPIRED, CLEAR IT
-        if (!hasValidSession) {
-          localStorage.removeItem('sessionUser');
-          localStorage.removeItem('sessionTimeout');
-        }
-      }
-    }
-
-    // ONLY redirect to login if on home page AND not logged in AND not guest
-    const currentPath = window.location.pathname;
-    const isHomePage = currentPath === '/' || currentPath === '/index.html';
-
-  } catch (error) {
-    console.log("Storage error:", error);
-  }
-});
-
-// ✅ SAFE LOGOUT
-function logout() {
-  try {
-    localStorage.removeItem('sessionUser');
-    localStorage.removeItem('sessionTimeout');
-    localStorage.removeItem('guestMode');
-  } catch (error) {}
-
-  window.location.href = '/login';
-}
-</script>
   </body>
 </html>
