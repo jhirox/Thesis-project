@@ -178,19 +178,19 @@
           </li>
 
           <li class="nav-item mb-2">
-            <a href="/courses">
+            <a href="pages/user/courses.html">
               <i class="bi bi-mortarboard"></i> Courses
             </a>
           </li>
 
           <li class="nav-item mb-2">
-            <a href="/enrollment">
+            <a href="pages/user/enrollment.html">
               <i class="bi bi-folder"></i> Enrollment
             </a>
           </li>
 
           <li class="nav-item mb-2">
-            <a href="/about-us">
+            <a href="pages/user/about-us.html">
               <i class="bi bi-people"></i> About us
             </a>
           </li>
@@ -227,7 +227,7 @@
             </div>
           </div>
           <div>
-            <a href="/profile" class="text-decoration-none text-white">
+            <a href="pages/user/profile.html" class="text-decoration-none text-white">
               <i class="bi bi-person fs-5"></i>
             </a>
           </div>
@@ -238,10 +238,10 @@
           <div class="d-flex align-items-center justify-content-between">
             <span class="text-white fw-semibold">Quezonian Educational College Inc.</span>
             <div>
-              <a href="/notifications" class="me-3 text-decoration-none text-white">
+              <a href="pages/user/notifications.html" class="me-3 text-decoration-none text-white">
                 <i class="bi bi-bell fs-5"></i>
               </a>
-              <a href="/profile" class="text-decoration-none text-white">
+              <a href="pages/user/profile.html" class="text-decoration-none text-white">
                 <i class="bi bi-person fs-5"></i>
               </a>
             </div>
@@ -269,12 +269,12 @@
                   class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start"
                 >
                   <a
-                    href="/enrollment"
+                    href="pages/user/enrollment.html"
                     class="btn btn-gold px-4 py-2 fw-semibold js-enroll-now"
                     >Start Enrollment</a
                   >
                   <a
-                    href="/courses"
+                    href="pages/user/courses.html"
                     class="btn btn-outline-gold px-4 py-2 fw-semibold"
                     >Explore Courses</a
                   >
@@ -520,14 +520,14 @@
                   </li>
                   <li>
                     <a
-                      href="/courses"
+                      href="pages/user/courses.html"
                       class="text-white-50 text-decoration-none"
                       >Courses</a
                     >
                   </li>
                   <li>
                     <a
-                      href="/enrollment"
+                      href="pages/user/enrollment.html"
                       class="text-white-50 text-decoration-none"
                       >Enrollment</a
                     >
@@ -539,21 +539,21 @@
                 <ul class="list-unstyled">
                   <li>
                     <a
-                      href="/profile"
+                      href="pages/user/profile.html"
                       class="text-white-50 text-decoration-none"
                       >Profile</a
                     >
                   </li>
                   <li>
                     <a
-                      href="/notifications"
+                      href="pages/user/notifications.html"
                       class="text-white-50 text-decoration-none"
                       >Notifications</a
                     >
                   </li>
                   <li>
                     <a
-                      href="/about-us"
+                      href="pages/user/about-us.html"
                       class="text-white-50 text-decoration-none"
                       >About Us</a
                     >
@@ -687,9 +687,7 @@
 
           if (!hasValidSession && !guestMode) {
             // Redirect to login if neither condition is met
-            window.location.href = '/login';
-            return;
-          }
+          window.location.href = 'pages/auth/login.html';
 
           // Guest mode is allowed to browse the homepage without forced login
           // If session is valid or guest mode is true, allow access
@@ -708,7 +706,7 @@
         } catch (error) {
           // Ignore if localStorage is not available
         }
-        window.location.href = '/login';
+        window.location.href = 'pages/auth/login.html';
       }
     </script>
   </body>

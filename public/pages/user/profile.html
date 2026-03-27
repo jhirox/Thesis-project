@@ -596,9 +596,13 @@
             const timeout = localStorage.getItem('sessionTimeout');
 
             const logout = () => {
-                localStorage.removeItem('sessionUser');
-                localStorage.removeItem('sessionTimeout');
-                window.location.href = "/login";
+                try {
+                    localStorage.removeItem('sessionUser');
+                    localStorage.removeItem('sessionTimeout');
+                } catch (error) {
+                    // Ignore
+                }
+                window.location.href = "../auth/login.html";
             }
 
             const isSessionValid = () => {
@@ -626,8 +630,7 @@
                 fullName.textContent = authUser.user.fullname;
                 checkSession();
             } else {
-                window.location.href = "/login";
-            }
+                    window.location.href = "../auth/login.html";
 
             // signOutBtn.addEventListener('click', () => {
             //     localStorage.removeItem('sessionUser');
@@ -644,7 +647,7 @@
             });
             } catch (error) {
                 // If localStorage or JSON parsing fails, redirect to login
-                window.location.href = "/login";
+                window.location.href = "../auth/login.html";
             }
     });
     </script>

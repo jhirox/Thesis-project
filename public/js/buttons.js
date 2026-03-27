@@ -1,7 +1,7 @@
 function navigateToEnrollment() {
-    window.location.href = '/enrollment.html';
+    window.location.href = 'pages/user/enrollment.html';
 }
 
 function navigateToCourses() {
-    window.location.href = '/pages/user/course.html';
+    window.location.href = 'pages/user/courses.html';
 }
