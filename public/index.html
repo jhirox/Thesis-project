@@ -672,8 +672,12 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-    if (!hasValidSession && !guestMode) {
-      window.location.href = '/login'; // ✅ FIXED
+    // Define pages that require login
+    const restrictedPages = ['/profile', '/courses', '/enrollment', '/notifications'];
+
+    if (!hasValidSession && !guestMode && restrictedPages.includes(window.location.pathname)) {
+      // Redirect only if user tries to access restricted pages
+      window.location.href = '/login';
       return;
     }
 
