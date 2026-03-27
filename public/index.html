@@ -669,14 +669,21 @@ document.addEventListener('DOMContentLoaded', function() {
       const timeout = parseInt(sessionTimeout, 10);
       if (!isNaN(timeout)) {
         hasValidSession = now < timeout;
+        
+        // IF SESSION EXPIRED, CLEAR IT
+        if (!hasValidSession) {
+          localStorage.removeItem('sessionUser');
+          localStorage.removeItem('sessionTimeout');
+        }
       }
     }
 
-    // Define pages that require login
-    const restrictedPages = ['/profile', '/courses', '/enrollment', '/notifications'];
+    // ONLY redirect to login if on home page AND not logged in AND not guest
+    const currentPath = window.location.pathname;
+    const isHomePage = currentPath === '/' || currentPath === '/index.html';
 
-    if (!hasValidSession && !guestMode && restrictedPages.includes(window.location.pathname)) {
-      // Redirect only if user tries to access restricted pages
+    if (isHomePage && !hasValidSession && !guestMode) {
+      // Show login page instead of home
       window.location.href = '/login';
       return;
     }
@@ -694,8 +701,9 @@ function logout() {
     localStorage.removeItem('guestMode');
   } catch (error) {}
 
-  window.location.href = '/login'; // ✅ FIXED
+  window.location.href = '/login';
 }
+    </script>
 </script>
   </body>
 </html>
