@@ -634,26 +634,37 @@
     <script src="/js/buttons.js"></script>
 
     <!-- Skeleton Screen Script -->
-    <script>
-function hideSkeleton() {
-  const skeleton = document.getElementById('skeleton-screen');
-  if (skeleton) {
-    skeleton.style.opacity = '0';
-    setTimeout(() => {
-      skeleton.style.display = 'none';
-    }, 300);
+   <script>
+  function hideSkeleton() {
+    try {
+      const skeleton = document.getElementById('skeleton-screen');
+      if (skeleton) {
+        skeleton.style.zIndex = '-1';
+        skeleton.style.pointerEvents = 'none';
+        skeleton.style.opacity = '0';
+        skeleton.style.transition = 'opacity 0.3s ease';
+        setTimeout(function() {
+          if (skeleton && skeleton.parentNode) {
+            skeleton.parentNode.removeChild(skeleton);
+          }
+        }, 300);
+      }
+    } catch (error) {
+      const skeleton = document.getElementById('skeleton-screen');
+      if (skeleton) {
+        skeleton.style.zIndex = '-1';
+        skeleton.style.pointerEvents = 'none';
+        skeleton.style.display = 'none';
+      }
+    }
   }
-}
 
-// ✅ Works better on Safari
-window.addEventListener('load', () => {
-  setTimeout(hideSkeleton, 500);
-});
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(hideSkeleton, 800);
+  });
 
-// ✅ HARD FAILSAFE (important for iPhone)
-setTimeout(hideSkeleton, 3000);
+  setTimeout(hideSkeleton, 2000);
 </script>
-    </script>
 
     <script>
 document.addEventListener('DOMContentLoaded', function() {

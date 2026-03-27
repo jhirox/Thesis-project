@@ -20,8 +20,8 @@ const app = express();
 // ======================
 // MIDDLEWARE
 // ======================
-app.use(corsMiddleware);
-app.use(jsonMiddleware);
+import corsMiddleware from "./src/middlewares/corsMiddleware.js";
+import jsonMiddleware from "./src/middlewares/jsonMiddleware.js";
 
 // Fix __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
