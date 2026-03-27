@@ -520,14 +520,14 @@
                   </li>
                   <li>
                     <a
-                      href="pages/user/courses.html"
+                      href="/courses.html"
                       class="text-white-50 text-decoration-none"
                       >Courses</a
                     >
                   </li>
                   <li>
                     <a
-                      href="pages/user/enrollment.html"
+                      href="/enrollment.html"
                       class="text-white-50 text-decoration-none"
                       >Enrollment</a
                     >
@@ -539,21 +539,21 @@
                 <ul class="list-unstyled">
                   <li>
                     <a
-                      href="pages/user/profile.html"
+                      href="/profile.html"
                       class="text-white-50 text-decoration-none"
                       >Profile</a
                     >
                   </li>
                   <li>
                     <a
-                      href="pages/user/notifications.html"
+                      href="/notifications.html"
                       class="text-white-50 text-decoration-none"
                       >Notifications</a
                     >
                   </li>
                   <li>
                     <a
-                      href="pages/user/about-us.html"
+                      href="/about-us.html"
                       class="text-white-50 text-decoration-none"
                       >About Us</a
                     >
@@ -635,79 +635,63 @@
 
     <!-- Skeleton Screen Script -->
     <script>
-      // Safely hide skeleton screen with fallbacks for cross-browser compatibility
-      function hideSkeleton() {
-        try {
-          const skeleton = document.getElementById('skeleton-screen');
-          if (skeleton) {
-            skeleton.style.opacity = '0';
-            skeleton.style.transition = 'opacity 0.3s ease';
-            setTimeout(function() {
-              if (skeleton) {
-                skeleton.style.display = 'none';
-              }
-            }, 300);
-          }
-        } catch (error) {
-          // Fallback: force hide skeleton
-          const skeleton = document.getElementById('skeleton-screen');
-          if (skeleton) {
-            skeleton.style.display = 'none';
-          }
-        }
-      }
+function hideSkeleton() {
+  const skeleton = document.getElementById('skeleton-screen');
+  if (skeleton) {
+    skeleton.style.opacity = '0';
+    setTimeout(() => {
+      skeleton.style.display = 'none';
+    }, 300);
+  }
+}
 
-      // Hide skeleton on DOMContentLoaded
-      document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(hideSkeleton, 800); // Show skeleton for 800ms
-      });
+// ✅ Works better on Safari
+window.addEventListener('load', () => {
+  setTimeout(hideSkeleton, 500);
+});
 
-      // Fallback: hide skeleton after 5 seconds regardless
-      setTimeout(hideSkeleton, 5000);
-    </script>
+// ✅ HARD FAILSAFE (important for iPhone)
+setTimeout(hideSkeleton, 3000);
+</script>
     </script>
 
     <script>
-      // Session protection for index.html with safe localStorage access
-      document.addEventListener('DOMContentLoaded', function() {
-        try {
-          const sessionUser = localStorage.getItem('sessionUser');
-          const sessionTimeout = localStorage.getItem('sessionTimeout');
-          const guestMode = localStorage.getItem('guestMode') === 'true';
-          const now = Date.now();
+document.addEventListener('DOMContentLoaded', function() {
+  try {
+    const sessionUser = localStorage.getItem('sessionUser');
+    const sessionTimeout = localStorage.getItem('sessionTimeout');
+    const guestMode = localStorage.getItem('guestMode') === 'true';
+    const now = Date.now();
 
-          // Check if user has valid session or is in guest mode
-          let hasValidSession = false;
-          if (sessionUser && sessionTimeout) {
-            const timeout = parseInt(sessionTimeout, 10);
-            if (!isNaN(timeout)) {
-              hasValidSession = now < timeout;
-            }
-          }
+    let hasValidSession = false;
 
-          if (!hasValidSession && !guestMode) {
-            // Redirect to login if neither condition is met
-          window.location.href = 'pages/auth/login.html';
-
-          // Guest mode is allowed to browse the homepage without forced login
-          // If session is valid or guest mode is true, allow access
-        } catch (error) {
-          // If localStorage is not available (e.g., disabled in browser), allow access
-          // This prevents the page from breaking on Safari with strict privacy settings
-        }
-      });
-
-      // Logout function with safe localStorage access
-      function logout() {
-        try {
-          localStorage.removeItem('sessionUser');
-          localStorage.removeItem('sessionTimeout');
-          localStorage.removeItem('guestMode');
-        } catch (error) {
-          // Ignore if localStorage is not available
-        }
-        window.location.href = 'pages/auth/login.html';
+    if (sessionUser && sessionTimeout) {
+      const timeout = parseInt(sessionTimeout, 10);
+      if (!isNaN(timeout)) {
+        hasValidSession = now < timeout;
       }
-    </script>
+    }
+
+    if (!hasValidSession && !guestMode) {
+      window.location.href = '/login'; // ✅ FIXED
+      return;
+    }
+
+  } catch (error) {
+    console.log("Storage error:", error);
+  }
+});
+
+// ✅ SAFE LOGOUT
+function logout() {
+  try {
+    localStorage.removeItem('sessionUser');
+    localStorage.removeItem('sessionTimeout');
+    localStorage.removeItem('guestMode');
+  } catch (error) {}
+
+  window.location.href = '/login'; // ✅ FIXED
+}
+</script>
   </body>
 </html>
