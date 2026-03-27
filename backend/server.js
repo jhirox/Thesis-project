@@ -26,10 +26,10 @@ import corsMiddleware from "./src/middlewares/corsMiddleware.js";
 import jsonMiddleware from "./src/middlewares/jsonMiddleware.js";
 
 app.use(corsMiddleware);   // ✅ ENABLE CORS
-app.use(jsonMiddleware);  // ✅ ENABLE JSON BODY PARSING
+app.use(jsonMiddleware);   // ✅ ENABLE JSON BODY PARSING
 
 // ======================
-// STATIC FILES (CLEAN)
+// STATIC FILES
 // ======================
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -46,9 +46,8 @@ app.get("/", (req, res) =>
 );
 
 app.get("/courses", (req, res) =>
-  res.sendFile(path.join(__dirname, "pages/user/courses.html"))
+  res.sendFile(path.join(__dirname, "public/pages/user/courses.html"))
 );
-
 
 app.get("/enrollment", (req, res) =>
   res.sendFile(path.join(__dirname, "public/pages/user/enrollment.html"))
@@ -75,9 +74,7 @@ app.get("/dashboard", (req, res) =>
 );
 
 app.get("/registrardashboard", (req, res) =>
-  res.sendFile(
-    path.join(__dirname, "public/pages/registrar/registrardashboard.html")
-  )
+  res.sendFile(path.join(__dirname, "public/pages/registrar/registrardashboard.html"))
 );
 
 app.get("/adminlogin", (req, res) =>
