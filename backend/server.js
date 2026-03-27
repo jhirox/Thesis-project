@@ -39,7 +39,9 @@ app.use("/js", express.static(path.join(__dirname, "public/js")));
 // ======================
 app.use("/api/students", studentRoutes);
 
-// ✅ Routes for pages (clean URLs)
+// ======================
+// CLEAN URL ROUTES (must come before legacy redirects)
+// ======================
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public/index.html")));
 app.get("/courses", (req, res) => res.sendFile(path.join(__dirname, "public/pages/user/courses.html")));
 app.get("/enrollment", (req, res) => res.sendFile(path.join(__dirname, "public/pages/user/enrollment.html")));
@@ -55,10 +57,12 @@ app.get("/signup", (req, res) => res.sendFile(path.join(__dirname, "public/pages
 app.get("/adminsignup", (req, res) => res.sendFile(path.join(__dirname, "public/pages/auth/adminsignup.html")));
 app.get("/registrarsignup", (req, res) => res.sendFile(path.join(__dirname, "public/pages/auth/registrarsignup.html")));
 
-// ✅ Redirect legacy URLs to clean URLs
+// ======================
+// LEGACY HTML REDIRECTS
+// ======================
 const cleanMap = {
   "index.html": "/",
-  "course.html": "/course",
+  "courses.html": "/courses",
   "enrollment.html": "/enrollment",
   "about-us.html": "/about-us",
   "profile.html": "/profile",
