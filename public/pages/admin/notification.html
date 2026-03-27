@@ -898,14 +898,18 @@
             showHistoryDetails(data);
           } else {
             // fallback: read values from card element
-            const title = card.querySelector('h5')?.innerText || '';
-            const message = card.querySelector('p.text-muted.mb-3')?.innerText || '';
-            const recipient = card.querySelector('i.fa-user')?.parentElement?.textContent.trim() || '';
-            const date = card.querySelector('i.fa-calendar')?.parentElement?.textContent.trim() || '';
-
+            const titleEl = card.querySelector('h5');
+            const title = titleEl ? titleEl.innerText : '';
+            const messageEl = card.querySelector('p.text-muted.mb-3');
+            const message = messageEl ? messageEl.innerText : '';
+            const recipientIcon = card.querySelector('i.fa-user');
+            const recipient = recipientIcon && recipientIcon.parentElement ? recipientIcon.parentElement.textContent.trim() : '';
+            const dateIcon = card.querySelector('i.fa-calendar');
+            const date = dateIcon && dateIcon.parentElement ? dateIcon.parentElement.textContent.trim() : '';
 
             // determine type from icon
-            const icon = card.querySelector('.icon')?.textContent.trim();
+            const iconEl = card.querySelector('.icon');
+            const icon = iconEl ? iconEl.textContent.trim() : '';
             let type = '';
             if (icon === '🔔') type = 'Reminder';
             else if (icon === '✔️') type = 'Announcement';

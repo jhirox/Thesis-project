@@ -570,17 +570,35 @@
 
     <!-- SKELETON HIDE SCRIPT -->
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(function() {
+      // Safely hide skeleton screen with fallbacks for cross-browser compatibility
+      function hideSkeleton() {
+        try {
           const skeleton = document.getElementById('skeleton-screen');
           if (skeleton) {
             skeleton.style.opacity = '0';
+            skeleton.style.transition = 'opacity 0.3s ease';
             setTimeout(function() {
-              skeleton.style.display = 'none';
+              if (skeleton) {
+                skeleton.style.display = 'none';
+              }
             }, 300);
           }
-        }, 800);
+        } catch (error) {
+          // Fallback: force hide skeleton
+          const skeleton = document.getElementById('skeleton-screen');
+          if (skeleton) {
+            skeleton.style.display = 'none';
+          }
+        }
+      }
+
+      // Hide skeleton on DOMContentLoaded
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(hideSkeleton, 800); // Show skeleton for 800ms
       });
+
+      // Fallback: hide skeleton after 5 seconds regardless
+      setTimeout(hideSkeleton, 5000);
     </script>
 
     <script>

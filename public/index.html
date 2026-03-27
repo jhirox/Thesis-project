@@ -635,47 +635,79 @@
 
     <!-- Skeleton Screen Script -->
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Hide skeleton after a short delay to ensure smooth transition
-        setTimeout(function() {
+      // Safely hide skeleton screen with fallbacks for cross-browser compatibility
+      function hideSkeleton() {
+        try {
           const skeleton = document.getElementById('skeleton-screen');
           if (skeleton) {
             skeleton.style.opacity = '0';
             skeleton.style.transition = 'opacity 0.3s ease';
             setTimeout(function() {
-              skeleton.style.display = 'none';
+              if (skeleton) {
+                skeleton.style.display = 'none';
+              }
             }, 300);
           }
-        }, 800); // Show skeleton for 800ms
+        } catch (error) {
+          // Fallback: force hide skeleton
+          const skeleton = document.getElementById('skeleton-screen');
+          if (skeleton) {
+            skeleton.style.display = 'none';
+          }
+        }
+      }
+
+      // Hide skeleton on DOMContentLoaded
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(hideSkeleton, 800); // Show skeleton for 800ms
       });
+
+      // Fallback: hide skeleton after 5 seconds regardless
+      setTimeout(hideSkeleton, 5000);
+    </script>
     </script>
 
     <script>
-      // Session protection for index.html
+      // Session protection for index.html with safe localStorage access
       document.addEventListener('DOMContentLoaded', function() {
-        const sessionUser = localStorage.getItem('sessionUser');
-        const sessionTimeout = localStorage.getItem('sessionTimeout');
-        const guestMode = localStorage.getItem('guestMode') === 'true';
-        const now = Date.now();
+        try {
+          const sessionUser = localStorage.getItem('sessionUser');
+          const sessionTimeout = localStorage.getItem('sessionTimeout');
+          const guestMode = localStorage.getItem('guestMode') === 'true';
+          const now = Date.now();
 
-        // Check if user has valid session or is in guest mode
-        const hasValidSession = sessionUser && sessionTimeout && now < parseInt(sessionTimeout);
+          // Check if user has valid session or is in guest mode
+          let hasValidSession = false;
+          if (sessionUser && sessionTimeout) {
+            const timeout = parseInt(sessionTimeout, 10);
+            if (!isNaN(timeout)) {
+              hasValidSession = now < timeout;
+            }
+          }
 
-        if (!hasValidSession && !guestMode) {
-          // Redirect to login if neither condition is met
-          window.location.href = '/login';
-          return;
+          if (!hasValidSession && !guestMode) {
+            // Redirect to login if neither condition is met
+            window.location.href = '/login';
+            return;
+          }
+
+          // Guest mode is allowed to browse the homepage without forced login
+          // If session is valid or guest mode is true, allow access
+        } catch (error) {
+          // If localStorage is not available (e.g., disabled in browser), allow access
+          // This prevents the page from breaking on Safari with strict privacy settings
         }
-
-        // Guest mode is allowed to browse the homepage without forced login
-        // If session is valid or guest mode is true, allow access
       });
 
-      // Logout function
+      // Logout function with safe localStorage access
       function logout() {
-        localStorage.removeItem('sessionUser');
-        localStorage.removeItem('sessionTimeout');
-        localStorage.removeItem('guestMode');
+        try {
+          localStorage.removeItem('sessionUser');
+          localStorage.removeItem('sessionTimeout');
+          localStorage.removeItem('guestMode');
+        } catch (error) {
+          // Ignore if localStorage is not available
+        }
         window.location.href = '/login';
       }
     </script>
