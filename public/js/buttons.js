@@ -3,5 +3,5 @@ function navigateToEnrollment() {
 }
 
 function navigateToCourses() {
-    window.location.href = '/courses';
+    window.location.href = '/public/pages/user/courses.html';
 }
