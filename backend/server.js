@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import bcrypt from "bcrypt";
 import path from "path";
 import { fileURLToPath } from "url";
 import db from "./src/config/db.js";
@@ -17,30 +16,61 @@ app.use(express.json());
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ✅ Serve static assets ONLY (CSS, JS, images)
+// ✅ ONLY allow assets (IMPORTANT)
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 app.use("/css", express.static(path.join(__dirname, "public/css")));
 app.use("/js", express.static(path.join(__dirname, "public/js")));
 
-// ✅ Serve root public files (index.html, etc.)
-app.use(express.static(path.join(__dirname, "public")));
+// 🚨 BLOCK direct access to /pages (THIS IS THE FIX)
+app.use("/pages", (req, res) => {
+  return res.redirect(301, "/");
+});
 
-// ✅ Database connection
-//
+// ✅ API routes
+app.use("/api/students", studentRoutes);
 
-// ✅ Routes for pages (clean URLs)
-app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public/index.html")));
-app.get("/courses", (req, res) => res.sendFile(path.join(__dirname, "public/pages/user/courses.html")));
-app.get("/enrollment", (req, res) => res.sendFile(path.join(__dirname, "public/pages/user/enrollment.html")));
-app.get("/about-us", (req, res) => res.sendFile(path.join(__dirname, "public/pages/user/about-us.html")));
-app.get("/profile", (req, res) => res.sendFile(path.join(__dirname, "public/pages/user/profile.html")));
-app.get("/notifications", (req, res) => res.sendFile(path.join(__dirname, "public/pages/user/notifications.html")));
-app.get("/login", (req, res) => res.sendFile(path.join(__dirname, "public/pages/auth/login.html")));
-app.get("/dashboard", (req, res) => res.sendFile(path.join(__dirname, "public/pages/admin/dashboard.html")));
-app.get("/registrardashboard", (req, res) => res.sendFile(path.join(__dirname, "public/pages/registrar/registrardashboard.html")));
-app.get("/adminlogin", (req, res) => res.sendFile(path.join(__dirname, "public/pages/auth/adminlogin.html")));
+// ✅ CLEAN ROUTES
+app.get("/", (req, res) =>
+  res.sendFile(path.join(__dirname, "public/index.html"))
+);
 
-// ✅ Redirect legacy URLs to clean URLs
+app.get("/courses", (req, res) =>
+  res.sendFile(path.join(__dirname, "public/pages/user/courses.html"))
+);
+
+app.get("/enrollment", (req, res) =>
+  res.sendFile(path.join(__dirname, "public/pages/user/enrollment.html"))
+);
+
+app.get("/about-us", (req, res) =>
+  res.sendFile(path.join(__dirname, "public/pages/user/about-us.html"))
+);
+
+app.get("/profile", (req, res) =>
+  res.sendFile(path.join(__dirname, "public/pages/user/profile.html"))
+);
+
+app.get("/notifications", (req, res) =>
+  res.sendFile(path.join(__dirname, "public/pages/user/notifications.html"))
+);
+
+app.get("/login", (req, res) =>
+  res.sendFile(path.join(__dirname, "public/pages/auth/login.html"))
+);
+
+app.get("/dashboard", (req, res) =>
+  res.sendFile(path.join(__dirname, "public/pages/admin/dashboard.html"))
+);
+
+app.get("/registrardashboard", (req, res) =>
+  res.sendFile(path.join(__dirname, "public/pages/registrar/registrardashboard.html"))
+);
+
+app.get("/adminlogin", (req, res) =>
+  res.sendFile(path.join(__dirname, "public/pages/auth/adminlogin.html"))
+);
+
+// 🔁 REDIRECT .html → CLEAN URLS
 app.get([
   "/index.html",
   "/courses.html",
@@ -65,14 +95,17 @@ app.get([
     "registrardashboard.html": "/registrardashboard",
     "adminlogin.html": "/adminlogin"
   };
+
   const cleanPath = cleanMap[req.path.substring(1)];
+
   if (cleanPath) {
     return res.redirect(301, cleanPath);
   }
+
   res.status(404).send("Not Found");
 });
 
-// ✅ Test DB
+// ✅ TEST DB
 app.get("/test-db", async (req, res) => {
   try {
     const [rows] = await db.query("SELECT 1");
@@ -82,7 +115,7 @@ app.get("/test-db", async (req, res) => {
   }
 });
 
-// ✅ Railway / local port
+// ✅ START SERVER
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Server running on port " + PORT);
