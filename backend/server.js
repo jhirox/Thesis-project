@@ -56,39 +56,26 @@ app.get("/adminsignup", (req, res) => res.sendFile(path.join(__dirname, "public/
 app.get("/registrarsignup", (req, res) => res.sendFile(path.join(__dirname, "public/pages/auth/registrarsignup.html")));
 
 // ✅ Redirect legacy URLs to clean URLs
-app.get([
-  "/index.html",
-  "/course.html",
-  "/enrollment.html",
-  "/about-us.html",
-  "/profile.html",
-  "/notifications.html",
-  "/login.html",
-  "/dashboard.html",
-  "/registrardashboard.html",
-  "/adminlogin.html",
-  "/enrollment-form.html",
-  "/signup.html",
-  "/adminsignup.html",
-  "/registrarsignup.html"
-], (req, res) => {
-  const cleanMap = {
-    "index.html": "/",
-    "course.html": "/course",
-    "enrollment.html": "/enrollment",
-    "about-us.html": "/about-us",
-    "profile.html": "/profile",
-    "notifications.html": "/notifications",
-    "login.html": "/login",
-    "dashboard.html": "/dashboard",
-    "registrardashboard.html": "/registrardashboard",
-    "adminlogin.html": "/adminlogin",
-    "enrollment-form.html": "/enrollment-form",
-    "signup.html": "/signup",
-    "adminsignup.html": "/adminsignup",
-    "registrarsignup.html": "/registrarsignup"
-  };
-  const cleanPath = cleanMap[req.path.substring(1)];
+const cleanMap = {
+  "index.html": "/",
+  "course.html": "/course",
+  "enrollment.html": "/enrollment",
+  "about-us.html": "/about-us",
+  "profile.html": "/profile",
+  "notifications.html": "/notifications",
+  "login.html": "/login",
+  "dashboard.html": "/dashboard",
+  "registrardashboard.html": "/registrardashboard",
+  "adminlogin.html": "/adminlogin",
+  "enrollment-form.html": "/enrollment-form",
+  "signup.html": "/signup",
+  "adminsignup.html": "/adminsignup",
+  "registrarsignup.html": "/registrarsignup"
+};
+
+app.get(Object.keys(cleanMap).map(file => `/${file}`), (req, res) => {
+  const fileName = req.path.substring(1); // Remove leading /
+  const cleanPath = cleanMap[fileName];
   if (cleanPath) {
     return res.redirect(301, cleanPath);
   }
