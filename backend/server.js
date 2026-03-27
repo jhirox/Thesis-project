@@ -45,10 +45,10 @@ app.get("/", (req, res) =>
   res.sendFile(path.join(__dirname, "public/index.html"))
 );
 
-app.get("/courses", (req, res) => {
-  console.log("HIT /courses");
-  res.sendFile(path.join(__dirname, "public/pages/user/courses.html"));
-});
+app.get("/courses", (req, res) =>
+  res.sendFile(path.join(__dirname, "pages/user/courses.html"))
+);
+
 
 app.get("/enrollment", (req, res) =>
   res.sendFile(path.join(__dirname, "public/pages/user/enrollment.html"))
