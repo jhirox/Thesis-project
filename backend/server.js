@@ -30,7 +30,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // ✅ Routes for pages (clean URLs)
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public/index.html")));
-app.get("/course", (req, res) => res.sendFile(path.join(__dirname, "public/pages/user/course.html")));
+app.get("/courses", (req, res) => res.sendFile(path.join(__dirname, "public/pages/user/courses.html")));
 app.get("/enrollment", (req, res) => res.sendFile(path.join(__dirname, "public/pages/user/enrollment.html")));
 app.get("/about-us", (req, res) => res.sendFile(path.join(__dirname, "public/pages/user/about-us.html")));
 app.get("/profile", (req, res) => res.sendFile(path.join(__dirname, "public/pages/user/profile.html")));
