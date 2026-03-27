@@ -5,107 +5,112 @@ import path from "path";
 import { fileURLToPath } from "url";
 import db from "./src/config/db.js";
 import studentRoutes from "./src/routes/studentRoutes.js";
+import corsMiddleware from "./middleware/corsMiddleware.js";
+import jsonMiddleware from "./middleware/jsonMiddleware.js";
 
 dotenv.config();
 
 const app = express();
-app.use(cors());
-app.use(express.json());
 
-// ✅ Fix __dirname (ES Modules)
+// ======================
+// MIDDLEWARE
+// ======================
+
+app.use(corsMiddleware);
+app.use(jsonMiddleware);
+
+
+// Fix __dirname (ESM)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ✅ ONLY allow assets (IMPORTANT)
+// ======================
+// STATIC FILES (SAFE ONLY)
+// ======================
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 app.use("/css", express.static(path.join(__dirname, "public/css")));
 app.use("/js", express.static(path.join(__dirname, "public/js")));
 
-// 🚨 BLOCK direct access to /pages (THIS IS THE FIX)
-app.use("/pages", (req, res) => {
+// ======================
+// 🚨 BLOCK OLD /pages ACCESS
+// ======================
+app.get("/pages/*", (req, res) => {
   return res.redirect(301, "/");
 });
 
-// ✅ API routes
+// ======================
+// API ROUTES
+// ======================
 app.use("/api/students", studentRoutes);
 
-// ✅ CLEAN ROUTES
-app.get("/", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/index.html"))
-);
+// ======================
+// PAGE ROUTES (CLEAN URLS)
+// ======================
+const sendPage = (res, filePath) => {
+  res.sendFile(path.join(__dirname, "public", filePath));
+};
+
+app.get("/", (req, res) => sendPage(res, "index.html"));
 
 app.get("/courses", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/user/courses.html"))
+  sendPage(res, "pages/user/courses.html")
 );
 
 app.get("/enrollment", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/user/enrollment.html"))
+  sendPage(res, "pages/user/enrollment.html")
 );
 
 app.get("/about-us", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/user/about-us.html"))
+  sendPage(res, "pages/user/about-us.html")
 );
 
 app.get("/profile", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/user/profile.html"))
+  sendPage(res, "pages/user/profile.html")
 );
 
 app.get("/notifications", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/user/notifications.html"))
+  sendPage(res, "pages/user/notifications.html")
 );
 
 app.get("/login", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/auth/login.html"))
+  sendPage(res, "pages/auth/login.html")
 );
 
 app.get("/dashboard", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/admin/dashboard.html"))
+  sendPage(res, "pages/admin/dashboard.html")
 );
 
 app.get("/registrardashboard", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/registrar/registrardashboard.html"))
+  sendPage(res, "pages/registrar/registrardashboard.html")
 );
 
 app.get("/adminlogin", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/auth/adminlogin.html"))
+  sendPage(res, "pages/auth/adminlogin.html")
 );
 
+// ======================
 // 🔁 REDIRECT .html → CLEAN URLS
-app.get([
-  "/index.html",
-  "/courses.html",
-  "/enrollment.html",
-  "/about-us.html",
-  "/profile.html",
-  "/notifications.html",
-  "/login.html",
-  "/dashboard.html",
-  "/registrardashboard.html",
-  "/adminlogin.html"
-], (req, res) => {
-  const cleanMap = {
-    "index.html": "/",
-    "courses.html": "/courses",
-    "enrollment.html": "/enrollment",
-    "about-us.html": "/about-us",
-    "profile.html": "/profile",
-    "notifications.html": "/notifications",
-    "login.html": "/login",
-    "dashboard.html": "/dashboard",
-    "registrardashboard.html": "/registrardashboard",
-    "adminlogin.html": "/adminlogin"
-  };
+// ======================
+const cleanRoutes = {
+  "/index.html": "/",
+  "/courses.html": "/courses",
+  "/enrollment.html": "/enrollment",
+  "/about-us.html": "/about-us",
+  "/profile.html": "/profile",
+  "/notifications.html": "/notifications",
+  "/login.html": "/login",
+  "/dashboard.html": "/dashboard",
+  "/registrardashboard.html": "/registrardashboard",
+  "/adminlogin.html": "/adminlogin",
+};
 
-  const cleanPath = cleanMap[req.path.substring(1)];
-
-  if (cleanPath) {
-    return res.redirect(301, cleanPath);
-  }
-
-  res.status(404).send("Not Found");
+app.get(Object.keys(cleanRoutes), (req, res) => {
+  return res.redirect(301, cleanRoutes[req.path]);
 });
 
-// ✅ TEST DB
+// ======================
+// TEST DB
+// ======================
 app.get("/test-db", async (req, res) => {
   try {
     const [rows] = await db.query("SELECT 1");
@@ -115,8 +120,18 @@ app.get("/test-db", async (req, res) => {
   }
 });
 
-// ✅ START SERVER
+// ======================
+// 404 HANDLER (IMPORTANT)
+// ======================
+app.use((req, res) => {
+  res.status(404).send("Page not found");
+});
+
+// ======================
+// START SERVER
+// ======================
 const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
-  console.log("Server running on port " + PORT);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
