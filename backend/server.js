@@ -1,10 +1,15 @@
+// ======================
+// SERVER.JS
+// ======================
+
 import express from "express";
-import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import db from "./src/config/db.js";
 import studentRoutes from "./src/routes/studentRoutes.js";
+
+// Custom middleware
 import corsMiddleware from "./middleware/corsMiddleware.js";
 import jsonMiddleware from "./middleware/jsonMiddleware.js";
 
@@ -15,28 +20,19 @@ const app = express();
 // ======================
 // MIDDLEWARE
 // ======================
-
 app.use(corsMiddleware);
 app.use(jsonMiddleware);
 
-
-// Fix __dirname (ESM)
+// Fix __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ======================
-// STATIC FILES (SAFE ONLY)
+// STATIC FILES
 // ======================
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 app.use("/css", express.static(path.join(__dirname, "public/css")));
 app.use("/js", express.static(path.join(__dirname, "public/js")));
-
-// ======================
-// 🚨 BLOCK OLD /pages ACCESS
-// ======================
-app.get("/pages/*", (req, res) => {
-  return res.redirect(301, "/");
-});
 
 // ======================
 // API ROUTES
@@ -44,72 +40,91 @@ app.get("/pages/*", (req, res) => {
 app.use("/api/students", studentRoutes);
 
 // ======================
-// PAGE ROUTES (CLEAN URLS)
+// CLEAN ROUTES
 // ======================
-const sendPage = (res, filePath) => {
-  res.sendFile(path.join(__dirname, "public", filePath));
-};
-
-app.get("/", (req, res) => sendPage(res, "index.html"));
+app.get("/", (req, res) =>
+  res.sendFile(path.join(__dirname, "public/index.html"))
+);
 
 app.get("/courses", (req, res) =>
-  sendPage(res, "pages/user/courses.html")
+  res.sendFile(path.join(__dirname, "public/pages/user/courses.html"))
 );
 
 app.get("/enrollment", (req, res) =>
-  sendPage(res, "pages/user/enrollment.html")
+  res.sendFile(path.join(__dirname, "public/pages/user/enrollment.html"))
 );
 
 app.get("/about-us", (req, res) =>
-  sendPage(res, "pages/user/about-us.html")
+  res.sendFile(path.join(__dirname, "public/pages/user/about-us.html"))
 );
 
 app.get("/profile", (req, res) =>
-  sendPage(res, "pages/user/profile.html")
+  res.sendFile(path.join(__dirname, "public/pages/user/profile.html"))
 );
 
 app.get("/notifications", (req, res) =>
-  sendPage(res, "pages/user/notifications.html")
+  res.sendFile(path.join(__dirname, "public/pages/user/notifications.html"))
 );
 
 app.get("/login", (req, res) =>
-  sendPage(res, "pages/auth/login.html")
+  res.sendFile(path.join(__dirname, "public/pages/auth/login.html"))
 );
 
 app.get("/dashboard", (req, res) =>
-  sendPage(res, "pages/admin/dashboard.html")
+  res.sendFile(path.join(__dirname, "public/pages/admin/dashboard.html"))
 );
 
 app.get("/registrardashboard", (req, res) =>
-  sendPage(res, "pages/registrar/registrardashboard.html")
+  res.sendFile(path.join(__dirname, "public/pages/registrar/registrardashboard.html"))
 );
 
 app.get("/adminlogin", (req, res) =>
-  sendPage(res, "pages/auth/adminlogin.html")
+  res.sendFile(path.join(__dirname, "public/pages/auth/adminlogin.html"))
 );
 
 // ======================
-// 🔁 REDIRECT .html → CLEAN URLS
+// BLOCK DIRECT /PAGES ACCESS
 // ======================
-const cleanRoutes = {
-  "/index.html": "/",
-  "/courses.html": "/courses",
-  "/enrollment.html": "/enrollment",
-  "/about-us.html": "/about-us",
-  "/profile.html": "/profile",
-  "/notifications.html": "/notifications",
-  "/login.html": "/login",
-  "/dashboard.html": "/dashboard",
-  "/registrardashboard.html": "/registrardashboard",
-  "/adminlogin.html": "/adminlogin",
-};
-
-app.get(Object.keys(cleanRoutes), (req, res) => {
-  return res.redirect(301, cleanRoutes[req.path]);
+app.use("/pages", (req, res) => {
+  return res.redirect(301, "/");
 });
 
 // ======================
-// TEST DB
+// REDIRECT LEGACY .HTML TO CLEAN ROUTES
+// ======================
+app.get([
+  "/index.html",
+  "/courses.html",
+  "/enrollment.html",
+  "/about-us.html",
+  "/profile.html",
+  "/notifications.html",
+  "/login.html",
+  "/dashboard.html",
+  "/registrardashboard.html",
+  "/adminlogin.html"
+], (req, res) => {
+  const cleanMap = {
+    "index.html": "/",
+    "courses.html": "/courses",
+    "enrollment.html": "/enrollment",
+    "about-us.html": "/about-us",
+    "profile.html": "/profile",
+    "notifications.html": "/notifications",
+    "login.html": "/login",
+    "dashboard.html": "/dashboard",
+    "registrardashboard.html": "/registrardashboard",
+    "adminlogin.html": "/adminlogin"
+  };
+
+  const cleanPath = cleanMap[req.path.substring(1)];
+  if (cleanPath) return res.redirect(301, cleanPath);
+
+  res.status(404).send("Page not found");
+});
+
+// ======================
+// TEST DB CONNECTION
 // ======================
 app.get("/test-db", async (req, res) => {
   try {
@@ -121,7 +136,7 @@ app.get("/test-db", async (req, res) => {
 });
 
 // ======================
-// 404 HANDLER (IMPORTANT)
+// 404 HANDLER
 // ======================
 app.use((req, res) => {
   res.status(404).send("Page not found");
@@ -131,7 +146,6 @@ app.use((req, res) => {
 // START SERVER
 // ======================
 const PORT = process.env.PORT || 3000;
-
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
