@@ -52,34 +52,33 @@ app.get("/login", (req, res) => res.sendFile(path.join(__dirname, "public/pages/
 app.get("/dashboard", (req, res) => res.sendFile(path.join(__dirname, "public/pages/admin/dashboard.html")));
 app.get("/registrardashboard", (req, res) => res.sendFile(path.join(__dirname, "public/pages/registrar/registrardashboard.html")));
 app.get("/adminlogin", (req, res) => res.sendFile(path.join(__dirname, "public/pages/auth/adminlogin.html")));
-app.get("/enrollment-form", (req, res) => res.sendFile(path.join(__dirname, "public/pages/auth/enrollment-form.html")));
-app.get("/signup", (req, res) => res.sendFile(path.join(__dirname, "public/pages/auth/signup.html")));
-app.get("/adminsignup", (req, res) => res.sendFile(path.join(__dirname, "public/pages/auth/adminsignup.html")));
-app.get("/registrarsignup", (req, res) => res.sendFile(path.join(__dirname, "public/pages/auth/registrarsignup.html")));
 
-// ======================
-// LEGACY HTML REDIRECTS
-// ======================
-const cleanMap = {
-  "index.html": "/",
-  "courses.html": "/courses",
-  "enrollment.html": "/enrollment",
-  "about-us.html": "/about-us",
-  "profile.html": "/profile",
-  "notifications.html": "/notifications",
-  "login.html": "/login",
-  "dashboard.html": "/dashboard",
-  "registrardashboard.html": "/registrardashboard",
-  "adminlogin.html": "/adminlogin",
-  "enrollment-form.html": "/enrollment-form",
-  "signup.html": "/signup",
-  "adminsignup.html": "/adminsignup",
-  "registrarsignup.html": "/registrarsignup"
-};
-
-app.get(Object.keys(cleanMap).map(file => `/${file}`), (req, res) => {
-  const fileName = req.path.substring(1); // Remove leading /
-  const cleanPath = cleanMap[fileName];
+// ✅ Redirect legacy URLs to clean URLs
+app.get([
+  "/index.html",
+  "/courses.html",
+  "/enrollment.html",
+  "/about-us.html",
+  "/profile.html",
+  "/notifications.html",
+  "/login.html",
+  "/dashboard.html",
+  "/registrardashboard.html",
+  "/adminlogin.html"
+], (req, res) => {
+  const cleanMap = {
+    "index.html": "/",
+    "courses.html": "/courses",
+    "enrollment.html": "/enrollment",
+    "about-us.html": "/about-us",
+    "profile.html": "/profile",
+    "notifications.html": "/notifications",
+    "login.html": "/login",
+    "dashboard.html": "/dashboard",
+    "registrardashboard.html": "/registrardashboard",
+    "adminlogin.html": "/adminlogin"
+  };
+  const cleanPath = cleanMap[req.path.substring(1)];
   if (cleanPath) {
     return res.redirect(301, cleanPath);
   }
