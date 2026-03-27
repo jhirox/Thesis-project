@@ -1,7 +1,8 @@
-function navigateToEnrollment() {
-    window.location.href = '/enrollment';
+// button.js
+function navigateToCourses() {
+    window.location.href = "/courses"; // ✅ Clean route
 }
 
-function navigateToCourses() {
-    window.location.href = '/public/pages/user/courses.html';
+function navigateToEnrollment() {
+    window.location.href = "/enrollment"; // ✅ Clean route
 }
