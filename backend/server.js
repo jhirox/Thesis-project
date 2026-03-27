@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import bcrypt from "bcrypt";
 import path from "path";
 import { fileURLToPath } from "url";
 import db from "./src/config/db.js";
@@ -12,73 +13,34 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// ✅ Fix __dirname (ES Modules)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ✅ Serve static files (CSS, JS, images)
+// ✅ Serve static assets ONLY (CSS, JS, images)
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 app.use("/css", express.static(path.join(__dirname, "public/css")));
 app.use("/js", express.static(path.join(__dirname, "public/js")));
 
-// ✅ Serve root public files ONLY (clean)
-app.use(express.static(path.join(__dirname, "public"), {
-  extensions: ["html"]
-}));
+// ✅ Serve root public files (index.html, etc.)
+app.use(express.static(path.join(__dirname, "public")));
 
-// ❌ BLOCK direct access to /pages folder
-app.use("/pages", (req, res) => {
-  return res.redirect(301, "/");
-});
+// ✅ Database connection
+//
 
-// ✅ API routes
-app.use("/api/students", studentRoutes);
+// ✅ Routes for pages (clean URLs)
+app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public/index.html")));
+app.get("/course", (req, res) => res.sendFile(path.join(__dirname, "public/pages/user/course.html")));
+app.get("/enrollment", (req, res) => res.sendFile(path.join(__dirname, "public/pages/user/enrollment.html")));
+app.get("/about-us", (req, res) => res.sendFile(path.join(__dirname, "public/pages/user/about-us.html")));
+app.get("/profile", (req, res) => res.sendFile(path.join(__dirname, "public/pages/user/profile.html")));
+app.get("/notifications", (req, res) => res.sendFile(path.join(__dirname, "public/pages/user/notifications.html")));
+app.get("/login", (req, res) => res.sendFile(path.join(__dirname, "public/pages/auth/login.html")));
+app.get("/dashboard", (req, res) => res.sendFile(path.join(__dirname, "public/pages/admin/dashboard.html")));
+app.get("/registrardashboard", (req, res) => res.sendFile(path.join(__dirname, "public/pages/registrar/registrardashboard.html")));
+app.get("/adminlogin", (req, res) => res.sendFile(path.join(__dirname, "public/pages/auth/adminlogin.html")));
 
-// ✅ CLEAN ROUTES
-app.get("/", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/index.html"))
-);
-
-app.get("/courses", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/user/courses.html"))
-);
-
-app.get("/enrollment", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/user/enrollment.html"))
-);
-
-app.get("/about-us", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/user/about-us.html"))
-);
-
-app.get("/profile", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/user/profile.html"))
-);
-
-app.get("/notifications", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/user/notifications.html"))
-);
-
-app.get("/login", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/auth/login.html"))
-);
-
-app.get("/dashboard", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/admin/dashboard.html"))
-);
-
-app.get("/registrardashboard", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/registrar/registrardashboard.html"))
-);
-
-app.get("/adminlogin", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/auth/adminlogin.html"))
-);
-
-app.get("/signup", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/auth/signup.html"))
-);
-
-// 🔁 REDIRECT .html → CLEAN URLS
+// ✅ Redirect legacy URLs to clean URLs
 app.get([
   "/index.html",
   "/courses.html",
@@ -89,8 +51,7 @@ app.get([
   "/login.html",
   "/dashboard.html",
   "/registrardashboard.html",
-  "/adminlogin.html",
-  "/signup.html"
+  "/adminlogin.html"
 ], (req, res) => {
   const cleanMap = {
     "index.html": "/",
@@ -102,19 +63,16 @@ app.get([
     "login.html": "/login",
     "dashboard.html": "/dashboard",
     "registrardashboard.html": "/registrardashboard",
-    "adminlogin.html": "/adminlogin",
-    "signup.html": "/signup"
+    "adminlogin.html": "/adminlogin"
   };
-
   const cleanPath = cleanMap[req.path.substring(1)];
   if (cleanPath) {
     return res.redirect(301, cleanPath);
   }
-
   res.status(404).send("Not Found");
 });
 
-// ✅ TEST DB
+// ✅ Test DB
 app.get("/test-db", async (req, res) => {
   try {
     const [rows] = await db.query("SELECT 1");
@@ -124,7 +82,7 @@ app.get("/test-db", async (req, res) => {
   }
 });
 
-// ✅ START SERVER
+// ✅ Railway / local port
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Server running on port " + PORT);
