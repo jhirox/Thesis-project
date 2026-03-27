@@ -19,6 +19,7 @@
       referrerpolicy="no-referrer"
     />
     <link rel="stylesheet" href="/css/style.css" />
+    <script src="/js/auth.js"></script>
   </head>
   <body class="page-shell page-home">
     <!-- SKELETON LOADING SCREEN -->
@@ -693,12 +694,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const currentPath = window.location.pathname;
     const isHomePage = currentPath === '/' || currentPath === '/index.html';
 
-    if (isHomePage && !hasValidSession && !guestMode) {
-      // Show login page instead of home
-      window.location.href = '/login';
-      return;
-    }
-
   } catch (error) {
     console.log("Storage error:", error);
   }
@@ -714,7 +709,6 @@ function logout() {
 
   window.location.href = '/login';
 }
-    </script>
 </script>
   </body>
 </html>

@@ -9,10 +9,6 @@ import { fileURLToPath } from "url";
 import db from "./src/config/db.js";
 import studentRoutes from "./src/routes/studentRoutes.js";
 
-// Custom middleware
-import corsMiddleware from "./middleware/corsMiddleware.js";
-import jsonMiddleware from "./middleware/jsonMiddleware.js";
-
 dotenv.config();
 
 const app = express();
