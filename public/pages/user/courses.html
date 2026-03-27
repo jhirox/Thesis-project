@@ -575,11 +575,14 @@
         try {
           const skeleton = document.getElementById('skeleton-screen');
           if (skeleton) {
+            // Immediately push skeleton behind content so it cannot block clicks or visibility
+            skeleton.style.zIndex = '-1';
+            skeleton.style.pointerEvents = 'none';
             skeleton.style.opacity = '0';
             skeleton.style.transition = 'opacity 0.3s ease';
             setTimeout(function() {
-              if (skeleton) {
-                skeleton.style.display = 'none';
+              if (skeleton && skeleton.parentNode) {
+                skeleton.parentNode.removeChild(skeleton);
               }
             }, 300);
           }
@@ -587,6 +590,8 @@
           // Fallback: force hide skeleton
           const skeleton = document.getElementById('skeleton-screen');
           if (skeleton) {
+            skeleton.style.zIndex = '-1';
+            skeleton.style.pointerEvents = 'none';
             skeleton.style.display = 'none';
           }
         }
@@ -597,8 +602,8 @@
         setTimeout(hideSkeleton, 800); // Show skeleton for 800ms
       });
 
-      // Fallback: hide skeleton after 5 seconds regardless
-      setTimeout(hideSkeleton, 5000);
+      // Fallback: hide skeleton after 2 seconds regardless
+      setTimeout(hideSkeleton, 2000);
     </script>
 
     <script>
