@@ -568,9 +568,33 @@
       crossorigin="anonymous"
     ></script>
 
+    <!-- Add this script BEFORE the skeleton hiding script -->
+<script>
+  // Check authentication before page loads
+  const authUser = JSON.parse(localStorage.getItem('sessionUser'));
+  const curTimeout = localStorage.getItem('sessionTimeout');
+  const guestMode = localStorage.getItem('guestMode');
+
+  // If not authenticated and not in guest mode, redirect to login
+  if (!authUser && !guestMode) {
+    window.location.href = '/login';
+  }
+
+  // If session expired, redirect to login
+  if (authUser && curTimeout && Date.now() > Number(curTimeout)) {
+    localStorage.removeItem('sessionUser');
+    localStorage.removeItem('sessionTimeout');
+    window.location.href = '/login';
+  }
+</script>
+
+    <!-- SKELETON LOADING SCREEN -->
+    <div id="skeleton-screen" class="skeleton-screen">
+      <!-- ...existing skeleton code... -->
+    </div>
+
     <!-- SKELETON HIDE SCRIPT -->
     <script>
-      // Safely hide skeleton screen with fallbacks for cross-browser compatibility
       function hideSkeleton() {
         try {
           const skeleton = document.getElementById('skeleton-screen');
@@ -584,7 +608,6 @@
             }, 300);
           }
         } catch (error) {
-          // Fallback: force hide skeleton
           const skeleton = document.getElementById('skeleton-screen');
           if (skeleton) {
             skeleton.style.display = 'none';
@@ -592,12 +615,10 @@
         }
       }
 
-      // Hide skeleton on DOMContentLoaded
       document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(hideSkeleton, 800); // Show skeleton for 800ms
+        setTimeout(hideSkeleton, 800);
       });
 
-      // Fallback: hide skeleton after 5 seconds regardless
       setTimeout(hideSkeleton, 5000);
     </script>
 

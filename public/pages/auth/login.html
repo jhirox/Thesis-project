@@ -172,11 +172,11 @@
                             IsRemember: rememberCbx.checked
                         };
 
-                        if (authUser != null) {
+                                                if (authUser != null) {
                             localStorage.setItem("sessionUser", JSON.stringify(sessionUser));
                             localStorage.setItem("sessionTimeout", Date.now() + timeout);
                             setTimeout(() => {
-                                window.location.href = "/";
+                                window.location.href = "/";  // Change this to your home route
                             }, 2000);
                         } else {
                             showError('Error storing session data.');
