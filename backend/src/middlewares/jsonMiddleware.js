@@ -1,8 +1,5 @@
-import cors from "cors";
+import express from "express";
 
-const corsMiddleware = cors({
-  origin: "*", // or restrict to your frontend domain
-  methods: ["GET", "POST", "PUT", "DELETE"],
-});
+const jsonMiddleware = express.json();
 
-export default corsMiddleware;
+export default jsonMiddleware;

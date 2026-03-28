@@ -31,7 +31,7 @@ app.use(jsonMiddleware);   // ✅ ENABLE JSON BODY PARSING
 // ======================
 // STATIC FILES
 // ======================
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "../public")));
 
 // ======================
 // API ROUTES
