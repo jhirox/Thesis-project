@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const currentPath = window.location.pathname;
 
     // ✅ ONLY protected pages
-    const restrictedPages = ['/profile', '/enrollment', '/notifications'];
+    const restrictedPages = ['/', '/profile', '/enrollment', '/notifications'];
 
     if (restrictedPages.includes(currentPath) && !hasValidSession && !guestMode) {
       window.location.href = '/login';
