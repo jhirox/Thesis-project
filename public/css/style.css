@@ -1585,3 +1585,189 @@ span .icon:hover {
 .skeleton-office-card { width: 100%; height: 250px; border-radius: 8px; }
 .skeleton-contact-tile { width: 100%; height: 180px; border-radius: 8px; }
 
+/* Dashboard skeleton */
+.skeleton-dashboard-card,
+.skeleton-dashboard-panel {
+  background-color: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+}
+
+.skeleton-dashboard-card {
+  min-height: 136px;
+  padding: 1rem;
+  border-left: 4px solid rgba(255, 255, 255, 0.25);
+}
+
+.skeleton-dashboard-panel {
+  padding: 1rem;
+}
+
+.skeleton-dashboard-chart {
+  min-height: 322px;
+}
+
+.skeleton-label {
+  width: 62%;
+  height: 16px;
+  border-radius: 999px;
+}
+
+.skeleton-stat-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+}
+
+.skeleton-stat-value {
+  width: 42%;
+  height: 34px;
+  border-radius: 10px;
+}
+
+.skeleton-stat-meta {
+  width: 78%;
+  height: 14px;
+  border-radius: 999px;
+}
+
+.skeleton-panel-title {
+  width: 190px;
+  max-width: 70%;
+  height: 18px;
+  border-radius: 999px;
+}
+
+.skeleton-chart-bars,
+.skeleton-chart-donut {
+  width: 100%;
+  height: 250px;
+  border-radius: 12px;
+  opacity: 0.9;
+}
+
+.skeleton-chart-bars {
+  background:
+    linear-gradient(to top, rgba(255, 255, 255, 0.1) 1px, transparent 1px) 0 100% / 100% 25%,
+    linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+  background-size: 100% 25%, 200% 100%;
+  animation: loading 1.5s infinite;
+  position: relative;
+}
+
+.skeleton-chart-donut {
+  width: 250px;
+  max-width: 100%;
+  margin: 0 auto;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 36%, rgba(255, 255, 255, 0.18) 37%, rgba(255, 255, 255, 0.18) 57%, transparent 58%),
+    linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+  background-size: auto, 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+.skeleton-dashboard-application-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 10px;
+  padding: 1rem;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.skeleton-application-name {
+  width: 150px;
+  max-width: 100%;
+  height: 18px;
+  border-radius: 999px;
+}
+
+.skeleton-application-id {
+  width: 90px;
+  height: 12px;
+  border-radius: 999px;
+}
+
+.skeleton-application-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.skeleton-status-pill {
+  width: 84px;
+  height: 28px;
+  border-radius: 999px;
+}
+
+.skeleton-timestamp {
+  width: 72px;
+  height: 12px;
+  border-radius: 999px;
+}
+
+.skeleton-dashboard-button {
+  width: 180px;
+  height: 38px;
+  border-radius: 8px;
+}
+
+.skeleton-dashboard-action {
+  width: 260px;
+  max-width: 100%;
+  height: 38px;
+  border-radius: 8px;
+}
+
+@media (max-width: 991px) {
+  .skeleton-dashboard-chart {
+    min-height: 298px;
+  }
+}
+
+@media (max-width: 767px) {
+  .app-content > #skeleton-screen {
+    padding-top: 0.5rem;
+  }
+
+  .skeleton-dashboard-card,
+  .skeleton-dashboard-panel {
+    border-radius: 10px;
+  }
+
+  .skeleton-dashboard-card {
+    min-height: 122px;
+  }
+
+  .skeleton-dashboard-chart {
+    min-height: 260px;
+  }
+
+  .skeleton-chart-bars,
+  .skeleton-chart-donut {
+    height: 190px;
+  }
+
+  .skeleton-chart-donut {
+    width: 190px;
+  }
+
+  .skeleton-dashboard-application-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .skeleton-application-meta {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .skeleton-dashboard-action {
+    width: 100%;
+  }
+}
+
