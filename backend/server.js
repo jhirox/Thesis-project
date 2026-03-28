@@ -19,19 +19,22 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// ✅ DEFINE PUBLIC PATH (IMPORTANT)
+const publicPath = path.join(__dirname, "../public");
+
 // ======================
 // MIDDLEWARE
 // ======================
 import corsMiddleware from "./src/middlewares/corsMiddleware.js";
 import jsonMiddleware from "./src/middlewares/jsonMiddleware.js";
 
-app.use(corsMiddleware);   // ✅ ENABLE CORS
-app.use(jsonMiddleware);   // ✅ ENABLE JSON BODY PARSING
+app.use(corsMiddleware);
+app.use(jsonMiddleware);
 
 // ======================
 // STATIC FILES
 // ======================
-app.use(express.static(path.join(__dirname, "../public")));
+app.use(express.static(publicPath));
 
 // ======================
 // API ROUTES
@@ -42,43 +45,43 @@ app.use("/api/students", studentRoutes);
 // CLEAN URL ROUTES
 // ======================
 app.get("/", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/index.html"))
+  res.sendFile(path.join(publicPath, "index.html"))
 );
 
 app.get("/courses", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/user/courses.html"))
+  res.sendFile(path.join(publicPath, "pages/user/courses.html"))
 );
 
 app.get("/enrollment", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/user/enrollment.html"))
+  res.sendFile(path.join(publicPath, "pages/user/enrollment.html"))
 );
 
 app.get("/about-us", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/user/about-us.html"))
+  res.sendFile(path.join(publicPath, "pages/user/about-us.html"))
 );
 
 app.get("/profile", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/user/profile.html"))
+  res.sendFile(path.join(publicPath, "pages/user/profile.html"))
 );
 
 app.get("/notifications", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/user/notifications.html"))
+  res.sendFile(path.join(publicPath, "pages/user/notifications.html"))
 );
 
 app.get("/login", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/auth/login.html"))
+  res.sendFile(path.join(publicPath, "pages/auth/login.html"))
 );
 
 app.get("/dashboard", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/admin/dashboard.html"))
+  res.sendFile(path.join(publicPath, "pages/admin/dashboard.html"))
 );
 
 app.get("/registrardashboard", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/registrar/registrardashboard.html"))
+  res.sendFile(path.join(publicPath, "pages/registrar/registrardashboard.html"))
 );
 
 app.get("/adminlogin", (req, res) =>
-  res.sendFile(path.join(__dirname, "public/pages/auth/adminlogin.html"))
+  res.sendFile(path.join(publicPath, "pages/auth/adminlogin.html"))
 );
 
 // ======================

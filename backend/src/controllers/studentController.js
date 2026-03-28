@@ -1,61 +1,64 @@
-const db = require("../config/db");
+// backend/controllers/studentController.js
+import db from "../config/db.js"; // ES module import
 
-// get all students
-const getStudents = async (req, res) => {
-    try {
-        const data = await db.query(' SELECT * FROM students');
-        if(!data){
-            return res.status(404).send({
-                success: false,
-                message: 'No students found'
-            });
-        }
-        res.status(200).send({
-            success: true,
-            message: 'Students retrieved successfully',
-            totalStudents: data[0].length, 
-            data: data[0],
-        });
-    } catch (error) {
-        console.log(error);
-        res.status(500).send({
-            success: false,
-            message: "Error in getting students",
-            error
-        });
+// GET all students
+export const getStudents = async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT * FROM students");
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No students found",
+      });
     }
+    res.status(200).json({
+      success: true,
+      message: "Students retrieved successfully",
+      totalStudents: rows.length,
+      data: rows,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Error in getting students",
+      error: error.message,
+    });
+  }
 };
 
-//GET STUDENT ID
-const getStudentByID = async (req, res) => {
-    try {
-        const studentId = req.params.id;
-        if(!studentId){
-            return res.status(404).send({
-                success: false,
-                message: 'Student ID is required'
-            });
-        }
-     const data = await db.query('SELECT * FROM students WHERE id = ?', [studentId])
-        if(data){
-            return res.status(404).send({
-                success: false,
-                message: 'Student retrieved successfully',
-            });
-        }
-        res.status(200).send({
-            success: true,
-            studentDetails: data[0],
-        });
-    } catch (error) {
-        console.log(error)
-        res.status(500).send({
-            success: false,
-            message: "Error in getting student by id",
-            error
-        });
+// GET student by ID
+export const getStudentByID = async (req, res) => {
+  try {
+    const studentId = req.params.id;
+    if (!studentId) {
+      return res.status(400).json({
+        success: false,
+        message: "Student ID is required",
+      });
     }
+
+    const [rows] = await db.query("SELECT * FROM students WHERE id = ?", [
+      studentId,
+    ]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Student not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      studentDetails: rows[0],
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Error in getting student by ID",
+      error: error.message,
+    });
+  }
 };
-
-
-module.exports = { getStudents , getStudentByID };
