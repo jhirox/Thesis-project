@@ -14,7 +14,6 @@
 
     <link rel="stylesheet" href="/css/style.css">
     <link rel="icon" href="/assets/images/logo.png" />
-
 </head>
 
 <body class="page-credentials">
@@ -111,7 +110,7 @@
         crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <!-- Function to set guest mode (moved outside module for global access) -->
+    <!-- Guest mode function -->
     <script>
         function setGuestMode() {
             localStorage.setItem('guestMode', 'true');
@@ -119,85 +118,44 @@
         }
     </script>
 
-    <script type="module">
-        import { user_data } from "/data/user.js";
-        import { validateFields, validate } from "/js/utils/validators.js";
-        import { loginPatterns } from "/js/utils/patterns.js";
+<script type="module">
+    import { user_data } from "/data/user.js";
+    import { validateFields, validate } from "/js/utils/validators.js";
+    import { loginPatterns } from "/js/utils/patterns.js";
 
-        const authUser = JSON.parse(localStorage.getItem('sessionUser'));
-        const curTimeout = localStorage.getItem('sessionTimeout');
+    const form = document.querySelector("#login-form");
+    const rememberCbx = document.querySelector("#remember");
+    const timeout = 30 * 60 * 1000;
 
-        if (authUser && authUser != null && curTimeout && Date.now() < Number(curTimeout)) {
-            window.location.href = "/profile.html";
+    // Redirect if session exists
+    const authUser = JSON.parse(localStorage.getItem('sessionUser'));
+    const curTimeout = localStorage.getItem('sessionTimeout');
+    if (authUser && curTimeout && Date.now() < Number(curTimeout)) {
+        window.location.href = "/profile.html";
+    }
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.querySelector("#email").value;
+        const password = document.querySelector("#password").value;
+
+        const errors = validate(form, loginPatterns);
+        if (errors.length) {
+            Swal.fire({ icon: "error", title: "Error", html: errors.join('<br>') });
+            return;
         }
 
-        const timeout = 30 * 60 * 1000;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const form = document.querySelector("#login-form");
-            const rememberCbx = document.querySelector("#remember");
-
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-
-                const email = document.querySelector("#email");
-                const password = document.querySelector("#password");
-
-                const errors = validate(form, loginPatterns);
-                console.log(errors);
-
-                if (errors && errors.length > 0) {
-                    const errorMessage = errors.join('<br>');
-                    showError(errorMessage);
-                } else {
-                    let isAuthenticated = false;
-                    let authUser = null;
-                    user_data.forEach(user => {
-                        if (user.username === email.value && user.password === password.value) {
-                            isAuthenticated = true;
-                            authUser = user;
-                        }
-                    });
-
-                    if (isAuthenticated) {
-                        Swal.fire({
-                            title: "User Management System",
-                            text: "Logged in successfully!",
-                            icon: "success"
-                        });
-
-                        const sessionUser = {
-                            user: authUser,
-                            loginTime: new Date().toISOString(),
-                            IsRemember: rememberCbx.checked
-                        };
-
-                                                if (authUser != null) {
-                            localStorage.setItem("sessionUser", JSON.stringify(sessionUser));
-                            localStorage.setItem("sessionTimeout", Date.now() + timeout);
-                            setTimeout(() => {
-                                window.location.href = "/";  // Change this to your home route
-                            }, 2000);
-                        } else {
-                            showError('Error storing session data.');
-                        }
-                    } else {
-                        showError("Invalid email or password. Please try again.");
-                    }
-                }
-            });
-
-            const showError = (message) => {
-                Swal.fire({
-                    icon: "error",
-                    title: "User Management System",
-                    html: message,
-                });
-            };
-        });
-    </script>
-
-    <!-- <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script> -->
-
+        const authUser = user_data.find(u => u.username === email && u.password === password);
+        if (authUser) {
+            Swal.fire({ icon: "success", title: "Success", text: "Logged in successfully!" });
+            const sessionUser = { user: authUser, loginTime: new Date().toISOString(), IsRemember: rememberCbx.checked };
+            localStorage.setItem("sessionUser", JSON.stringify(sessionUser));
+            localStorage.setItem("sessionTimeout", Date.now() + timeout);
+            setTimeout(() => window.location.href = "/", 2000);
+        } else {
+            Swal.fire({ icon: "error", title: "Error", text: "Invalid email or password" });
+        }
+    });
+</script>
 </body>
 </html>
