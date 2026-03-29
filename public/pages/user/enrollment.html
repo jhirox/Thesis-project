@@ -253,14 +253,13 @@
                       class="btn btn-light btn-lg text-primary fw-semibold px-4 js-enroll-details"
                       >View Details</a
                     >
-                    <a href="/enrollment-form"
-                      ><button
-                        type="button"
-                        class="btn btn-outline-light btn-lg js-enroll-now"
-                      >
-                        Proceed to Enrollment Form
-                      </button></a
+                    <button
+                      type="button"
+                      class="btn btn-outline-light btn-lg js-enroll-now"
+                      onclick="handleEnrollmentClick()"
                     >
+                      Proceed to Enrollment Form
+                    </button>
                   </div>
                 </div>
                 <div class="col-lg-5 d-none d-lg-flex justify-content-center">
@@ -543,7 +542,7 @@
             </p>
           </div>
           <div class="modal-footer justify-content-center">
-            <a href="/login.html" class="btn btn-primary px-4">
+            <a href="/login" class="btn btn-primary px-4">
               <i class="bi bi-box-arrow-in-right me-2"></i>Go to Login
             </a>
             <button
@@ -596,6 +595,41 @@
       // Fallback: hide skeleton after 5 seconds regardless
       setTimeout(hideSkeleton, 5000);
     </script>
+
+    <!-- ENROLLMENT CHECK SCRIPT -->
+    <script>
+      function handleEnrollmentClick() {
+        try {
+          const sessionUser = localStorage.getItem('sessionUser');
+          const sessionTimeout = localStorage.getItem('sessionTimeout');
+          const now = Date.now();
+
+          let hasValidSession = false;
+
+          if (sessionUser && sessionTimeout) {
+            const timeout = parseInt(sessionTimeout, 10);
+            if (!isNaN(timeout)) {
+              hasValidSession = now < timeout;
+            }
+          }
+
+          if (!hasValidSession) {
+            // Show login required modal
+            const loginModal = new bootstrap.Modal(document.getElementById('loginRequiredModal'));
+            loginModal.show();
+          } else {
+            // User is logged in, redirect to enrollment form
+            window.location.href = '/enrollment-form';
+          }
+        } catch (error) {
+          console.log("Error checking session:", error);
+          // Fallback: show login modal
+          const loginModal = new bootstrap.Modal(document.getElementById('loginRequiredModal'));
+          loginModal.show();
+        }
+      }
+    </script>
+
     <script src="/js/auth.js"></script>
   </body>
 </html>
