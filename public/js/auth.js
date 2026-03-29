@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let hasValidSession = false;
 
-    if (sessionUser && sessionTimeout) {
+    if (sessionUser && sessionTimeout && !guestMode) {
       const timeout = parseInt(sessionTimeout, 10);
       if (!isNaN(timeout)) {
         hasValidSession = now < timeout;
@@ -21,17 +21,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const currentPath = window.location.pathname;
 
-    // ✅ ONLY protected pages
+    // ✅ STRICTLY protected pages - No guest mode allowed
     const restrictedPages = ['/profile', '/enrollment-form', '/notifications'];
 
     if (restrictedPages.includes(currentPath) && !hasValidSession) {
-      window.location.href = '/login';
+      // Use replace to prevent browser back button
+      window.location.replace('/login');
       return;
     }
 
     // For homepage, require login unless in guest mode
     if (currentPath === '/' && !hasValidSession && !guestMode) {
-      window.location.href = '/login';
+      window.location.replace('/login');
       return;
     }
 
@@ -50,5 +51,5 @@ function logout() {
     localStorage.removeItem('guestMode');
   } catch (error) {}
 
-  window.location.href = '/login';
+  window.location.replace('/login');
 }

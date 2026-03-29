@@ -19,8 +19,52 @@
       referrerpolicy="no-referrer"
     />
     <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      /* Hide profile body until authenticated */
+      #profile-body {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+      }
+      
+      #profile-body.authenticated {
+        opacity: 1;
+        visibility: visible;
+      }
+    </style>
   </head>
-  <body class="page-shell page-profile">
+  <body class="page-shell page-profile" id="profile-body">
+    <!-- IMMEDIATE AUTH CHECK - RUNS BEFORE PAGE RENDERS -->
+    <script>
+      (function() {
+        try {
+          const sessionUser = localStorage.getItem('sessionUser');
+          const sessionTimeout = localStorage.getItem('sessionTimeout');
+          const guestMode = localStorage.getItem('guestMode') === 'true';
+          const now = Date.now();
+
+          let hasValidSession = false;
+
+          // Check if user has a valid session
+          if (sessionUser && sessionTimeout && !guestMode) {
+            const timeout = parseInt(sessionTimeout, 10);
+            if (!isNaN(timeout)) {
+              hasValidSession = now < timeout;
+            }
+          }
+
+          // If no valid session, redirect to login immediately
+          if (!hasValidSession) {
+            // Prevent browser back button by replacing history
+            window.location.replace('/login');
+            return;
+          }
+        } catch (error) {
+          window.location.replace('/login');
+        }
+      })();
+    </script>
+
     <!-- SKELETON LOADING SCREEN -->
     <div id="skeleton-screen" class="skeleton-screen">
       <div class="container-fluid p-0 d-flex h-100">
@@ -590,18 +634,21 @@
       document.addEventListener('DOMContentLoaded', () => {
         const fullName = document.querySelector('#user-full-name');
         const signOutBtn = document.querySelector('#sign-out');
+        const profileBody = document.querySelector('#profile-body');
         const sessionUserStr = localStorage.getItem('sessionUser');
         const authUser = sessionUserStr ? JSON.parse(sessionUserStr) : null;
         const timeout = localStorage.getItem('sessionTimeout');
+        const guestMode = localStorage.getItem('guestMode') === 'true';
 
         const logout = () => {
           try {
             localStorage.removeItem('sessionUser');
             localStorage.removeItem('sessionTimeout');
+            localStorage.removeItem('guestMode');
           } catch (error) {
             // Ignored
           }
-          window.location.href = '/login';
+          window.location.replace('/login');
         };
 
         const isSessionValid = () => {
@@ -609,8 +656,14 @@
           return Date.now() < Number(timeout);
         };
 
+        // STRICT AUTH CHECK - Block if not authenticated or in guest mode
+        if (!authUser || !authUser.user || guestMode) {
+          logout();
+          return;
+        }
+
         const checkSession = () => {
-          if (!authUser || !authUser.user) {
+          if (!authUser || !authUser.user || guestMode) {
             logout();
             return;
           }
@@ -627,8 +680,12 @@
           }
         };
 
-        if (authUser && authUser.user) {
+        if (authUser && authUser.user && !guestMode) {
           fullName.textContent = authUser.user.fullname || '';
+          // Show page content once authenticated
+          if (profileBody) {
+            profileBody.classList.add('authenticated');
+          }
           checkSession();
         } else {
           logout();
