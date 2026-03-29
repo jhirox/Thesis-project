@@ -587,69 +587,66 @@
     
 
     <script type="module">
-        document.addEventListener('DOMContentLoaded', () => {
-            try {
-            const fullName = document.querySelector('#user-full-name');
-            const signOutBtn = document.querySelector('#sign-out');
-            const sessionUserStr = localStorage.getItem('sessionUser');
-            const authUser = sessionUserStr ? JSON.parse(sessionUserStr) : null;
-            const timeout = localStorage.getItem('sessionTimeout');
+      document.addEventListener('DOMContentLoaded', () => {
+        const fullName = document.querySelector('#user-full-name');
+        const signOutBtn = document.querySelector('#sign-out');
+        const sessionUserStr = localStorage.getItem('sessionUser');
+        const authUser = sessionUserStr ? JSON.parse(sessionUserStr) : null;
+        const timeout = localStorage.getItem('sessionTimeout');
 
-            const logout = () => {
-                try {
-                    localStorage.removeItem('sessionUser');
-                    localStorage.removeItem('sessionTimeout');
-                } catch (error) {
-                    // Ignore
-                }
-                window.location.href = "../auth/login.html";
-            }
+        const logout = () => {
+          try {
+            localStorage.removeItem('sessionUser');
+            localStorage.removeItem('sessionTimeout');
+          } catch (error) {
+            // Ignored
+          }
+          window.location.href = '../auth/login.html';
+        };
 
-            const isSessionValid = () => {
-                if(!timeout) return false;
-                if(Date.now() < Number(timeout)) {
-                    return true;
-                }
-            }
+        const isSessionValid = () => {
+          if (!timeout) return false;
+          return Date.now() < Number(timeout);
+        };
 
-            const checkSession = () => {
-                if(!authUser.isRemember && !isSessionValid()){
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: "Session Timeout!",
-                        footer: '<a href="/login">Please login to continue using our app</a>'
-                    });
-                    setTimeout(() => {
-                        logout();
-                    }, 5000);
-                }
-            }
+        const checkSession = () => {
+          if (!authUser || !authUser.user) {
+            logout();
+            return;
+          }
 
-            if(authUser && authUser.user) {
-                fullName.textContent = authUser.user.fullname;
-                checkSession();
-            } else {
-                    window.location.href = "../auth/login.html";
-
-            // signOutBtn.addEventListener('click', () => {
-            //     localStorage.removeItem('sessionUser');
-            //     window.location.href = "./login.html";
-            // });
-            
-            signOutBtn.addEventListener('click', () => {
-                logout();
+          if (!authUser.isRemember && !isSessionValid()) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Session Timeout!',
+              footer: '<a href="/login">Please login to continue using our app</a>'
             });
 
-            ['mousemove', 'keydown', 'click',].forEach(event => {
-                document.addEventListener(event, () => {
-                checkSession();
-            });
-            } catch (error) {
-                // If localStorage or JSON parsing fails, redirect to login
-                window.location.href = "../auth/login.html";
-            }
-    });
+            setTimeout(logout, 5000);
+          }
+        };
+
+        if (authUser && authUser.user) {
+          fullName.textContent = authUser.user.fullname || '';
+          checkSession();
+        } else {
+          logout();
+          return;
+        }
+
+        if (signOutBtn) {
+          signOutBtn.addEventListener('click', () => {
+            logout();
+          });
+        }
+
+        ['mousemove', 'keydown', 'click'].forEach((event) => {
+          document.addEventListener(event, () => {
+            checkSession();
+          });
+        });
+      });
     </script>
     <script src="/js/auth.js"></script>
   </body>
