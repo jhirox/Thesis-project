@@ -381,6 +381,10 @@ footer .row {
   color: var(--qeci-light);
 }
 
+.modal {
+  z-index: 1056;
+}
+
 
 .page-home .header,
 .page-course .header,
