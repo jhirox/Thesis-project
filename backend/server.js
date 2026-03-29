@@ -72,6 +72,10 @@ app.get("/login", (req, res) =>
   res.sendFile(path.join(publicPath, "pages/auth/login.html"))
 );
 
+app.get("/signup", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/auth/signup.html"))
+);
+
 app.get("/dashboard", (req, res) =>
   res.sendFile(path.join(publicPath, "pages/admin/dashboard.html"))
 );
@@ -168,6 +172,7 @@ app.get(
     "/profile.html",
     "/notifications.html",
     "/login.html",
+    "/signup.html",
     "/registrar.html",
     "/registrardashboard.html",
     "/application-evaluation.html",
@@ -192,6 +197,7 @@ app.get(
       "profile.html": "/profile",
       "notifications.html": "/notifications",
       "login.html": "/login",
+      "signup.html": "/signup",
       "dashboard.html": "/dashboard",
       "registrardashboard.html": "/registrar/dashboard",
       "registrar.html": "/registrar",
