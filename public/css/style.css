@@ -1780,3 +1780,11 @@ span .icon:hover {
   --bs-backdrop-opacity: 0.1;
   backdrop-filter: blur(4px);
 }
+
+.modal {
+  z-index: 10000;
+}
+
+.modal-backdrop {
+  z-index: 9999;
+}
