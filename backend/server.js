@@ -131,12 +131,12 @@ app.get("/rep-and-analytics", (req, res) =>
 );
 
 app.get("/enrollment-form", (req, res) =>
-  res.sendFile(path.join(publicPath, "pages/user/enrollment.html"))
+  res.sendFile(path.join(publicPath, "pages/auth/enrollment-form.html"))
 );
 
 // optional fallback if direct file access appears in some links
-app.get("/enrollment-form.html", (req, res) =>
-  res.sendFile(path.join(publicPath, "pages/user/enrollment.html"))
+app.get("/enrollment-form", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/auth/enrollment-form.html"))
 );
 
 // optional fallbacks for admin old .html
