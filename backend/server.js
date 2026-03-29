@@ -85,7 +85,12 @@ app.get("/adminlogin", (req, res) =>
 );
 
 app.get("/enrollment-form", (req, res) =>
-  res.sendFile(path.join(publicPath, "pages/user/enrollment-form.html"))
+  res.sendFile(path.join(publicPath, "pages/user/enrollment.html"))
+);
+
+// optional fallback if direct file access appears in some links
+app.get("/enrollment-form.html", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/user/enrollment.html"))
 );
 
 // ======================
