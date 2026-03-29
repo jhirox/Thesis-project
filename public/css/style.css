@@ -1776,6 +1776,6 @@ span .icon:hover {
 }
 
 /* Fix modal backdrop shadow blocking clicks */
-.modal-backdrop {
-  pointer-events: none;
+.modal-backdrop.show {
+  opacity: 0.2;
 }
