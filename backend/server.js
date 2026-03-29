@@ -84,6 +84,48 @@ app.get("/adminlogin", (req, res) =>
   res.sendFile(path.join(publicPath, "pages/auth/adminlogin.html"))
 );
 
+// Registrar clean routes
+app.get("/registrar", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/registrar/registrar.html"))
+);
+
+app.get("/registrar/application-evaluation", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/registrar/application-evaluation.html"))
+);
+
+app.get("/registrar/application-queue", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/registrar/application-queue.html"))
+);
+
+app.get("/registrar/notification", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/registrar/notification.html"))
+);
+
+app.get("/registrar/dashboard", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/registrar/registrardashboard.html"))
+);
+
+// Admin clean routes
+app.get("/accounts", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/admin/accounts.html"))
+);
+
+app.get("/application-evaluation", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/admin/application-evaluation.html"))
+);
+
+app.get("/application-queue", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/admin/application-queue.html"))
+);
+
+app.get("/notification", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/admin/notification.html"))
+);
+
+app.get("/rep-and-analytics", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/admin/rep-and-analytics.html"))
+);
+
 app.get("/enrollment-form", (req, res) =>
   res.sendFile(path.join(publicPath, "pages/user/enrollment.html"))
 );
@@ -91,6 +133,27 @@ app.get("/enrollment-form", (req, res) =>
 // optional fallback if direct file access appears in some links
 app.get("/enrollment-form.html", (req, res) =>
   res.sendFile(path.join(publicPath, "pages/user/enrollment.html"))
+);
+
+// optional fallbacks for admin old .html
+app.get("/accounts.html", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/admin/accounts.html"))
+);
+
+app.get("/application-evaluation.html", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/admin/application-evaluation.html"))
+);
+
+app.get("/application-queue.html", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/admin/application-queue.html"))
+);
+
+app.get("/notification.html", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/admin/notification.html"))
+);
+
+app.get("/rep-and-analytics.html", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/admin/rep-and-analytics.html"))
 );
 
 // ======================
@@ -105,9 +168,19 @@ app.get(
     "/profile.html",
     "/notifications.html",
     "/login.html",
+    "/registrar.html",
+    "/registrardashboard.html",
+    "/application-evaluation.html",
+    "/application-queue.html",
+    "/notification.html",
     "/dashboard.html",
     "/registrardashboard.html",
     "/adminlogin.html",
+    "/accounts.html",
+    "/application-evaluation.html",
+    "/application-queue.html",
+    "/notification.html",
+    "/rep-and-analytics.html",
     "/enrollment-form.html"
   ],
   (req, res) => {
@@ -120,8 +193,14 @@ app.get(
       "notifications.html": "/notifications",
       "login.html": "/login",
       "dashboard.html": "/dashboard",
-      "registrardashboard.html": "/registrardashboard",
+      "registrardashboard.html": "/registrar/dashboard",
+      "registrar.html": "/registrar",
       "adminlogin.html": "/adminlogin",
+      "accounts.html": "/accounts",
+      "application-evaluation.html": "/application-evaluation",
+      "application-queue.html": "/application-queue",
+      "notification.html": "/notification",
+      "rep-and-analytics.html": "/rep-and-analytics",
       "enrollment-form.html": "/enrollment-form"
     };
 
