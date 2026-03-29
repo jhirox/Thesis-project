@@ -84,6 +84,10 @@ app.get("/adminlogin", (req, res) =>
   res.sendFile(path.join(publicPath, "pages/auth/adminlogin.html"))
 );
 
+app.get("/enrollment-form", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/user/enrollment-form.html"))
+);
+
 // ======================
 // REDIRECT LEGACY URLS
 // ======================
@@ -99,6 +103,7 @@ app.get(
     "/dashboard.html",
     "/registrardashboard.html",
     "/adminlogin.html",
+    "/enrollment-form.html"
   ],
   (req, res) => {
     const cleanMap = {
@@ -112,6 +117,7 @@ app.get(
       "dashboard.html": "/dashboard",
       "registrardashboard.html": "/registrardashboard",
       "adminlogin.html": "/adminlogin",
+      "enrollment-form.html": "/enrollment-form"
     };
 
     const cleanPath = cleanMap[req.path.substring(1)];
