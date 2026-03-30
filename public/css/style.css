@@ -1105,6 +1105,8 @@ body.page-credentials {
   margin-top: 25px;
 }
 
+.quick-actions .btn { width: 100%; text-align: left; background-color: rgba(255, 255, 255, 0.08);}
+
 /* Application Queue */
 .page-queue .logo {
   width: 30px;
