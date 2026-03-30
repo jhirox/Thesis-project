@@ -1109,13 +1109,19 @@ body.page-credentials {
   background: rgba(255, 255, 255, 0.08);
   border-radius: 10px;
   padding: 20px;
+  margin-top: 20px;
+}
+
+.quick-actions + .px-4,
+.quick-actions + .row,
+.quick-actions + .card-section {
+  margin-top: 20px;
 }
 
 .quick-actions h6 {
   margin-bottom: 1rem;
   font-weight: 600;
   font-size: 1rem;
-  padding: 20px;
 }
 
 .quick-actions .btn-action {
