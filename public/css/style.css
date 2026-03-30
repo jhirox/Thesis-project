@@ -1105,6 +1105,12 @@ body.page-credentials {
   margin-top: 25px;
 }
 
+.quick-actions {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 20px;
+}
+
 .quick-actions .btn { width: 100%; text-align: left; background-color: rgba(255, 255, 255, 0.08);}
 
 /* Application Queue */
