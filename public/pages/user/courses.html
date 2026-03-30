@@ -547,6 +547,7 @@
           </div>
           <div class="modal-footer">
             <a
+              id="enrollBtn"
               href="/enrollment-form"
               class="btn btn-primary"
               >Apply / Enroll</a
@@ -696,6 +697,21 @@
           card.style.display = matchesQuery && matchesFilter ? "block" : "none";
         });
       }
+    </script>
+
+    <script>
+      // Set enroll button href based on guest mode
+      document.addEventListener('DOMContentLoaded', function() {
+        const guestMode = localStorage.getItem('guestMode') === 'true';
+        const enrollBtn = document.getElementById('enrollBtn');
+        if (enrollBtn) {
+          if (guestMode) {
+            enrollBtn.href = '/login';
+          } else {
+            enrollBtn.href = '/enrollment-form';
+          }
+        }
+      });
     </script>
   </body>
 </html>
