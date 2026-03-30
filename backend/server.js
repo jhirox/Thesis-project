@@ -88,6 +88,10 @@ app.get("/adminlogin", (req, res) =>
   res.sendFile(path.join(publicPath, "pages/auth/adminlogin.html"))
 );
 
+app.get("/registrarlogin", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/auth/registrarlogin.html"))
+);
+
 // Registrar clean routes
 app.get("/registrar", (req, res) =>
   res.sendFile(path.join(publicPath, "pages/registrar/registrar.html"))
@@ -169,6 +173,7 @@ app.get(
     "/notifications.html",
     "/login.html",
     "/signup.html",
+    "/registrarlogin.html",
     "/registrar.html",
     "/registrardashboard.html",
     "/application-evaluation.html",
@@ -194,6 +199,7 @@ app.get(
       "dashboard.html": "/dashboard",
       "registrardashboard.html": "/registrar/dashboard",
       "registrar.html": "/registrar",
+      "registrarlogin.html": "/registrarlogin",
       "adminlogin.html": "/adminlogin",
       "accounts.html": "/accounts",
       "application-evaluation.html": "/application-evaluation",
