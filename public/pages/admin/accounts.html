@@ -34,6 +34,57 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <style>
+      .account-action-cell {
+        min-width: 9.5rem;
+      }
+
+      .account-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .account-actions .btn {
+        white-space: nowrap;
+      }
+
+      .account-action-icon {
+        width: 2rem;
+        height: 2rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        cursor: pointer;
+        flex: 0 0 auto;
+      }
+
+      .account-action-icon.text-info {
+        background: rgba(13, 202, 240, 0.12);
+      }
+
+      .account-action-icon.text-warning {
+        background: rgba(255, 193, 7, 0.12);
+      }
+
+      .account-action-icon.text-danger {
+        background: rgba(220, 53, 69, 0.12);
+      }
+
+      @media (max-width: 767.98px) {
+        .account-action-cell {
+          min-width: 8rem;
+          text-align: left !important;
+        }
+
+        .account-actions {
+          justify-content: flex-start;
+        }
+      }
+    </style>
   </head>
   <body
     class="page-acc layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary text-white"
@@ -499,7 +550,7 @@
                         <th scope="col" class="px-4 py-3 fw-bold text-white">Type of Student</th>
                         <th scope="col" class="px-4 py-3 fw-bold text-white">Last Login</th>
                         <th scope="col" class="px-4 py-3 fw-bold text-white">Status</th>
-                        <th scope="col" class="px-4 py-3 fw-bold text-white text-end">Action</th>
+                        <th scope="col" class="px-4 py-3 fw-bold text-white text-end account-action-cell">Action</th>
                       </tr>
                     </thead>
 
@@ -525,10 +576,12 @@
                         <td class="px-4 py-3">
                           <span class="status-badge status-active bg-success">Active</span>
                         </td>
-                        <td class="px-4 py-3 text-end">
-                          <i class="fa-solid fa-edit me-3 text-info" title="Edit" style="cursor: pointer;"></i>
-                          <i class="fa-solid fa-lock me-3 text-warning" title="Lock" style="cursor: pointer;"></i>
-                          <i class="fa-solid fa-ban text-danger" title="Reject" style="cursor: pointer;"></i>
+                        <td class="px-4 py-3 text-end account-action-cell">
+                          <div class="account-actions">
+                            <i class="fa-solid fa-edit account-action-icon text-info" title="Edit"></i>
+                            <i class="fa-solid fa-lock account-action-icon text-warning" title="Lock"></i>
+                            <i class="fa-solid fa-ban account-action-icon text-danger" title="Reject"></i>
+                          </div>
                         </td>
                       </tr>
 
@@ -553,10 +606,12 @@
                         <td class="px-4 py-3">
                           <span class="status-badge status-rejected bg-danger">Rejected</span>
                         </td>
-                        <td class="px-4 py-3 text-end">
-                          <i class="fa-solid fa-edit me-3 text-info" title="Edit" style="cursor: pointer;"></i>
-                          <i class="fa-solid fa-lock me-3 text-warning" title="Lock" style="cursor: pointer;"></i>
-                          <i class="fa-solid fa-ban text-danger" title="Reject" style="cursor: pointer;"></i>
+                        <td class="px-4 py-3 text-end account-action-cell">
+                          <div class="account-actions">
+                            <i class="fa-solid fa-edit account-action-icon text-info" title="Edit"></i>
+                            <i class="fa-solid fa-lock account-action-icon text-warning" title="Lock"></i>
+                            <i class="fa-solid fa-ban account-action-icon text-danger" title="Reject"></i>
+                          </div>
                         </td>
                       </tr>
 
@@ -581,10 +636,12 @@
                         <td class="px-4 py-3">
                           <span class="status-badge status-inactive bg-secondary">Inactive</span>
                         </td>
-                        <td class="px-4 py-3 text-end">
-                          <i class="fa-solid fa-edit me-3 text-info" title="Edit" style="cursor: pointer;"></i>
-                          <i class="fa-solid fa-lock me-3 text-warning" title="Lock" style="cursor: pointer;"></i>
-                          <i class="fa-solid fa-ban text-danger" title="Reject" style="cursor: pointer;"></i>
+                        <td class="px-4 py-3 text-end account-action-cell">
+                          <div class="account-actions">
+                            <i class="fa-solid fa-edit account-action-icon text-info" title="Edit"></i>
+                            <i class="fa-solid fa-lock account-action-icon text-warning" title="Lock"></i>
+                            <i class="fa-solid fa-ban account-action-icon text-danger" title="Reject"></i>
+                          </div>
                         </td>
                       </tr>
 
@@ -609,10 +666,12 @@
                         <td class="px-4 py-3">
                           <span class="status-badge status-inactive bg-secondary">Inactive</span>
                         </td>
-                        <td class="px-4 py-3 text-end">
-                          <i class="fa-solid fa-edit me-3 text-info" title="Edit" style="cursor: pointer;"></i>
-                          <i class="fa-solid fa-lock me-3 text-warning" title="Lock" style="cursor: pointer;"></i>
-                          <i class="fa-solid fa-ban text-danger" title="Reject" style="cursor: pointer;"></i>
+                        <td class="px-4 py-3 text-end account-action-cell">
+                          <div class="account-actions">
+                            <i class="fa-solid fa-edit account-action-icon text-info" title="Edit"></i>
+                            <i class="fa-solid fa-lock account-action-icon text-warning" title="Lock"></i>
+                            <i class="fa-solid fa-ban account-action-icon text-danger" title="Reject"></i>
+                          </div>
                         </td>
                       </tr>
                     </tbody>
@@ -707,7 +766,7 @@
                         <th scope="col" class="px-4 py-3 fw-bold text-white">Type of Student</th>
                         <th scope="col" class="px-4 py-3 fw-bold text-white">Last Login</th>
                         <th scope="col" class="px-4 py-3 fw-bold text-white">Status</th>
-                        <th scope="col" class="px-4 py-3 fw-bold text-white text-end">Action</th>
+                        <th scope="col" class="px-4 py-3 fw-bold text-white text-end account-action-cell">Action</th>
                       </tr>
                     </thead>
                     <tbody class="table-body">
@@ -731,10 +790,12 @@
                         <td class="px-4 py-3">
                           <span class="status-badge status-active bg-success">Active</span>
                         </td>
-                        <td class="px-4 py-3 text-end">
-                          <i class="fa-solid fa-edit me-3 text-info" title="Edit" style="cursor: pointer;"></i>
-                          <i class="fa-solid fa-lock me-3 text-warning" title="Lock" style="cursor: pointer;"></i>
-                          <i class="fa-solid fa-ban text-danger" title="Reject" style="cursor: pointer;"></i>
+                        <td class="px-4 py-3 text-end account-action-cell">
+                          <div class="account-actions">
+                            <i class="fa-solid fa-edit account-action-icon text-info" title="Edit"></i>
+                            <i class="fa-solid fa-lock account-action-icon text-warning" title="Lock"></i>
+                            <i class="fa-solid fa-ban account-action-icon text-danger" title="Reject"></i>
+                          </div>
                         </td>
                       </tr>
                       <tr class="border-bottom border-secondary-subtle">
@@ -757,10 +818,12 @@
                         <td class="px-4 py-3">
                           <span class="status-badge status-active bg-success">Active</span>
                         </td>
-                        <td class="px-4 py-3 text-end">
-                          <i class="fa-solid fa-edit me-3 text-info" title="Edit" style="cursor: pointer;"></i>
-                          <i class="fa-solid fa-lock me-3 text-warning" title="Lock" style="cursor: pointer;"></i>
-                          <i class="fa-solid fa-ban text-danger" title="Reject" style="cursor: pointer;"></i>
+                        <td class="px-4 py-3 text-end account-action-cell">
+                          <div class="account-actions">
+                            <i class="fa-solid fa-edit account-action-icon text-info" title="Edit"></i>
+                            <i class="fa-solid fa-lock account-action-icon text-warning" title="Lock"></i>
+                            <i class="fa-solid fa-ban account-action-icon text-danger" title="Reject"></i>
+                          </div>
                         </td>
                       </tr>
                       <tr>
@@ -783,10 +846,12 @@
                         <td class="px-4 py-3">
                           <span class="status-badge status-active bg-success">Active</span>
                         </td>
-                        <td class="px-4 py-3 text-end">
-                          <i class="fa-solid fa-edit me-3 text-info" title="Edit" style="cursor: pointer;"></i>
-                          <i class="fa-solid fa-lock me-3 text-warning" title="Lock" style="cursor: pointer;"></i>
-                          <i class="fa-solid fa-ban text-danger" title="Reject" style="cursor: pointer;"></i>
+                        <td class="px-4 py-3 text-end account-action-cell">
+                          <div class="account-actions">
+                            <i class="fa-solid fa-edit account-action-icon text-info" title="Edit"></i>
+                            <i class="fa-solid fa-lock account-action-icon text-warning" title="Lock"></i>
+                            <i class="fa-solid fa-ban account-action-icon text-danger" title="Reject"></i>
+                          </div>
                         </td>
                       </tr>
                     </tbody>
@@ -881,7 +946,7 @@
                         <th scope="col" class="px-4 py-3 fw-bold text-white">Type of Student</th>
                         <th scope="col" class="px-4 py-3 fw-bold text-white">Last Login</th>
                         <th scope="col" class="px-4 py-3 fw-bold text-white">Status</th>
-                        <th scope="col" class="px-4 py-3 fw-bold text-white text-end">Action</th>
+                        <th scope="col" class="px-4 py-3 fw-bold text-white text-end account-action-cell">Action</th>
                       </tr>
                     </thead>
                     <tbody class="table-body">
@@ -905,13 +970,15 @@
                         <td class="px-4 py-3">
                           <span class="status-badge status-inactive bg-secondary">Inactive</span>
                         </td>
-                        <td class="px-4 py-3 text-end">
-                          <button class="btn btn-outline-secondary btn-sm me-2">
-                            Send Reminder
-                          </button>
-                          <button class="btn btn-outline-primary btn-sm">
-                            Activate
-                          </button>
+                        <td class="px-4 py-3 text-end account-action-cell">
+                          <div class="account-actions">
+                            <button class="btn btn-outline-secondary btn-sm" type="button">
+                              Send Reminder
+                            </button>
+                            <button class="btn btn-outline-primary btn-sm" type="button">
+                              Activate
+                            </button>
+                          </div>
                         </td>
                       </tr>
                       <tr>
@@ -934,13 +1001,15 @@
                         <td class="px-4 py-3">
                           <span class="status-badge status-inactive bg-secondary">Inactive</span>
                         </td>
-                        <td class="px-4 py-3 text-end">
-                          <button class="btn btn-outline-secondary btn-sm me-2">
-                            Send Reminder
-                          </button>
-                          <button class="btn btn-outline-primary btn-sm">
-                            Activate
-                          </button>
+                        <td class="px-4 py-3 text-end account-action-cell">
+                          <div class="account-actions">
+                            <button class="btn btn-outline-secondary btn-sm" type="button">
+                              Send Reminder
+                            </button>
+                            <button class="btn btn-outline-primary btn-sm" type="button">
+                              Activate
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     </tbody>
