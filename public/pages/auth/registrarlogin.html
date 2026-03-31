@@ -108,20 +108,20 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script type="module">
-        import { user_data } from "../../data/user.js";
-        import { validateFields, validate } from "../../js/utils/validators.js";
-        import { loginPatterns } from "../../js/utils/patterns.js";
+        import { user_data } from "/data/user.js";
+        import { validateFields, validate } from "/js/utils/validators.js";
+        import { loginPatterns } from "/js/utils/patterns.js";
 
         const authUser = JSON.parse(localStorage.getItem('sessionUser'));
         const curTimeout = localStorage.getItem('sessionTimeout');
 
         if (authUser && authUser != null && curTimeout && Date.now() < Number(curTimeout)) {
             if (authUser.role === "admin") {
-                window.location.href = "/dashboard.html";
+                window.location.href = "/dashboard";
             } else if (authUser.role === "user") {
-                window.location.href = "/profile.html";
+                window.location.href = "/profile";
             } else {
-                window.location.href = "/registrardashboard.html";
+                window.location.href = "/registrar/dashboard";
             }
         }
 
@@ -170,8 +170,9 @@
                         if (authUser != null) {
                             localStorage.setItem("sessionUser", JSON.stringify(sessionUser));
                             localStorage.setItem("sessionTimeout", Date.now() + timeout);
+                            localStorage.removeItem("guestMode");
                             setTimeout(() => {
-                                window.location.href = "../registrar/registrardashboard.html";
+                                window.location.href = "/registrar/dashboard";
                             }, 2000);
                         } else {
                             showError('Error storing session data.');
