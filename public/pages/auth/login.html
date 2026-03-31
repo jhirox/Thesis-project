@@ -130,8 +130,9 @@
     // Redirect if session exists
     const authUser = JSON.parse(localStorage.getItem('sessionUser'));
     const curTimeout = localStorage.getItem('sessionTimeout');
-    if (authUser && curTimeout && Date.now() < Number(curTimeout)) {
-        window.location.href = "/profile.html";
+    const guestMode = localStorage.getItem('guestMode') === 'true';
+    if (authUser && curTimeout && !guestMode && Date.now() < Number(curTimeout)) {
+        window.location.href = "/profile";
     }
 
     form.addEventListener('submit', (e) => {
@@ -148,9 +149,10 @@
         const authUser = user_data.find(u => u.username === email && u.password === password);
         if (authUser) {
             Swal.fire({ icon: "success", title: "Success", text: "Logged in successfully!" });
-            const sessionUser = { user: authUser, loginTime: new Date().toISOString(), IsRemember: rememberCbx.checked };
+            const sessionUser = { user: authUser, loginTime: new Date().toISOString(), isRemember: rememberCbx.checked };
             localStorage.setItem("sessionUser", JSON.stringify(sessionUser));
             localStorage.setItem("sessionTimeout", Date.now() + timeout);
+            localStorage.removeItem("guestMode");
             setTimeout(() => window.location.href = "/", 2000);
         } else {
             Swal.fire({ icon: "error", title: "Error", text: "Invalid email or password" });
