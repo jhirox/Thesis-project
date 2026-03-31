@@ -34,6 +34,46 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <style>
+      .queue-toolbar {
+        row-gap: 0.75rem;
+      }
+
+      .queue-toolbar-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .queue-search {
+        flex: 1 1 20rem;
+        min-width: 0;
+        max-width: 100%;
+      }
+
+      .queue-filter-btn {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+      }
+
+      @media (max-width: 767.98px) {
+        .queue-toolbar-actions {
+          justify-content: stretch;
+        }
+
+        .queue-search,
+        .queue-filter-btn {
+          width: 100%;
+          flex-basis: 100%;
+        }
+      }
+    </style>
   </head>
   <body
     class="page-queue layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary text-white"
@@ -382,16 +422,15 @@
           <!-- Queue Management Section -->
           <section class="px-4 py-3">
             <div class="queue">
-              <div class="row pb-2 align-items-center mb-2">
+              <div class="row pb-2 align-items-center mb-2 queue-toolbar">
                 <div class="col-sm-4">
                   <h2 class="mb-0">Queue Management</h2>
                 </div>
-                <div class="col-sm-8 d-flex gap-2 justify-content-sm-end">
+                <div class="col-sm-8 queue-toolbar-actions">
                   <input
                     type="text"
                     placeholder="Search by student name or application ID"
-                    class="form-control"
-                    style="width: 350px;"
+                    class="form-control queue-search"
                   />
                   <!-- <select class="form-select">
                     <option>Filter by Status</option>
@@ -399,7 +438,7 @@
                     <option>Under Review</option>
                     <option>Completed</option>
                   </select> -->
-                  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filter
+                  <button class="btn btn-primary queue-filter-btn" data-bs-toggle="modal" data-bs-target="#filterModal">Filter
                     <i class="fa-solid fa-filter"></i>
                   </button>
                 </div>
