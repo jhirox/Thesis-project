@@ -255,6 +255,7 @@
                     >
                     <button
                       type="button"
+                      id="enrollNowButton"
                       class="btn btn-outline-light btn-lg js-enroll-now"
                       onclick="handleEnrollmentClick()"
                     >
@@ -543,7 +544,10 @@
           </div>
           <div class="modal-footer justify-content-center">
             <a href="/login" class="btn btn-primary px-4">
-              <i class="bi bi-box-arrow-in-right me-2"></i>Go to Login
+              <i class="bi bi-box-arrow-in-right me-2"></i>Login
+            </a>
+            <a href="/signup" class="btn btn-outline-primary px-4">
+              <i class="bi bi-person-plus me-2"></i>Sign Up
             </a>
             <button
               type="button"
@@ -598,36 +602,50 @@
 
     <!-- ENROLLMENT CHECK SCRIPT -->
     <script>
+      function isSessionValid() {
+        const sessionUser = localStorage.getItem('sessionUser');
+        const sessionTimeout = localStorage.getItem('sessionTimeout');
+        const now = Date.now();
+
+        if (!sessionUser || !sessionTimeout) {
+          return false;
+        }
+
+        const timeout = parseInt(sessionTimeout, 10);
+        return !isNaN(timeout) && now < timeout;
+      }
+
+      function updateEnrollButton() {
+        const enrollBtn = document.getElementById('enrollNowButton');
+        if (!enrollBtn) return;
+
+        if (!isSessionValid()) {
+          enrollBtn.textContent = 'Login or Sign Up to Enroll';
+          enrollBtn.classList.remove('btn-outline-light');
+          enrollBtn.classList.add('btn-light');
+        } else {
+          enrollBtn.textContent = 'Proceed to Enrollment Form';
+          enrollBtn.classList.remove('btn-light');
+          enrollBtn.classList.add('btn-outline-light');
+        }
+      }
+
       function handleEnrollmentClick() {
         try {
-          const sessionUser = localStorage.getItem('sessionUser');
-          const sessionTimeout = localStorage.getItem('sessionTimeout');
-          const now = Date.now();
-
-          let hasValidSession = false;
-
-          if (sessionUser && sessionTimeout) {
-            const timeout = parseInt(sessionTimeout, 10);
-            if (!isNaN(timeout)) {
-              hasValidSession = now < timeout;
-            }
-          }
-
-          if (!hasValidSession) {
-            // Show login required modal
+          if (!isSessionValid()) {
             const loginModal = new bootstrap.Modal(document.getElementById('loginRequiredModal'));
             loginModal.show();
           } else {
-            // User is logged in, redirect to enrollment form
             window.location.href = '/enrollment-form';
           }
         } catch (error) {
-          console.log("Error checking session:", error);
-          // Fallback: show login modal
+          console.log('Error checking session:', error);
           const loginModal = new bootstrap.Modal(document.getElementById('loginRequiredModal'));
           loginModal.show();
         }
       }
+
+      document.addEventListener('DOMContentLoaded', updateEnrollButton);
     </script>
 
     <script src="/js/auth.js"></script>
