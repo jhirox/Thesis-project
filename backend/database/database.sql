@@ -2,6 +2,31 @@
 CREATE DATABASE IF NOT EXISTS thesis_project;
 USE thesis_project;
 
+-- Roles table
+CREATE TABLE IF NOT EXISTS roles (
+  role_id INT AUTO_INCREMENT PRIMARY KEY,
+  role_name VARCHAR(50) NOT NULL UNIQUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert default roles
+INSERT IGNORE INTO roles (role_id, role_name) VALUES
+(1, 'student'),
+(2, 'registrar'),
+(3, 'admin');
+
+-- Users table
+CREATE TABLE IF NOT EXISTS users (
+  user_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  role_id INT NOT NULL,
+  is_active TINYINT(1) DEFAULT 1,
+  created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (role_id) REFERENCES roles(role_id)
+);
+
 -- example table
 CREATE TABLE IF NOT EXISTS students (
   id INT AUTO_INCREMENT PRIMARY KEY,
