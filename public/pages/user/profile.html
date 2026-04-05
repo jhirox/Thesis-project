@@ -369,7 +369,8 @@
                           id="fullName"
                           name="fullName"
                           class="form-control form-control-sm"
-                          value="Juan Dela Cruz"
+                          value=""
+                          placeholder="Not set"
                           disabled
                         />
                       </div>
@@ -384,7 +385,8 @@
                           id="emailAddr"
                           name="emailAddr"
                           class="form-control form-control-sm"
-                          value="juan.delacruz@example.com"
+                          value=""
+                          placeholder="Not set"
                           disabled
                         />
                       </div>
@@ -399,7 +401,8 @@
                           id="contactNo"
                           name="contactNo"
                           class="form-control form-control-sm"
-                          value="+63 912 345 6789"
+                          value=""
+                          placeholder="Not set"
                           disabled
                         />
                       </div>
@@ -412,7 +415,7 @@
                           id="dob"
                           name="dob"
                           class="form-control form-control-sm"
-                          value="2005-01-15"
+                          value=""
                           disabled
                         />
                       </div>
@@ -425,7 +428,8 @@
                           id="address"
                           name="address"
                           class="form-control form-control-sm"
-                          value="Atimonan, Quezon"
+                          value=""
+                          placeholder="Not set"
                           disabled
                         />
                       </div>
@@ -439,6 +443,7 @@
                           class="form-select form-select-sm"
                           disabled
                         >
+                          <option value="">Not set</option>
                           <option>Male</option>
                           <option>Female</option>
                           <option>Other</option>
@@ -459,13 +464,13 @@
                     <div class="col-md-6">
                       <label class="form-label text-muted small">Program</label>
                       <p id="programInfo" class="fw-semibold mb-0">
-                        BSBA - Bachelor of Science in Business Administration
+                        Not set
                       </p>
                     </div>
                     <div class="col-md-6">
                       <label class="form-label text-muted small">Major</label>
                       <p id="majorInfo" class="fw-semibold mb-0">
-                        Marketing Management
+                        Not set
                       </p>
                     </div>
                     <div class="col-md-6">
@@ -473,21 +478,21 @@
                         >Entry Status</label
                       >
                       <p id="entryStatus" class="fw-semibold mb-0">
-                        New Regular Enrollee
+                        Not set
                       </p>
                     </div>
                     <div class="col-md-6">
                       <label class="form-label text-muted small"
                         >Learning Modality</label
                       >
-                      <p id="modality" class="fw-semibold mb-0">Face-to-Face</p>
+                      <p id="modality" class="fw-semibold mb-0">Not set</p>
                     </div>
                     <div class="col-md-6">
                       <label class="form-label text-muted small"
                         >Semester</label
                       >
                       <p id="semester" class="fw-semibold mb-0">
-                        First Semester
+                        Not set
                       </p>
                     </div>
                     <div class="col-md-6">
@@ -509,10 +514,10 @@
                     <div>
                       <h6 class="fw-bold mb-1">Enrollment Application</h6>
                       <p class="text-muted small mb-0">
-                        Queue Number: <strong>#QECI-2025-001</strong>
+                        Queue Number: <strong id="queueNumber">Not available</strong>
                       </p>
                       <p class="text-muted small mb-0">
-                        Status: <span class="badge bg-info">Under Review</span>
+                        Status: <span id="applicationStatus" class="badge bg-secondary">Not submitted</span>
                       </p>
                     </div>
                     <div class="text-end">
@@ -594,6 +599,7 @@
       integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
       crossorigin="anonymous"
     ></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- SKELETON HIDE SCRIPT -->
     <script>
@@ -633,8 +639,21 @@
     <script type="module">
       document.addEventListener('DOMContentLoaded', () => {
         const fullName = document.querySelector('#user-full-name');
-        const signOutBtn = document.querySelector('#sign-out');
+        const displayId = document.querySelector('#displayId');
+        const emailAddr = document.querySelector('#emailAddr');
+        const contactNo = document.querySelector('#contactNo');
+        const dob = document.querySelector('#dob');
+        const address = document.querySelector('#address');
+        const sex = document.querySelector('#sex');
         const profileBody = document.querySelector('#profile-body');
+        const programInfo = document.querySelector('#programInfo');
+        const majorInfo = document.querySelector('#majorInfo');
+        const entryStatus = document.querySelector('#entryStatus');
+        const modality = document.querySelector('#modality');
+        const semester = document.querySelector('#semester');
+        const queueNumber = document.querySelector('#queueNumber');
+        const applicationStatus = document.querySelector('#applicationStatus');
+        const signOutBtn = document.querySelector('#sign-out');
         const sessionUserStr = localStorage.getItem('sessionUser');
         const authUser = sessionUserStr ? JSON.parse(sessionUserStr) : null;
         const timeout = localStorage.getItem('sessionTimeout');
@@ -649,6 +668,15 @@
             // Ignored
           }
           window.location.replace('/login');
+        };
+
+        const formatNameFromEmail = (email) => {
+          if (!email) return 'QECi Student';
+          const namePart = email.split('@')[0].replace(/[._-]+/g, ' ');
+          return namePart
+            .split(' ')
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
         };
 
         const isSessionValid = () => {
@@ -681,8 +709,23 @@
         };
 
         if (authUser && authUser.user && !guestMode) {
-          fullName.textContent = authUser.user.fullname || '';
-          // Show page content once authenticated
+          const user = authUser.user;
+          const name = user.fullname || formatNameFromEmail(user.email);
+          fullName.textContent = name;
+          displayId.textContent = user.id ? `QECI-${user.id}` : 'Not set';
+          emailAddr.value = user.email || '';
+          contactNo.value = '';
+          dob.value = '';
+          address.value = '';
+          sex.value = '';
+          programInfo.textContent = 'Not set';
+          majorInfo.textContent = 'Not set';
+          entryStatus.textContent = 'Not set';
+          modality.textContent = 'Not set';
+          semester.textContent = 'Not set';
+          queueNumber.textContent = 'Not available';
+          applicationStatus.textContent = 'Not submitted';
+
           if (profileBody) {
             profileBody.classList.add('authenticated');
           }
