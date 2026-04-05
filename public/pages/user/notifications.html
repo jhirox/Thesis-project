@@ -373,71 +373,52 @@
     </script>
 
     <script type="module">
+        // Simple session validation for notifications page
         document.addEventListener('DOMContentLoaded', () => {
             try {
-            const fullName = document.querySelector('#user-full-name');
-            const signOutBtn = document.querySelector('#sign-out');
-            const sessionUserStr = localStorage.getItem('sessionUser');
-            const authUser = sessionUserStr ? JSON.parse(sessionUserStr) : null;
-            const timeout = localStorage.getItem('sessionTimeout');
+                const sessionUserStr = localStorage.getItem('sessionUser');
+                const authUser = sessionUserStr ? JSON.parse(sessionUserStr) : null;
+                const timeout = localStorage.getItem('sessionTimeout');
 
-            const logout = () => {
-                try {
-                    localStorage.removeItem('sessionUser');
-                    localStorage.removeItem('sessionTimeout');
-                } catch (error) {
-                    // Ignore
+                const logout = () => {
+                    try {
+                        localStorage.removeItem('sessionUser');
+                        localStorage.removeItem('sessionTimeout');
+                    } catch (error) {
+                        // Ignore
+                    }
+                    window.location.href = "/login";
                 }
-                window.location.href = "/login";
-            }
 
-            const isSessionValid = () => {
-                if(!timeout) return false;
-                if(Date.now() < Number(timeout)) {
-                    return true;
+                const isSessionValid = () => {
+                    if(!timeout) return false;
+                    return Date.now() < Number(timeout);
                 }
-            }
 
-            const checkSession = () => {
-                if(!authUser.isRemember && !isSessionValid()){
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: "Session Timeout!",
-                        footer: '<a href="/login">Please login to continue using our app</a>'
-                    });
-                    setTimeout(() => {
+                const checkSession = () => {
+                    if(!authUser || !authUser.isRemember && !isSessionValid()){
                         logout();
-                    }, 5000);
+                    }
                 }
-            }
 
-            if(authUser && authUser.user) {
-                fullName.textContent = authUser.user.fullname;
-                checkSession();
-            } else {
-                window.location.href = "/login";
-            }
+                // Only check session if user exists, don't redirect immediately
+                if(authUser && authUser.user) {
+                    // Set up session monitoring for user activity
+                    let sessionCheckInterval = setInterval(checkSession, 60000); // Check every minute
 
-            // signOutBtn.addEventListener('click', () => {
-            //     localStorage.removeItem('sessionUser');
-            //     window.location.href = "./login.html";
-            // });
-            
-            signOutBtn.addEventListener('click', () => {
-                logout();
-            });
-
-            ['mousemove', 'keydown', 'click'].forEach(event => {
-                document.addEventListener(event, () => {
-                    checkSession();
-                });
-            });
+                    ['mousemove', 'keydown', 'click'].forEach(event => {
+                        document.addEventListener(event, () => {
+                            // Reset session check interval on activity
+                            clearInterval(sessionCheckInterval);
+                            sessionCheckInterval = setInterval(checkSession, 60000);
+                        }, { once: true });
+                    });
+                }
             } catch (error) {
-                // If localStorage or JSON parsing fails, redirect to login
+                // If localStorage fails, redirect to login
                 window.location.href = "/login";
             }
-    });
+        });
     </script>
 
     <script>
