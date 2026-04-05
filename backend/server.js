@@ -231,6 +231,16 @@ app.get("/test-db", async (req, res) => {
   }
 });
 
+// Test enrollments table
+app.get("/test-enrollments", async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT * FROM enrollments LIMIT 5");
+    res.json({ message: "Enrollments table exists!", count: rows.length, data: rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ======================
 // 404 HANDLER
 // ======================

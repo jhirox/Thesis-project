@@ -506,6 +506,7 @@
         if (authUser && authUser.user) {
           fullName.textContent = authUser.user.fullname;
           checkSession();
+          loadDashboardData(); // Load enrollment data
         } else {
           window.location.href = "/registrarlogin";
         }
@@ -524,6 +525,39 @@
             checkSession();
           });
         });
+
+        // Load dashboard data from API
+        async function loadDashboardData() {
+          try {
+            const response = await fetch('/api/students/enrollments/all');
+            const result = await response.json();
+
+            if (result.success) {
+              updateDashboardStats(result.data);
+            }
+          } catch (error) {
+            console.error('Error loading dashboard data:', error);
+          }
+        }
+
+        function updateDashboardStats(enrollments) {
+          const totalApplications = enrollments.length;
+          const pendingReview = enrollments.filter(e => e.application_status === 'Submitted' || e.application_status === 'Under Review').length;
+          const approvedToday = enrollments.filter(e => e.application_status === 'Approved' && isToday(e.updated_at)).length;
+          const rejectedToday = enrollments.filter(e => e.application_status === 'Rejected' && isToday(e.updated_at)).length;
+
+          // Update cards
+          document.querySelector('.card-total h3').textContent = totalApplications.toLocaleString();
+          document.querySelector('.card-pending h3').textContent = pendingReview.toLocaleString();
+          document.querySelector('.card-approved h3').textContent = approvedToday.toLocaleString();
+          document.querySelector('.card-rejected h3').textContent = rejectedToday.toLocaleString();
+        }
+
+        function isToday(dateString) {
+          const date = new Date(dateString);
+          const today = new Date();
+          return date.toDateString() === today.toDateString();
+        }
       });
     </script>
   </body>

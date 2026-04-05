@@ -339,25 +339,6 @@
         </div>
     </div>
 
-    <!-- DISCLAIMER MODAL -->
-    <div class="modal fade" id="disclaimerModal">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5>Disclaimer</h5>
-                    <button class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body small">
-                    Your application will not be queued or reviewed by the admin or registrar. Do you want to continue?
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">No, Go Back</button>
-                    <button class="btn btn-primary" id="confirmContinue">Yes, Continue</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- SUCCESS MODAL -->
     <div class="modal fade" id="successModal">
         <div class="modal-dialog modal-dialog-centered">
@@ -390,9 +371,7 @@
             const termsModal = new bootstrap.Modal(document.getElementById("termsModal"));
             const conditionsModal = new bootstrap.Modal(document.getElementById("conditionsModal"));
             const warningModal = new bootstrap.Modal(document.getElementById("warningModal"));
-            const disclaimerModal = new bootstrap.Modal(document.getElementById("disclaimerModal"));
             const successModal = new bootstrap.Modal(document.getElementById("successModal"));
-            const confirmBtn = document.getElementById("confirmContinue");
 
             const termsLink = document.getElementById("termsLink");
             const conditionsLink = document.getElementById("conditionsLink");
@@ -415,32 +394,72 @@
             });
 
             // Form submit
-            form.addEventListener("submit", e => {
+            form.addEventListener("submit", async e => {
                 e.preventDefault();
                 if (!agreeTerms.checked) {
                     warningModal.show();
                     return;
                 }
-                disclaimerModal.show();
-            });
 
-            // Confirm continue
-            confirmBtn.addEventListener("click", () => {
-                disclaimerModal.hide();
-                queueNumber.textContent = generateQueue();
-                successModal.show();
-                form.reset();
-                agreeTerms.checked = false;
-                spouseContainer.style.display = "none"; // reset spouse field
-            });
+                // Collect form data
+                const formData = new FormData(form);
+                const data = {
+                    firstName: formData.get('firstName'),
+                    middleName: formData.get('middleName'),
+                    lastName: formData.get('lastName'),
+                    suffix: formData.get('suffix'),
+                    birthDate: formData.get('birthDate'),
+                    birthPlace: formData.get('birthPlace'),
+                    sex: formData.get('sex'),
+                    civilStatus: formData.get('civilStatus'),
+                    spouseName: formData.get('civilStatus') === 'Married' ? formData.get('spouseName') : null,
+                    nationality: formData.get('nationality'),
+                    religion: formData.get('religion'),
+                    email: formData.get('email'),
+                    contactNumber: formData.get('contactNumber'),
+                    address: formData.get('address'),
+                    program: formData.get('program'),
+                    learningModality: formData.get('learningModality'),
+                    studentType: formData.get('studentType'),
+                    highestAttainment: formData.get('highestAttainment'),
+                    lastSchool: formData.get('lastSchool'),
+                    lastSchoolYear: formData.get('lastSchoolYear'),
+                    semester: formData.get('semester'),
+                    workingStatus: formData.get('workingStatus'),
+                    motherMaiden: formData.get('motherMaiden'),
+                    fatherName: formData.get('fatherName'),
+                    guardianName: formData.get('guardianName'),
+                    guardianContact: formData.get('guardianContact'),
+                    remarks: formData.get('remarks'),
+                    agreedToTerms: agreeTerms.checked,
+                    agreedAt: new Date().toISOString()
+                };
 
-            // Generate queue number
-            function generateQueue() {
-                const letters = ["A", "B", "C", "D"];
-                const letter = letters[Math.floor(Math.random() * letters.length)];
-                const num = Math.floor(Math.random() * 900) + 100;
-                return `#${letter}${num}`;
-            }
+                try {
+                    const response = await fetch('/api/students/enrollment', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        queueNumber.textContent = `#${result.queueNumber}`;
+                        successModal.show();
+                        form.reset();
+                        agreeTerms.checked = false;
+                        spouseContainer.style.display = "none";
+                    } else {
+                        alert('Error submitting enrollment: ' + result.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error submitting enrollment. Please try again.');
+                }
+            });
         });
     </script>
 
