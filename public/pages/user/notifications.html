@@ -19,8 +19,54 @@
       referrerpolicy="no-referrer"
     />
     <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      /* Hide notifications body until authenticated */
+      #notifications-body {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+      }
+      
+      #notifications-body.authenticated {
+        opacity: 1;
+        visibility: visible;
+      }
+    </style>
   </head>
-  <body class="page-shell page-notifications">
+  <body class="page-shell page-notifications" id="notifications-body">
+    <!-- IMMEDIATE AUTH CHECK - RUNS BEFORE PAGE RENDERS -->
+    <script>
+      (function() {
+        try {
+          const sessionUser = localStorage.getItem('sessionUser');
+          const sessionTimeout = localStorage.getItem('sessionTimeout');
+          const guestMode = localStorage.getItem('guestMode') === 'true';
+          const now = Date.now();
+
+          let hasValidSession = false;
+
+          // Check if user has a valid session
+          if (sessionUser && sessionTimeout && !guestMode) {
+            const timeout = parseInt(sessionTimeout, 10);
+            if (!isNaN(timeout)) {
+              hasValidSession = now < timeout;
+            }
+          }
+
+          // If no valid session, redirect to login immediately
+          if (!hasValidSession) {
+            // Prevent browser back button by replacing history
+            window.location.replace('/login');
+            return;
+          } else {
+            // Add authenticated class to show content
+            document.getElementById('notifications-body').classList.add('authenticated');
+          }
+        } catch (error) {
+          window.location.replace('/login');
+        }
+      })();
+    </script>
     <!-- SKELETON LOADING SCREEN -->
     <div id="skeleton-screen" class="skeleton-screen">
       <div class="container-fluid p-0 d-flex h-100">
@@ -218,7 +264,7 @@
                 <div>
                   <h4 class="fw-bold mb-1">All Notifications</h4>
                   <p class="text-muted small mb-0">
-                    You have 4 new notifications
+                    You have 0 new notifications
                   </p>
                 </div>
                 <div class="d-flex flex-column-lg flex-sm-row gap-3">
@@ -241,7 +287,7 @@
                 <li class="nav-item" role="presentation">
                   <button
                     class="nav-link active"
-                    onclick="filterNotifications('all')"
+                    onclick="filterNotifications('all', this)"
                     type="button"
                   >
                     All
@@ -250,7 +296,7 @@
                 <li class="nav-item" role="presentation">
                   <button
                     class="nav-link"
-                    onclick="filterNotifications('unread')"
+                    onclick="filterNotifications('unread', this)"
                     type="button"
                   >
                     Unread
@@ -259,7 +305,7 @@
                 <li class="nav-item" role="presentation">
                   <button
                     class="nav-link"
-                    onclick="filterNotifications('important')"
+                    onclick="filterNotifications('important', this)"
                     type="button"
                   >
                     Important
@@ -271,266 +317,12 @@
 
           <div class="row">
             <div class="col-lg-12">
-              <!-- Notification Item - New -->
-              <div
-                class="card mb-3 shadow-sm border-start border-primary border-4 notification-item unread"
-                data-id="1"
-              >
-                <div class="card-body">
-                  <div class="d-flex align-items-start">
-                    <div class="flex-shrink-0 me-3">
-                      <div class="bg-primary bg-opacity-10 rounded-circle p-2">
-                        <i class="bi bi-envelope-check text-primary fs-5"></i>
-                      </div>
-                    </div>
-                    <div class="flex-grow-1">
-                      <div
-                        class="d-flex justify-content-between align-items-start mb-2"
-                      >
-                        <div>
-                          <h6 class="fw-bold mb-1">
-                            Enrollment Application Received
-                            <span class="badge bg-primary">New</span>
-                          </h6>
-                          <p class="text-muted small mb-0">
-                            Your enrollment form has been successfully
-                            submitted.
-                          </p>
-                        </div>
-                        <button
-                          class="btn btn-sm btn-link text-danger"
-                          onclick="removeNotification(1)"
-                          style="text-decoration: none"
-                        >
-                          <i class="bi bi-x"></i>
-                        </button>
-                      </div>
-                      <p class="text-muted small mb-2">
-                        Your queue number is <strong>#QECI-2025-001</strong>.
-                        Please wait for the registrar's review. Track your
-                        application status in real-time.
-                      </p>
-                      <div
-                        class="d-flex justify-content-between align-items-center"
-                      >
-                        <small class="text-muted">
-                          <i class="bi bi-clock"></i> 2 hours ago
-                        </small>
-                        <a href="#" class="btn btn-sm btn-primary"
-                          >View Details</a
-                        >
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Notification Item - Success -->
-              <div
-                class="card mb-3 shadow-sm border-start border-success border-4 notification-item"
-                data-id="2"
-              >
-                <div class="card-body">
-                  <div class="d-flex align-items-start">
-                    <div class="flex-shrink-0 me-3">
-                      <div class="bg-success bg-opacity-10 rounded-circle p-2">
-                        <i class="bi bi-check-circle text-success fs-5"></i>
-                      </div>
-                    </div>
-                    <div class="flex-grow-1">
-                      <div
-                        class="d-flex justify-content-between align-items-start mb-2"
-                      >
-                        <div>
-                          <h6 class="fw-bold mb-1">Documents Verified</h6>
-                          <p class="text-muted small mb-0">
-                            All your submitted documents have been reviewed and
-                            approved.
-                          </p>
-                        </div>
-                        <button
-                          class="btn btn-sm btn-link text-danger"
-                          onclick="removeNotification(2)"
-                          style="text-decoration: none"
-                        >
-                          <i class="bi bi-x"></i>
-                        </button>
-                      </div>
-                      <p class="text-muted small mb-2">
-                        You can now proceed with the enrollment assessment.
-                        Check your email for the next steps.
-                      </p>
-                      <div
-                        class="d-flex justify-content-between align-items-center"
-                      >
-                        <small class="text-muted">
-                          <i class="bi bi-clock"></i> 1 day ago
-                        </small>
-                        <a href="#" class="btn btn-sm btn-success">Proceed</a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Notification Item - Info -->
-              <div
-                class="card mb-3 shadow-sm border-start border-info border-4 notification-item"
-                data-id="3"
-              >
-                <div class="card-body">
-                  <div class="d-flex align-items-start">
-                    <div class="flex-shrink-0 me-3">
-                      <div class="bg-info bg-opacity-10 rounded-circle p-2">
-                        <i class="bi bi-info-circle text-info fs-5"></i>
-                      </div>
-                    </div>
-                    <div class="flex-grow-1">
-                      <div
-                        class="d-flex justify-content-between align-items-start mb-2"
-                      >
-                        <div>
-                          <h6 class="fw-bold mb-1">
-                            Enrollment Period Reminder
-                          </h6>
-                          <p class="text-muted small mb-0">
-                            Enrollment for AY 2025-2026 is now open.
-                          </p>
-                        </div>
-                        <button
-                          class="btn btn-sm btn-link text-danger"
-                          onclick="removeNotification(3)"
-                          style="text-decoration: none"
-                        >
-                          <i class="bi bi-x"></i>
-                        </button>
-                      </div>
-                      <p class="text-muted small mb-2">
-                        Don't miss the deadline! Complete your enrollment before
-                        <strong>March 31, 2025</strong>. Limited slots
-                        available.
-                      </p>
-                      <div
-                        class="d-flex justify-content-between align-items-center"
-                      >
-                        <small class="text-muted">
-                          <i class="bi bi-clock"></i> 3 days ago
-                        </small>
-                        <a href="./enrollment.html" class="btn btn-sm btn-info"
-                          >Enroll Now</a
-                        >
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Notification Item - Warning -->
-              <div
-                class="card mb-3 shadow-sm border-start border-warning border-4 notification-item"
-                data-id="4"
-              >
-                <div class="card-body">
-                  <div class="d-flex align-items-start">
-                    <div class="flex-shrink-0 me-3">
-                      <div class="bg-warning bg-opacity-10 rounded-circle p-2">
-                        <i
-                          class="bi bi-exclamation-triangle text-warning fs-5"
-                        ></i>
-                      </div>
-                    </div>
-                    <div class="flex-grow-1">
-                      <div
-                        class="d-flex justify-content-between align-items-start mb-2"
-                      >
-                        <div>
-                          <h6 class="fw-bold mb-1">Missing Document Notice</h6>
-                          <p class="text-muted small mb-0">
-                            Please upload your PSA Birth Certificate.
-                          </p>
-                        </div>
-                        <button
-                          class="btn btn-sm btn-link text-danger"
-                          onclick="removeNotification(4)"
-                          style="text-decoration: none"
-                        >
-                          <i class="bi bi-x"></i>
-                        </button>
-                      </div>
-                      <p class="text-muted small mb-2">
-                        Your application is incomplete. Please submit the
-                        required document to continue processing.
-                      </p>
-                      <div
-                        class="d-flex justify-content-between align-items-center"
-                      >
-                        <small class="text-muted">
-                          <i class="bi bi-clock"></i> 5 days ago
-                        </small>
-                        <a href="./profile.html" class="btn btn-sm btn-warning"
-                          >Upload Now</a
-                        >
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Notification Item - System -->
-              <div class="card mb-3 shadow-sm notification-item" data-id="5">
-                <div class="card-body">
-                  <div class="d-flex align-items-start">
-                    <div class="flex-shrink-0 me-3">
-                      <div
-                        class="bg-secondary bg-opacity-10 rounded-circle p-2"
-                      >
-                        <i class="bi bi-megaphone text-secondary fs-5"></i>
-                      </div>
-                    </div>
-                    <div class="flex-grow-1">
-                      <div
-                        class="d-flex justify-content-between align-items-start mb-2"
-                      >
-                        <div>
-                          <h6 class="fw-bold mb-1">
-                            Welcome to QECI Online Registration
-                          </h6>
-                          <p class="text-muted small mb-0">
-                            Get started with your enrollment process.
-                          </p>
-                        </div>
-                        <button
-                          class="btn btn-sm btn-link text-danger"
-                          onclick="removeNotification(5)"
-                          style="text-decoration: none"
-                        >
-                          <i class="bi bi-x"></i>
-                        </button>
-                      </div>
-                      <p class="text-muted small mb-2">
-                        Thank you for choosing Quezonian Educational College,
-                        Inc. Start by completing your enrollment form and
-                        reviewing available courses.
-                      </p>
-                      <div
-                        class="d-flex justify-content-between align-items-center"
-                      >
-                        <small class="text-muted">
-                          <i class="bi bi-clock"></i> 1 week ago
-                        </small>
-                        <a href="./courses.html" class="btn btn-sm btn-secondary"
-                          >Browse Courses</a
-                        >
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <!-- Notifications will be loaded here dynamically -->
             </div>
           </div>
 
           <!-- Empty State (if no notifications) -->
-          <div class="text-center py-5 d-none" id="emptyState">
+          <div class="text-center py-5" id="emptyState">
             <i class="bi bi-bell-slash display-4 text-muted"></i>
             <h5 class="mt-3 text-muted">No notifications</h5>
             <p class="text-muted">
@@ -646,7 +438,7 @@
     });
     </script>
 
-    <!-- <script>
+    <script>
       // Mark all notifications as read
       function markAllAsRead() {
         const notifications = document.querySelectorAll(
@@ -678,7 +470,11 @@
       }
 
       // Filter notifications
-      function filterNotifications(type) {
+      function filterNotifications(type, element) {
+        // Update active tab
+        document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+        element.classList.add('active');
+
         const notifications = document.querySelectorAll(".notification-item");
         notifications.forEach((notif) => {
           if (type === "all") {
@@ -695,7 +491,7 @@
           }
         });
       }
-    </script> -->
+    </script>
     <script src="/js/auth.js"></script>
   </body>
 </html>
