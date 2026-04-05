@@ -122,13 +122,15 @@
     const form = document.querySelector("#login-form");
     const rememberCbx = document.querySelector("#remember");
     const timeout = 30 * 60 * 1000;
+    const params = new URLSearchParams(window.location.search);
+    const redirectTo = params.get('next') || '/profile';
 
     // Redirect if session exists
     const authUser = JSON.parse(localStorage.getItem('sessionUser'));
     const curTimeout = localStorage.getItem('sessionTimeout');
     const guestMode = localStorage.getItem('guestMode') === 'true';
     if (authUser && curTimeout && !guestMode && Date.now() < Number(curTimeout)) {
-        window.location.href = "/profile";
+        window.location.href = redirectTo;
     }
 
     form.addEventListener('submit', async (e) => {
@@ -168,7 +170,7 @@
                 localStorage.setItem("sessionTimeout", Date.now() + timeout);
                 localStorage.setItem("authToken", data.token);
                 localStorage.removeItem("guestMode");
-                setTimeout(() => window.location.href = "/", 2000);
+                setTimeout(() => window.location.href = redirectTo, 2000);
             } else {
                 Swal.fire({ icon: "error", title: "Error", text: data.error || "Login failed" });
             }

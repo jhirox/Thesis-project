@@ -234,7 +234,7 @@
                         text: 'Your account has been created successfully. You can now log in.',
                         confirmButtonColor: '#1a56db'
                     }).then(() => {
-                        window.location.href = '/login';
+                        window.location.href = '/login?next=/enrollment-form';
                     });
                 } else {
                     Swal.fire({
