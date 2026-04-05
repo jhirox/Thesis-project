@@ -318,9 +318,10 @@
                       style="width: 120px; height: 120px"
                     >
                       <img
-                        src="/assets/images/nathphoto.jpg"
+                        src="/assets/images/logo.png"
                         alt="Profile"
                         id="profileImg"
+                        onerror="this.src='/assets/images/logo.png';"
                         style="
                           width: 120px;
                           height: 120px;
@@ -645,6 +646,7 @@
         const dob = document.querySelector('#dob');
         const address = document.querySelector('#address');
         const sex = document.querySelector('#sex');
+        const profileImg = document.querySelector('#profileImg');
         const profileBody = document.querySelector('#profile-body');
         const programInfo = document.querySelector('#programInfo');
         const majorInfo = document.querySelector('#majorInfo');
@@ -718,6 +720,7 @@
           dob.value = '';
           address.value = '';
           sex.value = '';
+          profileImg.src = user.photo || '/assets/images/logo.png';
           programInfo.textContent = 'Not set';
           majorInfo.textContent = 'Not set';
           entryStatus.textContent = 'Not set';
