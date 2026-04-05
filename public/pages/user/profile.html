@@ -294,12 +294,41 @@
             <div class="profile-card col-12 col-lg-4">
               <div class="card shadow-sm h-100">
                 <div class="card-body text-center p-4">
-                  <div class="mb-3">
-                    <div
-                      class="d-inline-flex align-items-center justify-content-center rounded-circle"
-                      style="width: 120px; height: 120px; background-color: #c9ccc9; color: #999;"
+                  <div class="mb-3 position-relative">
+                    <label
+                      for="profilePhotoInput"
+                      class="position-absolute bottom-0 end-0"
                     >
-                      <i class="bi bi-person" style="font-size: 60px;"></i>
+                      <span
+                        class="badge bg-white text-primary rounded-circle p-2 shadow-sm"
+                        style="cursor: pointer"
+                      >
+                        <i class="bi bi-pencil"></i>
+                      </span>
+                    </label>
+                    <input
+                      id="profilePhotoInput"
+                      type="file"
+                      accept="image/*"
+                      class="d-none"
+                    />
+                    <div
+                      id="profilePhotoPreview"
+                      class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center overflow-hidden"
+                      style="width: 120px; height: 120px"
+                    >
+                      <img
+                        src="/assets/images/logo.png"
+                        alt="Profile"
+                        id="profileImg"
+                        onerror="this.src='/assets/images/logo.png';"
+                        style="
+                          width: 120px;
+                          height: 120px;
+                          object-fit: cover;
+                          display: block;
+                        "
+                      />
                     </div>
                   </div>
                   <h4 id="user-full-name" class="fw-bold mb-1"></h4>
@@ -617,6 +646,7 @@
         const dob = document.querySelector('#dob');
         const address = document.querySelector('#address');
         const sex = document.querySelector('#sex');
+        const profileImg = document.querySelector('#profileImg');
         const profileBody = document.querySelector('#profile-body');
         const programInfo = document.querySelector('#programInfo');
         const majorInfo = document.querySelector('#majorInfo');
@@ -690,6 +720,7 @@
           dob.value = '';
           address.value = '';
           sex.value = '';
+          profileImg.src = user.photo || '/assets/images/logo.png';
           programInfo.textContent = 'Not set';
           majorInfo.textContent = 'Not set';
           entryStatus.textContent = 'Not set';
