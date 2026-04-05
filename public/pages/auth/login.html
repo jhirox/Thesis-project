@@ -119,10 +119,6 @@
     </script>
 
 <script type="module">
-    import { user_data } from "/data/user.js";
-    import { validateFields, validate } from "/js/utils/validators.js";
-    import { loginPatterns } from "/js/utils/patterns.js";
-
     const form = document.querySelector("#login-form");
     const rememberCbx = document.querySelector("#remember");
     const timeout = 30 * 60 * 1000;
@@ -135,27 +131,53 @@
         window.location.href = "/profile";
     }
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const email = document.querySelector("#email").value;
+        const email = document.querySelector("#email").value.trim();
         const password = document.querySelector("#password").value;
 
-        const errors = validate(form, loginPatterns);
-        if (errors.length) {
-            Swal.fire({ icon: "error", title: "Error", html: errors.join('<br>') });
+        if (!email || !password) {
+            Swal.fire({ icon: "error", title: "Error", text: "Please enter both email and password" });
             return;
         }
 
-        const authUser = user_data.find(u => u.username === email && u.password === password);
-        if (authUser) {
-            Swal.fire({ icon: "success", title: "Success", text: "Logged in successfully!" });
-            const sessionUser = { user: authUser, loginTime: new Date().toISOString(), isRemember: rememberCbx.checked };
-            localStorage.setItem("sessionUser", JSON.stringify(sessionUser));
-            localStorage.setItem("sessionTimeout", Date.now() + timeout);
-            localStorage.removeItem("guestMode");
-            setTimeout(() => window.location.href = "/", 2000);
-        } else {
-            Swal.fire({ icon: "error", title: "Error", text: "Invalid email or password" });
+        // Show loading
+        const submitBtn = document.querySelector('.btn-login-main');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Logging in...';
+        submitBtn.disabled = true;
+
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                Swal.fire({ icon: "success", title: "Success", text: "Logged in successfully!" });
+                const sessionUser = { user: data.user, loginTime: new Date().toISOString(), isRemember: rememberCbx.checked };
+                localStorage.setItem("sessionUser", JSON.stringify(sessionUser));
+                localStorage.setItem("sessionTimeout", Date.now() + timeout);
+                localStorage.setItem("authToken", data.token);
+                localStorage.removeItem("guestMode");
+                setTimeout(() => window.location.href = "/", 2000);
+            } else {
+                Swal.fire({ icon: "error", title: "Error", text: data.error || "Login failed" });
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            Swal.fire({ icon: "error", title: "Error", text: "Network error. Please try again." });
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
         }
     });
 </script>

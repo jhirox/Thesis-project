@@ -48,6 +48,7 @@ function logout() {
   try {
     localStorage.removeItem('sessionUser');
     localStorage.removeItem('sessionTimeout');
+    localStorage.removeItem('authToken');
     localStorage.removeItem('guestMode');
   } catch (error) {}
 

@@ -8,6 +8,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import db from "./src/config/db.js";
 import studentRoutes from "./src/routes/studentRoutes.js";
+import authRoutes from "./src/routes/authRoutes.js";
 
 // ======================
 // CONFIG
@@ -40,6 +41,7 @@ app.use(express.static(publicPath));
 // API ROUTES
 // ======================
 app.use("/api/students", studentRoutes);
+app.use("/api/auth", authRoutes);
 
 // ======================
 // CLEAN URL ROUTES

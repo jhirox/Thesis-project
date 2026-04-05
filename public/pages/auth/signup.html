@@ -179,7 +179,7 @@
             bootstrap.Modal.getInstance(document.getElementById('termsModal')).hide();
         });
 
-        document.querySelector('form').addEventListener('submit', (e) => {
+        document.querySelector('form').addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const email = document.getElementById('email').value.trim();
@@ -205,6 +205,56 @@
             }
             if (!terms) {
                 Swal.fire({ icon: 'warning', title: 'Terms & Conditions', text: 'You must accept the Terms and Conditions to create an account.', confirmButtonColor: '#1a56db' }); return;
+            }
+
+            // Show loading
+            const submitBtn = document.querySelector('.btn-signup-main');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Creating Account...';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Account Created!',
+                        text: 'Your account has been created successfully. You can now log in.',
+                        confirmButtonColor: '#1a56db'
+                    }).then(() => {
+                        window.location.href = '/login';
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Signup Failed',
+                        text: data.error || 'An error occurred during signup.',
+                        confirmButtonColor: '#1a56db'
+                    });
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Network Error',
+                    text: 'Please check your connection and try again.',
+                    confirmButtonColor: '#1a56db'
+                });
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
             }
         });
     </script>
