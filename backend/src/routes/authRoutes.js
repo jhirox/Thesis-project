@@ -16,7 +16,7 @@ router.post('/signup', async (req, res) => {
     }
 
     // Check if user already exists
-    const [existingUser] = await db.execute(
+    const [existingUser] = await db.query(
       'SELECT user_id FROM users WHERE email = ?',
       [email]
     );
@@ -30,7 +30,7 @@ router.post('/signup', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Insert new user (assuming role_id 1 is student, adjust as needed)
-    const [result] = await db.execute(
+    const [result] = await db.query(
       'INSERT INTO users (email, password, role_id, is_active, created_date) VALUES (?, ?, ?, ?, NOW())',
       [email, hashedPassword, 1, 1] // role_id 1 for student, is_active 1
     );
@@ -53,7 +53,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Find user
-    const [users] = await db.execute(
+    const [users] = await db.query(
       'SELECT user_id, email, password, role_id, is_active FROM users WHERE email = ?',
       [email]
     );
