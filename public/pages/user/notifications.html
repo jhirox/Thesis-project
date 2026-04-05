@@ -416,7 +416,8 @@
                 fullName.textContent = authUser.user.fullname;
                 checkSession();
             } else {
-                    window.location.href = "../auth/login.html";
+                window.location.href = "../auth/login.html";
+            }
 
             // signOutBtn.addEventListener('click', () => {
             //     localStorage.removeItem('sessionUser');
@@ -427,9 +428,10 @@
                 logout();
             });
 
-            ['mousemove', 'keydown', 'click',].forEach(event => {
+            ['mousemove', 'keydown', 'click'].forEach(event => {
                 document.addEventListener(event, () => {
-                checkSession();
+                    checkSession();
+                });
             });
             } catch (error) {
                 // If localStorage or JSON parsing fails, redirect to login
