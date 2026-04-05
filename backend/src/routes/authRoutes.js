@@ -25,6 +25,12 @@ router.post('/signup', async (req, res) => {
       return res.status(409).json({ error: 'User already exists' });
     }
 
+    // Ensure default role exists
+    const [roleRows] = await db.query('SELECT id FROM role WHERE id = ?', [1]);
+    if (roleRows.length === 0) {
+      return res.status(500).json({ error: 'Default role is not configured in the database. Please create role id 1.' });
+    }
+
     // Hash password
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);

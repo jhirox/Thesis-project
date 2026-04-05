@@ -243,6 +243,36 @@ app.get("/test-enrollments", async (req, res) => {
   }
 });
 
+// Check users table structure
+app.get("/test-users", async (req, res) => {
+  try {
+    // Check if table exists and get structure
+    const [columns] = await db.query("DESCRIBE users");
+    
+    // Get sample data if any
+    const [rows] = await db.query("SELECT * FROM users LIMIT 5");
+    
+    res.json({ 
+      message: "Users table exists!", 
+      columns: columns,
+      sampleData: rows,
+      count: rows.length
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message, details: "Users table may not exist or has no columns" });
+  }
+});
+
+app.get("/env-debug", (req, res) => {
+  res.json({
+    MYSQLHOST: process.env.MYSQLHOST || null,
+    MYSQLUSER: process.env.MYSQLUSER || null,
+    MYSQLPASSWORD: process.env.MYSQLPASSWORD ? "SET" : null,
+    MYSQLDATABASE: process.env.MYSQLDATABASE || null,
+    MYSQLPORT: process.env.MYSQLPORT || null
+  });
+});
+
 // ======================
 // 404 HANDLER
 // ======================
@@ -253,6 +283,12 @@ app.use((req, res) => {
 // ======================
 // START SERVER
 // ======================
+const routeStack = app._router ? app._router.stack : [];
+console.log('Registered routes:', routeStack
+  .filter(layer => layer.route)
+  .map(layer => `${Object.keys(layer.route.methods).join(',').toUpperCase()} ${layer.route.path}`)
+);
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
