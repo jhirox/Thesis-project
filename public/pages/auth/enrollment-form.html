@@ -79,7 +79,7 @@
                     </div>
 
                     <!-- Dynamic Spouse Field -->
-                    <div class="col-md-4" id="spouseContainer" style="display:none;">
+                    <div class="col-md-4" id="spouseContainer">
                         <label class="form-label">Spouse Name</label>
                         <input type="text" id="spouseName" class="form-control" placeholder="Enter spouse's full name">
                     </div>
@@ -114,23 +114,42 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">Program / Course</label>
-                        <select id="program" class="form-select" required>
-                            <option value="">Select</option>
-                            <optgroup label="BSBA - Business Administration">
-                                <option>BSBA Major in Marketing Management</option>
-                                <option>BSBA Major in Financial Management</option>
-                                <option>BSBA Major in Human Resource Management</option>
-                            </optgroup>
-                            <optgroup label="BSED - Secondary Education">
-                                <option>BSED Major in English</option>
-                                <option>BSED Major in Mathematics</option>
-                                <option>BSED Major in Filipino</option>
-                            </optgroup>
-                            <option>BEED - Bachelor of Elementary Education</option>
-                            <option>BSCS - Bachelor of Science in Computer Science</option>
-                            <option>BSCRIM - Bachelor of Science in Criminology</option>
-                        </select>
+                        <label class="form-label" for="program">Program / Course</label>
+                        <div class="program-picker">
+                            <div class="program-picker-header">
+                                <div>
+                                    <p>Choose the course you want to enroll in. Programs are grouped to make searching easier.</p>
+                                </div>
+                                <span class="program-selected-badge is-empty" id="programSelectedBadge" aria-live="polite">
+                                    <i class="bi bi-mortarboard-fill" aria-hidden="true"></i>
+                                    <span id="programSelectedText">No program selected</span>
+                                </span>
+                            </div>
+                            <div class="program-native-select">
+                                <div class="program-select-shell">
+                                    <i class="bi bi-journal-bookmark-fill program-select-icon" aria-hidden="true"></i>
+                                    <select id="program" class="form-select program-select" required aria-describedby="programHelp">
+                                        <option value="">Select your preferred program</option>
+                                        <optgroup label="BSBA - Business Administration">
+                                            <option>BSBA Major in Marketing Management</option>
+                                            <option>BSBA Major in Financial Management</option>
+                                            <option>BSBA Major in Human Resource Management</option>
+                                        </optgroup>
+                                        <optgroup label="BSED - Secondary Education">
+                                            <option>BSED Major in English</option>
+                                            <option>BSED Major in Mathematics</option>
+                                            <option>BSED Major in Filipino</option>
+                                        </optgroup>
+                                        <option>BEED - Bachelor of Elementary Education</option>
+                                        <option>BSCS - Bachelor of Science in Computer Science</option>
+                                        <option>BSCRIM - Bachelor of Science in Criminology</option>
+                                    </select>
+                                </div>
+                                <div id="programHelp" class="form-text program-help-text">
+                                    Tip: open the list and choose the exact major or degree that matches your application.
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -357,6 +376,8 @@
             const civilStatus = document.getElementById("civilStatus");
             const spouseContainer = document.getElementById("spouseContainer");
             const programSelect = document.getElementById("program");
+            const programSelectedBadge = document.getElementById("programSelectedBadge");
+            const programSelectedText = document.getElementById("programSelectedText");
             const officialReceiptImageInput = document.getElementById("officialReceiptImage");
             const officialReceiptNumberInput = document.getElementById("officialReceiptNumber");
 
@@ -367,6 +388,16 @@
 
             const termsLink = document.getElementById("termsLink");
             const conditionsLink = document.getElementById("conditionsLink");
+
+            const updateProgramSelection = () => {
+                const selectedLabel = programSelect.value
+                    ? programSelect.options[programSelect.selectedIndex].text
+                    : "No program selected";
+
+                programSelectedText.textContent = selectedLabel;
+                programSelectedBadge.classList.toggle("is-selected", Boolean(programSelect.value));
+                programSelectedBadge.classList.toggle("is-empty", !programSelect.value);
+            };
 
             // Toggle Spouse field
             civilStatus.addEventListener("change", () => {
@@ -384,6 +415,9 @@
                 e.preventDefault();
                 conditionsModal.show();
             });
+
+            programSelect.addEventListener("change", updateProgramSelection);
+            updateProgramSelection();
 
             const generateQueueNumber = () => {
                 const prefix = ["A", "B", "C", "D"][Math.floor(Math.random() * 4)];
@@ -426,6 +460,7 @@
                 officialReceiptNumberInput.value = "";
                 agreeTerms.checked = false;
                 spouseContainer.style.display = "none";
+                updateProgramSelection();
             });
         });
     </script>
