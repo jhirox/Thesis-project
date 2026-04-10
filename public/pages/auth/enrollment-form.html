@@ -261,13 +261,13 @@
                     <div class="col-md-6">
                         <label class="form-label">Official Receipt Image</label>
                         <input type="file" id="officialReceiptImage" class="form-control" accept="image/*">
-                        <div class="form-text">Upload a clear image of the Official Receipt if available.</div>
+                        <div class="form-text">Upload an image of your official receipt if available.</div>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label">Official Receipt Number</label>
-                        <input type="text" id="officialReceiptNumber" class="form-control" placeholder="Enter OR number if no image is available">
-                        <div class="form-text">If you do not have an image, you may enter the OR number instead.</div>
+                        <input type="text" id="officialReceiptNumber" class="form-control" placeholder="Enter the OR number if no image is available">
+                        <div class="form-text">If you do not have a receipt image yet, you can type the OR number instead.</div>
                     </div>
 
                     <!-- TERMS + SUBMIT -->
@@ -412,105 +412,41 @@
                 conditionsModal.show();
             });
 
-            const getValue = (id) => document.getElementById(id)?.value.trim() || "";
+            const generateQueueNumber = () => {
+                const prefix = ["A", "B", "C", "D"][Math.floor(Math.random() * 4)];
+                const number = Math.floor(Math.random() * 900) + 100;
+                return `${prefix}${number}`;
+            };
 
-            const readFileAsDataUrl = (file) => new Promise((resolve, reject) => {
-                if (!file) {
-                    resolve(null);
+            // Form submit
+            form.addEventListener("submit", e => {
+                e.preventDefault();
+
+                if (!form.checkValidity()) {
+                    form.reportValidity();
                     return;
                 }
 
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = () => reject(new Error("Failed to read Official Receipt image."));
-                reader.readAsDataURL(file);
-            });
-
-            // Form submit
-            form.addEventListener("submit", async e => {
-                e.preventDefault();
                 if (!agreeTerms.checked) {
                     warningModal.show();
                     return;
                 }
 
-                const officialReceiptNumber = officialReceiptNumberInput.value.trim();
-                const officialReceiptImageFile = officialReceiptImageInput.files[0];
-
-                if (!officialReceiptImageFile && !officialReceiptNumber) {
+                if (!officialReceiptImageInput.files.length && !officialReceiptNumberInput.value.trim()) {
                     alert("Please upload an Official Receipt image or enter the Official Receipt number.");
+                    officialReceiptNumberInput.focus();
                     return;
                 }
 
-                let officialReceiptImage = null;
+                queueNumber.textContent = `#${generateQueueNumber()}`;
+                successModal.show();
+                console.log("Enrollment form preview submitted.");
 
-                try {
-                    officialReceiptImage = await readFileAsDataUrl(officialReceiptImageFile);
-                } catch (error) {
-                    console.error(error);
-                    alert("Unable to read the Official Receipt image. Please try again.");
-                    return;
-                }
-
-                const data = {
-                    firstName: getValue('firstName'),
-                    middleName: getValue('middleName'),
-                    lastName: getValue('lastName'),
-                    suffix: getValue('suffix'),
-                    birthDate: getValue('birthDate'),
-                    birthPlace: getValue('birthPlace'),
-                    sex: getValue('sex'),
-                    civilStatus: getValue('civilStatus'),
-                    spouseName: getValue('civilStatus') === 'Married' ? getValue('spouseName') : null,
-                    nationality: getValue('nationality'),
-                    religion: getValue('religion'),
-                    email: getValue('email'),
-                    contactNumber: getValue('contactNumber'),
-                    address: getValue('address'),
-                    program: getValue('program'),
-                    learningModality: getValue('learningModality'),
-                    studentType: getValue('studentType'),
-                    highestAttainment: getValue('highestAttainment'),
-                    lastSchool: getValue('lastSchool'),
-                    lastSchoolYear: getValue('lastSchoolYear'),
-                    semester: getValue('semester'),
-                    workingStatus: getValue('workingStatus'),
-                    motherMaiden: getValue('motherMaiden'),
-                    fatherName: getValue('fatherName'),
-                    guardianName: getValue('guardianName'),
-                    guardianContact: getValue('guardianContact'),
-                    remarks: getValue('remarks'),
-                    officialReceiptNumber,
-                    officialReceiptImage,
-                    officialReceiptImageName: officialReceiptImageFile ? officialReceiptImageFile.name : null,
-                    agreedToTerms: agreeTerms.checked,
-                    agreedAt: new Date().toISOString()
-                };
-
-                try {
-                    const response = await fetch('/api/students/enrollment', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(data)
-                    });
-
-                    const result = await response.json();
-
-                    if (result.success) {
-                        queueNumber.textContent = `#${result.queueNumber}`;
-                        successModal.show();
-                        form.reset();
-                        agreeTerms.checked = false;
-                        spouseContainer.style.display = "none";
-                    } else {
-                        alert('Error submitting enrollment: ' + result.message);
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('Error submitting enrollment. Please try again.');
-                }
+                form.reset();
+                officialReceiptImageInput.value = "";
+                officialReceiptNumberInput.value = "";
+                agreeTerms.checked = false;
+                spouseContainer.style.display = "none";
             });
         });
     </script>
