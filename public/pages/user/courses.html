@@ -519,6 +519,55 @@
         </footer>
       </main>
 
+    <!-- Login Required Modal -->
+    <div
+      class="modal fade"
+      id="loginRequiredModal"
+      tabindex="-1"
+      aria-labelledby="loginRequiredModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-warning text-dark">
+            <h5 class="modal-title fw-bold" id="loginRequiredModalLabel">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>Login Required
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body text-center py-4">
+            <div class="mb-3">
+              <i class="bi bi-person-x display-1 text-warning"></i>
+            </div>
+            <h5 class="fw-bold mb-3">You are not logged in yet</h5>
+            <p class="text-muted mb-4">
+              Please log in to your account to apply for this program and submit your application.
+            </p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <a id="modalLoginLink" href="/login" class="btn btn-primary px-4">
+              <i class="bi bi-box-arrow-in-right me-2"></i>Login
+            </a>
+            <a id="modalSignupLink" href="/signup" class="btn btn-outline-primary px-4">
+              <i class="bi bi-person-plus me-2"></i>Sign Up
+            </a>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Course Details Modal -->
     <div
       class="modal fade"
@@ -546,11 +595,12 @@
             <ul id="courseModalList" class="small"></ul>
           </div>
           <div class="modal-footer">
-            <a
+            <button
+              type="button"
               id="enrollBtn"
-              href="/enrollment-form"
               class="btn btn-primary"
-              >Apply / Enroll</a
+              onclick="handleCourseEnrollment()"
+              >Apply / Enroll</button
             >
             <button
               type="button"
@@ -700,18 +750,51 @@
     </script>
 
     <script>
-      // Set enroll button href based on guest mode
-      document.addEventListener('DOMContentLoaded', function() {
-        const guestMode = localStorage.getItem('guestMode') === 'true';
-        const enrollBtn = document.getElementById('enrollBtn');
-        if (enrollBtn) {
-          if (guestMode) {
-            enrollBtn.href = '/login';
-          } else {
-            enrollBtn.href = '/enrollment-form';
-          }
+      // Session validation
+      function isSessionValid() {
+        const sessionUser = localStorage.getItem('sessionUser');
+        const sessionTimeout = localStorage.getItem('sessionTimeout');
+        const now = Date.now();
+
+        if (!sessionUser || !sessionTimeout) {
+          return false;
         }
-      });
+
+        const timeout = parseInt(sessionTimeout, 10);
+        return !isNaN(timeout) && now < timeout;
+      }
+
+      // Set modal auth redirect links
+      function setModalAuthRedirect(nextPath) {
+        const nextParam = encodeURIComponent(nextPath);
+        const loginLink = document.getElementById('modalLoginLink');
+        const signupLink = document.getElementById('modalSignupLink');
+
+        if (loginLink) {
+          loginLink.href = '/login?next=' + nextParam;
+        }
+        if (signupLink) {
+          signupLink.href = '/signup?next=' + nextParam;
+        }
+      }
+
+      // Handle course enrollment click
+      function handleCourseEnrollment() {
+        try {
+          if (!isSessionValid()) {
+            setModalAuthRedirect('/enrollment-form');
+            const loginModal = new bootstrap.Modal(document.getElementById('loginRequiredModal'));
+            loginModal.show();
+          } else {
+            window.location.href = '/enrollment-form';
+          }
+        } catch (error) {
+          console.log('Error checking session:', error);
+          setModalAuthRedirect('/enrollment-form');
+          const loginModal = new bootstrap.Modal(document.getElementById('loginRequiredModal'));
+          loginModal.show();
+        }
+      }
     </script>
   </body>
 </html>
