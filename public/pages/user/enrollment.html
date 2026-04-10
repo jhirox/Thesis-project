@@ -543,10 +543,10 @@
             </p>
           </div>
           <div class="modal-footer justify-content-center">
-            <a href="/login" class="btn btn-primary px-4">
+            <a id="modalLoginLink" href="/login" class="btn btn-primary px-4">
               <i class="bi bi-box-arrow-in-right me-2"></i>Login
             </a>
-            <a href="/signup" class="btn btn-outline-primary px-4">
+            <a id="modalSignupLink" href="/signup" class="btn btn-outline-primary px-4">
               <i class="bi bi-person-plus me-2"></i>Sign Up
             </a>
             <button
@@ -630,9 +630,23 @@
         }
       }
 
+      function setModalAuthRedirect(nextPath) {
+        const nextParam = encodeURIComponent(nextPath);
+        const loginLink = document.getElementById('modalLoginLink');
+        const signupLink = document.getElementById('modalSignupLink');
+
+        if (loginLink) {
+          loginLink.href = '/login?next=' + nextParam;
+        }
+        if (signupLink) {
+          signupLink.href = '/signup?next=' + nextParam;
+        }
+      }
+
       function handleEnrollmentClick() {
         try {
           if (!isSessionValid()) {
+            setModalAuthRedirect('/enrollment-form');
             const loginModal = new bootstrap.Modal(document.getElementById('loginRequiredModal'));
             loginModal.show();
           } else {
@@ -640,6 +654,7 @@
           }
         } catch (error) {
           console.log('Error checking session:', error);
+          setModalAuthRedirect('/enrollment-form');
           const loginModal = new bootstrap.Modal(document.getElementById('loginRequiredModal'));
           loginModal.show();
         }
