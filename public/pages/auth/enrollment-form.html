@@ -392,7 +392,7 @@
             };
 
             // Form submit
-            form.addEventListener("submit", e => {
+            form.addEventListener("submit", async e => {
                 e.preventDefault();
 
                 if (!form.checkValidity()) {
@@ -411,21 +411,81 @@
                     return;
                 }
 
-                if (!officialReceiptImageInput.files.length && !officialReceiptNumberInput.value.trim()) {
+                const orNumber = officialReceiptNumberInput.value.trim();
+                const orImageFile = officialReceiptImageInput.files[0];
+
+                if (!orImageFile && !orNumber) {
                     alert("Please upload an Official Receipt image or enter the Official Receipt number.");
                     officialReceiptNumberInput.focus();
                     return;
                 }
 
-                queueNumber.textContent = `#${generateQueueNumber()}`;
-                successModal.show();
-                console.log("Enrollment form preview submitted.");
+                const sessionUser = JSON.parse(localStorage.getItem('sessionUser') || 'null');
+                const authToken = localStorage.getItem('authToken');
 
-                form.reset();
-                officialReceiptImageInput.value = "";
-                officialReceiptNumberInput.value = "";
-                agreeTerms.checked = false;
-                spouseContainer.style.display = "none";
+                const payload = {
+                    firstName: document.getElementById('firstName').value.trim(),
+                    middleName: document.getElementById('middleName').value.trim(),
+                    lastName: document.getElementById('lastName').value.trim(),
+                    suffix: document.getElementById('suffix').value.trim(),
+                    birthDate: document.getElementById('birthDate').value,
+                    birthPlace: document.getElementById('birthPlace').value.trim(),
+                    sex: document.getElementById('sex').value,
+                    civilStatus: document.getElementById('civilStatus').value,
+                    spouseName: document.getElementById('spouseName').value.trim(),
+                    nationality: document.getElementById('nationality').value.trim(),
+                    religion: document.getElementById('religion').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    contactNumber: document.getElementById('contactNumber').value.trim(),
+                    address: document.getElementById('address').value.trim(),
+                    program: document.getElementById('program').value,
+                    learningModality: document.getElementById('learningModality').value,
+                    studentType: document.getElementById('studentType').value,
+                    highestAttainment: document.getElementById('highestAttainment').value,
+                    lastSchool: document.getElementById('lastSchool').value.trim(),
+                    lastSchoolYear: document.getElementById('lastSchoolYear').value.trim(),
+                    semester: document.getElementById('semester').value,
+                    workingStatus: document.getElementById('workingStatus').value,
+                    motherMaiden: document.getElementById('motherMaiden').value.trim(),
+                    fatherName: document.getElementById('fatherName').value.trim(),
+                    guardianName: document.getElementById('guardianName').value.trim(),
+                    guardianContact: document.getElementById('guardianContact').value.trim(),
+                    remarks: document.getElementById('remarks').value.trim(),
+                    agreedToTerms: agreeTerms.checked,
+                    agreedAt: new Date().toISOString(),
+                    orNumber,
+                    orImagePath: orImageFile ? orImageFile.name : null,
+                    authUserId: sessionUser?.user?.id || null
+                };
+
+                try {
+                    const response = await fetch('/api/students/enrollment', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await response.json();
+                    if (!response.ok) {
+                        const errorText = data.error || data.message || 'Unable to submit enrollment.';
+                        alert(errorText);
+                        return;
+                    }
+
+                    queueNumber.textContent = `#${data.queueNumber}`;
+                    successModal.show();
+                    form.reset();
+                    officialReceiptImageInput.value = "";
+                    officialReceiptNumberInput.value = "";
+                    agreeTerms.checked = false;
+                    spouseContainer.style.display = "none";
+                } catch (error) {
+                    console.error('Enrollment submit error:', error);
+                    alert('Network error while submitting the enrollment. Please try again.');
+                }
             });
         });
     </script>

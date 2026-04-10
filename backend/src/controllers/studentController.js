@@ -95,8 +95,23 @@ export const submitEnrollment = async (req, res) => {
       guardianContact,
       remarks,
       agreedToTerms,
-      agreedAt
+      agreedAt,
+      orNumber,
+      orImagePath,
+      authUserId
     } = req.body;
+
+    // Find student record by email when available
+    let studentId = null;
+    if (email) {
+      const [studentRows] = await db.query(
+        "SELECT student_id FROM students WHERE email_address = ? LIMIT 1",
+        [email]
+      );
+      if (studentRows.length > 0) {
+        studentId = studentRows[0].student_id;
+      }
+    }
 
     // Generate queue number
     const queueNumber = generateQueueNumber();
@@ -109,11 +124,12 @@ export const submitEnrollment = async (req, res) => {
         highest_educational_attainment, last_school_attended, last_school_year, working_student,
         mother_maiden_name, father_name, guardian_name, guardian_contact,
         program_id, modality_id, student_type_id, semester_types,
-        academic_year, enrollment_date, queue_number, application_status,
-        special_remarks, agreed_to_terms, agreed_at, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, 'Submitted', ?, ?, ?, NOW(), NOW())
+        academic_year, enrollment_date, or_number, or_image_path, payment_verified_at,
+        queue_number, application_status, special_remarks, agreed_to_terms, agreed_at, created_at, updated_at,
+        reviewed_by_admin_id, reviewed_at, reviewed_remarks
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, 'Submitted', ?, ?, ?, NOW(), NOW(), NULL, NULL, NULL)
     `, [
-      null, // student_id
+      studentId,
       firstName,
       middleName,
       lastName,
@@ -141,10 +157,14 @@ export const submitEnrollment = async (req, res) => {
       getStudentTypeId(studentType),
       semester,
       getAcademicYear(),
+      new Date(),
+      orNumber || null,
+      orImagePath || null,
+      null,
       queueNumber,
       remarks || null,
       agreedToTerms ? 1 : 0,
-      agreedAt
+      agreedAt || new Date()
     ]);
 
     res.status(201).json({
