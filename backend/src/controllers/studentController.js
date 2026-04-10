@@ -101,7 +101,7 @@ export const submitEnrollment = async (req, res) => {
       authUserId
     } = req.body;
 
-    // Find student record by email when available
+    // Check if student already exists by email
     let studentId = null;
     if (email) {
       const [studentRows] = await db.query(
@@ -113,54 +113,95 @@ export const submitEnrollment = async (req, res) => {
       }
     }
 
+    // If student doesn't exist, create new student record
+    if (!studentId) {
+      const [studentResult] = await db.query(`
+        INSERT INTO students (
+          first_name, middle_name, last_name, suffix, birth_date, birth_place, sex,
+          civil_status, spouse_name, nationality, religion, email_address, contact_number,
+          complete_address, is_active, created_date, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), NOW())
+      `, [
+        firstName,
+        middleName,
+        lastName,
+        suffix,
+        birthDate,
+        birthPlace,
+        sex,
+        civilStatus,
+        spouseName,
+        nationality,
+        religion,
+        email,
+        contactNumber,
+        address
+      ]);
+      studentId = studentResult.insertId;
+    }
+
+    // Insert family information if provided
+    if (motherMaiden || fatherName || guardianName) {
+      await db.query(`
+        INSERT INTO family_information (
+          student_id, mother_maiden_name, father_name, guardian_name, guardian_contact, guardian_relationship, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, 'Guardian', NOW(), NOW())
+        ON DUPLICATE KEY UPDATE
+          mother_maiden_name = VALUES(mother_maiden_name),
+          father_name = VALUES(father_name),
+          guardian_name = VALUES(guardian_name),
+          guardian_contact = VALUES(guardian_contact),
+          updated_at = NOW()
+      `, [
+        studentId,
+        motherMaiden || null,
+        fatherName || null,
+        guardianName || null,
+        guardianContact || null
+      ]);
+    }
+
+    // Insert academic history if provided
+    if (highestAttainment || lastSchool) {
+      await db.query(`
+        INSERT INTO academic_history (
+          student_id, highest_attainment, last_school_attended, last_school_year, is_working, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, NOW(), NOW())
+        ON DUPLICATE KEY UPDATE
+          highest_attainment = VALUES(highest_attainment),
+          last_school_attended = VALUES(last_school_attended),
+          last_school_year = VALUES(last_school_year),
+          is_working = VALUES(is_working),
+          updated_at = NOW()
+      `, [
+        studentId,
+        highestAttainment || null,
+        lastSchool || null,
+        lastSchoolYear || null,
+        workingStatus === 'Working student' ? 1 : 0
+      ]);
+    }
+
     // Generate queue number
     const queueNumber = generateQueueNumber();
 
     // Insert into enrollments table
     const [result] = await db.query(`
       INSERT INTO enrollments (
-        student_id, first_name, middle_name, last_name, suffix, birth_date, birth_place, sex,
-        civil_status, spouse_name, nationality, religion, email, contact_number, address,
-        highest_educational_attainment, last_school_attended, last_school_year, working_student,
-        mother_maiden_name, father_name, guardian_name, guardian_contact,
-        program_id, modality_id, student_type_id, semester_types,
+        student_id, program_id, modality_id, student_type_id, semester_types,
         academic_year, enrollment_date, or_number, or_image_path, payment_verified_at,
-        queue_number, application_status, special_remarks, agreed_to_terms, agreed_at, created_at, updated_at,
-        reviewed_by_admin_id, reviewed_at, reviewed_remarks
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, 'Submitted', ?, ?, ?, NOW(), NOW(), NULL, NULL, NULL)
+        queue_number, application_status, special_remarks, agreed_to_terms, agreed_at,
+        created_at, updated_at, reviewed_by_admin_id, reviewed_at, reviewed_remarks
+      ) VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?, NULL, ?, 'Submitted', ?, ?, ?, NOW(), NOW(), NULL, NULL, NULL)
     `, [
       studentId,
-      firstName,
-      middleName,
-      lastName,
-      suffix,
-      birthDate,
-      birthPlace,
-      sex,
-      civilStatus,
-      spouseName,
-      nationality,
-      religion,
-      email,
-      contactNumber,
-      address,
-      highestAttainment,
-      lastSchool,
-      lastSchoolYear,
-      workingStatus === 'Working student' ? 1 : 0,
-      motherMaiden,
-      fatherName,
-      guardianName,
-      guardianContact,
       getProgramId(program),
       getModalityId(learningModality),
       getStudentTypeId(studentType),
       semester,
       getAcademicYear(),
-      new Date(),
       orNumber || null,
       orImagePath || null,
-      null,
       queueNumber,
       remarks || null,
       agreedToTerms ? 1 : 0,
