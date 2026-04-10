@@ -96,7 +96,7 @@
                         <a href="/registrarlogin.html">Registrar</a>
                     </div>
                     <div>
-                        Don't have an account? <a href="/signup">Create</a>
+                        Don't have an account? <a id="loginSignupLink" href="/signup">Create</a>
                     </div>
                 </div>
 
@@ -115,6 +115,15 @@
         function setGuestMode() {
             localStorage.setItem('guestMode', 'true');
             window.location.href = '/';
+        }
+    </script>
+
+<script>
+        const loginParams = new URLSearchParams(window.location.search);
+        const loginRedirectTo = loginParams.get('next') || '/';
+        const loginSignupLink = document.getElementById('loginSignupLink');
+        if (loginSignupLink) {
+            loginSignupLink.href = '/signup?next=' + encodeURIComponent(loginRedirectTo);
         }
     </script>
 
