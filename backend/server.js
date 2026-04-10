@@ -90,6 +90,10 @@ app.get("/adminlogin", (req, res) =>
   res.sendFile(path.join(publicPath, "pages/auth/adminlogin.html"))
 );
 
+app.get("/enrollment-form", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/auth/enrollment-form.html"))
+);
+
 app.get("/registrarlogin", (req, res) =>
   res.sendFile(path.join(publicPath, "pages/auth/registrarlogin.html"))
 );
@@ -186,7 +190,8 @@ app.get(
     "/adminlogin.html",
     "/accounts.html",
     "/rep-and-analytics.html",
-    "/enrollment-form.html"
+    "/enrollment-form.html",
+    "/adminsignup.html"
   ],
   (req, res) => {
     const cleanMap = {
@@ -208,7 +213,8 @@ app.get(
       "application-queue.html": "/application-queue",
       "notification.html": "/notification",
       "rep-and-analytics.html": "/rep-and-analytics",
-      "enrollment-form.html": "/enrollment-form"
+      "enrollment-form.html": "/enrollment-form",
+      "adminsignup.html": "/adminsignup"
     };
 
     const cleanPath = cleanMap[req.path.substring(1)];

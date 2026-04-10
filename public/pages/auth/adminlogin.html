@@ -117,10 +117,10 @@
         if (authUser && authUser != null && curTimeout && Date.now() < Number(curTimeout)) {
             if (authUser.user.role === "user") {
                 window.location.href = "/profile.html";
-            } else if (authUser.user.role === "registrar") {
-                window.location.href = "/registrardashboard.html";
+            } else if (authUser.user.role === "/registrar") {
+                window.location.href = "/registrardashboard";
             } else {
-                window.location.href = "/dashboard.html";
+                window.location.href = "/dashboard";
             }
         }
 
@@ -172,9 +172,9 @@
                                 if (authUser.role === "user") {
                                     window.location.href = "/profile.html";
                                 } else if (authUser.role === "registrar") {
-                                    window.location.href = "/registrardashboard.html";
+                                    window.location.href = "/registrardashboard";
                                 } else {
-                                    window.location.href = "/dashboard.html";
+                                    window.location.href = "/dashboard";
                                 }
                             }, 2000);
                         } else {
