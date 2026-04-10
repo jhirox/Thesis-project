@@ -123,7 +123,7 @@
     const rememberCbx = document.querySelector("#remember");
     const timeout = 30 * 60 * 1000;
     const params = new URLSearchParams(window.location.search);
-    const redirectTo = params.get('next') || '/profile';
+    const redirectTo = params.get('next') || '/';
 
     // Redirect if session exists
     const authUser = JSON.parse(localStorage.getItem('sessionUser'));
