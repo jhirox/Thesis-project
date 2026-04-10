@@ -113,50 +113,24 @@
                         <h4 class="fw-bold text-primary">Academic Details</h4>
                     </div>
 
-                    <div class="col-12">
+                    <div class="col-md-6">
                         <label class="form-label">Program / Course</label>
-                        <div class="program-picker">
-                            <div class="program-picker-header">
-                                <p>Select your program from the dropdown. Courses are grouped by department to make them easier to find.</p>
-                                <div class="program-selected-badge">
-                                    <i class="bi bi-mortarboard-fill"></i>
-                                    <span id="selectedProgramText">No program selected yet</span>
-                                </div>
-                            </div>
-
-                            <div class="program-legend" aria-hidden="true">
-                                <span class="program-legend-chip">BSBA</span>
-                                <span class="program-legend-chip">BSED</span>
-                                <span class="program-legend-chip">BEED</span>
-                                <span class="program-legend-chip">BSCS</span>
-                                <span class="program-legend-chip">BSCRIM</span>
-                            </div>
-
-                            <div class="program-group-title">Available Degree Programs</div>
-                            <select id="program" class="form-select form-select-lg program-native-select" aria-label="Program or course">
-                                <option value="">Choose your program / course</option>
-                                <optgroup label="BSBA - Business Administration">
-                                    <option>BSBA Major in Marketing Management</option>
-                                    <option>BSBA Major in Financial Management</option>
-                                    <option>BSBA Major in Human Resource Management</option>
-                                </optgroup>
-                                <optgroup label="BSED - Secondary Education">
-                                    <option>BSED Major in English</option>
-                                    <option>BSED Major in Mathematics</option>
-                                    <option>BSED Major in Filipino</option>
-                                </optgroup>
-                                <optgroup label="Other Degree Programs">
-                                    <option>BEED - Bachelor of Elementary Education</option>
-                                    <option>BSCS - Bachelor of Science in Computer Science</option>
-                                    <option>BSCRIM - Bachelor of Science in Criminology</option>
-                                </optgroup>
-                            </select>
-
-                            <div class="program-help-list">
-                                <div><strong>Tip:</strong> BSBA and BSED have majors under the same program group.</div>
-                                <div><strong>Mobile:</strong> Tap the dropdown once, then scroll the grouped list to choose your course.</div>
-                            </div>
-                        </div>
+                        <select id="program" class="form-select" required>
+                            <option value="">Select</option>
+                            <optgroup label="BSBA - Business Administration">
+                                <option>BSBA Major in Marketing Management</option>
+                                <option>BSBA Major in Financial Management</option>
+                                <option>BSBA Major in Human Resource Management</option>
+                            </optgroup>
+                            <optgroup label="BSED - Secondary Education">
+                                <option>BSED Major in English</option>
+                                <option>BSED Major in Mathematics</option>
+                                <option>BSED Major in Filipino</option>
+                            </optgroup>
+                            <option>BEED - Bachelor of Elementary Education</option>
+                            <option>BSCS - Bachelor of Science in Computer Science</option>
+                            <option>BSCRIM - Bachelor of Science in Criminology</option>
+                        </select>
                     </div>
 
                     <div class="col-md-6">
@@ -383,7 +357,6 @@
             const civilStatus = document.getElementById("civilStatus");
             const spouseContainer = document.getElementById("spouseContainer");
             const programSelect = document.getElementById("program");
-            const selectedProgramText = document.getElementById("selectedProgramText");
             const officialReceiptImageInput = document.getElementById("officialReceiptImage");
             const officialReceiptNumberInput = document.getElementById("officialReceiptNumber");
 
@@ -399,16 +372,6 @@
             civilStatus.addEventListener("change", () => {
                 spouseContainer.style.display = civilStatus.value === "Married" ? "block" : "none";
             });
-
-            const syncProgramSelection = (selectedValue) => {
-                selectedProgramText.textContent = selectedValue || "No program selected yet";
-            };
-
-            programSelect.addEventListener("change", () => {
-                syncProgramSelection(programSelect.value);
-            });
-
-            syncProgramSelection(programSelect.value);
 
             // Show Terms modal
             termsLink.addEventListener("click", (e) => {
@@ -463,7 +426,6 @@
                 officialReceiptNumberInput.value = "";
                 agreeTerms.checked = false;
                 spouseContainer.style.display = "none";
-                syncProgramSelection("");
             });
         });
     </script>
