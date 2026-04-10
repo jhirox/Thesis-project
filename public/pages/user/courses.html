@@ -519,55 +519,6 @@
         </footer>
       </main>
 
-    <!-- Login Required Modal -->
-    <div
-      class="modal fade"
-      id="loginRequiredModal"
-      tabindex="-1"
-      aria-labelledby="loginRequiredModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header bg-warning text-dark">
-            <h5 class="modal-title fw-bold" id="loginRequiredModalLabel">
-              <i class="bi bi-exclamation-triangle-fill me-2"></i>Login Required
-            </h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body text-center py-4">
-            <div class="mb-3">
-              <i class="bi bi-person-x display-1 text-warning"></i>
-            </div>
-            <h5 class="fw-bold mb-3">You are not logged in yet</h5>
-            <p class="text-muted mb-4">
-              Please log in to your account to apply for this program and submit your application.
-            </p>
-          </div>
-          <div class="modal-footer justify-content-center">
-            <a id="modalLoginLink" href="/login" class="btn btn-primary px-4">
-              <i class="bi bi-box-arrow-in-right me-2"></i>Login
-            </a>
-            <a id="modalSignupLink" href="/signup" class="btn btn-outline-primary px-4">
-              <i class="bi bi-person-plus me-2"></i>Sign Up
-            </a>
-            <button
-              type="button"
-              class="btn btn-outline-secondary"
-              data-bs-dismiss="modal"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Course Details Modal -->
     <div
       class="modal fade"
@@ -764,35 +715,17 @@
         return !isNaN(timeout) && now < timeout;
       }
 
-      // Set modal auth redirect links
-      function setModalAuthRedirect(nextPath) {
-        const nextParam = encodeURIComponent(nextPath);
-        const loginLink = document.getElementById('modalLoginLink');
-        const signupLink = document.getElementById('modalSignupLink');
-
-        if (loginLink) {
-          loginLink.href = '/login?next=' + nextParam;
-        }
-        if (signupLink) {
-          signupLink.href = '/signup?next=' + nextParam;
-        }
-      }
-
       // Handle course enrollment click
       function handleCourseEnrollment() {
         try {
           if (!isSessionValid()) {
-            setModalAuthRedirect('/enrollment-form');
-            const loginModal = new bootstrap.Modal(document.getElementById('loginRequiredModal'));
-            loginModal.show();
+            window.location.href = '/signup?next=/enrollment-form';
           } else {
             window.location.href = '/enrollment-form';
           }
         } catch (error) {
           console.log('Error checking session:', error);
-          setModalAuthRedirect('/enrollment-form');
-          const loginModal = new bootstrap.Modal(document.getElementById('loginRequiredModal'));
-          loginModal.show();
+          window.location.href = '/signup?next=/enrollment-form';
         }
       }
     </script>
