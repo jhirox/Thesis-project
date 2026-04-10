@@ -90,6 +90,10 @@ app.get("/adminlogin", (req, res) =>
   res.sendFile(path.join(publicPath, "pages/auth/adminlogin.html"))
 );
 
+app.get("/adminsignup", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/auth/adminsignup.html"))
+);
+
 app.get("/enrollment-form", (req, res) =>
   res.sendFile(path.join(publicPath, "pages/auth/enrollment-form.html"))
 );
