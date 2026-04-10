@@ -100,7 +100,7 @@
                 <li class="user-footer">
                   <a href="#" class="btn btn-default btn-flat">Profile</a>
                   <a
-                    href="../auth/adminlogin.html"
+                    href="../auth/adminlogin"
                     class="btn btn-default btn-flat float-end"
                     id="sign-out"
                     >Sign out</a
@@ -150,44 +150,44 @@
             >
               <h5 class="text-white pt-2">Main</h5>
               <li class="nav-item">
-                <a href="./dashboard.html" class="nav-link active">
+                <a href="/dashboard" class="nav-link active">
                   <i class="nav-icon fa-solid fa-house"></i>
                   <p>Dashboard Overview</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="./registrar.html" class="nav-link">
+                <a href="/registrar" class="nav-link">
                   <i class="nav-icon fa-solid fa-user-graduate"></i>
                   <p>Registrar</p>
                 </a>
               </li>
               <li class="nav-item active">
-                <a href="./application-queue.html" class="nav-link">
+                <a href="/application-queue" class="nav-link">
                   <i class="nav-icon fa-solid fa-list"></i>
                   <p>Application Queue</p>
                 </a>
               </li>
               <li class="nav-item active">
-                <a href="./application-evaluation.html" class="nav-link">
+                <a href="/application-evaluation" class="nav-link">
                   <i class="nav-icon fa-solid fa-file-circle-check"></i>
                   <p>Application Evaluation</p>
                 </a>
               </li>
               <h5 class="text-white pt-4">Management</h5>
               <li class="nav-item active">
-                <a href="./accounts.html" class="nav-link">
+                <a href="/accounts" class="nav-link">
                   <i class="nav-icon fa-solid fa-users"></i>
                   <p>Accounts</p>
                 </a>
               </li>
               <li class="nav-item active">
-                <a href="./notification.html" class="nav-link">
+                <a href="/notification" class="nav-link">
                   <i class="nav-icon fa-regular fa-bell"></i>
                   <p>Notifications</p>
                 </a>
               </li>
               <li class="nav-item active">
-                <a href="./rep-and-analytics.html" class="nav-link">
+                <a href="/rep-and-analytics" class="nav-link">
                   <i class="nav-icon fa-solid fa-chart-pie"></i>
                   <p>Reports and Analytics</p>
                 </a>
@@ -381,7 +381,7 @@
                 </div>
               </div>
               <div class="justify-content-center d-flex">
-                <a href="./application-evaluation.html">
+                <a href="/application-evaluation">
                   <button class="btn btn-light w-100% mt-3">
                     View All Applications
                   </button>
@@ -398,7 +398,7 @@
               >
                 <i class="fa-solid fa-calendar-days me-2"></i>Schedule Review Session
               </button>
-              <a href="./rep-and-analytics.html" class="text-decoration-none">
+              <a href="/rep-and-analytics" class="text-decoration-none">
                 <button
                   class="btn btn-action text-white w-100 mb-2 text-start"
                   type="button"
@@ -406,7 +406,7 @@
                   <i class="fa-solid fa-file-lines me-2"></i>Generate Daily Report
                 </button>
               </a>
-              <a href="./notification.html" class="text-decoration-none">
+              <a href="/notification" class="text-decoration-none">
                 <button
                   class="btn btn-action text-white w-100 mb-2 text-start"
                   type="button"
@@ -414,7 +414,7 @@
                   <i class="fa-solid fa-bell me-2"></i>Send Bulk Notifications
                 </button>
               </a>
-              <a href="./registrar.html" class="text-decoration-none">
+              <a href="/registrar" class="text-decoration-none">
                 <button
                   class="btn btn-action text-white w-100 mb-2 text-start"
                   type="button"
@@ -495,7 +495,7 @@
               title: "Oops...",
               text: "Session Timeout!",
               footer:
-                '<a href="./login.html">Please login to continue using our app</a>',
+                '<a href="./login">Please login to continue using our app</a>',
             });
             setTimeout(() => {
               logout();
