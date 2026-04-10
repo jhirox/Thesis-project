@@ -253,6 +253,23 @@
                         <textarea id="remarks" rows="3" class="form-control" placeholder="Write important notes here..."></textarea>
                     </div>
 
+                    <!-- OFFICIAL RECEIPT -->
+                    <div class="col-12 pt-2">
+                        <h4 class="fw-bold text-primary">Official Receipt</h4>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Official Receipt Image</label>
+                        <input type="file" id="officialReceiptImage" class="form-control" accept="image/*">
+                        <div class="form-text">Upload a clear image of the Official Receipt if available.</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Official Receipt Number</label>
+                        <input type="text" id="officialReceiptNumber" class="form-control" placeholder="Enter OR number if no image is available">
+                        <div class="form-text">If you do not have an image, you may enter the OR number instead.</div>
+                    </div>
+
                     <!-- TERMS + SUBMIT -->
                     <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
                         <div class="form-check">
@@ -367,6 +384,8 @@
             const queueNumber = document.getElementById("queueNumber");
             const civilStatus = document.getElementById("civilStatus");
             const spouseContainer = document.getElementById("spouseContainer");
+            const officialReceiptImageInput = document.getElementById("officialReceiptImage");
+            const officialReceiptNumberInput = document.getElementById("officialReceiptNumber");
 
             const termsModal = new bootstrap.Modal(document.getElementById("termsModal"));
             const conditionsModal = new bootstrap.Modal(document.getElementById("conditionsModal"));
@@ -393,6 +412,20 @@
                 conditionsModal.show();
             });
 
+            const getValue = (id) => document.getElementById(id)?.value.trim() || "";
+
+            const readFileAsDataUrl = (file) => new Promise((resolve, reject) => {
+                if (!file) {
+                    resolve(null);
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = () => reject(new Error("Failed to read Official Receipt image."));
+                reader.readAsDataURL(file);
+            });
+
             // Form submit
             form.addEventListener("submit", async e => {
                 e.preventDefault();
@@ -401,36 +434,55 @@
                     return;
                 }
 
-                // Collect form data
-                const formData = new FormData(form);
+                const officialReceiptNumber = officialReceiptNumberInput.value.trim();
+                const officialReceiptImageFile = officialReceiptImageInput.files[0];
+
+                if (!officialReceiptImageFile && !officialReceiptNumber) {
+                    alert("Please upload an Official Receipt image or enter the Official Receipt number.");
+                    return;
+                }
+
+                let officialReceiptImage = null;
+
+                try {
+                    officialReceiptImage = await readFileAsDataUrl(officialReceiptImageFile);
+                } catch (error) {
+                    console.error(error);
+                    alert("Unable to read the Official Receipt image. Please try again.");
+                    return;
+                }
+
                 const data = {
-                    firstName: formData.get('firstName'),
-                    middleName: formData.get('middleName'),
-                    lastName: formData.get('lastName'),
-                    suffix: formData.get('suffix'),
-                    birthDate: formData.get('birthDate'),
-                    birthPlace: formData.get('birthPlace'),
-                    sex: formData.get('sex'),
-                    civilStatus: formData.get('civilStatus'),
-                    spouseName: formData.get('civilStatus') === 'Married' ? formData.get('spouseName') : null,
-                    nationality: formData.get('nationality'),
-                    religion: formData.get('religion'),
-                    email: formData.get('email'),
-                    contactNumber: formData.get('contactNumber'),
-                    address: formData.get('address'),
-                    program: formData.get('program'),
-                    learningModality: formData.get('learningModality'),
-                    studentType: formData.get('studentType'),
-                    highestAttainment: formData.get('highestAttainment'),
-                    lastSchool: formData.get('lastSchool'),
-                    lastSchoolYear: formData.get('lastSchoolYear'),
-                    semester: formData.get('semester'),
-                    workingStatus: formData.get('workingStatus'),
-                    motherMaiden: formData.get('motherMaiden'),
-                    fatherName: formData.get('fatherName'),
-                    guardianName: formData.get('guardianName'),
-                    guardianContact: formData.get('guardianContact'),
-                    remarks: formData.get('remarks'),
+                    firstName: getValue('firstName'),
+                    middleName: getValue('middleName'),
+                    lastName: getValue('lastName'),
+                    suffix: getValue('suffix'),
+                    birthDate: getValue('birthDate'),
+                    birthPlace: getValue('birthPlace'),
+                    sex: getValue('sex'),
+                    civilStatus: getValue('civilStatus'),
+                    spouseName: getValue('civilStatus') === 'Married' ? getValue('spouseName') : null,
+                    nationality: getValue('nationality'),
+                    religion: getValue('religion'),
+                    email: getValue('email'),
+                    contactNumber: getValue('contactNumber'),
+                    address: getValue('address'),
+                    program: getValue('program'),
+                    learningModality: getValue('learningModality'),
+                    studentType: getValue('studentType'),
+                    highestAttainment: getValue('highestAttainment'),
+                    lastSchool: getValue('lastSchool'),
+                    lastSchoolYear: getValue('lastSchoolYear'),
+                    semester: getValue('semester'),
+                    workingStatus: getValue('workingStatus'),
+                    motherMaiden: getValue('motherMaiden'),
+                    fatherName: getValue('fatherName'),
+                    guardianName: getValue('guardianName'),
+                    guardianContact: getValue('guardianContact'),
+                    remarks: getValue('remarks'),
+                    officialReceiptNumber,
+                    officialReceiptImage,
+                    officialReceiptImageName: officialReceiptImageFile ? officialReceiptImageFile.name : null,
                     agreedToTerms: agreeTerms.checked,
                     agreedAt: new Date().toISOString()
                 };
