@@ -573,8 +573,149 @@ footer .row {
 
 
 /* ===== Enrollment form ===== */
+.page-enrollment-form .school-header {
+  text-align: center;
+  padding: 25px 0;
+}
+
+.page-enrollment-form .school-header img {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+.page-enrollment-form .school-header h2 {
+  margin: 0;
+  font-weight: 800;
+  color: #0d6efd;
+}
+
+.page-enrollment-form .program-picker {
+  border: 1px solid #dbe7ff;
+  border-radius: 18px;
+  padding: 18px;
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+}
+
+.page-enrollment-form .program-picker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.page-enrollment-form .program-picker-header p {
+  margin: 0;
+  color: #5c6b82;
+  font-size: 0.95rem;
+}
+
+.page-enrollment-form .program-selected-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  background: #e9f2ff;
+  color: #0d6efd;
+  font-weight: 700;
+  padding: 8px 14px;
+  min-height: 42px;
+}
+
+.page-enrollment-form .program-group-title {
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #5c6b82;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.page-enrollment-form .program-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.page-enrollment-form .program-option {
+  border: 1px solid #d7e3f7;
+  border-radius: 16px;
+  background: #fff;
+  padding: 16px;
+  text-align: left;
+  width: 100%;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.page-enrollment-form .program-option:hover,
+.page-enrollment-form .program-option:focus-visible {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.12);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.page-enrollment-form .program-option.active {
+  border-color: #0d6efd;
+  background: linear-gradient(180deg, #eef5ff 0%, #ffffff 100%);
+  box-shadow: 0 12px 28px rgba(13, 110, 253, 0.12);
+}
+
+.page-enrollment-form .program-option-code {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #0d6efd;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.page-enrollment-form .program-option-title {
+  display: block;
+  font-weight: 700;
+  color: #1d2a3b;
+  margin-bottom: 4px;
+}
+
+.page-enrollment-form .program-option-subtitle {
+  display: block;
+  color: #6b7280;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.page-enrollment-form .program-native-select {
+  margin-top: 14px;
+}
+
+.page-enrollment-form #termsLink,
+.page-enrollment-form #conditionsLink {
+  color: #0d6efd;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .page-enrollment-form .min-vh-100 {
   background-color: #f8f9fa;
+}
+
+@media (max-width: 767.98px) {
+  .page-enrollment-form .program-picker {
+    padding: 14px;
+  }
+
+  .page-enrollment-form .program-options {
+    grid-template-columns: 1fr;
+  }
+
+  .page-enrollment-form .program-option {
+    padding: 14px;
+  }
 }
 
 /* ===== Credentials (login/signup/admin) ===== */

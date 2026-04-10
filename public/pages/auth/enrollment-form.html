@@ -12,37 +12,9 @@
     <link rel="stylesheet" href="/css/style.css">
     <link rel="icon" href="/assets/images/logo.png" />
 
-    <style>
-        .school-header {
-            text-align: center;
-            padding: 25px 0;
-        }
-
-        .school-header img {
-            width: 90px;
-            height: 90px;
-            object-fit: contain;
-            margin-bottom: 10px;
-        }
-
-        .school-header h2 {
-            margin: 0;
-            font-weight: 800;
-            color: #0d6efd;
-        }
-
-        /* Highlight Terms link only */
-        #termsLink,
-        #conditionsLink {
-            color: #0d6efd;
-            font-weight: 600;
-            text-decoration: underline;
-            cursor: pointer;
-        }
-    </style>
 </head>
 
-<body class="page-shell bg-light">
+<body class="page-shell bg-light page-enrollment-form">
 
     <!-- HEADER WITH LOGO -->
     <div class="school-header">
@@ -141,24 +113,98 @@
                         <h4 class="fw-bold text-primary">Academic Details</h4>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-12">
                         <label class="form-label">Program / Course</label>
-                        <select id="program" class="form-select" required>
-                            <option value="">Select</option>
-                            <optgroup label="BSBA - Business Administration">
-                                <option>BSBA Major in Marketing Management</option>
-                                <option>BSBA Major in Financial Management</option>
-                                <option>BSBA Major in Human Resource Management</option>
-                            </optgroup>
-                            <optgroup label="BSED - Secondary Education">
-                                <option>BSED Major in English</option>
-                                <option>BSED Major in Mathematics</option>
-                                <option>BSED Major in Filipino</option>
-                            </optgroup>
-                            <option>BEED - Bachelor of Elementary Education</option>
-                            <option>BSCS - Bachelor of Science in Computer Science</option>
-                            <option>BSCRIM - Bachelor of Science in Criminology</option>
-                        </select>
+                        <div class="program-picker">
+                            <div class="program-picker-header">
+                                <p>Choose your program by tapping one of the course cards below.</p>
+                                <div class="program-selected-badge">
+                                    <i class="bi bi-mortarboard-fill"></i>
+                                    <span id="selectedProgramText">No program selected yet</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="program-group-title">Business Administration</div>
+                                <div class="program-options">
+                                    <button type="button" class="program-option" data-program="BSBA Major in Marketing Management">
+                                        <span class="program-option-code">BSBA</span>
+                                        <span class="program-option-title">Marketing Management</span>
+                                        <span class="program-option-subtitle">For students focused on branding, promotions, and customer strategy.</span>
+                                    </button>
+                                    <button type="button" class="program-option" data-program="BSBA Major in Financial Management">
+                                        <span class="program-option-code">BSBA</span>
+                                        <span class="program-option-title">Financial Management</span>
+                                        <span class="program-option-subtitle">For students interested in budgeting, investments, and business finance.</span>
+                                    </button>
+                                    <button type="button" class="program-option" data-program="BSBA Major in Human Resource Management">
+                                        <span class="program-option-code">BSBA</span>
+                                        <span class="program-option-title">Human Resource Management</span>
+                                        <span class="program-option-subtitle">For students aiming to work in recruitment, training, and people management.</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="program-group-title">Secondary Education</div>
+                                <div class="program-options">
+                                    <button type="button" class="program-option" data-program="BSED Major in English">
+                                        <span class="program-option-code">BSED</span>
+                                        <span class="program-option-title">Major in English</span>
+                                        <span class="program-option-subtitle">For future educators focused on language, literature, and communication.</span>
+                                    </button>
+                                    <button type="button" class="program-option" data-program="BSED Major in Mathematics">
+                                        <span class="program-option-code">BSED</span>
+                                        <span class="program-option-title">Major in Mathematics</span>
+                                        <span class="program-option-subtitle">For future teachers specializing in math concepts, logic, and problem solving.</span>
+                                    </button>
+                                    <button type="button" class="program-option" data-program="BSED Major in Filipino">
+                                        <span class="program-option-code">BSED</span>
+                                        <span class="program-option-title">Major in Filipino</span>
+                                        <span class="program-option-subtitle">For future educators dedicated to Filipino language and culture.</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="program-group-title">Other Degree Programs</div>
+                                <div class="program-options">
+                                    <button type="button" class="program-option" data-program="BEED - Bachelor of Elementary Education">
+                                        <span class="program-option-code">BEED</span>
+                                        <span class="program-option-title">Bachelor of Elementary Education</span>
+                                        <span class="program-option-subtitle">For aspiring elementary school teachers and foundational educators.</span>
+                                    </button>
+                                    <button type="button" class="program-option" data-program="BSCS - Bachelor of Science in Computer Science">
+                                        <span class="program-option-code">BSCS</span>
+                                        <span class="program-option-title">Bachelor of Science in Computer Science</span>
+                                        <span class="program-option-subtitle">For students interested in programming, systems, and software development.</span>
+                                    </button>
+                                    <button type="button" class="program-option" data-program="BSCRIM - Bachelor of Science in Criminology">
+                                        <span class="program-option-code">BSCRIM</span>
+                                        <span class="program-option-title">Bachelor of Science in Criminology</span>
+                                        <span class="program-option-subtitle">For students preparing for careers in public safety, law, and criminology.</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <select id="program" class="form-select program-native-select" aria-label="Program or course">
+                                <option value="">Select</option>
+                                <optgroup label="BSBA - Business Administration">
+                                    <option>BSBA Major in Marketing Management</option>
+                                    <option>BSBA Major in Financial Management</option>
+                                    <option>BSBA Major in Human Resource Management</option>
+                                </optgroup>
+                                <optgroup label="BSED - Secondary Education">
+                                    <option>BSED Major in English</option>
+                                    <option>BSED Major in Mathematics</option>
+                                    <option>BSED Major in Filipino</option>
+                                </optgroup>
+                                <option>BEED - Bachelor of Elementary Education</option>
+                                <option>BSCS - Bachelor of Science in Computer Science</option>
+                                <option>BSCRIM - Bachelor of Science in Criminology</option>
+                            </select>
+                            <div class="form-text">You may also use the dropdown above if you prefer the standard list view.</div>
+                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -384,6 +430,9 @@
             const queueNumber = document.getElementById("queueNumber");
             const civilStatus = document.getElementById("civilStatus");
             const spouseContainer = document.getElementById("spouseContainer");
+            const programSelect = document.getElementById("program");
+            const selectedProgramText = document.getElementById("selectedProgramText");
+            const programOptions = document.querySelectorAll(".program-option");
             const officialReceiptImageInput = document.getElementById("officialReceiptImage");
             const officialReceiptNumberInput = document.getElementById("officialReceiptNumber");
 
@@ -399,6 +448,27 @@
             civilStatus.addEventListener("change", () => {
                 spouseContainer.style.display = civilStatus.value === "Married" ? "block" : "none";
             });
+
+            const syncProgramSelection = (selectedValue) => {
+                programSelect.value = selectedValue;
+                selectedProgramText.textContent = selectedValue || "No program selected yet";
+
+                programOptions.forEach(option => {
+                    option.classList.toggle("active", option.dataset.program === selectedValue);
+                });
+            };
+
+            programOptions.forEach(option => {
+                option.addEventListener("click", () => {
+                    syncProgramSelection(option.dataset.program);
+                });
+            });
+
+            programSelect.addEventListener("change", () => {
+                syncProgramSelection(programSelect.value);
+            });
+
+            syncProgramSelection(programSelect.value);
 
             // Show Terms modal
             termsLink.addEventListener("click", (e) => {
@@ -427,6 +497,12 @@
                     return;
                 }
 
+                if (!programSelect.value) {
+                    alert("Please select your Program / Course.");
+                    programSelect.focus();
+                    return;
+                }
+
                 if (!agreeTerms.checked) {
                     warningModal.show();
                     return;
@@ -447,6 +523,7 @@
                 officialReceiptNumberInput.value = "";
                 agreeTerms.checked = false;
                 spouseContainer.style.display = "none";
+                syncProgramSelection("");
             });
         });
     </script>
