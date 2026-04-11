@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node backend/server.js",
-    "dev": "nodemon backend/server.js"
+    "dev": "nodemon backend/server.js",
+    "seed:enrollment-lookups": "node backend/scripts/seedEnrollmentLookups.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
