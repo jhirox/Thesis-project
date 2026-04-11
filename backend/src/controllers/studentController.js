@@ -1,5 +1,4 @@
-// backend/controllers/studentController.js
-import db from "../config/db.js"; // ES module import
+import db from "../config/db.js";
 
 // GET all students
 export const getStudents = async (req, res) => {
@@ -38,9 +37,10 @@ export const getStudentByID = async (req, res) => {
       });
     }
 
-    const [rows] = await db.query("SELECT * FROM students WHERE id = ?", [
-      studentId,
-    ]);
+    const [rows] = await db.query(
+      "SELECT * FROM students WHERE student_id = ?",
+      [studentId]
+    );
 
     if (rows.length === 0) {
       return res.status(404).json({
@@ -65,6 +65,8 @@ export const getStudentByID = async (req, res) => {
 
 // POST submit enrollment
 export const submitEnrollment = async (req, res) => {
+  const connection = await db.getConnection();
+
   try {
     const {
       firstName,
@@ -95,71 +97,192 @@ export const submitEnrollment = async (req, res) => {
       guardianContact,
       remarks,
       agreedToTerms,
-      agreedAt
+      agreedAt,
     } = req.body;
 
-    // Generate queue number
-    const queueNumber = generateQueueNumber();
+    const requiredFields = [
+      ["firstName", firstName],
+      ["lastName", lastName],
+      ["birthDate", birthDate],
+      ["sex", sex],
+      ["email", email],
+      ["contactNumber", contactNumber],
+      ["program", program],
+      ["learningModality", learningModality],
+      ["studentType", studentType],
+      ["highestAttainment", highestAttainment],
+      ["semester", semester],
+    ];
 
-    // Insert into enrollments table
-    const [result] = await db.query(`
-      INSERT INTO enrollments (
-        student_id, first_name, middle_name, last_name, suffix, birth_date, birth_place, sex,
-        civil_status, spouse_name, nationality, religion, email, contact_number, address,
-        highest_educational_attainment, last_school_attended, last_school_year, working_student,
-        mother_maiden_name, father_name, guardian_name, guardian_contact,
-        program_id, modality_id, student_type_id, semester_types,
-        academic_year, enrollment_date, queue_number, application_status,
-        special_remarks, agreed_to_terms, agreed_at, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, 'Submitted', ?, ?, ?, NOW(), NOW())
-    `, [
-      null, // student_id
-      firstName,
-      middleName,
-      lastName,
-      suffix,
-      birthDate,
-      birthPlace,
-      sex,
-      civilStatus,
-      spouseName,
-      nationality,
-      religion,
-      email,
-      contactNumber,
-      address,
+    const missingField = requiredFields.find(([, value]) => !value);
+    if (missingField) {
+      return res.status(400).json({
+        success: false,
+        message: `${missingField[0]} is required`,
+      });
+    }
+
+    if (!agreedToTerms) {
+      return res.status(400).json({
+        success: false,
+        message: "You must agree to the terms and conditions before submitting.",
+      });
+    }
+
+    await connection.beginTransaction();
+
+    const programId = await resolveProgramId(connection, program);
+    const modalityId = await resolveLookupId(
+      connection,
+      "learning_modalities",
+      "modality_id",
+      "modality_name",
+      learningModality
+    );
+    const studentTypeId = await resolveLookupId(
+      connection,
+      "student_types",
+      "type_id",
+      "type_name",
+      studentType
+    );
+
+    if (!programId || !modalityId || !studentTypeId) {
+      await connection.rollback();
+      return res.status(400).json({
+        success: false,
+        message:
+          "Some enrollment options are not configured in the database yet. Please check programs, modalities, and student types.",
+      });
+    }
+
+    let studentId;
+    const [existingStudents] = await connection.query(
+      "SELECT student_id FROM students WHERE email_address = ? LIMIT 1",
+      [email.trim()]
+    );
+
+    if (existingStudents.length > 0) {
+      studentId = existingStudents[0].student_id;
+      await connection.query(
+        `UPDATE students
+         SET first_name = ?, middle_name = ?, last_name = ?, suffix = ?, birth_date = ?,
+             birth_place = ?, sex = ?, civil_status = ?, spouse_name = ?, nationality = ?,
+             religion = ?, email_address = ?, contact_number = ?, complete_address = ?,
+             is_active = 1, updated_at = NOW()
+         WHERE student_id = ?`,
+        [
+          firstName.trim(),
+          normalizeNullable(middleName),
+          lastName.trim(),
+          normalizeNullable(suffix),
+          birthDate,
+          normalizeNullable(birthPlace),
+          sex,
+          normalizeNullable(civilStatus) || "Single",
+          normalizeNullable(spouseName),
+          normalizeNullable(nationality),
+          normalizeNullable(religion),
+          email.trim(),
+          contactNumber.trim(),
+          normalizeNullable(address),
+          studentId,
+        ]
+      );
+    } else {
+      const [studentResult] = await connection.query(
+        `INSERT INTO students (
+          first_name, middle_name, last_name, suffix, birth_date, birth_place, sex,
+          civil_status, spouse_name, nationality, religion, email_address,
+          contact_number, complete_address, is_active, created_date, updated_at, password
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), NOW(), NULL)`,
+        [
+          firstName.trim(),
+          normalizeNullable(middleName),
+          lastName.trim(),
+          normalizeNullable(suffix),
+          birthDate,
+          normalizeNullable(birthPlace),
+          sex,
+          normalizeNullable(civilStatus) || "Single",
+          normalizeNullable(spouseName),
+          normalizeNullable(nationality),
+          normalizeNullable(religion),
+          email.trim(),
+          contactNumber.trim(),
+          normalizeNullable(address),
+        ]
+      );
+
+      studentId = studentResult.insertId;
+    }
+
+    await upsertAcademicHistory(connection, {
+      studentId,
       highestAttainment,
       lastSchool,
       lastSchoolYear,
-      workingStatus === 'Working student' ? 1 : 0,
+      workingStatus,
+    });
+
+    await upsertFamilyInformation(connection, {
+      studentId,
       motherMaiden,
       fatherName,
       guardianName,
       guardianContact,
-      getProgramId(program),
-      getModalityId(learningModality),
-      getStudentTypeId(studentType),
-      semester,
-      getAcademicYear(),
-      queueNumber,
-      remarks || null,
-      agreedToTerms ? 1 : 0,
-      agreedAt
-    ]);
+    });
+
+    const queueNumber = await generateQueueNumber(connection);
+    const academicYear = getAcademicYear();
+    const submittedAt = agreedAt || new Date().toISOString();
+
+    const [result] = await connection.query(
+      `INSERT INTO enrollments (
+        student_id, program_id, modality_id, student_type_id, semester_types,
+        academic_year, enrollment_date, queue_number, application_status,
+        special_remarks, agreed_to_terms, agreed_at, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, 'Submitted', ?, ?, ?, NOW(), NOW())`,
+      [
+        studentId,
+        programId,
+        modalityId,
+        studentTypeId,
+        semester,
+        academicYear,
+        queueNumber,
+        normalizeNullable(remarks),
+        agreedToTerms ? 1 : 0,
+        formatForMysqlTimestamp(submittedAt),
+      ]
+    );
+
+    await connection.query(
+      `INSERT INTO application_queue (
+        enrollment_id, queued_at, position, status
+      ) VALUES (?, NOW(), ?, 'Waiting')`,
+      [result.insertId, await getNextQueuePosition(connection)]
+    );
+
+    await connection.commit();
 
     res.status(201).json({
       success: true,
       message: "Enrollment submitted successfully",
+      studentId,
       enrollmentId: result.insertId,
-      queueNumber
+      queueNumber,
     });
   } catch (error) {
+    await connection.rollback();
     console.log(error);
     res.status(500).json({
       success: false,
       message: "Error submitting enrollment",
       error: error.message,
     });
+  } finally {
+    connection.release();
   }
 };
 
@@ -183,17 +306,26 @@ export const getEnrollments = async (req, res) => {
   }
 };
 
-// Helper functions
-function generateQueueNumber() {
-  const letters = ["A", "B", "C", "D"];
-  const letter = letters[Math.floor(Math.random() * letters.length)];
-  const num = Math.floor(Math.random() * 900) + 100;
-  return `${letter}${num}`;
-}
+async function resolveProgramId(connection, programValue) {
+  if (!programValue) {
+    return null;
+  }
 
-function getProgramId(program) {
-  // Map program names to IDs - this needs to be adjusted based on your programs table
-  const programMap = {
+  const [rows] = await connection.query(
+    `SELECT program_id
+     FROM programs
+     WHERE program_name = ?
+        OR program_code = ?
+        OR CONCAT(program_code, ' - ', program_name) = ?
+     LIMIT 1`,
+    [programValue, programValue, programValue]
+  );
+
+  if (rows.length > 0) {
+    return rows[0].program_id;
+  }
+
+  const fallbackMap = {
     "BSBA Major in Marketing Management": 1,
     "BSBA Major in Financial Management": 2,
     "BSBA Major in Human Resource Management": 3,
@@ -204,31 +336,156 @@ function getProgramId(program) {
     "BSCS - Bachelor of Science in Computer Science": 8,
     "BSCRIM - Bachelor of Science in Criminology": 9
   };
-  return programMap[program] || null;
+
+  return fallbackMap[programValue] || null;
 }
 
-function getModalityId(modality) {
-  const modalityMap = {
-    "Face-to-Face": 1,
-    "Online / Flexible": 2
-  };
-  return modalityMap[modality] || null;
+async function resolveLookupId(
+  connection,
+  tableName,
+  idColumn,
+  nameColumn,
+  selectedValue
+) {
+  if (!selectedValue) {
+    return null;
+  }
+
+  const [rows] = await connection.query(
+    `SELECT ${idColumn} AS id
+     FROM ${tableName}
+     WHERE ${nameColumn} = ?
+     LIMIT 1`,
+    [selectedValue]
+  );
+
+  return rows.length > 0 ? rows[0].id : null;
 }
 
-function getStudentTypeId(type) {
-  const typeMap = {
-    "New Regular Enrollee": 1,
-    "Existing Regular": 2,
-    "Irregular Student": 3,
-    "College Transferee": 4,
-    "Re-Entry / iCare": 5,
-    "Uniting Student / CPTP": 6
-  };
-  return typeMap[type] || null;
+async function upsertAcademicHistory(connection, payload) {
+  const [existing] = await connection.query(
+    "SELECT history_id FROM academic_history WHERE student_id = ? LIMIT 1",
+    [payload.studentId]
+  );
+
+  const values = [
+    payload.highestAttainment,
+    normalizeNullable(payload.lastSchool),
+    normalizeNullable(payload.lastSchoolYear),
+    payload.workingStatus === "Working student" ? 1 : 0,
+    payload.studentId,
+  ];
+
+  if (existing.length > 0) {
+    await connection.query(
+      `UPDATE academic_history
+       SET highest_attainment = ?, last_school_attended = ?, last_school_year = ?,
+           is_working = ?, updated_at = NOW()
+       WHERE student_id = ?`,
+      values
+    );
+    return;
+  }
+
+  await connection.query(
+    `INSERT INTO academic_history (
+      highest_attainment, last_school_attended, last_school_year,
+      is_working, student_id, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, NOW(), NOW())`,
+    values
+  );
+}
+
+async function upsertFamilyInformation(connection, payload) {
+  const [existing] = await connection.query(
+    "SELECT family_id FROM family_information WHERE student_id = ? LIMIT 1",
+    [payload.studentId]
+  );
+
+  const values = [
+    normalizeNullable(payload.motherMaiden),
+    normalizeNullable(payload.fatherName),
+    normalizeNullable(payload.guardianName),
+    normalizeNullable(payload.guardianContact),
+    payload.studentId,
+  ];
+
+  if (existing.length > 0) {
+    await connection.query(
+      `UPDATE family_information
+       SET mother_maiden_name = ?, father_name = ?, guardian_name = ?,
+           guardian_contact = ?, updated_at = NOW()
+       WHERE student_id = ?`,
+      values
+    );
+    return;
+  }
+
+  await connection.query(
+    `INSERT INTO family_information (
+      mother_maiden_name, father_name, guardian_name,
+      guardian_contact, student_id, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, NOW(), NOW())`,
+    values
+  );
+}
+
+async function generateQueueNumber(connection) {
+  let queueNumber = "";
+  let isUnique = false;
+
+  while (!isUnique) {
+    const letters = ["A", "B", "C", "D"];
+    const letter = letters[Math.floor(Math.random() * letters.length)];
+    const num = Math.floor(Math.random() * 900) + 100;
+    queueNumber = `${letter}${num}`;
+
+    const [existing] = await connection.query(
+      "SELECT enrollment_id FROM enrollments WHERE queue_number = ? LIMIT 1",
+      [queueNumber]
+    );
+
+    isUnique = existing.length === 0;
+  }
+
+  return queueNumber;
+}
+
+async function getNextQueuePosition(connection) {
+  const [rows] = await connection.query(
+    "SELECT COALESCE(MAX(position), 0) + 1 AS nextPosition FROM application_queue"
+  );
+
+  return rows[0]?.nextPosition || 1;
 }
 
 function getAcademicYear() {
   const now = new Date();
   const year = now.getFullYear();
   return `${year}-${year + 1}`;
+}
+
+function normalizeNullable(value) {
+  if (value === undefined || value === null) {
+    return null;
+  }
+
+  const normalized = String(value).trim();
+  return normalized === "" ? null : normalized;
+}
+
+function formatForMysqlTimestamp(value) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return new Date();
+  }
+
+  const pad = (num) => String(num).padStart(2, "0");
+
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+    date.getDate()
+  )} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(
+    date.getSeconds()
+  )}`;
 }
