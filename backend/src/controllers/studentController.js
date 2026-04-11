@@ -185,7 +185,7 @@ export const submitEnrollment = async (req, res) => {
           normalizeNullable(religion),
           email.trim(),
           contactNumber.trim(),
-          normalizeNullable(address),
+          normalizeRequiredText(address),
           studentId,
         ]
       );
@@ -195,7 +195,7 @@ export const submitEnrollment = async (req, res) => {
           first_name, middle_name, last_name, suffix, birth_date, birth_place, sex,
           civil_status, spouse_name, nationality, religion, email_address,
           contact_number, complete_address, is_active, created_date, updated_at, password
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), NOW(), NULL)`,
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), NOW(), ?)`,
         [
           firstName.trim(),
           normalizeNullable(middleName),
@@ -210,7 +210,8 @@ export const submitEnrollment = async (req, res) => {
           normalizeNullable(religion),
           email.trim(),
           contactNumber.trim(),
-          normalizeNullable(address),
+          normalizeRequiredText(address),
+          "",
         ]
       );
 
@@ -472,6 +473,14 @@ function normalizeNullable(value) {
 
   const normalized = String(value).trim();
   return normalized === "" ? null : normalized;
+}
+
+function normalizeRequiredText(value) {
+  if (value === undefined || value === null) {
+    return "";
+  }
+
+  return String(value).trim();
 }
 
 function formatForMysqlTimestamp(value) {
