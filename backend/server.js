@@ -111,16 +111,17 @@ app.get("/registrar", (req, res) =>
   res.sendFile(path.join(publicPath, "pages/registrar/registrar.html"))
 );
 
+// Registrar routes now serve admin equivalents (no duplicates)
 app.get("/registrar/application-evaluation", (req, res) =>
-  res.sendFile(path.join(publicPath, "pages/registrar/application-evaluation.html"))
+  res.sendFile(path.join(publicPath, "pages/admin/application-evaluation.html"))
 );
 
 app.get("/registrar/application-queue", (req, res) =>
-  res.sendFile(path.join(publicPath, "pages/registrar/application-queue.html"))
+  res.sendFile(path.join(publicPath, "pages/admin/application-queue.html"))
 );
 
 app.get("/registrar/notification", (req, res) =>
-  res.sendFile(path.join(publicPath, "pages/registrar/notification.html"))
+  res.sendFile(path.join(publicPath, "pages/admin/notification.html"))
 );
 
 app.get("/registrar/dashboard", (req, res) =>
@@ -128,7 +129,7 @@ app.get("/registrar/dashboard", (req, res) =>
 );
 
 app.get("/registrar/rep-and-analytics", (req, res) =>
-  res.sendFile(path.join(publicPath, "pages/registrar/rep-and-analytics.html"))
+  res.sendFile(path.join(publicPath, "pages/admin/rep-and-analytics.html"))
 );
 
 // Admin clean routes
@@ -178,8 +179,21 @@ app.get("/rep-and-analytics.html", (req, res) =>
   res.sendFile(path.join(publicPath, "pages/admin/rep-and-analytics.html"))
 );
 
+// Registrar fallback routes now serve admin equivalents (Files were deleted on purpose)
+app.get("/registrar/application-evaluation.html", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/admin/application-evaluation.html"))
+);
+
+app.get("/registrar/application-queue.html", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/admin/application-queue.html"))
+);
+
+app.get("/registrar/notification.html", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/admin/notification.html"))
+);
+
 app.get("/registrar/rep-and-analytics.html", (req, res) =>
-  res.sendFile(path.join(publicPath, "pages/registrar/rep-and-analytics.html"))
+  res.sendFile(path.join(publicPath, "pages/admin/rep-and-analytics.html"))
 );
 
 // ======================

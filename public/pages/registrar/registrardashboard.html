@@ -553,6 +553,24 @@
           const today = new Date();
           return date.toDateString() === today.toDateString();
         }
+
+        // Hide Registrar link for admin users, hide Accounts for registrars
+        const sessionUser = JSON.parse(localStorage.getItem('sessionUser'));
+        if (sessionUser && sessionUser.user) {
+          if (sessionUser.user.role === 'admin') {
+            // Hide Registrar link for admin users
+            const registrarLink = document.querySelector('a[href="/registrar"]');
+            if (registrarLink) {
+              registrarLink.closest('.nav-item').style.display = 'none';
+            }
+          } else if (sessionUser.user.role === 'registrar') {
+            // Hide Accounts link for registrar users
+            const accountsLink = document.querySelector('a[href="/accounts"]');
+            if (accountsLink) {
+              accountsLink.closest('.nav-item').style.display = 'none';
+            }
+          }
+        }
       });
     </script>
   </body>
