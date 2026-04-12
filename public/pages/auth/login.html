@@ -68,12 +68,7 @@
                     <label for="password" class="form-label">Password</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                        <div class="password-field flex-grow-1">
-                            <input type="password" name="Password" class="form-control" id="password" placeholder="Password">
-                            <button type="button" class="password-toggle-icon" data-password-id="password" tabindex="-1">
-                                <i class="bi bi-eye"></i>
-                            </button>
-                        </div>
+                        <input type="password" name="Password" class="form-control" id="password" placeholder="Password">
                     </div>
                 </div>
 
@@ -121,33 +116,6 @@
             localStorage.setItem('guestMode', 'true');
             window.location.href = '/';
         }
-
-        // Password toggle functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const toggleButtons = document.querySelectorAll('.password-toggle-icon');
-            
-            toggleButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const passwordId = this.getAttribute('data-password-id');
-                    const passwordInput = document.getElementById(passwordId);
-                    const icon = this.querySelector('i');
-                    
-                    if (passwordInput) {
-                        const isPassword = passwordInput.type === 'password';
-                        passwordInput.type = isPassword ? 'text' : 'password';
-                        
-                        if (isPassword) {
-                            icon.classList.remove('bi-eye');
-                            icon.classList.add('bi-eye-slash');
-                        } else {
-                            icon.classList.remove('bi-eye-slash');
-                            icon.classList.add('bi-eye');
-                        }
-                    }
-                });
-            });
-        });
     </script>
 
 <script>

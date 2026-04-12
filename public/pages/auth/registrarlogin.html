@@ -69,12 +69,7 @@
                     <label for="password" class="form-label">Password</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                        <div class="password-field flex-grow-1">
-                            <input type="password" name="Password" class="form-control" id="password" placeholder="Password">
-                            <button type="button" class="password-toggle-icon" data-password-id="password" tabindex="-1">
-                                <i class="bi bi-eye"></i>
-                            </button>
-                        </div>
+                        <input type="password" name="Password" class="form-control" id="password" placeholder="Password">
                     </div>
                 </div>
 
@@ -111,35 +106,6 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <!-- Password toggle functionality -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const toggleButtons = document.querySelectorAll('.password-toggle-icon');
-            
-            toggleButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const passwordId = this.getAttribute('data-password-id');
-                    const passwordInput = document.getElementById(passwordId);
-                    const icon = this.querySelector('i');
-                    
-                    if (passwordInput) {
-                        const isPassword = passwordInput.type === 'password';
-                        passwordInput.type = isPassword ? 'text' : 'password';
-                        
-                        if (isPassword) {
-                            icon.classList.remove('bi-eye');
-                            icon.classList.add('bi-eye-slash');
-                        } else {
-                            icon.classList.remove('bi-eye-slash');
-                            icon.classList.add('bi-eye');
-                        }
-                    }
-                });
-            });
-        });
-    </script>
 
     <script type="module">
         import { user_data } from "/data/user.js";
