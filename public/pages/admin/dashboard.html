@@ -655,13 +655,22 @@
       document.addEventListener("DOMContentLoaded", () => {
         const fullName = document.querySelector("#user-full-name");
         const signOutBtn = document.querySelector("#sign-out");
-        const authUser = JSON.parse(localStorage.getItem("sessionUser"));
+        const authUserStr = localStorage.getItem("sessionUser");
+        const authUser = authUserStr ? JSON.parse(authUserStr) : null;
         const timeout = localStorage.getItem("sessionTimeout");
 
         const logout = () => {
+          const sessionUserStr = localStorage.getItem("sessionUser");
+          const sessionUser = sessionUserStr ? JSON.parse(sessionUserStr) : null;
           localStorage.removeItem("sessionUser");
           localStorage.removeItem("sessionTimeout");
-          window.location.href = "/adminlogin.html";
+          
+          // Redirect to appropriate login page based on role
+          if (sessionUser && sessionUser.user && sessionUser.user.role === 'registrar') {
+            window.location.href = "/registrarlogin";
+          } else {
+            window.location.href = "/adminlogin.html";
+          }
         };
 
         const isSessionValid = () => {
@@ -672,7 +681,7 @@
         };
 
         const checkSession = () => {
-          if (!authUser.isRemember && !isSessionValid()) {
+          if (authUser && !authUser.isRemember && !isSessionValid()) {
             Swal.fire({
               icon: "error",
               title: "Oops...",
@@ -704,7 +713,8 @@
         });
 
         // Hide Registrar link for admin users, hide Accounts for registrars
-        const sessionUser = JSON.parse(localStorage.getItem('sessionUser'));
+        const sessionUserStr = localStorage.getItem('sessionUser');
+        const sessionUser = sessionUserStr ? JSON.parse(sessionUserStr) : null;
         if (sessionUser && sessionUser.user) {
           if (sessionUser.user.role === 'admin') {
             // Hide Registrar link for admin users
