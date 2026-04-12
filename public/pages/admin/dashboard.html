@@ -713,23 +713,35 @@
         });
 
         // Hide Registrar link for admin users, hide Accounts for registrars
-        const sessionUserStr = localStorage.getItem('sessionUser');
-        const sessionUser = sessionUserStr ? JSON.parse(sessionUserStr) : null;
-        if (sessionUser && sessionUser.user) {
-          if (sessionUser.user.role === 'admin') {
-            // Hide Registrar link for admin users
-            const registrarLink = document.querySelector('a[href="/registrar"]');
-            if (registrarLink) {
-              registrarLink.closest('.nav-item').style.display = 'none';
-            }
-          } else if (sessionUser.user.role === 'registrar') {
-            // Hide Accounts link for registrar users
-            const accountsLink = document.querySelector('a[href="/accounts"]');
-            if (accountsLink) {
-              accountsLink.closest('.nav-item').style.display = 'none';
+        const hideNavItems = () => {
+          const sessionUserStr = localStorage.getItem('sessionUser');
+          const sessionUser = sessionUserStr ? JSON.parse(sessionUserStr) : null;
+          if (sessionUser && sessionUser.user) {
+            if (sessionUser.user.role === 'admin') {
+              // Hide ALL Registrar links for admin users
+              const registrarLinks = document.querySelectorAll('a[href="/registrar"]');
+              registrarLinks.forEach(link => {
+                const navItem = link.closest('.nav-item');
+                if (navItem) {
+                  navItem.style.display = 'none';
+                  navItem.style.visibility = 'hidden';
+                }
+              });
+            } else if (sessionUser.user.role === 'registrar') {
+              // Hide ALL Accounts links for registrar users
+              const accountsLinks = document.querySelectorAll('a[href="/accounts"]');
+              accountsLinks.forEach(link => {
+                const navItem = link.closest('.nav-item');
+                if (navItem) {
+                  navItem.style.display = 'none';
+                  navItem.style.visibility = 'hidden';
+                }
+              });
             }
           }
-        }
+        };
+        hideNavItems();
+        setTimeout(hideNavItems, 100);
 
         ["mousemove", "keydown", "click"].forEach((event) => {
           document.addEventListener(event, () => {
