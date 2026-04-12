@@ -83,7 +83,7 @@ app.get("/dashboard", (req, res) =>
 );
 
 app.get("/registrardashboard", (req, res) =>
-  res.sendFile(path.join(publicPath, "pages/registrar/registrardashboard.html"))
+  res.sendFile(path.join(publicPath, "pages/admin/dashboard.html"))
 );
 
 app.get("/adminlogin", (req, res) =>
@@ -125,7 +125,7 @@ app.get("/registrar/notification", (req, res) =>
 );
 
 app.get("/registrar/dashboard", (req, res) =>
-  res.sendFile(path.join(publicPath, "pages/registrar/registrardashboard.html"))
+  res.sendFile(path.join(publicPath, "pages/admin/dashboard.html"))
 );
 
 app.get("/registrar/rep-and-analytics", (req, res) =>
