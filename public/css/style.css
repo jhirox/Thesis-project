@@ -942,6 +942,38 @@ body.page-credentials {
             border-color: var(--qeci-gold);
         }
 
+        /* Password toggle button */
+        .password-group {
+            position: relative;
+        }
+
+        .password-toggle {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-left: none;
+            color: rgba(255,255,255,0.4);
+            padding: 0.375rem 0.75rem;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .password-toggle:hover {
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.6);
+        }
+
+        .password-toggle:active {
+            transform: scale(0.98);
+        }
+
+        .password-group:focus-within .password-toggle {
+            border-color: var(--qeci-gold);
+            background: rgba(212,175,55,0.08);
+            color: var(--qeci-gold);
+        }
+
         /* Remember me + forgot row */
         .extras-row {
             display: flex;
