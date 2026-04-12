@@ -465,6 +465,14 @@
 
     <script type="module">
       document.addEventListener("DOMContentLoaded", () => {
+        // Protect Registrar Dashboard page - admins should not access it
+        const sessionUserStr = localStorage.getItem("sessionUser");
+        const sessionUserCheck = sessionUserStr ? JSON.parse(sessionUserStr) : null;
+        if (sessionUserCheck && sessionUserCheck.user && sessionUserCheck.user.role === 'admin') {
+          window.location.href = "/dashboard";
+          return;
+        }
+
         const fullName = document.querySelector("#user-full-name");
         const signOutBtn = document.querySelector("#sign-out");
         const authUser = JSON.parse(localStorage.getItem("sessionUser"));

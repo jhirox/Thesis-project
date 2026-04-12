@@ -331,6 +331,12 @@
                   <p>Dashboard Overview</p>
                 </a>
               </li>
+              <li class="nav-item">
+                <a href="/registrar" class="nav-link">
+                  <i class="nav-icon fa-solid fa-user-graduate"></i>
+                  <p>Registrar</p>
+                </a>
+              </li>
               <li class="nav-item active">
                 <a href="/application-queue" class="nav-link">
                   <i class="nav-icon fa-solid fa-list"></i>
@@ -1105,6 +1111,14 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", () => {
+        // Protect Accounts page - registrars should not access it
+        const sessionUserStr = localStorage.getItem('sessionUser');
+        const sessionUser = sessionUserStr ? JSON.parse(sessionUserStr) : null;
+        if (sessionUser && sessionUser.user && sessionUser.user.role === 'registrar') {
+          window.location.href = "/dashboard";
+          return;
+        }
+
         setTimeout(() => {
           const skeleton = document.getElementById("page-skeleton");
           if (!skeleton) return;

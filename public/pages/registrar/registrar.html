@@ -797,6 +797,13 @@
     
 
     <script>
+      // Protect Registrar page - admins should not access it
+      const sessionUserStr = localStorage.getItem('sessionUser');
+      const sessionUser = sessionUserStr ? JSON.parse(sessionUserStr) : null;
+      if (sessionUser && sessionUser.user && sessionUser.user.role === 'admin') {
+        window.location.href = "/dashboard";
+      }
+
       // Add Student Function
       document
         .getElementById("addStudentForm")
