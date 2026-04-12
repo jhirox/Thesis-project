@@ -117,8 +117,8 @@
         if (authUser && authUser != null && curTimeout && Date.now() < Number(curTimeout)) {
             if (authUser.user.role === "user") {
                 window.location.href = "/profile.html";
-            } else if (authUser.user.role === "/registrar") {
-                window.location.href = "/registrardashboard";
+            } else if (authUser.user.role === "registrar") {
+                window.location.href = "/registrar/dashboard";
             } else {
                 window.location.href = "/dashboard";
             }
@@ -146,7 +146,11 @@
                     let isAuthenticated = false;
                     let authUser = null;
                     user_data.forEach(user => {
-                        if (user.username === email.value && user.password === password.value) {
+                        if (
+                            user.username === email.value &&
+                            user.password === password.value &&
+                            user.role === "admin"
+                        ) {
                             isAuthenticated = true;
                             authUser = user;
                         }
@@ -172,7 +176,7 @@
                                 if (authUser.role === "user") {
                                     window.location.href = "/profile.html";
                                 } else if (authUser.role === "registrar") {
-                                    window.location.href = "/registrardashboard";
+                                    window.location.href = "/registrar/dashboard";
                                 } else {
                                     window.location.href = "/dashboard";
                                 }
@@ -181,7 +185,7 @@
                             showError('Error storing session data.');
                         }
                     } else {
-                        showError("Invalid email or password. Please try again.");
+                        showError("Invalid admin email or password. Please try again.");
                     }
                 }
             });

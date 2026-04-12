@@ -116,9 +116,9 @@
         const curTimeout = localStorage.getItem('sessionTimeout');
 
         if (authUser && authUser != null && curTimeout && Date.now() < Number(curTimeout)) {
-            if (authUser.role === "admin") {
+            if (authUser.user.role === "admin") {
                 window.location.href = "/dashboard";
-            } else if (authUser.role === "user") {
+            } else if (authUser.user.role === "user") {
                 window.location.href = "/profile";
             } else {
                 window.location.href = "/registrar/dashboard";
@@ -147,7 +147,11 @@
                     let isAuthenticated = false;
                     let authUser = null;
                     user_data.forEach(user => {
-                        if (user.username === email.value && user.password === password.value) {
+                        if (
+                            user.username === email.value &&
+                            user.password === password.value &&
+                            user.role === "registrar"
+                        ) {
                             isAuthenticated = true;
                             authUser = user;
                         }
@@ -163,8 +167,7 @@
                         const sessionUser = {
                             user: authUser,
                             loginTime: new Date().toISOString(),
-                            isRemember: rememberCbx.checked,
-                            role: "registrar"
+                            isRemember: rememberCbx.checked
                         };
 
                         if (authUser != null) {
@@ -178,7 +181,7 @@
                             showError('Error storing session data.');
                         }
                     } else {
-                        showError("Invalid email or password. Please try again.");
+                        showError("Invalid registrar email or password. Please try again.");
                     }
                 }
             });
@@ -195,4 +198,3 @@
 
 </body>
 </html>
-
