@@ -1055,7 +1055,8 @@
         }, 1500);
 
         // Hide Registrar link for admin users, hide Accounts for registrars
-        const sessionUser = JSON.parse(localStorage.getItem('sessionUser'));
+        const sessionUserStr = localStorage.getItem('sessionUser');
+        const sessionUser = sessionUserStr ? JSON.parse(sessionUserStr) : null;
         if (sessionUser && sessionUser.user) {
           if (sessionUser.user.role === 'admin') {
             // Hide Registrar link for admin users
