@@ -942,44 +942,6 @@ body.page-credentials {
             border-color: var(--qeci-gold);
         }
 
-        /* Password field with show/hide icon */
-        .login-right .password-field {
-            position: relative;
-        }
-
-        .login-right .password-field .form-control {
-            padding-right: 40px;
-        }
-
-        .login-right .password-toggle-icon {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: rgba(255,255,255,0.4);
-            background: none;
-            border: none;
-            padding: 0;
-            font-size: 1.1rem;
-            line-height: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: color 0.2s ease;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-        }
-
-        .login-right .password-toggle-icon:hover {
-            color: rgba(255,255,255,0.7);
-        }
-
-        .login-right .password-toggle-icon:active {
-            transform: translateY(-50%) scale(0.95);
-        }
-
         /* Remember me + forgot row */
         .extras-row {
             display: flex;
