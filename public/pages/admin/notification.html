@@ -1033,15 +1033,6 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        setTimeout(() => {
-          const skeleton = document.getElementById("page-skeleton");
-          if (!skeleton) return;
-          skeleton.style.opacity = "0";
-          skeleton.style.pointerEvents = "none";
-          skeleton.style.transition = "opacity 0.25s ease";
-          setTimeout(() => skeleton.remove(), 250);
-        }, 1500);
-
         // Hide Registrar link for admin users, hide Accounts for registrars
         const sessionUserStr = localStorage.getItem('sessionUser');
         const sessionUser = sessionUserStr ? JSON.parse(sessionUserStr) : null;
@@ -1061,6 +1052,15 @@
           }
         }
       });
+
+        setTimeout(() => {
+          const skeleton = document.getElementById("page-skeleton");
+          if (!skeleton) return;
+          skeleton.style.opacity = "0";
+          skeleton.style.pointerEvents = "none";
+          skeleton.style.transition = "opacity 0.25s ease";
+          setTimeout(() => skeleton.remove(), 250);
+        }, 1500);
     </script>
   </body>
 </html>
