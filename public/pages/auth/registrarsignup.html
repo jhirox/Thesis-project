@@ -61,23 +61,17 @@
 
                 <div class="mb-3 fa-2">
                     <label for="password" class="form-label">Password</label>
-                    <div class="input-group password-group">
+                    <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-lock"></i></span>
                         <input type="password" class="form-control" id="password" placeholder="Password">
-                        <button type="button" class="password-toggle" tabindex="-1">
-                            <i class="bi bi-eye"></i>
-                        </button>
                     </div>
                 </div>
 
                 <div class="mb-3 fa-3">
                     <label for="confirm-password" class="form-label">Confirm Password</label>
-                    <div class="input-group password-group">
+                    <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
                         <input type="password" class="form-control" id="confirm-password" placeholder="Confirm password">
-                        <button type="button" class="password-toggle" tabindex="-1">
-                            <i class="bi bi-eye"></i>
-                        </button>
                     </div>
                 </div>
 
@@ -180,32 +174,7 @@
     <!-- Password toggle functionality -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const toggleButtons = document.querySelectorAll('.password-toggle');
-            
-            toggleButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    // Find the password input in the same input-group
-                    const inputGroup = this.closest('.input-group');
-                    const passwordInput = inputGroup.querySelector('input[type="password"], input[type="text"]');
-                    
-                    if (passwordInput) {
-                        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                        passwordInput.setAttribute('type', type);
-                        
-                        // Toggle icon
-                        const icon = this.querySelector('i');
-                        if (type === 'text') {
-                            icon.classList.remove('bi-eye');
-                            icon.classList.add('bi-eye-slash');
-                        } else {
-                            icon.classList.remove('bi-eye-slash');
-                            icon.classList.add('bi-eye');
-                        }
-                    }
-                });
-            });
+            // Placeholder for future functionality
         });
     </script>
 
