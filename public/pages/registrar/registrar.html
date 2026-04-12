@@ -96,7 +96,7 @@
                 <li class="user-footer">
                   <a href="#" class="btn btn-default btn-flat">Profile</a>
                   <a
-                    href="../auth/login"
+                    href="#"
                     class="btn btn-default btn-flat float-end"
                     id="sign-out"
                     >Sign out</a
@@ -1014,6 +1014,20 @@
         modal.hide();
         // Reset form
         document.getElementById("addAdminForm").reset();
+      }
+
+      // Logout handler
+      const signOutBtn = document.querySelector("#sign-out");
+      if (signOutBtn) {
+        const logout = () => {
+          localStorage.removeItem("sessionUser");
+          localStorage.removeItem("sessionTimeout");
+          window.location.href = "/registrarlogin";
+        };
+        signOutBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          logout();
+        });
       }
     </script>
   </body>

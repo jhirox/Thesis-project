@@ -97,7 +97,7 @@
                 <li class="user-footer">
                   <a href="#" class="btn btn-default btn-flat">Profile</a>
                   <a
-                    href="../auth/login"
+                    href="#"
                     class="btn btn-default btn-flat float-end"
                     id="sign-out"
                     >Sign out</a
@@ -158,6 +158,7 @@
                   <p>Registrar</p>
                 </a>
               </li>
+
               <li class="nav-item active">
                 <a href="/application-queue" class="nav-link active">
                   <i class="nav-icon fa-solid fa-list"></i>
@@ -171,12 +172,6 @@
                 </a>
               </li>
               <h5 class="text-white pt-4">Management</h5>
-              <li class="nav-item active">
-                <a href="/accounts" class="nav-link">
-                  <i class="nav-icon fa-solid fa-users"></i>
-                  <p>Accounts</p>
-                </a>
-              </li>
               <li class="nav-item active">
                 <a href="/notification" class="nav-link">
                   <i class="nav-icon fa-regular fa-bell"></i>
@@ -589,6 +584,20 @@
         // Close the modal
         const modal = bootstrap.Modal.getInstance(document.getElementById('filterModal'));
         modal.hide();
+      }
+
+      // Logout handler
+      const signOutBtn = document.querySelector("#sign-out");
+      if (signOutBtn) {
+        const logout = () => {
+          localStorage.removeItem("sessionUser");
+          localStorage.removeItem("sessionTimeout");
+          window.location.href = "/registrarlogin";
+        };
+        signOutBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          logout();
+        });
       }
     </script>
 
