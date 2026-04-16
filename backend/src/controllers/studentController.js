@@ -498,3 +498,133 @@ function formatForMysqlTimestamp(value) {
     date.getSeconds()
   )}`;
 }
+
+// GET profile data for the logged-in student
+export const getStudentProfile = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { email } = req.query;
+
+    if (!id && !email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Student id or email is required to fetch profile',
+      });
+    }
+
+    const whereClause = id ? 'student_id = ?' : 'email_address = ?';
+    const whereValue = id || email;
+
+    const query = `
+      SELECT *
+      FROM student_profile_view
+      WHERE ${whereClause}
+      LIMIT 1
+    `;
+
+    const [rows] = await db.query(query, [whereValue]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Profile not found' });
+    }
+
+    const profile = rows[0];
+    if (profile.semester !== undefined && profile.semester_types === undefined) {
+      profile.semester_types = profile.semester;
+    }
+    if (profile.learning_modality !== undefined && profile.modality_name === undefined) {
+      profile.modality_name = profile.learning_modality;
+    }
+
+    res.status(200).json({
+      success: true,
+      data: profile,
+    });
+  } catch (error) {
+    console.error('Get student profile error:', error);
+    res.status(500).json({ success: false, message: 'Error loading profile', error: error.message });
+  }
+};
+
+export const updateStudentProfile = async (req, res) => {
+  try {
+    const { studentId, email, contactNumber, birthDate, completeAddress, sex } = req.body;
+
+    if (!studentId && !email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Student id or email is required to update profile',
+      });
+    }
+
+    const lookupQuery = studentId
+      ? 'SELECT student_id FROM students WHERE student_id = ? LIMIT 1'
+      : 'SELECT student_id FROM students WHERE email_address = ? LIMIT 1';
+
+    const [studentRows] = await db.query(lookupQuery, [studentId || email]);
+
+    if (studentRows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Student not found' });
+    }
+
+    const studentRecordId = studentRows[0].student_id;
+    const updates = [];
+    const params = [];
+
+    if (contactNumber !== undefined) {
+      updates.push('contact_number = ?');
+      params.push(contactNumber.trim() || null);
+    }
+
+    if (birthDate !== undefined) {
+      updates.push('birth_date = ?');
+      params.push(birthDate || null);
+    }
+
+    if (completeAddress !== undefined) {
+      updates.push('complete_address = ?');
+      params.push(completeAddress.trim() || null);
+    }
+
+    if (sex !== undefined) {
+      updates.push('sex = ?');
+      params.push(sex || null);
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({ success: false, message: 'No profile fields provided to update' });
+    }
+
+    const updateQuery = `
+      UPDATE students
+      SET ${updates.join(', ')}, updated_at = NOW()
+      WHERE student_id = ?
+    `;
+
+    params.push(studentRecordId);
+    await db.query(updateQuery, params);
+
+    const [updatedRows] = await db.query(
+      `
+        SELECT *
+        FROM student_profile_view
+        WHERE student_id = ?
+        LIMIT 1
+      `,
+      [studentRecordId]
+    );
+
+    const updatedProfile = updatedRows[0] || {};
+    if (updatedProfile.semester !== undefined && updatedProfile.semester_types === undefined) {
+      updatedProfile.semester_types = updatedProfile.semester;
+    }
+    if (updatedProfile.learning_modality !== undefined && updatedProfile.modality_name === undefined) {
+      updatedProfile.modality_name = updatedProfile.learning_modality;
+    }
+
+    res.status(200).json({ success: true, data: updatedProfile });
+  } catch (error) {
+    console.error('Update student profile error:', error);
+    res.status(500).json({ success: false, message: 'Error updating profile', error: error.message });
+  }
+};

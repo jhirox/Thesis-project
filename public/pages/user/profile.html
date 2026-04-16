@@ -335,14 +335,8 @@
                   <p class="text-muted mb-3">
                     Student ID: <span id="displayId">QECI-2025-001</span>
                   </p>
-                  <div class="d-flex gap-2 justify-content-center">
-                    <button
-                      id="editProfileBtn"
-                      class="btn btn-outline-primary btn-sm"
-                    >
-                      <i class="bi bi-pencil"></i> Edit Profile
-                    </button>
-                    <button id="sign-out" class="btn btn-secondary btn-sm">
+                  <div class="d-flex gap-2 justify-content-center flex-wrap">
+                    <button id="sign-out" class="btn btn-secondary btn-sm" type="button">
                       <i class="bi bi-box-arrow-right"></i> Sign out
                     </button>
                   </div>
@@ -640,6 +634,7 @@
     <script type="module">
       document.addEventListener('DOMContentLoaded', () => {
         const fullName = document.querySelector('#user-full-name');
+        const fullNameField = document.querySelector('#fullName');
         const displayId = document.querySelector('#displayId');
         const emailAddr = document.querySelector('#emailAddr');
         const contactNo = document.querySelector('#contactNo');
@@ -657,14 +652,18 @@
         const applicationStatus = document.querySelector('#applicationStatus');
         const signOutBtn = document.querySelector('#sign-out');
         const sessionUserStr = localStorage.getItem('sessionUser');
+        const authToken = localStorage.getItem('authToken');
         const authUser = sessionUserStr ? JSON.parse(sessionUserStr) : null;
         const timeout = localStorage.getItem('sessionTimeout');
         const guestMode = localStorage.getItem('guestMode') === 'true';
+
+        let currentProfile = null;
 
         const logout = () => {
           try {
             localStorage.removeItem('sessionUser');
             localStorage.removeItem('sessionTimeout');
+            localStorage.removeItem('authToken');
             localStorage.removeItem('guestMode');
           } catch (error) {
             // Ignored
@@ -686,7 +685,6 @@
           return Date.now() < Number(timeout);
         };
 
-        // STRICT AUTH CHECK - Block if not authenticated or in guest mode
         if (!authUser || !authUser.user || guestMode) {
           logout();
           return;
@@ -703,40 +701,89 @@
               icon: 'error',
               title: 'Oops...',
               text: 'Session Timeout!',
-              footer: '<a href="/login">Please login to continue using our app</a>'
+              footer: '<a href="/login">Please login to continue using our app</a>',
             });
 
             setTimeout(logout, 5000);
           }
         };
 
-        if (authUser && authUser.user && !guestMode) {
-          const user = authUser.user;
-          const name = user.fullname || formatNameFromEmail(user.email);
-          fullName.textContent = name;
-          displayId.textContent = user.id ? `QECI-${user.id}` : 'Not set';
-          emailAddr.value = user.email || '';
-          contactNo.value = '';
-          dob.value = '';
-          address.value = '';
-          sex.value = '';
-          profileImg.src = user.photo || '/assets/images/lancephoto.png';
-          programInfo.textContent = 'Not set';
-          majorInfo.textContent = 'Not set';
-          entryStatus.textContent = 'Not set';
-          modality.textContent = 'Not set';
-          semester.textContent = 'Not set';
-          queueNumber.textContent = 'Not available';
-          applicationStatus.textContent = 'Not submitted';
+        const user = authUser.user;
+        const userEmail = user.email;
+
+        if (profileBody) {
+          profileBody.classList.add('authenticated');
+        }
+
+        const buildFullName = (profile) => {
+          if (profile.full_name) {
+            return profile.full_name;
+          }
+
+          const nameParts = [profile.first_name, profile.middle_name, profile.last_name, profile.suffix]
+            .filter(Boolean)
+            .map((part, index) => {
+              if (index === 1 && part.length === 1) {
+                return `${part.toUpperCase()}.`;
+              }
+              return part;
+            });
+
+          if (nameParts.length > 0) {
+            return nameParts.join(' ');
+          }
+
+          return formatNameFromEmail(profile.email_address || userEmail);
+        };
+
+        const renderProfile = (profile) => {
+          currentProfile = profile;
+
+          const fullNameText = buildFullName(profile);
+          fullName.textContent = fullNameText;
+          if (fullNameField) fullNameField.value = fullNameText;
+          displayId.textContent = profile.student_id ? `QECI-${profile.student_id}` : user.id ? `QECI-${user.id}` : 'Not set';
+          emailAddr.value = profile.email_address || userEmail || '';
+          contactNo.value = profile.contact_number || '';
+          dob.value = profile.birth_date ? profile.birth_date.split('T')[0] : '';
+          address.value = profile.complete_address || '';
+          sex.value = profile.sex || '';
+          profileImg.src = profile.photo || '/assets/images/lancephoto.png';
+          programInfo.textContent = profile.program_name ? `${profile.program_name} ${profile.program_code ? `(${profile.program_code})` : ''}`.trim() : 'Not set';
+          majorInfo.textContent = profile.program_code || 'Not set';
+          entryStatus.textContent = profile.application_status || 'Not set';
+          modality.textContent = profile.modality_name || 'Not set';
+          semester.textContent = profile.semester_types || 'Not set';
+          queueNumber.textContent = profile.queue_number || 'Not available';
+          applicationStatus.textContent = profile.application_status || 'Not submitted';
 
           if (profileBody) {
             profileBody.classList.add('authenticated');
           }
-          checkSession();
-        } else {
-          logout();
-          return;
-        }
+        };
+
+        const loadProfile = async () => {
+          if (!userEmail) return;
+
+          try {
+            const params = new URLSearchParams({ email: userEmail });
+            const response = await fetch(`/api/students/profile?${params.toString()}`, {
+              headers: {
+                'Authorization': authToken ? `Bearer ${authToken}` : '',
+              },
+            });
+
+            const data = await response.json();
+            if (!response.ok || !data.success) {
+              console.warn('Unable to load profile', data);
+              return;
+            }
+
+            renderProfile(data.data);
+          } catch (error) {
+            console.error('Profile load error:', error);
+          }
+        };
 
         if (signOutBtn) {
           signOutBtn.addEventListener('click', () => {
@@ -749,6 +796,8 @@
             checkSession();
           });
         });
+
+        loadProfile();
       });
     </script>
     <script src="/js/auth.js"></script>
