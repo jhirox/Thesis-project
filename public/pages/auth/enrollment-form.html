@@ -5,54 +5,82 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enrollment Form - QECI</title>
-
-    <!-- BOOTSTRAP -->
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
     <link rel="stylesheet" href="/css/style.css">
     <link rel="icon" href="/assets/images/logo.png" />
-
+    
+    <style>
+        .school-header {
+            text-align: center;
+            padding: 25px 0;
+        }
+        
+        .school-header img {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+        
+        .school-header h2 {
+            margin: 0;
+            font-weight: 800;
+            color: #0d6efd;
+        }
+        
+        #addressSuggestions {
+            background: white;
+            border-radius: 0 0 5px 5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .text-danger {
+            font-size: 0.9em;
+        }
+    </style>
 </head>
 
 <body class="page-shell bg-light page-enrollment-form">
-
-    <!-- HEADER WITH LOGO -->
+    
     <div class="school-header">
         <img src="/assets/images/logo.png" alt="QECI Logo">
         <h2>QUEZONIAN EDUCATIONAL COLLEGE, INC.</h2>
         <p class="text-muted mb-0">Dr. Soler St. Brgy. Zone II Poblacion Atimonan, Quezon</p>
         <p class="text-muted mb-0">Official Enrollment Form</p>
     </div>
-
+    
     <div class="container py-4">
         <div class="card shadow-sm border-0 mb-5">
             <div class="card-body">
                 <form id="enrollForm" class="row g-4">
-
-                    <!-- STUDENT INFORMATION -->
+                    
                     <div class="col-12">
                         <h4 class="fw-bold text-primary">Student Information</h4>
                     </div>
-
+                    
                     <div class="col-md-4">
-                        <label class="form-label">First Name</label>
-                        <input type="text" id="firstName" class="form-control" required>
+                        <label class="form-label">First Name <span class="text-danger">*</span></label>
+                        <input type="text" id="firstName" class="form-control name-input" required>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Middle Name</label>
-                        <input type="text" id="middleName" class="form-control">
+                        <input type="text" id="middleName" class="form-control name-input">
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">Last Name</label>
-                        <input type="text" id="lastName" class="form-control" required>
+                        <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                        <input type="text" id="lastName" class="form-control name-input" required>
                     </div>
-
+                    
                     <div class="col-md-3">
                         <label class="form-label">Suffix</label>
                         <input type="text" id="suffix" class="form-control" placeholder="Jr., III">
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Birthdate</label>
+                        <label class="form-label">Birthdate <span class="text-danger">*</span></label>
                         <input type="date" id="birthDate" class="form-control" required>
                     </div>
                     <div class="col-md-3">
@@ -60,14 +88,14 @@
                         <input type="text" id="birthPlace" class="form-control">
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Sex</label>
+                        <label class="form-label">Sex <span class="text-danger">*</span></label>
                         <select id="sex" class="form-select" required>
                             <option value="">Select</option>
                             <option>Male</option>
                             <option>Female</option>
                         </select>
                     </div>
-
+                    
                     <div class="col-md-4">
                         <label class="form-label">Civil Status</label>
                         <select id="civilStatus" class="form-select">
@@ -77,44 +105,54 @@
                             <option>Widowed</option>
                         </select>
                     </div>
-
-                    <!-- Dynamic Spouse Field -->
+                    
                     <div class="col-md-4" id="spouseContainer" style="display:none;">
                         <label class="form-label">Spouse Name</label>
-                        <input type="text" id="spouseName" class="form-control" placeholder="Enter spouse's full name">
+                        <input type="text" id="spouseName" class="form-control name-input" placeholder="Enter spouse's full name">
                     </div>
-
+                    
                     <div class="col-md-4">
                         <label class="form-label">Nationality</label>
                         <input type="text" id="nationality" class="form-control">
                     </div>
-
+                    
                     <div class="col-md-4">
                         <label class="form-label">Religion</label>
-                        <input type="text" id="religion" class="form-control">
+                        <select id="religion" class="form-select">
+                            <option value="">Select</option>
+                            <option>Roman Catholic</option>
+                            <option>Christian (Non-Catholic)</option>
+                            <option>Iglesia ni Cristo</option>
+                            <option>Islam</option>
+                            <option>Born Again Christian</option>
+                            <option>Others</option>
+                        </select>
                     </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">Email Address</label>
+                    
+                    <div class="col-md-4">
+                        <label class="form-label">Email Address <span class="text-danger">*</span></label>
                         <input type="email" id="email" class="form-control" placeholder="you@example.com" required>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Contact Number</label>
-                        <input type="tel" id="contactNumber" class="form-control" placeholder="+63 912 345 6789" required>
+                    <div class="col-md-4">
+                        <label class="form-label">Contact Number <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text">+63</span>
+                            <input type="tel" id="contactNumber" class="form-control" placeholder="9XXXXXXXXX" maxlength="10" required>
+                        </div>
                     </div>
-
-                    <div class="col-12">
-                        <label class="form-label">Complete Address</label>
-                        <input type="text" id="address" class="form-control" placeholder="House No., Street, Barangay, City">
+                    
+                    <div class="col-12 position-relative">
+                        <label class="form-label">Complete Address <span class="text-danger">*</span></label>
+                        <input type="text" id="address" class="form-control" placeholder="Type your Barangay (e.g. Zone 1, Tagbakin...)" required autocomplete="off">
+                        <div id="addressSuggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
                     </div>
-
-                    <!-- ACADEMIC DETAILS -->
+                    
                     <div class="col-12 pt-2">
                         <h4 class="fw-bold text-primary">Academic Details</h4>
                     </div>
-
+                    
                     <div class="col-md-6">
-                        <label class="form-label">Program / Course</label>
+                        <label class="form-label">Program / Course <span class="text-danger">*</span></label>
                         <select id="program" class="form-select" required>
                             <option value="">Select</option>
                             <optgroup label="BSBA - Business Administration">
@@ -127,34 +165,38 @@
                                 <option>BSED Major in Mathematics</option>
                                 <option>BSED Major in Filipino</option>
                             </optgroup>
-                            <option value="Bachelor of Elementary Education">BEED - Bachelor of Elementary Education</option>
-                            <option value="Bachelor of Science in Computer Science">BSCS - Bachelor of Science in Computer Science</option>
-                            <option value="Bachelor of Science in Criminology">BSCRIM - Bachelor of Science in Criminology</option>
+                            <option>BEED - Bachelor of Elementary Education</option>
+                            <option>BSCS - Bachelor of Science in Computer Science</option>
+                            <option>BSCRIM - Bachelor of Science in Criminology</option>
                         </select>
                     </div>
-
+                    
                     <div class="col-md-6">
                         <label class="form-label">Preferred Learning Modality</label>
                         <select id="learningModality" class="form-select">
                             <option value="">Select</option>
                             <option>Face-to-Face</option>
-                            <option>Online / Flexible</option>
+                            <option>Blended Learning</option>
                         </select>
                     </div>
-
+                    
                     <div class="col-md-6">
                         <label class="form-label">Type of Student</label>
                         <select id="studentType" class="form-select">
                             <option value="">Select</option>
                             <option>New Regular Enrollee</option>
-                            <option>Existing Regular</option>
-                            <option>Irregular Student</option>
+                            <option>Existing Regular/Irregular Student</option>
                             <option>College Transferee</option>
                             <option>Re-Entry / iCare</option>
                             <option>Uniting Student / CPTP</option>
                         </select>
                     </div>
-
+                    
+                    <div class="col-md-6" id="studentIdContainer" style="display:none;">
+                        <label class="form-label">Student ID</label>
+                        <input type="text" id="studentId" class="form-control" placeholder="Enter your Student ID">
+                    </div>
+                    
                     <div class="col-md-6">
                         <label class="form-label">Highest Educational Attainment</label>
                         <select id="highestAttainment" class="form-select">
@@ -166,17 +208,17 @@
                             <option>College Graduate</option>
                         </select>
                     </div>
-
+                    
                     <div class="col-md-6">
                         <label class="form-label">Last School Attended</label>
                         <input type="text" id="lastSchool" class="form-control">
                     </div>
-
+                    
                     <div class="col-md-6">
                         <label class="form-label">Last School Year Finished</label>
                         <input type="text" id="lastSchoolYear" class="form-control" placeholder="2023-2024">
                     </div>
-
+                    
                     <div class="col-md-6">
                         <label class="form-label">Semester of Enrollment</label>
                         <select id="semester" class="form-select">
@@ -185,7 +227,7 @@
                             <option>Second Semester</option>
                         </select>
                     </div>
-
+                    
                     <div class="col-md-6">
                         <label class="form-label">Working Student?</label>
                         <select id="workingStatus" class="form-select">
@@ -194,62 +236,61 @@
                             <option>Working student</option>
                         </select>
                     </div>
-
-                    <!-- FAMILY INFORMATION -->
+                    
                     <div class="col-12 pt-2">
                         <h4 class="fw-bold text-primary">Family / Guardian Information</h4>
                     </div>
-
+                    
                     <div class="col-md-6">
                         <label class="form-label">Mother's Maiden Name</label>
-                        <input type="text" id="motherMaiden" class="form-control">
+                        <input type="text" id="motherMaiden" class="form-control name-input">
                     </div>
-
+                    
                     <div class="col-md-6">
                         <label class="form-label">Father's Name</label>
-                        <input type="text" id="fatherName" class="form-control">
+                        <input type="text" id="fatherName" class="form-control name-input">
                     </div>
-
+                    
                     <div class="col-md-6">
                         <label class="form-label">Guardian Name</label>
-                        <input type="text" id="guardianName" class="form-control">
+                        <input type="text" id="guardianName" class="form-control name-input">
                     </div>
-
+                    
                     <div class="col-md-6">
                         <label class="form-label">Guardian Contact</label>
-                        <input type="tel" id="guardianContact" class="form-control" placeholder="+63 987 654 3210">
+                        <div class="input-group">
+                            <span class="input-group-text">+63</span>
+                            <input type="tel" id="guardianContact" class="form-control" placeholder="9XXXXXXXXX" maxlength="10">
+                        </div>
                     </div>
-
+                    
                     <div class="col-12">
                         <label class="form-label">Additional Remarks / Special Needs</label>
                         <textarea id="remarks" rows="3" class="form-control" placeholder="Write important notes here..."></textarea>
                     </div>
-
-                    <!-- TERMS + SUBMIT -->
+                    
                     <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" id="agreeTerms">
                             <label class="form-check-label">
-                                I agree to the 
-                                <a href="#" id="termsLink">Terms</a> & 
+                                I agree to the
+                                <a href="#" id="termsLink">Terms</a> &
                                 <a href="#" id="conditionsLink">Conditions</a>.
                             </label>
                         </div>
                         <button type="submit" class="btn btn-primary px-5">Submit Form</button>
                     </div>
-
+                    
                 </form>
             </div>
         </div>
     </div>
-
-    <!-- FOOTER -->
+    
     <footer class="text-center text-white py-3 bg-dark">
         <strong class="d-block">GO FOR GROWTH!</strong>
         <small>© 2025 Quezonian Educational College, Inc.</small>
     </footer>
-
-    <!-- TERMS MODAL -->
+    
     <div class="modal fade" id="termsModal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -259,19 +300,31 @@
                 </div>
                 <div class="modal-body small">
                     <ul>
-                        <li>You must provide accurate personal information.</li>
-                        <li>Enrollment is subject to approval by the administration.</li>
-                        <li>All data collected will be handled according to privacy policies.</li>
+                        <li>All information provided in this enrollment form must be true, accurate, and complete.</li>
+                        <li>Providing false, misleading, or incomplete information may result in disqualification or
+                            cancellation of enrollment.</li>
+                        <li>The applicant agrees that submitted data will be reviewed and verified by the Admissions or
+                            Registrar’s Office.</li>
+                        <li>The school reserves the right to request additional documents for verification purposes.
+                        </li>
+                        <li>Submission of this form does not automatically guarantee admission or official enrollment.
+                        </li>
+                        <li>The applicant understands that all academic records submitted become part of the school’s
+                            official database.</li>
+                        <li>Personal data collected will be processed in accordance with applicable data privacy
+                            regulations.</li>
+                        <li>The applicant agrees to receive official communications through the provided email address
+                            and contact number.</li>
                     </ul>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" data-bs-dismiss="modal">Understood</button>
+                <div class="modal-footer justify-content-center">
+                    <button class="btn btn-primary" data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- CONDITIONS MODAL -->
+    
+    
     <div class="modal fade" id="conditionsModal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -281,168 +334,227 @@
                 </div>
                 <div class="modal-body small">
                     <ul>
-                        <li>Payment must be completed before enrollment is finalized.</li>
-                        <li>Students must comply with school rules and regulations.</li>
-                        <li>Modifications to submitted forms require administrative approval.</li>
+                        <li>Enrollment will only be finalized upon completion of required payments and submission of
+                            necessary documents.</li>
+                        <li>Students must comply with all institutional policies, student handbook rules, and academic
+                            regulations.</li>
+                        <li>The school reserves the right to adjust schedules, sections, or class modalities when
+                            necessary.</li>
+                        <li>Failure to meet academic or financial obligations may result in suspension of enrollment
+                            privileges.</li>
+                        <li>Refunds, if applicable, shall follow the official refund policy of the institution.</li>
+                        <li>Students are responsible for regularly checking official announcements and updates from the
+                            administration.</li>
+                        <li>Any request for changes to submitted information requires formal approval from the
+                            Registrar.</li>
+                        <li>The institution may deny or revoke enrollment if policies and regulations are violated.</li>
                     </ul>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" data-bs-dismiss="modal">Understood</button>
+                <div class="modal-footer justify-content-center">
+                    <button class="btn btn-primary" data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- WARNING MODAL -->
+    
+    
     <div class="modal fade" id="warningModal">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
+            <div class="modal-content text-center">
                 <div class="modal-header">
                     <h5>Notice</h5>
                     <button class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body small">
+                <div class="modal-body">
                     You must agree to the Terms and Conditions before submitting.
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer d-flex justify-content-center">
                     <button class="btn btn-primary" data-bs-dismiss="modal">Understood</button>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- SUCCESS MODAL -->
-    <div class="modal fade" id="successModal">
+    
+    
+    <div class="modal fade" id="generateQueueModal">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5>Application Submitted</h5>
-                    <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            <div class="modal-content text-center">
+                <div class="modal-header">
+                    <h5 class="modal-title">Generate Queue</h5>
                 </div>
                 <div class="modal-body">
-                    <p class="mb-2">Your enrollment form has been submitted successfully.</p> 
-                    <br>
-                    <strong id="queueWrapper" class="d-none">Your queue number is: <span id="queueNumber">#A000</span></strong>
+                    Do you want to generate your queue now?
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-success" data-bs-dismiss="modal">Close</button>
+                <div class="modal-footer d-flex justify-content-center gap-2">
+                    <button type="button" class="btn btn-secondary" id="generateLaterBtn">Generate Later</button>
+                    <button type="button" class="btn btn-primary" id="generateQueueNow">Generate Now</button>
                 </div>
             </div>
         </div>
     </div>
-
+    
+    
+    <div class="modal fade" id="disclaimerModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Disclaimer</h5>
+                </div>
+                <div class="modal-body small">
+                    Your application will be submitted for review. Do you want to continue?
+                </div>
+                <div class="modal-footer d-flex justify-content-center gap-2">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">No, Go Back</button>
+                    <button type="button" class="btn btn-primary" id="confirmContinue">Yes, Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class="modal fade" id="successModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center">
+                <div class="modal-header bg-success text-white">
+                    <h5>Successfully Submitted</h5>
+                </div>
+                <div class="modal-body py-4">
+                    <h5 class="fw-bold text-success">Form Submitted Successfully!</h5>
+                    <p class="mb-0">Your application is now under review.</p>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button class="btn btn-primary" data-bs-dismiss="modal">
+                        View Application Number
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class="modal fade" id="referenceNumberModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center">
+                <div class="modal-header">
+                    <h5>Reference Information</h5>
+                </div>
+                <div class="modal-body">
+                    <p>Your Application Number:</p>
+                    <h3 id="applicationNumber" class="text-primary fw-bold"></h3>
+                    <small class="text-muted">
+                        Please screenshot this number and present it to the Registrar.
+                    </small>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button class="btn btn-primary" data-bs-dismiss="modal">
+                        OK, Finished
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
-        const enrollForm = document.getElementById('enrollForm');
-        const civilStatusSelect = document.getElementById('civilStatus');
-        const spouseContainer = document.getElementById('spouseContainer');
-        const spouseInput = document.getElementById('spouseName');
-        const termsLink = document.getElementById('termsLink');
-        const conditionsLink = document.getElementById('conditionsLink');
-        const warningModal = new bootstrap.Modal(document.getElementById('warningModal'));
-        const successModal = new bootstrap.Modal(document.getElementById('successModal'));
-        const submitButton = enrollForm.querySelector('button[type="submit"]');
-        const queueNumber = document.getElementById('queueNumber');
-        const queueWrapper = document.getElementById('queueWrapper');
-
-        function toggleSpouseField() {
-            const isMarried = civilStatusSelect.value === 'Married';
-            spouseContainer.style.display = isMarried ? '' : 'none';
-
-            if (!isMarried) {
-                spouseInput.value = '';
-            }
-        }
-
-        function openModal(modalId, event) {
-            event.preventDefault();
-            new bootstrap.Modal(document.getElementById(modalId)).show();
-        }
-
-        function collectFormData() {
-            return {
-                firstName: document.getElementById('firstName').value.trim(),
-                middleName: document.getElementById('middleName').value.trim(),
-                lastName: document.getElementById('lastName').value.trim(),
-                suffix: document.getElementById('suffix').value.trim(),
-                birthDate: document.getElementById('birthDate').value,
-                birthPlace: document.getElementById('birthPlace').value.trim(),
-                sex: document.getElementById('sex').value,
-                civilStatus: document.getElementById('civilStatus').value,
-                spouseName: document.getElementById('spouseName').value.trim(),
-                nationality: document.getElementById('nationality').value.trim(),
-                religion: document.getElementById('religion').value.trim(),
-                email: document.getElementById('email').value.trim(),
-                contactNumber: document.getElementById('contactNumber').value.trim(),
-                address: document.getElementById('address').value.trim(),
-                program: document.getElementById('program').value,
-                learningModality: document.getElementById('learningModality').value,
-                studentType: document.getElementById('studentType').value,
-                highestAttainment: document.getElementById('highestAttainment').value,
-                lastSchool: document.getElementById('lastSchool').value.trim(),
-                lastSchoolYear: document.getElementById('lastSchoolYear').value.trim(),
-                semester: document.getElementById('semester').value,
-                workingStatus: document.getElementById('workingStatus').value,
-                motherMaiden: document.getElementById('motherMaiden').value.trim(),
-                fatherName: document.getElementById('fatherName').value.trim(),
-                guardianName: document.getElementById('guardianName').value.trim(),
-                guardianContact: document.getElementById('guardianContact').value.trim(),
-                remarks: document.getElementById('remarks').value.trim(),
-                agreedToTerms: document.getElementById('agreeTerms').checked,
-                agreedAt: new Date().toISOString()
-            };
-        }
-
-        async function submitEnrollmentForm(event) {
-            event.preventDefault();
-
-            if (!document.getElementById('agreeTerms').checked) {
-                warningModal.show();
-                return;
-            }
-
-            if (!enrollForm.reportValidity()) {
-                return;
-            }
-
-            const payload = collectFormData();
-            const originalText = submitButton.textContent;
-            submitButton.disabled = true;
-            submitButton.textContent = 'Submitting...';
-
-            try {
-                const response = await fetch('/api/students/enrollment', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.getElementById("enrollForm");
+            const civilStatus = document.getElementById("civilStatus");
+            const studentType = document.getElementById("studentType");
+            const spouseContainer = document.getElementById("spouseContainer");
+            const studentIdContainer = document.getElementById("studentIdContainer");
+            const addressInput = document.getElementById("address");
+            const suggestionBox = document.getElementById("addressSuggestions");
+            
+            const termsModal = new bootstrap.Modal(document.getElementById("termsModal"));
+            const conditionsModal = new bootstrap.Modal(document.getElementById("conditionsModal"));
+            const warningModal = new bootstrap.Modal(document.getElementById("warningModal"));
+            const generateQueueModal = new bootstrap.Modal(document.getElementById("generateQueueModal"));
+            const disclaimerModal = new bootstrap.Modal(document.getElementById("disclaimerModal"));
+            const successModal = new bootstrap.Modal(document.getElementById("successModal"));
+            const refModal = new bootstrap.Modal(document.getElementById("referenceNumberModal"));
+            
+            const rawBarangays = [
+                "Angeles", "Balubad", "Balugohin", "Barangay Zone 1 (Poblacion)", "Barangay Zone 2 (Poblacion)",
+                "Barangay Zone 3 (Poblacion)", "Barangay Zone 4 (Poblacion)", "Buhangin", "Caridad Ibaba",
+                "Caridad Ilaya", "Habingan", "Inaclagan", "Inalig", "Kilait", "Kulawit", "Lakip", "Lubi",
+                "Lumutan", "Magsaysay", "Malinao Ibaba", "Malinao Ilaya", "Malusak", "Manggalayan Bundok",
+                "Manggalayan Labak", "Matanag", "Montes Balaon", "Montes Kallagan", "Ponon", "Rizal",
+                "San Andres Bundok", "San Andres Labak", "San Isidro", "San Jose Balatok", "San Rafael",
+                "Santa Catalina", "Sapaan", "Sokol", "Tagbakin", "Talaba", "Tinandog", "Villa Ibaba", "Villa Ilaya",
+                "Concepcion, Plaridel", "Central, Plaridel", "Duhat, Plaridel", "Ilaya, Plaridel", "Tanauan, Plaridel"
+            ];
+            const barangays = rawBarangays.map(b => b.includes("Plaridel") ? `Brgy. ${b}, Quezon` : `Brgy. ${b}, Atimonan, Quezon`);
+            
+            document.querySelectorAll('.name-input').forEach(el => {
+                el.addEventListener("input", () => el.value = el.value.replace(/[^A-Za-z\s.]/g, ""));
+            });
+            
+            ['contactNumber', 'guardianContact'].forEach(id => {
+                document.getElementById(id).addEventListener("input", function() {
+                    this.value = this.value.replace(/\D/g, "").slice(0, 10);
                 });
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(result.message || 'Unable to submit enrollment form.');
-                }
-
-                queueNumber.textContent = result.queueNumber || 'Pending';
-                queueWrapper.classList.remove('d-none');
+            });
+            
+            civilStatus.addEventListener("change", () => spouseContainer.style.display = civilStatus.value === "Married" ? "block" : "none");
+            studentType.addEventListener("change", () => studentIdContainer.style.display = studentType.value.includes("Existing") ? "block" : "none");
+            addressInput.addEventListener("input", () => {
+                const val = addressInput.value.toLowerCase();
+                suggestionBox.innerHTML = "";
+                if (!val || val.length < 1) return;
+                barangays.filter(b => b.toLowerCase().includes(val)).slice(0, 6).forEach(match => {
+                    const btn = document.createElement("button");
+                    btn.className = "list-group-item list-group-item-action py-2";
+                    btn.textContent = match;
+                    btn.onclick = () => {
+                        addressInput.value = match;
+                        suggestionBox.innerHTML = "";
+                    };
+                    suggestionBox.appendChild(btn);
+                });
+            });
+            
+            form.addEventListener("submit", (e) => {
+                e.preventDefault();
+                if (!document.getElementById("agreeTerms").checked) return warningModal.show();
+                generateQueueModal.show();
+            });
+            
+            document.getElementById("generateQueueNow").onclick = () => {
+                generateQueueModal.hide();
+                disclaimerModal.show();
+            };
+            
+            document.getElementById("generateLaterBtn").onclick = () => {
+                generateQueueModal.hide();
+                disclaimerModal.show();
+            };
+            
+            document.getElementById("confirmContinue").onclick = () => {
+                disclaimerModal.hide();
                 successModal.show();
-                enrollForm.reset();
-                toggleSpouseField();
-            } catch (error) {
-                window.alert(error.message || 'Unable to submit enrollment form.');
-            } finally {
-                submitButton.disabled = false;
-                submitButton.textContent = originalText;
-            }
-        }
-
-        civilStatusSelect.addEventListener('change', toggleSpouseField);
-        termsLink.addEventListener('click', (event) => openModal('termsModal', event));
-        conditionsLink.addEventListener('click', (event) => openModal('conditionsModal', event));
-        enrollForm.addEventListener('submit', submitEnrollmentForm);
-        toggleSpouseField();
+            };
+            
+            document.getElementById("successModal").addEventListener("hidden.bs.modal", () => {
+                document.getElementById("applicationNumber").textContent = `QECI-${new Date().getFullYear()}-${Math.floor(10000+Math.random()*90000)}`;
+                refModal.show();
+                form.reset();
+                spouseContainer.style.display = "none";
+                studentIdContainer.style.display = "none";
+            });
+        
+            document.getElementById("termsLink").onclick = (e) => {
+                e.preventDefault();
+                termsModal.show();
+            };
+            document.getElementById("conditionsLink").onclick = (e) => {
+                e.preventDefault();
+                conditionsModal.show();
+            };
+            
+            document.addEventListener("click", e => { if (!addressInput.contains(e.target)) suggestionBox.innerHTML = ""; });
+        });
     </script>
 </body>
+
 </html>
