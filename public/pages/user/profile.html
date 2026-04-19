@@ -19,19 +19,6 @@
       referrerpolicy="no-referrer"
     />
     <link rel="stylesheet" href="/css/style.css" />
-    <style>
-      /* Hide profile body until authenticated */
-      #profile-body {
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.3s ease, visibility 0.3s ease;
-      }
-      
-      #profile-body.authenticated {
-        opacity: 1;
-        visibility: visible;
-      }
-    </style>
   </head>
   <body class="page-shell page-profile" id="profile-body">
     <!-- IMMEDIATE AUTH CHECK - RUNS BEFORE PAGE RENDERS -->
@@ -335,6 +322,36 @@
                   <p class="text-muted mb-3">
                     Student ID: <span id="displayId">QECI-2025-001</span>
                   </p>
+                  <div class="or-upload-card rounded-3 p-3 text-start mb-3">
+                    <label for="orNumberInput" class="form-label text-muted small mb-1">
+                      Official Receipt Number / Details
+                    </label>
+                    <input
+                      type="text"
+                      id="orNumberInput"
+                      class="form-control form-control-sm mb-3"
+                      placeholder="Enter OR number or short receipt note"
+                    />
+
+                    <label for="orFileInput" class="form-label text-muted small mb-2">
+                      Upload Official Receipt
+                    </label>
+                    <input
+                      type="file"
+                      id="orFileInput"
+                      class="form-control form-control-sm"
+                      accept="image/*,.pdf"
+                    />
+                    <p id="orFileName" class="small text-muted mb-2 mt-2">
+                      No OR uploaded yet.
+                    </p>
+                    <div
+                      id="orPreviewBox"
+                      class="or-preview-box rounded-3 d-flex align-items-center justify-content-center text-muted small p-3"
+                    >
+                      OR preview will appear here.
+                    </div>
+                  </div>
                   <div class="d-flex gap-2 justify-content-center flex-wrap">
                     <button id="sign-out" class="btn btn-secondary btn-sm" type="button">
                       <i class="bi bi-box-arrow-right"></i> Sign out
@@ -785,6 +802,10 @@
         const queueNumber = document.querySelector('#queueNumber');
         const applicationStatus = document.querySelector('#applicationStatus');
         const specialRemarks = document.querySelector('#specialRemarks');
+        const orNumberInput = document.querySelector('#orNumberInput');
+        const orFileInput = document.querySelector('#orFileInput');
+        const orFileName = document.querySelector('#orFileName');
+        const orPreviewBox = document.querySelector('#orPreviewBox');
         const signOutBtn = document.querySelector('#sign-out');
         const sessionUserStr = localStorage.getItem('sessionUser');
         const authToken = localStorage.getItem('authToken');
@@ -794,6 +815,10 @@
         const guestMode = localStorage.getItem('guestMode') === 'true';
 
         let currentProfile = null;
+        const buildOrStorageKey = () => {
+          const baseId = currentProfile?.student_id || storedStudentProfileId || authUser?.user?.id || authUser?.user?.email || 'guest';
+          return `studentOR:${baseId}`;
+        };
 
         const logout = () => {
           try {
@@ -872,6 +897,60 @@
           return formatNameFromEmail(profile.email_address || userEmail);
         };
 
+        const renderStoredOR = () => {
+          try {
+            const savedOR = JSON.parse(localStorage.getItem(buildOrStorageKey()) || '{}');
+
+            if (orNumberInput) {
+              orNumberInput.value = savedOR.text || '';
+            }
+
+            if (!orPreviewBox || !orFileName) return;
+
+            if (savedOR.fileName) {
+              orFileName.textContent = `Uploaded file: ${savedOR.fileName}`;
+            } else {
+              orFileName.textContent = 'No OR uploaded yet.';
+            }
+
+            if (savedOR.fileData && savedOR.fileType?.startsWith('image/')) {
+              orPreviewBox.innerHTML = `<img src="${savedOR.fileData}" alt="Official Receipt Preview" />`;
+              return;
+            }
+
+            if (savedOR.fileName && savedOR.fileType === 'application/pdf') {
+              orPreviewBox.innerHTML = `
+                <div class="text-center">
+                  <i class="bi bi-file-earmark-pdf fs-1 text-danger d-block mb-2"></i>
+                  <span>${savedOR.fileName}</span>
+                </div>
+              `;
+              return;
+            }
+
+            orPreviewBox.textContent = 'OR preview will appear here.';
+          } catch (error) {
+            if (orPreviewBox) {
+              orPreviewBox.textContent = 'OR preview will appear here.';
+            }
+            if (orFileName) {
+              orFileName.textContent = 'No OR uploaded yet.';
+            }
+          }
+        };
+
+        const saveORText = () => {
+          if (!orNumberInput) return;
+
+          try {
+            const existing = JSON.parse(localStorage.getItem(buildOrStorageKey()) || '{}');
+            existing.text = orNumberInput.value.trim();
+            localStorage.setItem(buildOrStorageKey(), JSON.stringify(existing));
+          } catch (error) {
+            console.error('Unable to save OR text:', error);
+          }
+        };
+
         const renderProfile = (profile) => {
           currentProfile = profile;
 
@@ -910,6 +989,8 @@
           if (profileBody) {
             profileBody.classList.add('authenticated');
           }
+
+          renderStoredOR();
         };
 
         const loadProfile = async () => {
@@ -947,6 +1028,36 @@
         if (signOutBtn) {
           signOutBtn.addEventListener('click', () => {
             logout();
+          });
+        }
+
+        if (orNumberInput) {
+          orNumberInput.addEventListener('input', saveORText);
+        }
+
+        if (orFileInput) {
+          orFileInput.addEventListener('change', (event) => {
+            const [file] = event.target.files || [];
+
+            if (!file) {
+              renderStoredOR();
+              return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = () => {
+              try {
+                const existing = JSON.parse(localStorage.getItem(buildOrStorageKey()) || '{}');
+                existing.fileName = file.name;
+                existing.fileType = file.type || 'application/octet-stream';
+                existing.fileData = reader.result;
+                localStorage.setItem(buildOrStorageKey(), JSON.stringify(existing));
+                renderStoredOR();
+              } catch (error) {
+                console.error('Unable to save OR file:', error);
+              }
+            };
+            reader.readAsDataURL(file);
           });
         }
 
