@@ -194,8 +194,8 @@ export const submitEnrollment = async (req, res) => {
         `INSERT INTO students (
           first_name, middle_name, last_name, suffix, birth_date, birth_place, sex,
           civil_status, spouse_name, nationality, religion, email_address,
-          contact_number, complete_address, is_active, created_date, updated_at, password
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), NOW(), ?)`,
+          contact_number, complete_address, is_active, created_date, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), NOW())`,
         [
           firstName.trim(),
           normalizeNullable(middleName),
@@ -211,7 +211,6 @@ export const submitEnrollment = async (req, res) => {
           email.trim(),
           contactNumber.trim(),
           normalizeRequiredText(address),
-          "",
         ]
       );
 
