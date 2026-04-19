@@ -25,20 +25,24 @@ router.post('/signup', async (req, res) => {
       return res.status(409).json({ error: 'User already exists' });
     }
 
-    // Ensure default role exists
-    const [roleRows] = await db.query('SELECT id FROM role WHERE id = ?', [1]);
+    // Resolve the default student/user role without relying on a fixed ID.
+    const [roleRows] = await db.query(
+      "SELECT id FROM role WHERE role_name IN ('user', 'student') ORDER BY FIELD(role_name, 'user', 'student') LIMIT 1"
+    );
     if (roleRows.length === 0) {
-      return res.status(500).json({ error: 'Default role is not configured in the database. Please create role id 1.' });
+      return res.status(500).json({ error: 'Default signup role is not configured in the database.' });
     }
+
+    const defaultRoleId = roleRows[0].id;
 
     // Hash password
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Insert new user (assuming role_id 1 is student, adjust as needed)
+    // Insert new user with the resolved default role.
     const [result] = await db.query(
       'INSERT INTO users (email, passkey, role_id, is_active, created_date) VALUES (?, ?, ?, ?, NOW())',
-      [email, hashedPassword, 1, 1] // role_id 1 for student, is_active 1
+      [email, hashedPassword, defaultRoleId, 1]
     );
 
     res.status(201).json({ message: 'User created successfully', userId: result.insertId });
