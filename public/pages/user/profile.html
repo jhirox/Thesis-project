@@ -429,6 +429,19 @@
                         />
                       </div>
                       <div class="col-md-6">
+                        <label for="birthPlace" class="form-label text-muted small"
+                          >Birth Place</label
+                        >
+                        <input
+                          type="text"
+                          id="birthPlace"
+                          class="form-control form-control-sm"
+                          value=""
+                          placeholder="Not set"
+                          disabled
+                        />
+                      </div>
+                      <div class="col-md-6">
                         <label for="sex" class="form-label text-muted small"
                           >Sex</label
                         >
@@ -443,6 +456,45 @@
                           <option>Female</option>
                           <option>Other</option>
                         </select>
+                      </div>
+                      <div class="col-md-6">
+                        <label for="civilStatus" class="form-label text-muted small"
+                          >Civil Status</label
+                        >
+                        <input
+                          type="text"
+                          id="civilStatus"
+                          class="form-control form-control-sm"
+                          value=""
+                          placeholder="Not set"
+                          disabled
+                        />
+                      </div>
+                      <div class="col-md-6">
+                        <label for="nationality" class="form-label text-muted small"
+                          >Nationality</label
+                        >
+                        <input
+                          type="text"
+                          id="nationality"
+                          class="form-control form-control-sm"
+                          value=""
+                          placeholder="Not set"
+                          disabled
+                        />
+                      </div>
+                      <div class="col-md-6">
+                        <label for="religion" class="form-label text-muted small"
+                          >Religion</label
+                        >
+                        <input
+                          type="text"
+                          id="religion"
+                          class="form-control form-control-sm"
+                          value=""
+                          placeholder="Not set"
+                          disabled
+                        />
                       </div>
                     </div>
                   </form>
@@ -478,6 +530,14 @@
                     </div>
                     <div class="col-md-6">
                       <label class="form-label text-muted small"
+                        >Student Type</label
+                      >
+                      <p id="studentTypeInfo" class="fw-semibold mb-0">
+                        Not set
+                      </p>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label text-muted small"
                         >Learning Modality</label
                       >
                       <p id="modality" class="fw-semibold mb-0">Not set</p>
@@ -492,9 +552,67 @@
                     </div>
                     <div class="col-md-6">
                       <label class="form-label text-muted small"
+                        >Highest Attainment</label
+                      >
+                      <p id="highestAttainmentInfo" class="fw-semibold mb-0">
+                        Not set
+                      </p>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label text-muted small"
+                        >Last School Attended</label
+                      >
+                      <p id="lastSchoolInfo" class="fw-semibold mb-0">
+                        Not set
+                      </p>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label text-muted small"
+                        >Last School Year</label
+                      >
+                      <p id="lastSchoolYearInfo" class="fw-semibold mb-0">
+                        Not set
+                      </p>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label text-muted small"
+                        >Working Status</label
+                      >
+                      <p id="workingStatusInfo" class="fw-semibold mb-0">
+                        Not set
+                      </p>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label text-muted small"
                         >Enrollment Status</label
                       >
                       <span class="badge bg-success">Active</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card shadow-sm mt-4">
+                <div class="card-header bg-white border-bottom">
+                  <h5 class="fw-bold mb-0">Family Information</h5>
+                </div>
+                <div class="card-body">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label class="form-label text-muted small">Mother's Maiden Name</label>
+                      <p id="motherMaidenInfo" class="fw-semibold mb-0">Not set</p>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label text-muted small">Father's Name</label>
+                      <p id="fatherNameInfo" class="fw-semibold mb-0">Not set</p>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label text-muted small">Guardian Name</label>
+                      <p id="guardianNameInfo" class="fw-semibold mb-0">Not set</p>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label text-muted small">Guardian Contact</label>
+                      <p id="guardianContactInfo" class="fw-semibold mb-0">Not set</p>
                     </div>
                   </div>
                 </div>
@@ -513,6 +631,9 @@
                       </p>
                       <p class="text-muted small mb-0">
                         Status: <span id="applicationStatus" class="badge bg-secondary">Not submitted</span>
+                      </p>
+                      <p class="text-muted small mb-0">
+                        Remarks: <strong id="specialRemarks">None</strong>
                       </p>
                     </div>
                     <div class="text-end">
@@ -640,16 +761,30 @@
         const contactNo = document.querySelector('#contactNo');
         const dob = document.querySelector('#dob');
         const address = document.querySelector('#address');
+        const birthPlace = document.querySelector('#birthPlace');
         const sex = document.querySelector('#sex');
+        const civilStatus = document.querySelector('#civilStatus');
+        const nationality = document.querySelector('#nationality');
+        const religion = document.querySelector('#religion');
         const profileImg = document.querySelector('#profileImg');
         const profileBody = document.querySelector('#profile-body');
         const programInfo = document.querySelector('#programInfo');
         const majorInfo = document.querySelector('#majorInfo');
         const entryStatus = document.querySelector('#entryStatus');
+        const studentTypeInfo = document.querySelector('#studentTypeInfo');
         const modality = document.querySelector('#modality');
         const semester = document.querySelector('#semester');
+        const highestAttainmentInfo = document.querySelector('#highestAttainmentInfo');
+        const lastSchoolInfo = document.querySelector('#lastSchoolInfo');
+        const lastSchoolYearInfo = document.querySelector('#lastSchoolYearInfo');
+        const workingStatusInfo = document.querySelector('#workingStatusInfo');
+        const motherMaidenInfo = document.querySelector('#motherMaidenInfo');
+        const fatherNameInfo = document.querySelector('#fatherNameInfo');
+        const guardianNameInfo = document.querySelector('#guardianNameInfo');
+        const guardianContactInfo = document.querySelector('#guardianContactInfo');
         const queueNumber = document.querySelector('#queueNumber');
         const applicationStatus = document.querySelector('#applicationStatus');
+        const specialRemarks = document.querySelector('#specialRemarks');
         const signOutBtn = document.querySelector('#sign-out');
         const sessionUserStr = localStorage.getItem('sessionUser');
         const authToken = localStorage.getItem('authToken');
@@ -747,15 +882,29 @@
           contactNo.value = profile.contact_number || '';
           dob.value = profile.birth_date ? profile.birth_date.split('T')[0] : '';
           address.value = profile.complete_address || '';
+          if (birthPlace) birthPlace.value = profile.birth_place || '';
           sex.value = profile.sex || '';
+          if (civilStatus) civilStatus.value = profile.civil_status || '';
+          if (nationality) nationality.value = profile.nationality || '';
+          if (religion) religion.value = profile.religion || '';
           profileImg.src = profile.photo || '/assets/images/lancephoto.png';
           programInfo.textContent = profile.program_name ? `${profile.program_name} ${profile.program_code ? `(${profile.program_code})` : ''}`.trim() : 'Not set';
           majorInfo.textContent = profile.program_code || 'Not set';
           entryStatus.textContent = profile.application_status || 'Not set';
+          if (studentTypeInfo) studentTypeInfo.textContent = profile.student_type || 'Not set';
           modality.textContent = profile.modality_name || 'Not set';
           semester.textContent = profile.semester_types || 'Not set';
+          if (highestAttainmentInfo) highestAttainmentInfo.textContent = profile.highest_attainment || 'Not set';
+          if (lastSchoolInfo) lastSchoolInfo.textContent = profile.last_school_attended || 'Not set';
+          if (lastSchoolYearInfo) lastSchoolYearInfo.textContent = profile.last_school_year || 'Not set';
+          if (workingStatusInfo) workingStatusInfo.textContent = profile.is_working === 1 ? 'Working student' : (profile.is_working === 0 ? 'Non-working' : 'Not set');
+          if (motherMaidenInfo) motherMaidenInfo.textContent = profile.mother_maiden_name || 'Not set';
+          if (fatherNameInfo) fatherNameInfo.textContent = profile.father_name || 'Not set';
+          if (guardianNameInfo) guardianNameInfo.textContent = profile.guardian_name || 'Not set';
+          if (guardianContactInfo) guardianContactInfo.textContent = profile.guardian_contact || 'Not set';
           queueNumber.textContent = profile.queue_number || 'Not available';
           applicationStatus.textContent = profile.application_status || 'Not submitted';
+          if (specialRemarks) specialRemarks.textContent = profile.special_remarks || 'None';
 
           if (profileBody) {
             profileBody.classList.add('authenticated');

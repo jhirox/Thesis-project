@@ -498,6 +498,71 @@ function formatForMysqlTimestamp(value) {
   )}`;
 }
 
+function buildStudentProfileQuery(whereClause) {
+  return `
+    SELECT
+      s.student_id,
+      s.first_name,
+      s.middle_name,
+      s.last_name,
+      s.suffix,
+      CONCAT(
+        s.first_name,
+        ' ',
+        IFNULL(CONCAT(s.middle_name, ' '), ''),
+        s.last_name,
+        IFNULL(CONCAT(' ', s.suffix), '')
+      ) AS full_name,
+      s.email_address,
+      s.contact_number,
+      s.birth_date,
+      s.birth_place,
+      s.complete_address,
+      s.sex,
+      s.civil_status,
+      s.spouse_name,
+      s.nationality,
+      s.religion,
+      ah.highest_attainment,
+      ah.last_school_attended,
+      ah.last_school_year,
+      ah.is_working,
+      fi.mother_maiden_name,
+      fi.father_name,
+      fi.guardian_name,
+      fi.guardian_contact,
+      fi.guardian_relationship,
+      p.program_name,
+      p.program_code,
+      st.type_name AS student_type,
+      e.semester_types,
+      lm.modality_name AS modality_name,
+      e.queue_number,
+      e.application_status,
+      e.special_remarks,
+      e.academic_year,
+      e.agreed_at,
+      CASE
+        WHEN s.is_active = 1 THEN 'Active'
+        ELSE 'Inactive'
+      END AS enrollment_status
+    FROM students s
+    LEFT JOIN academic_history ah ON ah.student_id = s.student_id
+    LEFT JOIN family_information fi ON fi.student_id = s.student_id
+    LEFT JOIN enrollments e ON s.student_id = e.student_id
+      AND e.enrollment_id = (
+        SELECT MAX(e2.enrollment_id)
+        FROM enrollments e2
+        WHERE e2.student_id = s.student_id
+      )
+    LEFT JOIN programs p ON e.program_id = p.program_id
+    LEFT JOIN learning_modalities lm ON e.modality_id = lm.modality_id
+    LEFT JOIN student_types st ON e.student_type_id = st.type_id
+    WHERE ${whereClause}
+    LIMIT 1
+  `;
+}
+
 // GET profile data for the logged-in student
 export const getStudentProfile = async (req, res) => {
   try {
@@ -514,12 +579,7 @@ export const getStudentProfile = async (req, res) => {
     const whereClause = id ? 'student_id = ?' : 'email_address = ?';
     const whereValue = id || email;
 
-    const query = `
-      SELECT *
-      FROM student_profile_view
-      WHERE ${whereClause}
-      LIMIT 1
-    `;
+    const query = buildStudentProfileQuery(whereClause);
 
     const [rows] = await db.query(query, [whereValue]);
 
@@ -604,12 +664,7 @@ export const updateStudentProfile = async (req, res) => {
     await db.query(updateQuery, params);
 
     const [updatedRows] = await db.query(
-      `
-        SELECT *
-        FROM student_profile_view
-        WHERE student_id = ?
-        LIMIT 1
-      `,
+      buildStudentProfileQuery('s.student_id = ?'),
       [studentRecordId]
     );
 
