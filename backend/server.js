@@ -13,12 +13,11 @@ import authRoutes from "./src/routes/authRoutes.js";
 // ======================
 // CONFIG
 // ======================
-dotenv.config();
-const app = express();
-
 // Fix __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, "./.env") });
+const app = express();
 
 // ✅ DEFINE PUBLIC PATH (IMPORTANT)
 const publicPath = path.join(__dirname, "../public");
