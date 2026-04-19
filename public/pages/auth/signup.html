@@ -232,7 +232,14 @@
                     })
                 });
 
-                const data = await response.json();
+                const rawResponse = await response.text();
+                let data = {};
+
+                try {
+                    data = rawResponse ? JSON.parse(rawResponse) : {};
+                } catch {
+                    data = { error: rawResponse || 'Unexpected server response.' };
+                }
 
                 if (response.ok) {
                     Swal.fire({

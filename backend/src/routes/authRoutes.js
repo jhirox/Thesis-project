@@ -48,7 +48,12 @@ router.post('/signup', async (req, res) => {
     res.status(201).json({ message: 'User created successfully', userId: result.insertId });
   } catch (error) {
     console.error('Signup error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    const isDuplicateEmail = error?.code === 'ER_DUP_ENTRY';
+    const message = isDuplicateEmail
+      ? 'User already exists'
+      : (error?.sqlMessage || error?.message || 'Internal server error');
+
+    res.status(isDuplicateEmail ? 409 : 500).json({ error: message });
   }
 });
 
@@ -99,7 +104,7 @@ router.post('/login', async (req, res) => {
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error?.sqlMessage || error?.message || 'Internal server error' });
   }
 });
 
