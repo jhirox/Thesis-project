@@ -21,37 +21,6 @@
     <link rel="stylesheet" href="/css/style.css" />
   </head>
   <body class="page-shell page-profile" id="profile-body">
-    <!-- IMMEDIATE AUTH CHECK - RUNS BEFORE PAGE RENDERS -->
-    <script>
-      (function() {
-        try {
-          const sessionUser = localStorage.getItem('sessionUser');
-          const sessionTimeout = localStorage.getItem('sessionTimeout');
-          const guestMode = localStorage.getItem('guestMode') === 'true';
-          const now = Date.now();
-
-          let hasValidSession = false;
-
-          // Check if user has a valid session
-          if (sessionUser && sessionTimeout && !guestMode) {
-            const timeout = parseInt(sessionTimeout, 10);
-            if (!isNaN(timeout)) {
-              hasValidSession = now < timeout;
-            }
-          }
-
-          // If no valid session, redirect to login immediately
-          if (!hasValidSession) {
-            // Prevent browser back button by replacing history
-            window.location.replace('/login');
-            return;
-          }
-        } catch (error) {
-          window.location.replace('/login');
-        }
-      })();
-    </script>
-
     <!-- SKELETON LOADING SCREEN -->
     <div id="skeleton-screen" class="skeleton-screen">
       <div class="container-fluid p-0 d-flex h-100">
@@ -733,6 +702,34 @@
       crossorigin="anonymous"
     ></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- IMMEDIATE AUTH CHECK -->
+    <script>
+      (function() {
+        try {
+          const sessionUser = localStorage.getItem('sessionUser');
+          const sessionTimeout = localStorage.getItem('sessionTimeout');
+          const guestMode = localStorage.getItem('guestMode') === 'true';
+          const now = Date.now();
+
+          let hasValidSession = false;
+
+          if (sessionUser && sessionTimeout && !guestMode) {
+            const timeout = parseInt(sessionTimeout, 10);
+            if (!isNaN(timeout)) {
+              hasValidSession = now < timeout;
+            }
+          }
+
+          if (!hasValidSession) {
+            window.location.replace('/login');
+            return;
+          }
+        } catch (error) {
+          window.location.replace('/login');
+        }
+      })();
+    </script>
 
     <!-- SKELETON HIDE SCRIPT -->
     <script>
