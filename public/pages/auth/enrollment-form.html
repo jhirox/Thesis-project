@@ -463,6 +463,7 @@
             const submitButton = form.querySelector('button[type="submit"]');
             const confirmContinueButton = document.getElementById("confirmContinue");
             const successTriggerButton = document.querySelector("#successModal .btn.btn-primary");
+            const emailInput = document.getElementById("email");
             const civilStatus = document.getElementById("civilStatus");
             const studentType = document.getElementById("studentType");
             const spouseContainer = document.getElementById("spouseContainer");
@@ -483,6 +484,14 @@
             const refModal = new bootstrap.Modal(referenceModalElement);
             let submissionResult = null;
             let isSubmitting = false;
+            const sessionUserStr = localStorage.getItem("sessionUser");
+            const sessionUser = sessionUserStr ? JSON.parse(sessionUserStr) : null;
+            const loggedInEmail = sessionUser?.user?.email?.trim() || "";
+
+            if (loggedInEmail && emailInput) {
+                emailInput.value = loggedInEmail;
+                emailInput.readOnly = true;
+            }
             
             const rawBarangays = [
                 "Angeles", "Balubad", "Balugohin", "Barangay Zone 1 (Poblacion)", "Barangay Zone 2 (Poblacion)",
@@ -552,7 +561,7 @@
                 spouseName: document.getElementById("spouseName").value.trim(),
                 nationality: document.getElementById("nationality").value.trim(),
                 religion: document.getElementById("religion").value,
-                email: document.getElementById("email").value.trim(),
+                email: loggedInEmail || document.getElementById("email").value.trim(),
                 contactNumber: document.getElementById("contactNumber").value.trim(),
                 address: document.getElementById("address").value.trim(),
                 program: document.getElementById("program").value,
@@ -618,6 +627,9 @@
                     }
 
                     submissionResult = data;
+                    if (data.studentId) {
+                        localStorage.setItem("studentProfileId", String(data.studentId));
+                    }
                     disclaimerModal.hide();
                     successModal.show();
                 } catch (error) {

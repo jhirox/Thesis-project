@@ -576,7 +576,7 @@ export const getStudentProfile = async (req, res) => {
       });
     }
 
-    const whereClause = id ? 'student_id = ?' : 'email_address = ?';
+    const whereClause = id ? 's.student_id = ?' : 's.email_address = ?';
     const whereValue = id || email;
 
     const query = buildStudentProfileQuery(whereClause);

@@ -788,6 +788,7 @@
         const signOutBtn = document.querySelector('#sign-out');
         const sessionUserStr = localStorage.getItem('sessionUser');
         const authToken = localStorage.getItem('authToken');
+        const storedStudentProfileId = localStorage.getItem('studentProfileId');
         const authUser = sessionUserStr ? JSON.parse(sessionUserStr) : null;
         const timeout = localStorage.getItem('sessionTimeout');
         const guestMode = localStorage.getItem('guestMode') === 'true';
@@ -912,23 +913,32 @@
         };
 
         const loadProfile = async () => {
-          if (!userEmail) return;
-
           try {
-            const params = new URLSearchParams({ email: userEmail });
-            const response = await fetch(`/api/students/profile?${params.toString()}`, {
-              headers: {
-                'Authorization': authToken ? `Bearer ${authToken}` : '',
-              },
-            });
+            const headers = {
+              'Authorization': authToken ? `Bearer ${authToken}` : '',
+            };
 
-            const data = await response.json();
-            if (!response.ok || !data.success) {
-              console.warn('Unable to load profile', data);
-              return;
+            const requestTargets = [];
+            if (userEmail) {
+              requestTargets.push(`/api/students/profile?${new URLSearchParams({ email: userEmail }).toString()}`);
+            }
+            if (storedStudentProfileId) {
+              requestTargets.push(`/api/students/profile/${encodeURIComponent(storedStudentProfileId)}`);
             }
 
-            renderProfile(data.data);
+            for (const target of requestTargets) {
+              const response = await fetch(target, { headers });
+              const data = await response.json();
+              if (response.ok && data.success) {
+                if (data.data?.student_id) {
+                  localStorage.setItem('studentProfileId', String(data.data.student_id));
+                }
+                renderProfile(data.data);
+                return;
+              }
+            }
+
+            console.warn('Unable to load profile for current session');
           } catch (error) {
             console.error('Profile load error:', error);
           }
