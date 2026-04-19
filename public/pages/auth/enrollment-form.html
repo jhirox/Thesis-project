@@ -173,7 +173,7 @@
                     
                     <div class="col-md-6">
                         <label class="form-label">Preferred Learning Modality</label>
-                        <select id="learningModality" class="form-select">
+                        <select id="learningModality" class="form-select" required>
                             <option value="">Select</option>
                             <option>Face-to-Face</option>
                             <option>Blended Learning</option>
@@ -182,7 +182,7 @@
                     
                     <div class="col-md-6">
                         <label class="form-label">Type of Student</label>
-                        <select id="studentType" class="form-select">
+                        <select id="studentType" class="form-select" required>
                             <option value="">Select</option>
                             <option>New Regular Enrollee</option>
                             <option>Existing Regular/Irregular Student</option>
@@ -199,7 +199,7 @@
                     
                     <div class="col-md-6">
                         <label class="form-label">Highest Educational Attainment</label>
-                        <select id="highestAttainment" class="form-select">
+                        <select id="highestAttainment" class="form-select" required>
                             <option value="">Select</option>
                             <option>K-12 Senior High Graduate</option>
                             <option>Non K-12 Graduate</option>
@@ -221,7 +221,7 @@
                     
                     <div class="col-md-6">
                         <label class="form-label">Semester of Enrollment</label>
-                        <select id="semester" class="form-select">
+                        <select id="semester" class="form-select" required>
                             <option value="">Select</option>
                             <option>First Semester</option>
                             <option>Second Semester</option>
@@ -459,12 +459,19 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const form = document.getElementById("enrollForm");
+            const submitButton = form.querySelector('button[type="submit"]');
+            const confirmContinueButton = document.getElementById("confirmContinue");
+            const successTriggerButton = document.querySelector("#successModal .btn.btn-primary");
             const civilStatus = document.getElementById("civilStatus");
             const studentType = document.getElementById("studentType");
             const spouseContainer = document.getElementById("spouseContainer");
             const studentIdContainer = document.getElementById("studentIdContainer");
             const addressInput = document.getElementById("address");
             const suggestionBox = document.getElementById("addressSuggestions");
+            const applicationNumber = document.getElementById("applicationNumber");
+            const referenceModalLabel = document.querySelector("#referenceNumberModal .modal-body p");
+            const referenceModalHint = document.querySelector("#referenceNumberModal small");
+            const referenceModalElement = document.getElementById("referenceNumberModal");
             
             const termsModal = new bootstrap.Modal(document.getElementById("termsModal"));
             const conditionsModal = new bootstrap.Modal(document.getElementById("conditionsModal"));
@@ -472,7 +479,9 @@
             const generateQueueModal = new bootstrap.Modal(document.getElementById("generateQueueModal"));
             const disclaimerModal = new bootstrap.Modal(document.getElementById("disclaimerModal"));
             const successModal = new bootstrap.Modal(document.getElementById("successModal"));
-            const refModal = new bootstrap.Modal(document.getElementById("referenceNumberModal"));
+            const refModal = new bootstrap.Modal(referenceModalElement);
+            let submissionResult = null;
+            let isSubmitting = false;
             
             const rawBarangays = [
                 "Angeles", "Balubad", "Balugohin", "Barangay Zone 1 (Poblacion)", "Barangay Zone 2 (Poblacion)",
@@ -514,8 +523,58 @@
                 });
             });
             
+            const resetEnrollmentForm = () => {
+                form.reset();
+                spouseContainer.style.display = "none";
+                studentIdContainer.style.display = "none";
+                suggestionBox.innerHTML = "";
+                submissionResult = null;
+            };
+
+            const setSubmissionState = (submitting) => {
+                isSubmitting = submitting;
+                submitButton.disabled = submitting;
+                confirmContinueButton.disabled = submitting;
+                submitButton.textContent = submitting ? "Submitting..." : "Submit Form";
+                confirmContinueButton.textContent = submitting ? "Submitting..." : "Yes, Continue";
+            };
+
+            const buildEnrollmentPayload = () => ({
+                firstName: document.getElementById("firstName").value.trim(),
+                middleName: document.getElementById("middleName").value.trim(),
+                lastName: document.getElementById("lastName").value.trim(),
+                suffix: document.getElementById("suffix").value.trim(),
+                birthDate: document.getElementById("birthDate").value,
+                birthPlace: document.getElementById("birthPlace").value.trim(),
+                sex: document.getElementById("sex").value,
+                civilStatus: document.getElementById("civilStatus").value,
+                spouseName: document.getElementById("spouseName").value.trim(),
+                nationality: document.getElementById("nationality").value.trim(),
+                religion: document.getElementById("religion").value,
+                email: document.getElementById("email").value.trim(),
+                contactNumber: document.getElementById("contactNumber").value.trim(),
+                address: document.getElementById("address").value.trim(),
+                program: document.getElementById("program").value,
+                learningModality: document.getElementById("learningModality").value,
+                studentType: document.getElementById("studentType").value,
+                highestAttainment: document.getElementById("highestAttainment").value,
+                lastSchool: document.getElementById("lastSchool").value.trim(),
+                lastSchoolYear: document.getElementById("lastSchoolYear").value.trim(),
+                semester: document.getElementById("semester").value,
+                workingStatus: document.getElementById("workingStatus").value,
+                motherMaiden: document.getElementById("motherMaiden").value.trim(),
+                fatherName: document.getElementById("fatherName").value.trim(),
+                guardianName: document.getElementById("guardianName").value.trim(),
+                guardianContact: document.getElementById("guardianContact").value.trim(),
+                remarks: document.getElementById("remarks").value.trim(),
+                agreedToTerms: document.getElementById("agreeTerms").checked,
+                agreedAt: new Date().toISOString()
+            });
+
             form.addEventListener("submit", (e) => {
                 e.preventDefault();
+                if (isSubmitting) return;
+                if (!form.reportValidity()) return;
                 if (!document.getElementById("agreeTerms").checked) return warningModal.show();
                 generateQueueModal.show();
             });
@@ -530,17 +589,63 @@
                 disclaimerModal.show();
             };
             
-            document.getElementById("confirmContinue").onclick = () => {
-                disclaimerModal.hide();
-                successModal.show();
+            confirmContinueButton.onclick = async () => {
+                if (isSubmitting) return;
+
+                setSubmissionState(true);
+
+                try {
+                    const response = await fetch("/api/students/enrollment", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(buildEnrollmentPayload())
+                    });
+
+                    const rawResponse = await response.text();
+                    let data = {};
+
+                    try {
+                        data = rawResponse ? JSON.parse(rawResponse) : {};
+                    } catch {
+                        data = { message: rawResponse || "Unexpected server response." };
+                    }
+
+                    if (!response.ok || !data.success) {
+                        throw new Error(data.message || data.error || "Unable to submit enrollment.");
+                    }
+
+                    submissionResult = data;
+                    disclaimerModal.hide();
+                    successModal.show();
+                } catch (error) {
+                    window.alert(error.message || "Unable to submit enrollment.");
+                } finally {
+                    setSubmissionState(false);
+                }
             };
             
             document.getElementById("successModal").addEventListener("hidden.bs.modal", () => {
-                document.getElementById("applicationNumber").textContent = `QECI-${new Date().getFullYear()}-${Math.floor(10000+Math.random()*90000)}`;
+                if (!submissionResult) return;
+
+                const referenceValue = submissionResult.queueNumber || `ENR-${submissionResult.enrollmentId}`;
+                referenceModalLabel.textContent = submissionResult.queueNumber
+                    ? "Your Queue Number:"
+                    : "Your Application Number:";
+                referenceModalHint.textContent = submissionResult.queueNumber
+                    ? "Please screenshot this queue number and present it to the Registrar."
+                    : "Please screenshot this reference number and present it to the Registrar.";
+                applicationNumber.textContent = referenceValue;
                 refModal.show();
-                form.reset();
-                spouseContainer.style.display = "none";
-                studentIdContainer.style.display = "none";
+            });
+
+            referenceModalElement.addEventListener("hidden.bs.modal", () => {
+                resetEnrollmentForm();
+            });
+
+            successTriggerButton.addEventListener("click", () => {
+                successModal.hide();
             });
         
             document.getElementById("termsLink").onclick = (e) => {
