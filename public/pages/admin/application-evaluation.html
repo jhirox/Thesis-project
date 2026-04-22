@@ -447,7 +447,7 @@
                     </tr>
                   </thead>
 
-                  <tbody class="table-body">
+                  <tbody class="table-body" id="all-applications-body">
                     <tr>
                       <td>APP001</td>
                       <td>Zairus Jester</td>
@@ -777,6 +777,87 @@
     <script src="/js/core/adminlte.min.js"></script>
 
     <script>
+      async function loadAllApplications() {
+        try {
+          const response = await fetch('/api/students/enrollments/all');
+          const result = await response.json();
+
+          if (!result.success) {
+            return;
+          }
+
+          renderAllApplications(result.data || []);
+        } catch (error) {
+          console.error('Error loading applications:', error);
+        }
+      }
+
+      function renderAllApplications(applications) {
+        const tableBody = document.getElementById('all-applications-body');
+        if (!tableBody) {
+          return;
+        }
+
+        tableBody.innerHTML = '';
+
+        if (!applications.length) {
+          tableBody.innerHTML = `
+            <tr>
+              <td colspan="6" class="text-center text-muted">No applications found.</td>
+            </tr>
+          `;
+          return;
+        }
+
+        applications.forEach((application) => {
+          const row = document.createElement('tr');
+          const applicationId = application.queue_number || `ENR-${application.enrollment_id}`;
+          const applicantName =
+            application.full_name ||
+            `${application.first_name || ''} ${application.middle_name || ''} ${application.last_name || ''}`.trim() ||
+            'N/A';
+          const course = application.program_code || application.program_name || 'N/A';
+          const status = application.application_status || 'Pending';
+          const submittedDate = formatDate(application.created_at || application.enrollment_date);
+
+          row.innerHTML = `
+            <td>${applicationId}</td>
+            <td>${applicantName}</td>
+            <td>${course}</td>
+            <td>${buildStatusBadge(status)}</td>
+            <td>Unassigned</td>
+            <td>${submittedDate}</td>
+          `;
+
+          tableBody.appendChild(row);
+        });
+      }
+
+      function buildStatusBadge(status) {
+        if (status === 'Approved' || status === 'Enrolled') {
+          return `<span class="badge text-bg-success">${status}</span>`;
+        }
+
+        if (status === 'Rejected') {
+          return `<span class="badge bg-danger">${status}</span>`;
+        }
+
+        return `<span class="badge bg-warning text-dark">${status}</span>`;
+      }
+
+      function formatDate(dateValue) {
+        if (!dateValue) {
+          return 'N/A';
+        }
+
+        const date = new Date(dateValue);
+        if (Number.isNaN(date.getTime())) {
+          return 'N/A';
+        }
+
+        return date.toISOString().split('T')[0];
+      }
+
       function applyFilters() {
         const status = document.getElementById('filterStatus').value;
         const course = document.getElementById('filterCourse').value;
@@ -800,6 +881,8 @@
       });
 
       document.addEventListener("DOMContentLoaded", () => {
+        loadAllApplications();
+
         setTimeout(() => {
           const skeleton = document.getElementById("page-skeleton");
           if (!skeleton) return;

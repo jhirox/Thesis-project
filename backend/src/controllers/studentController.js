@@ -289,7 +289,41 @@ export const submitEnrollment = async (req, res) => {
 // GET all enrollments
 export const getEnrollments = async (req, res) => {
   try {
-    const [rows] = await db.query("SELECT * FROM enrollments ORDER BY created_at DESC");
+    const [rows] = await db.query(`
+      SELECT
+        e.enrollment_id,
+        e.student_id,
+        e.program_id,
+        e.modality_id,
+        e.student_type_id,
+        e.semester_types,
+        e.academic_year,
+        e.enrollment_date,
+        e.queue_number,
+        e.application_status,
+        e.special_remarks,
+        e.agreed_to_terms,
+        e.agreed_at,
+        e.created_at,
+        e.updated_at,
+        s.first_name,
+        s.middle_name,
+        s.last_name,
+        s.suffix,
+        CONCAT(
+          s.first_name,
+          ' ',
+          IFNULL(CONCAT(s.middle_name, ' '), ''),
+          s.last_name,
+          IFNULL(CONCAT(' ', s.suffix), '')
+        ) AS full_name,
+        p.program_code,
+        p.program_name
+      FROM enrollments e
+      LEFT JOIN students s ON s.student_id = e.student_id
+      LEFT JOIN programs p ON p.program_id = e.program_id
+      ORDER BY e.created_at DESC
+    `);
     res.status(200).json({
       success: true,
       message: "Enrollments retrieved successfully",
@@ -301,6 +335,132 @@ export const getEnrollments = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Error in getting enrollments",
+      error: error.message,
+    });
+  }
+};
+
+export const getRecentEnrollments = async (req, res) => {
+  try {
+    const requestedLimit = Number.parseInt(req.query.limit, 10);
+    const limit =
+      Number.isInteger(requestedLimit) && requestedLimit > 0
+        ? Math.min(requestedLimit, 5)
+        : 5;
+
+    const [rows] = await db.query(
+      `
+        SELECT
+          e.enrollment_id,
+          e.student_id,
+          e.queue_number,
+          e.application_status,
+          e.enrollment_date,
+          e.created_at,
+          e.updated_at,
+          s.first_name,
+          s.middle_name,
+          s.last_name,
+          s.suffix,
+          CONCAT(
+            s.first_name,
+            ' ',
+            IFNULL(CONCAT(s.middle_name, ' '), ''),
+            s.last_name,
+            IFNULL(CONCAT(' ', s.suffix), '')
+          ) AS full_name,
+          p.program_code,
+          p.program_name
+        FROM enrollments e
+        INNER JOIN students s ON s.student_id = e.student_id
+        LEFT JOIN programs p ON p.program_id = e.program_id
+        ORDER BY e.created_at DESC
+        LIMIT ?
+      `,
+      [limit]
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Recent enrollments retrieved successfully",
+      totalRecentEnrollments: rows.length,
+      limit,
+      data: rows,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Error in getting recent enrollments",
+      error: error.message,
+    });
+  }
+};
+
+export const getEnrollmentApplicantDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Enrollment ID or application ID is required",
+      });
+    }
+
+    const numericEnrollmentId = Number.parseInt(id, 10);
+    const isNumericEnrollmentId = Number.isInteger(numericEnrollmentId);
+
+    const [rows] = await db.query(
+      `
+        SELECT
+          e.enrollment_id,
+          e.queue_number AS application_id,
+          CONCAT(
+            s.first_name,
+            ' ',
+            IFNULL(CONCAT(s.middle_name, ' '), ''),
+            s.last_name,
+            IFNULL(CONCAT(' ', s.suffix), '')
+          ) AS full_name,
+          p.program_code,
+          p.program_name
+        FROM enrollments e
+        INNER JOIN students s ON s.student_id = e.student_id
+        LEFT JOIN programs p ON p.program_id = e.program_id
+        WHERE e.queue_number = ?
+           OR (? IS NOT NULL AND e.enrollment_id = ?)
+        LIMIT 1
+      `,
+      [id, isNumericEnrollmentId ? numericEnrollmentId : null, isNumericEnrollmentId ? numericEnrollmentId : null]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Enrollment or application not found",
+      });
+    }
+
+    const enrollment = rows[0];
+
+    res.status(200).json({
+      success: true,
+      message: "Enrollment applicant details retrieved successfully",
+      data: {
+        enrollmentId: enrollment.enrollment_id,
+        applicationId: enrollment.application_id,
+        fullName: enrollment.full_name,
+        course: enrollment.program_code || enrollment.program_name || null,
+        programCode: enrollment.program_code,
+        programName: enrollment.program_name,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Error in getting enrollment applicant details",
       error: error.message,
     });
   }

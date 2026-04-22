@@ -1,5 +1,5 @@
 import express from 'express';
-import { getStudents, getStudentByID, submitEnrollment, getEnrollments, getStudentProfile, updateStudentProfile } from '../controllers/studentController.js';
+import { getStudents, getStudentByID, submitEnrollment, getEnrollments, getRecentEnrollments, getEnrollmentApplicantDetails, getStudentProfile, updateStudentProfile } from '../controllers/studentController.js';
 
 const router = express.Router();
 
@@ -8,6 +8,12 @@ router.get('/', getStudents);
 
 // GET all enrollments
 router.get('/enrollments/all', getEnrollments);
+
+// GET recent enrollments
+router.get('/enrollments/recent', getRecentEnrollments);
+
+// GET applicant name and course by enrollment ID or application ID
+router.get('/enrollments/details/:id', getEnrollmentApplicantDetails);
 
 // POST submit enrollment
 router.post('/enrollment', submitEnrollment);
