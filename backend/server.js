@@ -105,6 +105,14 @@ app.get("/superadmin/rep-and-analytics", (req, res) =>
   res.sendFile(path.join(publicPath, "pages/superadmin/superadmin.html"))
 );
 
+app.get("/superadmin/design", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/superadmin/superadmin.html"))
+);
+
+app.get("/superadmin/info", (req, res) =>
+  res.sendFile(path.join(publicPath, "pages/superadmin/superadmin.html"))
+);
+
 app.get("/registrardashboard", (req, res) =>
   res.sendFile(path.join(publicPath, "pages/admin/dashboard.html"))
 );
@@ -209,6 +217,14 @@ app.get("/superadmin/notification.html", (req, res) =>
 
 app.get("/superadmin/rep-and-analytics.html", (req, res) =>
   res.redirect(301, "/superadmin/rep-and-analytics")
+);
+
+app.get("/superadmin/design.html", (req, res) =>
+  res.redirect(301, "/superadmin/design")
+);
+
+app.get("/superadmin/info.html", (req, res) =>
+  res.redirect(301, "/superadmin/info")
 );
 
 // Registrar fallback routes now serve admin equivalents (Files were deleted on purpose)

@@ -102,6 +102,61 @@
         background: transparent;
       }
 
+      .superadmin-view {
+        display: none;
+      }
+
+      .superadmin-view.is-active {
+        display: block;
+      }
+
+      .superadmin-mini-card {
+        border-left: 4px solid #6c757d;
+      }
+
+      .superadmin-kpi {
+        font-size: 1.8rem;
+        font-weight: 700;
+      }
+
+      .superadmin-list-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .superadmin-list-item:last-child {
+        border-bottom: 0;
+      }
+
+      .superadmin-badge-soft {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+
+      .superadmin-info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+      }
+
+      .superadmin-info-card {
+        height: 100%;
+      }
+
+      .superadmin-info-card h5 {
+        margin-bottom: 0.5rem;
+      }
+
       .superadmin-panel-title {
         margin: 0;
         font-size: 1.9rem;
@@ -195,6 +250,12 @@
         .superadmin-add-btn {
           width: 100%;
           min-width: 0;
+        }
+      }
+
+      @media (max-width: 767.98px) {
+        .superadmin-info-grid {
+          grid-template-columns: 1fr;
         }
       }
     </style>
@@ -380,7 +441,7 @@
             >
               <h5 class="text-white pt-2">Main</h5>
               <li class="nav-item">
-                <a href="/superadmin" class="nav-link active">
+                <a href="/superadmin" class="nav-link" data-superadmin-nav="dashboard">
                   <i class="nav-icon fa-solid fa-house"></i>
                   <p>Dashboard Overview</p>
                 </a>
@@ -392,34 +453,47 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/superadmin/application-queue" class="nav-link">
+                <a href="/superadmin/application-queue" class="nav-link" data-superadmin-nav="applicationQueue">
                   <i class="nav-icon fa-solid fa-list"></i>
                   <p>Application Queue</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/superadmin/application-evaluation" class="nav-link">
+                <a href="/superadmin/application-evaluation" class="nav-link" data-superadmin-nav="applicationEvaluation">
                   <i class="nav-icon fa-solid fa-file-circle-check"></i>
                   <p>Application Evaluation</p>
                 </a>
               </li>
               <h5 class="text-white pt-4">Management</h5>
               <li class="nav-item">
-                <a href="/superadmin/accounts" class="nav-link">
+                <a href="/superadmin/accounts" class="nav-link" data-superadmin-nav="accounts">
                   <i class="nav-icon fa-solid fa-users"></i>
                   <p>Accounts</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/superadmin/notification" class="nav-link">
+                <a href="/superadmin/notification" class="nav-link" data-superadmin-nav="notification">
                   <i class="nav-icon fa-regular fa-bell"></i>
                   <p>Notifications</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/superadmin/rep-and-analytics" class="nav-link">
+                <a href="/superadmin/rep-and-analytics" class="nav-link" data-superadmin-nav="analytics">
                   <i class="nav-icon fa-solid fa-chart-pie"></i>
                   <p>Reports and Analytics</p>
+                </a>
+              </li>
+              <h5 class="text-white pt-4">System</h5>
+              <li class="nav-item">
+                <a href="/superadmin/design" class="nav-link" data-superadmin-nav="design">
+                  <i class="nav-icon fa-solid fa-palette"></i>
+                  <p>Design</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/superadmin/info" class="nav-link" data-superadmin-nav="info">
+                  <i class="nav-icon fa-solid fa-circle-info"></i>
+                  <p>Info</p>
                 </a>
               </li>
             </ul>
@@ -451,133 +525,314 @@
 
         <div class="app-content">
           <div id="actual-content" class="superadmin-surface px-4 pb-4">
-            <section class="superadmin-toolbar">
-              <div>
-                <h1 class="superadmin-title">Super Admin Dashboard</h1>
-                <p class="superadmin-subtitle">
-                  Manage admin and registrar accounts
-                </p>
-              </div>
-              <button type="button" class="superadmin-add-btn">
-                <i class="fa-solid fa-user-plus"></i>
-                <span>Add Account</span>
-              </button>
+            <section id="superadmin-dashboard" class="superadmin-view">
+              <section class="superadmin-toolbar">
+                <div>
+                  <h1 class="superadmin-title">Super Admin Dashboard</h1>
+                  <p class="superadmin-subtitle">
+                    Manage admin and registrar accounts
+                  </p>
+                </div>
+                <button type="button" class="superadmin-add-btn">
+                  <i class="fa-solid fa-user-plus"></i>
+                  <span>Add Account</span>
+                </button>
+              </section>
+
+              <section class="row top-cards g-3 mb-4">
+                <div class="col-md-6 col-xl-4">
+                  <article
+                    class="card superadmin-stat-card p-3 bg-primary-subtle h-100"
+                    data-bs-theme="dark"
+                  >
+                    <div class="superadmin-stat-head">
+                      <h6>Super Admins</h6>
+                      <i class="fa-regular fa-shield superadmin-stat-icon text-primary"></i>
+                    </div>
+                    <h3>1</h3>
+                    <small><span class="text-primary">Core</span> access level</small>
+                  </article>
+                </div>
+                <div class="col-md-6 col-xl-4">
+                  <article
+                    class="card superadmin-stat-card is-warning p-3 bg-primary-subtle h-100"
+                    data-bs-theme="dark"
+                  >
+                    <div class="superadmin-stat-head">
+                      <h6>Admins</h6>
+                      <i class="fa-regular fa-user superadmin-stat-icon text-warning"></i>
+                    </div>
+                    <h3>1</h3>
+                    <small><span class="text-warning">Active</span> management account</small>
+                  </article>
+                </div>
+                <div class="col-md-6 col-xl-4">
+                  <article
+                    class="card superadmin-stat-card is-success p-3 bg-primary-subtle h-100"
+                    data-bs-theme="dark"
+                  >
+                    <div class="superadmin-stat-head">
+                      <h6>Registrars</h6>
+                      <i class="fa-regular fa-clipboard superadmin-stat-icon text-success"></i>
+                    </div>
+                    <h3>1</h3>
+                    <small><span class="text-success">Assigned</span> registrar account</small>
+                  </article>
+                </div>
+              </section>
+
+              <section class="card superadmin-panel p-0 bg-primary-subtle shadow" data-bs-theme="dark">
+                <div class="card-header border-bottom bg-primary-subtle shadow px-4 py-4">
+                  <h2 class="superadmin-panel-title">Staff Accounts</h2>
+                  <p class="superadmin-panel-subtitle">All admin and registrar accounts in the system</p>
+                </div>
+
+                <div class="table-responsive px-4 pb-3">
+                  <table class="table superadmin-table align-middle">
+                    <thead>
+                      <tr>
+                        <th scope="col">User</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Role</th>
+                        <th scope="col">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <div class="superadmin-user">
+                            <span class="superadmin-avatar">SA</span>
+                            <span class="superadmin-user-name">Super Admin</span>
+                          </div>
+                        </td>
+                        <td class="superadmin-email">superadmin@eduadmin.com</td>
+                        <td>
+                          <span class="superadmin-role-badge">super admin</span>
+                        </td>
+                        <td>
+                          <div class="superadmin-actions">
+                            <button
+                              type="button"
+                              class="superadmin-action-btn"
+                              aria-label="Edit Super Admin"
+                            >
+                              <i class="fa-regular fa-pen-to-square"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div class="superadmin-user">
+                            <span class="superadmin-avatar">AU</span>
+                            <span class="superadmin-user-name">Admin User</span>
+                          </div>
+                        </td>
+                        <td class="superadmin-email">admin@eduadmin.com</td>
+                        <td>
+                          <span class="superadmin-role-badge">admin</span>
+                        </td>
+                        <td>
+                          <div class="superadmin-actions">
+                            <button
+                              type="button"
+                              class="superadmin-action-btn"
+                              aria-label="Edit Admin User"
+                            >
+                              <i class="fa-regular fa-pen-to-square"></i>
+                            </button>
+                            <button
+                              type="button"
+                              class="superadmin-action-btn is-danger"
+                              aria-label="Delete Admin User"
+                            >
+                              <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
             </section>
 
-            <section class="row top-cards g-3 mb-4">
-              <div class="col-md-6 col-xl-4">
-                <article
-                  class="card superadmin-stat-card p-3 bg-primary-subtle h-100"
-                  data-bs-theme="dark"
-                >
-                  <div class="superadmin-stat-head">
-                    <h6>Super Admins</h6>
-                    <i class="fa-regular fa-shield superadmin-stat-icon text-primary"></i>
+            <section id="superadmin-accounts" class="superadmin-view">
+              <div class="card superadmin-panel p-0 bg-primary-subtle shadow" data-bs-theme="dark">
+                <div class="card-header border-bottom bg-primary-subtle shadow px-4 py-4">
+                  <h2 class="superadmin-panel-title">Accounts</h2>
+                  <p class="superadmin-panel-subtitle">Manage super admin, admin, and registrar access from one place.</p>
+                </div>
+                <div class="card-body px-4 py-4">
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <div class="card superadmin-mini-card p-3 bg-primary-subtle h-100" data-bs-theme="dark">
+                        <small class="text-secondary">Total Staff</small>
+                        <div class="superadmin-kpi">3</div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="card superadmin-mini-card p-3 bg-primary-subtle h-100" data-bs-theme="dark">
+                        <small class="text-secondary">Active Accounts</small>
+                        <div class="superadmin-kpi">3</div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="card superadmin-mini-card p-3 bg-primary-subtle h-100" data-bs-theme="dark">
+                        <small class="text-secondary">Pending Requests</small>
+                        <div class="superadmin-kpi">0</div>
+                      </div>
+                    </div>
                   </div>
-                  <h3>1</h3>
-                  <small><span class="text-primary">Core</span> access level</small>
-                </article>
-              </div>
-              <div class="col-md-6 col-xl-4">
-                <article
-                  class="card superadmin-stat-card is-warning p-3 bg-primary-subtle h-100"
-                  data-bs-theme="dark"
-                >
-                  <div class="superadmin-stat-head">
-                    <h6>Admins</h6>
-                    <i class="fa-regular fa-user superadmin-stat-icon text-warning"></i>
-                  </div>
-                  <h3>1</h3>
-                  <small><span class="text-warning">Active</span> management account</small>
-                </article>
-              </div>
-              <div class="col-md-6 col-xl-4">
-                <article
-                  class="card superadmin-stat-card is-success p-3 bg-primary-subtle h-100"
-                  data-bs-theme="dark"
-                >
-                  <div class="superadmin-stat-head">
-                    <h6>Registrars</h6>
-                    <i class="fa-regular fa-clipboard superadmin-stat-icon text-success"></i>
-                  </div>
-                  <h3>1</h3>
-                  <small><span class="text-success">Assigned</span> registrar account</small>
-                </article>
+                </div>
               </div>
             </section>
 
-            <section class="card superadmin-panel p-0 bg-primary-subtle shadow" data-bs-theme="dark">
-              <div class="card-header border-bottom bg-primary-subtle shadow px-4 py-4">
-                <h2 class="superadmin-panel-title">Staff Accounts</h2>
-                <p class="superadmin-panel-subtitle">All admin and registrar accounts in the system</p>
+            <section id="superadmin-applicationQueue" class="superadmin-view">
+              <div class="card superadmin-panel p-0 bg-primary-subtle shadow" data-bs-theme="dark">
+                <div class="card-header border-bottom bg-primary-subtle shadow px-4 py-4">
+                  <h2 class="superadmin-panel-title">Application Queue</h2>
+                  <p class="superadmin-panel-subtitle">Monitor queued applications and handoff status across the registrar flow.</p>
+                </div>
+                <div class="card-body px-4 py-4">
+                  <div class="superadmin-list-item">
+                    <div>
+                      <div class="fw-semibold">Submitted Applications</div>
+                      <small class="text-secondary">Waiting for registrar review</small>
+                    </div>
+                    <span class="superadmin-badge-soft">24</span>
+                  </div>
+                  <div class="superadmin-list-item">
+                    <div>
+                      <div class="fw-semibold">Flagged Records</div>
+                      <small class="text-secondary">Needs super admin attention</small>
+                    </div>
+                    <span class="superadmin-badge-soft">2</span>
+                  </div>
+                </div>
               </div>
+            </section>
 
-              <div class="table-responsive px-4 pb-3">
-                <table class="table superadmin-table align-middle">
-                  <thead>
-                    <tr>
-                      <th scope="col">User</th>
-                      <th scope="col">Email</th>
-                      <th scope="col">Role</th>
-                      <th scope="col">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <div class="superadmin-user">
-                          <span class="superadmin-avatar">SA</span>
-                          <span class="superadmin-user-name">Super Admin</span>
-                        </div>
-                      </td>
-                      <td class="superadmin-email">superadmin@eduadmin.com</td>
-                      <td>
-                        <span class="superadmin-role-badge">super admin</span>
-                      </td>
-                      <td>
-                        <div class="superadmin-actions">
-                          <button
-                            type="button"
-                            class="superadmin-action-btn"
-                            aria-label="Edit Super Admin"
-                          >
-                            <i class="fa-regular fa-pen-to-square"></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="superadmin-user">
-                          <span class="superadmin-avatar">AU</span>
-                          <span class="superadmin-user-name">Admin User</span>
-                        </div>
-                      </td>
-                      <td class="superadmin-email">admin@eduadmin.com</td>
-                      <td>
-                        <span class="superadmin-role-badge">admin</span>
-                      </td>
-                      <td>
-                        <div class="superadmin-actions">
-                          <button
-                            type="button"
-                            class="superadmin-action-btn"
-                            aria-label="Edit Admin User"
-                          >
-                            <i class="fa-regular fa-pen-to-square"></i>
-                          </button>
-                          <button
-                            type="button"
-                            class="superadmin-action-btn is-danger"
-                            aria-label="Delete Admin User"
-                          >
-                            <i class="fa-regular fa-trash-can"></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+            <section id="superadmin-applicationEvaluation" class="superadmin-view">
+              <div class="card superadmin-panel p-0 bg-primary-subtle shadow" data-bs-theme="dark">
+                <div class="card-header border-bottom bg-primary-subtle shadow px-4 py-4">
+                  <h2 class="superadmin-panel-title">Application Evaluation</h2>
+                  <p class="superadmin-panel-subtitle">Review evaluation outcomes and audit decision consistency.</p>
+                </div>
+                <div class="card-body px-4 py-4">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <div class="card superadmin-mini-card p-3 bg-primary-subtle h-100" data-bs-theme="dark">
+                        <div class="fw-semibold mb-2">Approved This Week</div>
+                        <div class="superadmin-kpi">18</div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="card superadmin-mini-card p-3 bg-primary-subtle h-100" data-bs-theme="dark">
+                        <div class="fw-semibold mb-2">Returned for Revision</div>
+                        <div class="superadmin-kpi">4</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section id="superadmin-notification" class="superadmin-view">
+              <div class="card superadmin-panel p-0 bg-primary-subtle shadow" data-bs-theme="dark">
+                <div class="card-header border-bottom bg-primary-subtle shadow px-4 py-4">
+                  <h2 class="superadmin-panel-title">Notifications</h2>
+                  <p class="superadmin-panel-subtitle">Broadcast alerts and manage internal staff notices.</p>
+                </div>
+                <div class="card-body px-4 py-4">
+                  <div class="superadmin-list-item">
+                    <div>
+                      <div class="fw-semibold">System Maintenance Notice</div>
+                      <small class="text-secondary">Sent to admins and registrars</small>
+                    </div>
+                    <span class="superadmin-badge-soft">Delivered</span>
+                  </div>
+                  <div class="superadmin-list-item">
+                    <div>
+                      <div class="fw-semibold">Policy Update Reminder</div>
+                      <small class="text-secondary">Pending confirmation</small>
+                    </div>
+                    <span class="superadmin-badge-soft">Pending</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section id="superadmin-analytics" class="superadmin-view">
+              <div class="card superadmin-panel p-0 bg-primary-subtle shadow" data-bs-theme="dark">
+                <div class="card-header border-bottom bg-primary-subtle shadow px-4 py-4">
+                  <h2 class="superadmin-panel-title">Reports and Analytics</h2>
+                  <p class="superadmin-panel-subtitle">Track staff productivity, approvals, and system activity.</p>
+                </div>
+                <div class="card-body px-4 py-4">
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <div class="card superadmin-mini-card p-3 bg-primary-subtle h-100" data-bs-theme="dark">
+                        <small class="text-secondary">Monthly Processed</small>
+                        <div class="superadmin-kpi">126</div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="card superadmin-mini-card p-3 bg-primary-subtle h-100" data-bs-theme="dark">
+                        <small class="text-secondary">Approval Rate</small>
+                        <div class="superadmin-kpi">91%</div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="card superadmin-mini-card p-3 bg-primary-subtle h-100" data-bs-theme="dark">
+                        <small class="text-secondary">Escalations</small>
+                        <div class="superadmin-kpi">3</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section id="superadmin-design" class="superadmin-view">
+              <div class="card superadmin-panel p-0 bg-primary-subtle shadow" data-bs-theme="dark">
+                <div class="card-header border-bottom bg-primary-subtle shadow px-4 py-4">
+                  <h2 class="superadmin-panel-title">Design</h2>
+                  <p class="superadmin-panel-subtitle">Visual direction and interface rules for the superadmin portal.</p>
+                </div>
+                <div class="card-body px-4 py-4">
+                  <div class="superadmin-info-grid">
+                    <div class="card superadmin-info-card p-3 bg-primary-subtle" data-bs-theme="dark">
+                      <h5>Color Direction</h5>
+                      <p class="mb-0 text-secondary">Keep the dark navy dashboard shell, muted card surfaces, and warm brown action accents for consistency with admin and registrar.</p>
+                    </div>
+                    <div class="card superadmin-info-card p-3 bg-primary-subtle" data-bs-theme="dark">
+                      <h5>Layout Rules</h5>
+                      <p class="mb-0 text-secondary">Use the same sidebar, header, and dashboard card rhythm as the admin pages so superadmin feels like the same product family.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section id="superadmin-info" class="superadmin-view">
+              <div class="card superadmin-panel p-0 bg-primary-subtle shadow" data-bs-theme="dark">
+                <div class="card-header border-bottom bg-primary-subtle shadow px-4 py-4">
+                  <h2 class="superadmin-panel-title">Info</h2>
+                  <p class="superadmin-panel-subtitle">System ownership, portal purpose, and operational notes for superadmin access.</p>
+                </div>
+                <div class="card-body px-4 py-4">
+                  <div class="superadmin-info-grid">
+                    <div class="card superadmin-info-card p-3 bg-primary-subtle" data-bs-theme="dark">
+                      <h5>Portal Scope</h5>
+                      <p class="mb-0 text-secondary">Superadmin oversees staff accounts, review visibility, registrar coordination, and high-level configuration across the enrollment system.</p>
+                    </div>
+                    <div class="card superadmin-info-card p-3 bg-primary-subtle" data-bs-theme="dark">
+                      <h5>Authority Level</h5>
+                      <p class="mb-0 text-secondary">This area is reserved for highest-privilege users only, with access to dashboard control, account governance, and system guidance pages.</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </section>
           </div>
@@ -647,6 +902,36 @@
         if (authUser && authUser.isRemember === false && !isSessionValid()) {
           logout();
         }
+
+        const superadminPageMap = {
+          "/superadmin": "dashboard",
+          "/superadmin/accounts": "accounts",
+          "/superadmin/application-queue": "applicationQueue",
+          "/superadmin/application-evaluation": "applicationEvaluation",
+          "/superadmin/notification": "notification",
+          "/superadmin/rep-and-analytics": "analytics",
+          "/superadmin/design": "design",
+          "/superadmin/info": "info"
+        };
+
+        const currentPath = window.location.pathname.replace(/\/+$/, "") || "/superadmin";
+        const activePage = superadminPageMap[currentPath] || "dashboard";
+
+        document.querySelectorAll(".superadmin-view").forEach((section) => {
+          section.classList.remove("is-active");
+        });
+
+        const activeSection = document.getElementById(`superadmin-${activePage}`);
+        if (activeSection) {
+          activeSection.classList.add("is-active");
+        }
+
+        document.querySelectorAll("[data-superadmin-nav]").forEach((link) => {
+          link.classList.toggle(
+            "active",
+            link.getAttribute("data-superadmin-nav") === activePage
+          );
+        });
 
         setTimeout(() => {
           const skeleton = document.getElementById("page-skeleton");
