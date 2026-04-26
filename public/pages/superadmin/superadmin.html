@@ -26,63 +26,8 @@
       referrerpolicy="no-referrer"
     />
     <style>
-      body.page-queue,
-      .app-wrapper {
-        background:
-          radial-gradient(circle at top right, rgba(56, 134, 255, 0.12), transparent 26%),
-          linear-gradient(180deg, #071a36 0%, #07152d 100%);
-      }
-
-      .app-header,
-      .app-sidebar,
-      .app-main,
-      .app-footer {
-        background: #081b39 !important;
-        border-color: rgba(255, 255, 255, 0.08) !important;
-      }
-
-      .app-header {
-        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28) !important;
-      }
-
-      .app-sidebar {
-        box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.06) !important;
-      }
-
-      .app-main {
-        min-height: 100vh;
-      }
-
-      .app-content-header {
-        color: #f5f8ff;
-      }
-
-      .app-content-header .breadcrumb-item,
-      .app-content-header .breadcrumb-item a {
-        color: #68a4ff;
-      }
-
-      .app-content-header .breadcrumb-item.active {
-        color: #d9e6ff;
-      }
-
-      .sidebar-menu .nav-link {
-        color: rgba(232, 239, 255, 0.82);
-      }
-
-      .sidebar-menu .nav-link.active,
-      .sidebar-menu .nav-link:hover {
-        background: rgba(146, 171, 219, 0.16);
-        color: #ffffff;
-      }
-
-      .sidebar-brand,
-      .app-header {
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      }
-
       .superadmin-surface {
-        color: #dbe7ff;
+        color: #ffffff;
       }
 
       .superadmin-toolbar {
@@ -90,184 +35,118 @@
         justify-content: space-between;
         align-items: flex-start;
         gap: 1rem;
-        margin-bottom: 1.75rem;
+        margin-bottom: 1.5rem;
       }
 
       .superadmin-title {
         margin: 0;
-        font-size: clamp(2rem, 3vw, 2.5rem);
+        font-size: clamp(2rem, 3vw, 2.35rem);
         font-weight: 700;
         color: #ffffff;
       }
 
       .superadmin-subtitle {
-        margin: 0.4rem 0 0;
-        font-size: 1.1rem;
-        color: rgba(226, 235, 255, 0.76);
+        margin: 0.3rem 0 0;
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.72);
       }
 
       .superadmin-add-btn {
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 0.9rem;
-        padding: 1rem 1.5rem;
-        min-width: 220px;
-        background: #213556;
+        border: 0;
+        border-radius: 0.75rem;
+        padding: 0.95rem 1.4rem;
+        min-width: 210px;
+        background: #4e4944;
         color: #fff;
         font-weight: 700;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 0.75rem;
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.24);
-      }
-
-      .superadmin-add-btn i {
-        font-size: 1.15rem;
-        color: #e9f1ff;
       }
 
       .superadmin-stat-card {
-        position: relative;
-        overflow: hidden;
-        background: rgba(16, 39, 79, 0.88);
-        border: 1px solid rgba(122, 151, 212, 0.18);
-        border-radius: 1rem;
-        padding: 2rem 2.25rem;
-        min-height: 170px;
-        box-shadow: 0 18px 34px rgba(0, 0, 0, 0.18);
+        border-left: 4px solid #0d6efd;
       }
 
-      .superadmin-stat-card::before {
-        content: "";
-        position: absolute;
-        inset: 0 auto 0 0;
-        width: 5px;
-        border-radius: 1rem 0 0 1rem;
-        background: #1b74ff;
+      .superadmin-stat-card.is-warning {
+        border-left-color: #ffc107;
       }
 
-      .superadmin-stat-card.is-warning::before {
-        background: #ffc400;
+      .superadmin-stat-card.is-success {
+        border-left-color: #198754;
       }
 
-      .superadmin-stat-card.is-success::before {
-        background: #1fb56d;
-      }
-
-      .superadmin-stat-label {
-        display: inline-flex;
+      .superadmin-stat-head {
+        display: flex;
+        justify-content: space-between;
         align-items: center;
-        gap: 0.9rem;
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #f4f7ff;
+        margin-bottom: 0.75rem;
       }
 
-      .superadmin-stat-label i {
-        font-size: 1.2rem;
-        color: #1b74ff;
+      .superadmin-stat-head h6 {
+        margin: 0;
+        font-size: 1.05rem;
       }
 
-      .superadmin-stat-card.is-warning .superadmin-stat-label i {
-        color: #ffc400;
+      .superadmin-stat-icon {
+        font-size: 1.35rem;
       }
 
-      .superadmin-stat-card.is-success .superadmin-stat-label i {
-        color: #1fb56d;
+      .superadmin-stat-card h3 {
+        margin-bottom: 0.35rem;
       }
 
-      .superadmin-stat-value {
-        margin: 1.5rem 0 0;
-        font-size: clamp(2rem, 3vw, 2.4rem);
-        font-weight: 700;
-        color: #ffffff;
-      }
-
-      .superadmin-panel {
-        background: rgba(27, 48, 84, 0.88);
-        border: 1px solid rgba(122, 151, 212, 0.18);
-        border-radius: 1rem;
-        box-shadow: 0 18px 34px rgba(0, 0, 0, 0.18);
-      }
-
-      .superadmin-panel-header {
-        padding: 2rem 2.25rem 1rem;
+      .superadmin-panel .card-header,
+      .superadmin-panel .card-body {
+        background: transparent;
       }
 
       .superadmin-panel-title {
         margin: 0;
-        font-size: clamp(1.8rem, 2.5vw, 2.2rem);
+        font-size: 1.9rem;
         font-weight: 700;
         color: #ffffff;
       }
 
       .superadmin-panel-subtitle {
-        margin: 0.55rem 0 0;
-        font-size: 1rem;
-        color: rgba(226, 235, 255, 0.74);
-      }
-
-      .superadmin-table-wrap {
-        padding: 0 2.25rem 1.5rem;
+        margin: 0.35rem 0 0;
+        color: rgba(255, 255, 255, 0.72);
       }
 
       .superadmin-table {
-        margin-bottom: 0;
-        color: #d9e5ff;
         --bs-table-bg: transparent;
-        --bs-table-color: #d9e5ff;
-        --bs-table-border-color: transparent;
-      }
-
-      .superadmin-table thead th {
-        padding: 1.3rem 1.5rem;
-        font-size: 0.95rem;
-        font-weight: 600;
-        color: #9ebaf0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-        background: transparent;
-      }
-
-      .superadmin-table tbody td {
-        padding: 1.45rem 1.5rem;
-        vertical-align: middle;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        background: transparent;
-      }
-
-      .superadmin-table tbody tr:last-child td {
-        border-bottom: 0;
+        --bs-table-color: #ffffff;
+        --bs-table-border-color: rgba(255, 255, 255, 0.1);
+        margin-bottom: 0;
       }
 
       .superadmin-user {
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: 0.9rem;
       }
 
       .superadmin-avatar {
-        width: 3rem;
-        height: 3rem;
+        width: 2.85rem;
+        height: 2.85rem;
         border-radius: 50%;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: rgba(235, 242, 255, 0.18);
-        color: #f2f6ff;
-        font-size: 1.1rem;
+        background: rgba(255, 255, 255, 0.14);
+        color: #ffffff;
+        font-size: 1rem;
         flex-shrink: 0;
-        border: 1px solid rgba(255, 255, 255, 0.08);
       }
 
       .superadmin-user-name {
-        font-size: 0.95rem;
         font-weight: 700;
         color: #ffffff;
       }
 
       .superadmin-email {
-        font-size: 0.95rem;
-        color: rgba(226, 235, 255, 0.78);
+        color: rgba(255, 255, 255, 0.8);
       }
 
       .superadmin-role-badge {
@@ -277,8 +156,7 @@
         min-width: 120px;
         padding: 0.45rem 0.9rem;
         border-radius: 999px;
-        background: rgba(111, 117, 134, 0.82);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(107, 98, 91, 0.95);
         color: #fff;
         font-size: 0.9rem;
         font-weight: 700;
@@ -288,40 +166,24 @@
       .superadmin-actions {
         display: flex;
         align-items: center;
-        gap: 0.85rem;
+        gap: 0.75rem;
       }
 
       .superadmin-action-btn {
-        width: 3.3rem;
-        height: 3.3rem;
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        border-radius: 0.75rem;
+        width: 3.1rem;
+        height: 3.1rem;
+        border: 0;
+        border-radius: 0.7rem;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: rgba(239, 243, 251, 0.1);
-        color: #eef4ff;
-        font-size: 1.15rem;
+        background: rgba(255, 255, 255, 0.12);
+        color: #ffffff;
+        font-size: 1.05rem;
       }
 
       .superadmin-action-btn.is-danger {
-        color: #ff5464;
-      }
-
-      .superadmin-add-btn:hover,
-      .superadmin-action-btn:hover {
-        filter: brightness(1.08);
-      }
-
-      .user-menu .nav-link,
-      .brand-text,
-      .sidebar-menu h5,
-      .sidebar-menu .nav-icon {
-        color: #f3f7ff !important;
-      }
-
-      .app-footer {
-        color: rgba(226, 235, 255, 0.78);
+        color: #ff5a67;
       }
 
       @media (max-width: 991.98px) {
@@ -331,27 +193,8 @@
         }
 
         .superadmin-add-btn {
-          min-width: 0;
           width: 100%;
-        }
-      }
-
-      @media (max-width: 767.98px) {
-        .superadmin-panel-header,
-        .superadmin-table-wrap {
-          padding-left: 1.25rem;
-          padding-right: 1.25rem;
-        }
-
-        .superadmin-stat-card {
-          padding: 1.5rem;
-          min-height: auto;
-        }
-
-        .superadmin-table thead th,
-        .superadmin-table tbody td {
-          padding-left: 0.85rem;
-          padding-right: 0.85rem;
+          min-width: 0;
         }
       }
     </style>
@@ -537,47 +380,46 @@
             >
               <h5 class="text-white pt-2">Main</h5>
               <li class="nav-item">
-                <a href="/dashboard" class="nav-link">
+                <a href="/superadmin" class="nav-link active">
                   <i class="nav-icon fa-solid fa-house"></i>
                   <p>Dashboard Overview</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/application-queue" class="nav-link">
+                <a href="/registrar" class="nav-link">
+                  <i class="nav-icon fa-solid fa-user-graduate"></i>
+                  <p>Registrar</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/superadmin/application-queue" class="nav-link">
                   <i class="nav-icon fa-solid fa-list"></i>
                   <p>Application Queue</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/application-evaluation" class="nav-link">
+                <a href="/superadmin/application-evaluation" class="nav-link">
                   <i class="nav-icon fa-solid fa-file-circle-check"></i>
                   <p>Application Evaluation</p>
                 </a>
               </li>
               <h5 class="text-white pt-4">Management</h5>
               <li class="nav-item">
-                <a href="/accounts" class="nav-link">
+                <a href="/superadmin/accounts" class="nav-link">
                   <i class="nav-icon fa-solid fa-users"></i>
                   <p>Accounts</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/notification" class="nav-link">
+                <a href="/superadmin/notification" class="nav-link">
                   <i class="nav-icon fa-regular fa-bell"></i>
                   <p>Notifications</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/rep-and-analytics" class="nav-link">
+                <a href="/superadmin/rep-and-analytics" class="nav-link">
                   <i class="nav-icon fa-solid fa-chart-pie"></i>
                   <p>Reports and Analytics</p>
-                </a>
-              </li>
-              <h5 class="text-white pt-4">System</h5>
-              <li class="nav-item">
-                <a href="/superadmin" class="nav-link active">
-                  <i class="nav-icon fa-solid fa-user-shield"></i>
-                  <p>Super Admin</p>
                 </a>
               </li>
             </ul>
@@ -608,7 +450,7 @@
         </div>
 
         <div class="app-content">
-          <div id="actual-content" class="superadmin-surface px-3 px-md-4 pb-4">
+          <div id="actual-content" class="superadmin-surface px-4 pb-4">
             <section class="superadmin-toolbar">
               <div>
                 <h1 class="superadmin-title">Super Admin Dashboard</h1>
@@ -622,45 +464,55 @@
               </button>
             </section>
 
-            <section class="row g-3 g-xl-4 mb-4">
+            <section class="row top-cards g-3 mb-4">
               <div class="col-md-6 col-xl-4">
-                <article class="superadmin-stat-card">
-                  <div class="superadmin-stat-label">
-                    <i class="fa-regular fa-shield"></i>
-                    <span>Super Admins</span>
+                <article
+                  class="card superadmin-stat-card p-3 bg-primary-subtle h-100"
+                  data-bs-theme="dark"
+                >
+                  <div class="superadmin-stat-head">
+                    <h6>Super Admins</h6>
+                    <i class="fa-regular fa-shield superadmin-stat-icon text-primary"></i>
                   </div>
-                  <p class="superadmin-stat-value">1</p>
+                  <h3>1</h3>
+                  <small><span class="text-primary">Core</span> access level</small>
                 </article>
               </div>
               <div class="col-md-6 col-xl-4">
-                <article class="superadmin-stat-card is-warning">
-                  <div class="superadmin-stat-label">
-                    <i class="fa-regular fa-clock"></i>
-                    <span>Admins</span>
+                <article
+                  class="card superadmin-stat-card is-warning p-3 bg-primary-subtle h-100"
+                  data-bs-theme="dark"
+                >
+                  <div class="superadmin-stat-head">
+                    <h6>Admins</h6>
+                    <i class="fa-regular fa-user superadmin-stat-icon text-warning"></i>
                   </div>
-                  <p class="superadmin-stat-value">1</p>
+                  <h3>1</h3>
+                  <small><span class="text-warning">Active</span> management account</small>
                 </article>
               </div>
               <div class="col-md-6 col-xl-4">
-                <article class="superadmin-stat-card is-success">
-                  <div class="superadmin-stat-label">
-                    <i class="fa-regular fa-circle-check"></i>
-                    <span>Registrars</span>
+                <article
+                  class="card superadmin-stat-card is-success p-3 bg-primary-subtle h-100"
+                  data-bs-theme="dark"
+                >
+                  <div class="superadmin-stat-head">
+                    <h6>Registrars</h6>
+                    <i class="fa-regular fa-clipboard superadmin-stat-icon text-success"></i>
                   </div>
-                  <p class="superadmin-stat-value">1</p>
+                  <h3>1</h3>
+                  <small><span class="text-success">Assigned</span> registrar account</small>
                 </article>
               </div>
             </section>
 
-            <section class="superadmin-panel">
-              <div class="superadmin-panel-header">
+            <section class="card superadmin-panel p-0 bg-primary-subtle shadow" data-bs-theme="dark">
+              <div class="card-header border-bottom bg-primary-subtle shadow px-4 py-4">
                 <h2 class="superadmin-panel-title">Staff Accounts</h2>
-                <p class="superadmin-panel-subtitle">
-                  All admin and registrar accounts in the system
-                </p>
+                <p class="superadmin-panel-subtitle">All admin and registrar accounts in the system</p>
               </div>
 
-              <div class="table-responsive superadmin-table-wrap">
+              <div class="table-responsive px-4 pb-3">
                 <table class="table superadmin-table align-middle">
                   <thead>
                     <tr>

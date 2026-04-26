@@ -27,6 +27,15 @@ const portalRoutes = {
         notification: "/registrar/notification",
         analytics: "/registrar/rep-and-analytics",
         login: "/login"
+    },
+    superadmin: {
+        dashboard: "/superadmin",
+        accounts: "/superadmin/accounts",
+        applicationQueue: "/superadmin/application-queue",
+        applicationEvaluation: "/superadmin/application-evaluation",
+        notification: "/superadmin/notification",
+        analytics: "/superadmin/rep-and-analytics",
+        login: "/login"
     }
 };
 
@@ -34,6 +43,9 @@ const routeAliases = {
     "/dashboard": "dashboard",
     "/dashboard.html": "dashboard",
     "./dashboard.html": "dashboard",
+    "/superadmin": "dashboard",
+    "/superadmin.html": "dashboard",
+    "./superadmin.html": "dashboard",
     "/registrardashboard": "dashboard",
     "/registrardashboard.html": "dashboard",
     "/registrar/dashboard": "dashboard",
@@ -42,6 +54,8 @@ const routeAliases = {
     "/accounts": "accounts",
     "/accounts.html": "accounts",
     "./accounts.html": "accounts",
+    "/superadmin/accounts": "accounts",
+    "/superadmin/accounts.html": "accounts",
     "/registrar": "accounts",
     "/registrar.html": "accounts",
     "./registrar.html": "accounts",
@@ -49,24 +63,32 @@ const routeAliases = {
     "/application-queue": "applicationQueue",
     "/application-queue.html": "applicationQueue",
     "./application-queue.html": "applicationQueue",
+    "/superadmin/application-queue": "applicationQueue",
+    "/superadmin/application-queue.html": "applicationQueue",
     "/registrar/application-queue": "applicationQueue",
     "/registrar/application-queue.html": "applicationQueue",
 
     "/application-evaluation": "applicationEvaluation",
     "/application-evaluation.html": "applicationEvaluation",
     "./application-evaluation.html": "applicationEvaluation",
+    "/superadmin/application-evaluation": "applicationEvaluation",
+    "/superadmin/application-evaluation.html": "applicationEvaluation",
     "/registrar/application-evaluation": "applicationEvaluation",
     "/registrar/application-evaluation.html": "applicationEvaluation",
 
     "/notification": "notification",
     "/notification.html": "notification",
     "./notification.html": "notification",
+    "/superadmin/notification": "notification",
+    "/superadmin/notification.html": "notification",
     "/registrar/notification": "notification",
     "/registrar/notification.html": "notification",
 
     "/rep-and-analytics": "analytics",
     "/rep-and-analytics.html": "analytics",
     "./rep-and-analytics.html": "analytics",
+    "/superadmin/rep-and-analytics": "analytics",
+    "/superadmin/rep-and-analytics.html": "analytics",
     "/registrar/rep-and-analytics": "analytics",
     "/registrar/rep-and-analytics.html": "analytics",
 
@@ -95,7 +117,11 @@ function getStoredSessionUser() {
 
 function getStoredRole() {
     const sessionUser = getStoredSessionUser();
-    return sessionUser?.user?.role || sessionUser?.role || null;
+    const rawRole = sessionUser?.user?.role || sessionUser?.role || null;
+    if (!rawRole) return null;
+
+    const normalizedRole = String(rawRole).trim().toLowerCase();
+    return normalizedRole === "super admin" ? "superadmin" : normalizedRole;
 }
 
 function normalizePath(path) {
@@ -115,7 +141,8 @@ function getRoleTargetPath(role, currentPath) {
 }
 
 function shouldManagePortalPath(path) {
-    return path.startsWith("/registrar") ||
+    return path.startsWith("/superadmin") ||
+        path.startsWith("/registrar") ||
         path === "/dashboard" ||
         path === "/dashboard.html" ||
         path === "/accounts" ||
