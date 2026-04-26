@@ -165,6 +165,54 @@ function toggleRegistrarOnlyNav(role) {
     });
 }
 
+function toggleSuperAdminOnlyNav(role) {
+    // Hide Super Admin link for non-superadmin users (admin and registrar)
+    if (role !== "superadmin" && role !== "super admin") {
+        const superAdminLinks = Array.from(document.querySelectorAll("a[href]")).filter((link) => {
+            const href = normalizePath(link.getAttribute("href"));
+            const label = (link.textContent || "").trim().toLowerCase();
+            return href === "/superadmin" && label === "super admin";
+        });
+
+        superAdminLinks.forEach((link) => {
+            const navItem = link.closest(".nav-item");
+            if (!navItem) return;
+            navItem.style.display = "none";
+        });
+    }
+}
+
+function hideEmptySectionHeaders() {
+    // Find all section headers (h5 tags in sidebar)
+    const sectionHeaders = document.querySelectorAll(".sidebar-menu h5");
+    
+    sectionHeaders.forEach((header) => {
+        // Get all nav items following this header until the next header
+        const navItems = [];
+        let nextElement = header.nextElementSibling;
+        
+        while (nextElement && nextElement.tagName !== "H5") {
+            if (nextElement.classList.contains("nav-item")) {
+                navItems.push(nextElement);
+            }
+            nextElement = nextElement.nextElementSibling;
+        }
+        
+        // Check if all nav items in this section are hidden
+        const allItemsHidden = navItems.length > 0 && navItems.every(item => {
+            return item.style.display === "none" || 
+                   window.getComputedStyle(item).display === "none";
+        });
+        
+        // Hide the header if all nav items are hidden
+        if (allItemsHidden) {
+            header.style.display = "none";
+        } else {
+            header.style.display = "";
+        }
+    });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const role = getStoredRole();
     const currentPath = normalizePath(window.location.pathname);
@@ -182,4 +230,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     rewritePortalLinks(role);
     toggleRegistrarOnlyNav(role);
+    toggleSuperAdminOnlyNav(role);
+    hideEmptySectionHeaders();
 });
