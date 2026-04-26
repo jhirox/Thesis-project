@@ -165,7 +165,12 @@ function rewritePortalLinks(role) {
     document.querySelectorAll("a[href]").forEach((link) => {
         const rawHref = link.getAttribute("href");
 
-        if (!rawHref || rawHref.startsWith("#") || /^https?:/i.test(rawHref)) {
+        if (
+            !rawHref ||
+            rawHref.startsWith("#") ||
+            /^https?:/i.test(rawHref) ||
+            link.hasAttribute("data-skip-portal-rewrite")
+        ) {
             return;
         }
 
