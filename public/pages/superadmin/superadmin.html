@@ -26,8 +26,63 @@
       referrerpolicy="no-referrer"
     />
     <style>
+      body.page-queue,
+      .app-wrapper {
+        background:
+          radial-gradient(circle at top right, rgba(56, 134, 255, 0.12), transparent 26%),
+          linear-gradient(180deg, #071a36 0%, #07152d 100%);
+      }
+
+      .app-header,
+      .app-sidebar,
+      .app-main,
+      .app-footer {
+        background: #081b39 !important;
+        border-color: rgba(255, 255, 255, 0.08) !important;
+      }
+
+      .app-header {
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28) !important;
+      }
+
+      .app-sidebar {
+        box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.06) !important;
+      }
+
+      .app-main {
+        min-height: 100vh;
+      }
+
+      .app-content-header {
+        color: #f5f8ff;
+      }
+
+      .app-content-header .breadcrumb-item,
+      .app-content-header .breadcrumb-item a {
+        color: #68a4ff;
+      }
+
+      .app-content-header .breadcrumb-item.active {
+        color: #d9e6ff;
+      }
+
+      .sidebar-menu .nav-link {
+        color: rgba(232, 239, 255, 0.82);
+      }
+
+      .sidebar-menu .nav-link.active,
+      .sidebar-menu .nav-link:hover {
+        background: rgba(146, 171, 219, 0.16);
+        color: #ffffff;
+      }
+
+      .sidebar-brand,
+      .app-header {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
       .superadmin-surface {
-        color: #3f4f69;
+        color: #dbe7ff;
       }
 
       .superadmin-toolbar {
@@ -42,41 +97,61 @@
         margin: 0;
         font-size: clamp(2rem, 3vw, 2.5rem);
         font-weight: 700;
-        color: #394965;
+        color: #ffffff;
       }
 
       .superadmin-subtitle {
         margin: 0.4rem 0 0;
         font-size: 1.1rem;
-        color: #7f7369;
+        color: rgba(226, 235, 255, 0.76);
       }
 
       .superadmin-add-btn {
-        border: 0;
+        border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 0.9rem;
         padding: 1rem 1.5rem;
         min-width: 220px;
-        background: #5a514a;
+        background: #213556;
         color: #fff;
         font-weight: 700;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 0.75rem;
-        box-shadow: 0 8px 22px rgba(90, 81, 74, 0.18);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.24);
       }
 
       .superadmin-add-btn i {
         font-size: 1.15rem;
+        color: #e9f1ff;
       }
 
       .superadmin-stat-card {
-        background: #fff;
-        border: 1px solid rgba(112, 98, 88, 0.22);
+        position: relative;
+        overflow: hidden;
+        background: rgba(16, 39, 79, 0.88);
+        border: 1px solid rgba(122, 151, 212, 0.18);
         border-radius: 1rem;
         padding: 2rem 2.25rem;
         min-height: 170px;
-        box-shadow: 0 6px 18px rgba(57, 73, 101, 0.08);
+        box-shadow: 0 18px 34px rgba(0, 0, 0, 0.18);
+      }
+
+      .superadmin-stat-card::before {
+        content: "";
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 5px;
+        border-radius: 1rem 0 0 1rem;
+        background: #1b74ff;
+      }
+
+      .superadmin-stat-card.is-warning::before {
+        background: #ffc400;
+      }
+
+      .superadmin-stat-card.is-success::before {
+        background: #1fb56d;
       }
 
       .superadmin-stat-label {
@@ -85,26 +160,34 @@
         gap: 0.9rem;
         font-size: 1.1rem;
         font-weight: 600;
-        color: #394965;
+        color: #f4f7ff;
       }
 
       .superadmin-stat-label i {
         font-size: 1.2rem;
-        color: #5a514a;
+        color: #1b74ff;
+      }
+
+      .superadmin-stat-card.is-warning .superadmin-stat-label i {
+        color: #ffc400;
+      }
+
+      .superadmin-stat-card.is-success .superadmin-stat-label i {
+        color: #1fb56d;
       }
 
       .superadmin-stat-value {
         margin: 1.5rem 0 0;
         font-size: clamp(2rem, 3vw, 2.4rem);
         font-weight: 700;
-        color: #394965;
+        color: #ffffff;
       }
 
       .superadmin-panel {
-        background: #fff;
-        border: 1px solid rgba(112, 98, 88, 0.22);
+        background: rgba(27, 48, 84, 0.88);
+        border: 1px solid rgba(122, 151, 212, 0.18);
         border-radius: 1rem;
-        box-shadow: 0 8px 24px rgba(57, 73, 101, 0.08);
+        box-shadow: 0 18px 34px rgba(0, 0, 0, 0.18);
       }
 
       .superadmin-panel-header {
@@ -115,13 +198,13 @@
         margin: 0;
         font-size: clamp(1.8rem, 2.5vw, 2.2rem);
         font-weight: 700;
-        color: #394965;
+        color: #ffffff;
       }
 
       .superadmin-panel-subtitle {
         margin: 0.55rem 0 0;
         font-size: 1rem;
-        color: #7f7369;
+        color: rgba(226, 235, 255, 0.74);
       }
 
       .superadmin-table-wrap {
@@ -130,21 +213,26 @@
 
       .superadmin-table {
         margin-bottom: 0;
-        color: #5b6475;
+        color: #d9e5ff;
+        --bs-table-bg: transparent;
+        --bs-table-color: #d9e5ff;
+        --bs-table-border-color: transparent;
       }
 
       .superadmin-table thead th {
         padding: 1.3rem 1.5rem;
         font-size: 0.95rem;
         font-weight: 600;
-        color: #857668;
-        border-bottom: 1px solid rgba(112, 98, 88, 0.25);
+        color: #9ebaf0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        background: transparent;
       }
 
       .superadmin-table tbody td {
         padding: 1.45rem 1.5rem;
         vertical-align: middle;
-        border-bottom: 1px solid rgba(112, 98, 88, 0.18);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: transparent;
       }
 
       .superadmin-table tbody tr:last-child td {
@@ -164,21 +252,22 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: #e6e1dc;
-        color: #4f5f79;
+        background: rgba(235, 242, 255, 0.18);
+        color: #f2f6ff;
         font-size: 1.1rem;
         flex-shrink: 0;
+        border: 1px solid rgba(255, 255, 255, 0.08);
       }
 
       .superadmin-user-name {
         font-size: 0.95rem;
         font-weight: 700;
-        color: #394965;
+        color: #ffffff;
       }
 
       .superadmin-email {
         font-size: 0.95rem;
-        color: #6f7685;
+        color: rgba(226, 235, 255, 0.78);
       }
 
       .superadmin-role-badge {
@@ -188,7 +277,8 @@
         min-width: 120px;
         padding: 0.45rem 0.9rem;
         border-radius: 999px;
-        background: #6b625b;
+        background: rgba(111, 117, 134, 0.82);
+        border: 1px solid rgba(255, 255, 255, 0.08);
         color: #fff;
         font-size: 0.9rem;
         font-weight: 700;
@@ -204,18 +294,34 @@
       .superadmin-action-btn {
         width: 3.3rem;
         height: 3.3rem;
-        border: 0;
+        border: 1px solid rgba(255, 255, 255, 0.06);
         border-radius: 0.75rem;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: #f0efed;
-        color: #5a514a;
+        background: rgba(239, 243, 251, 0.1);
+        color: #eef4ff;
         font-size: 1.15rem;
       }
 
       .superadmin-action-btn.is-danger {
-        color: #ff3b30;
+        color: #ff5464;
+      }
+
+      .superadmin-add-btn:hover,
+      .superadmin-action-btn:hover {
+        filter: brightness(1.08);
+      }
+
+      .user-menu .nav-link,
+      .brand-text,
+      .sidebar-menu h5,
+      .sidebar-menu .nav-icon {
+        color: #f3f7ff !important;
+      }
+
+      .app-footer {
+        color: rgba(226, 235, 255, 0.78);
       }
 
       @media (max-width: 991.98px) {
@@ -527,18 +633,18 @@
                 </article>
               </div>
               <div class="col-md-6 col-xl-4">
-                <article class="superadmin-stat-card">
+                <article class="superadmin-stat-card is-warning">
                   <div class="superadmin-stat-label">
-                    <i class="fa-regular fa-shield"></i>
+                    <i class="fa-regular fa-clock"></i>
                     <span>Admins</span>
                   </div>
                   <p class="superadmin-stat-value">1</p>
                 </article>
               </div>
               <div class="col-md-6 col-xl-4">
-                <article class="superadmin-stat-card">
+                <article class="superadmin-stat-card is-success">
                   <div class="superadmin-stat-label">
-                    <i class="fa-regular fa-clipboard"></i>
+                    <i class="fa-regular fa-circle-check"></i>
                     <span>Registrars</span>
                   </div>
                   <p class="superadmin-stat-value">1</p>
