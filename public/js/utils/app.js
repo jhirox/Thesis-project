@@ -27,6 +27,10 @@ const portalRoutes = {
         notification: "/registrar/notification",
         analytics: "/registrar/rep-and-analytics",
         login: "/login"
+    },
+    superadmin: {
+        dashboard: "/superadmin",
+        login: "/login"
     }
 };
 
@@ -78,6 +82,8 @@ const routeAliases = {
     "/registrarlogin.html": "login",
     "../auth/registrarlogin": "login",
     "../auth/registrarlogin.html": "login",
+    "/superadmin": "dashboard",
+    "/superadmin.html": "dashboard",
     "/login": "login",
     "/login.html": "login",
     "../auth/login": "login",
@@ -118,6 +124,8 @@ function shouldManagePortalPath(path) {
     return path.startsWith("/registrar") ||
         path === "/dashboard" ||
         path === "/dashboard.html" ||
+        path === "/superadmin" ||
+        path === "/superadmin.html" ||
         path === "/accounts" ||
         path === "/accounts.html" ||
         path === "/application-queue" ||
