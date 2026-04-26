@@ -17,7 +17,7 @@ const portalRoutes = {
         applicationEvaluation: "/application-evaluation",
         notification: "/notification",
         analytics: "/rep-and-analytics",
-        login: "/adminlogin"
+        login: "/login"
     },
     registrar: {
         dashboard: "/registrar/dashboard",
@@ -26,7 +26,7 @@ const portalRoutes = {
         applicationEvaluation: "/registrar/application-evaluation",
         notification: "/registrar/notification",
         analytics: "/registrar/rep-and-analytics",
-        login: "/registrarlogin"
+        login: "/login"
     }
 };
 
@@ -77,7 +77,11 @@ const routeAliases = {
     "/registrarlogin": "login",
     "/registrarlogin.html": "login",
     "../auth/registrarlogin": "login",
-    "../auth/registrarlogin.html": "login"
+    "../auth/registrarlogin.html": "login",
+    "/login": "login",
+    "/login.html": "login",
+    "../auth/login": "login",
+    "../auth/login.html": "login"
 };
 
 function getStoredSessionUser() {

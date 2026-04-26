@@ -85,25 +85,14 @@ app.get("/registrardashboard", (req, res) =>
   res.sendFile(path.join(publicPath, "pages/admin/dashboard.html"))
 );
 
-app.get("/adminlogin", (req, res) =>
-  res.sendFile(path.join(publicPath, "pages/auth/adminlogin.html"))
-);
-
-app.get("/adminsignup", (req, res) =>
-  res.sendFile(path.join(publicPath, "pages/auth/adminsignup.html"))
-);
-
 app.get("/enrollment-form", (req, res) =>
   res.sendFile(path.join(publicPath, "pages/auth/enrollment-form.html"))
 );
 
-app.get("/registrarlogin", (req, res) =>
-  res.sendFile(path.join(publicPath, "pages/auth/registrarlogin.html"))
-);
-
-app.get("/registrarsignup", (req, res) =>
-  res.sendFile(path.join(publicPath, "pages/auth/registrarsignup.html"))
-);
+app.get("/adminlogin", (req, res) => res.redirect(301, "/login"));
+app.get("/adminsignup", (req, res) => res.redirect(301, "/login"));
+app.get("/registrarlogin", (req, res) => res.redirect(301, "/login"));
+app.get("/registrarsignup", (req, res) => res.redirect(301, "/login"));
 
 // Registrar clean routes
 app.get("/registrar", (req, res) =>
@@ -236,16 +225,16 @@ app.get(
       "dashboard.html": "/dashboard",
       "registrardashboard.html": "/registrar/dashboard",
       "registrar.html": "/registrar",
-      "registrarlogin.html": "/registrarlogin",
-      "adminlogin.html": "/adminlogin",
+      "registrarlogin.html": "/login",
+      "adminlogin.html": "/login",
       "accounts.html": "/accounts",
       "application-evaluation.html": "/application-evaluation",
       "application-queue.html": "/application-queue",
       "notification.html": "/notification",
       "rep-and-analytics.html": "/rep-and-analytics",
       "enrollment-form.html": "/enrollment-form",
-      "adminsignup.html": "/adminsignup",
-      "registrarsignup.html": "/registrarsignup"
+      "adminsignup.html": "/login",
+      "registrarsignup.html": "/login"
     };
 
     const cleanPath = cleanMap[req.path.substring(1)];

@@ -274,7 +274,7 @@
                 <li class="user-footer">
                   <a href="#" class="btn btn-default btn-flat">Profile</a>
                   <a
-                    href="/adminlogin.html"
+                    href="/login"
                     class="btn btn-default btn-flat float-end"
                     id="sign-out"
                     >Sign out</a
@@ -662,7 +662,7 @@
         const logout = () => {
           localStorage.removeItem("sessionUser");
           localStorage.removeItem("sessionTimeout");
-          window.location.href = "/adminlogin.html";
+          window.location.href = "/login";
         };
 
         const isSessionValid = () => {
@@ -692,7 +692,7 @@
           checkSession();
           loadDashboardData(); // Load enrollment data
         } else {
-          window.location.href = "/adminlogin.html";
+          window.location.href = "/login";
         }
 
         // signOutBtn.addEventListener('click', () => {

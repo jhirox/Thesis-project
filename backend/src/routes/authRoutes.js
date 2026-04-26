@@ -69,7 +69,21 @@ router.post('/login', async (req, res) => {
 
     // Find user
     const [users] = await db.query(
-      'SELECT user_id, email, passkey AS password, role_id, is_active FROM users WHERE email = ?',
+      `SELECT
+        u.user_id,
+        u.email,
+        u.passkey AS password,
+        u.role_id,
+        u.is_active,
+        COALESCE(
+          NULLIF(TRIM(CONCAT_WS(' ', s.first_name, s.middle_name, s.last_name, s.suffix)), ''),
+          SUBSTRING_INDEX(u.email, '@', 1)
+        ) AS fullname,
+        COALESCE(NULLIF(TRIM(r.role_name), ''), 'user') AS role
+      FROM users u
+      LEFT JOIN role r ON r.id = u.role_id
+      LEFT JOIN students s ON s.email_address = u.email
+      WHERE u.email = ?`,
       [email]
     );
 
@@ -100,7 +114,13 @@ router.post('/login', async (req, res) => {
     res.json({
       message: 'Login successful',
       token,
-      user: { id: user.user_id, email: user.email, roleId: user.role_id }
+      user: {
+        id: user.user_id,
+        email: user.email,
+        roleId: user.role_id,
+        role: user.role,
+        fullname: user.fullname
+      }
     });
   } catch (error) {
     console.error('Login error:', error);

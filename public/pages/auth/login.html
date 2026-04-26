@@ -52,7 +52,7 @@
             </div>
 
             <h4>Log in</h4>
-            <div class="login-sub">Sign in to your student account</div>
+            <div class="login-sub">Sign in to your portal account</div>
 
             <form id="login-form" onsubmit="return false;" style="width:100%">
 
@@ -90,13 +90,10 @@
 
                 <div class="login-footer-links fa-6">
                     <div>
-                        Login as an:
-                        <a href="/adminlogin.html">Admin</a>
-                        <span class="sep">|</span>
-                        <a href="/registrarlogin.html">Registrar</a>
+                        Staff and student accounts all sign in here.
                     </div>
                     <div>
-                        Don't have an account? <a id="loginSignupLink" href="/signup">Create</a>
+                        Need a student account? <a id="loginSignupLink" href="/signup">Create</a>
                     </div>
                 </div>
 
@@ -132,14 +129,31 @@
     const rememberCbx = document.querySelector("#remember");
     const timeout = 30 * 60 * 1000;
     const params = new URLSearchParams(window.location.search);
-    const redirectTo = params.get('next') || '/';
+    const requestedRedirect = params.get('next');
+
+    const normalizeRole = (role) => String(role || "").trim().toLowerCase();
+    const getDefaultRedirect = (user) => {
+        const role = normalizeRole(user?.role);
+
+        if (role === "registrar") {
+            return "/registrar/dashboard";
+        }
+
+        if (role === "admin" || role === "superadmin" || role === "super admin") {
+            return "/dashboard";
+        }
+
+        return "/profile";
+    };
+
+    const getRedirectTarget = (user) => requestedRedirect || getDefaultRedirect(user);
 
     // Redirect if session exists
     const authUser = JSON.parse(localStorage.getItem('sessionUser'));
     const curTimeout = localStorage.getItem('sessionTimeout');
     const guestMode = localStorage.getItem('guestMode') === 'true';
     if (authUser && curTimeout && !guestMode && Date.now() < Number(curTimeout)) {
-        window.location.href = redirectTo;
+        window.location.href = getRedirectTarget(authUser.user || authUser);
     }
 
     form.addEventListener('submit', async (e) => {
@@ -179,7 +193,7 @@
                 localStorage.setItem("sessionTimeout", Date.now() + timeout);
                 localStorage.setItem("authToken", data.token);
                 localStorage.removeItem("guestMode");
-                setTimeout(() => window.location.href = redirectTo, 2000);
+                setTimeout(() => window.location.href = getRedirectTarget(data.user), 1200);
             } else {
                 Swal.fire({ icon: "error", title: "Error", text: data.error || "Login failed" });
             }
