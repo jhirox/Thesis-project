@@ -217,6 +217,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const role = getStoredRole();
     const currentPath = normalizePath(window.location.pathname);
 
+    // Always hide nav items based on role
+    if (role) {
+        toggleRegistrarOnlyNav(role);
+        toggleSuperAdminOnlyNav(role);
+        hideEmptySectionHeaders();
+    }
+
     if (!role || !shouldManagePortalPath(currentPath)) {
         return;
     }
@@ -229,7 +236,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     rewritePortalLinks(role);
-    toggleRegistrarOnlyNav(role);
-    toggleSuperAdminOnlyNav(role);
-    hideEmptySectionHeaders();
 });
