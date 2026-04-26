@@ -485,15 +485,9 @@
               </li>
               <h5 class="text-white pt-4">System</h5>
               <li class="nav-item">
-                <a href="/superadmin/design" class="nav-link" data-superadmin-nav="design">
-                  <i class="nav-icon fa-solid fa-palette"></i>
-                  <p>Design</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="/superadmin/info" class="nav-link" data-superadmin-nav="info">
-                  <i class="nav-icon fa-solid fa-circle-info"></i>
-                  <p>Info</p>
+                <a href="/superadmin" class="nav-link" data-superadmin-nav="dashboard">
+                  <i class="nav-icon fa-solid fa-user-shield"></i>
+                  <p>Super Admin</p>
                 </a>
               </li>
             </ul>
@@ -794,47 +788,6 @@
               </div>
             </section>
 
-            <section id="superadmin-design" class="superadmin-view">
-              <div class="card superadmin-panel p-0 bg-primary-subtle shadow" data-bs-theme="dark">
-                <div class="card-header border-bottom bg-primary-subtle shadow px-4 py-4">
-                  <h2 class="superadmin-panel-title">Design</h2>
-                  <p class="superadmin-panel-subtitle">Visual direction and interface rules for the superadmin portal.</p>
-                </div>
-                <div class="card-body px-4 py-4">
-                  <div class="superadmin-info-grid">
-                    <div class="card superadmin-info-card p-3 bg-primary-subtle" data-bs-theme="dark">
-                      <h5>Color Direction</h5>
-                      <p class="mb-0 text-secondary">Keep the dark navy dashboard shell, muted card surfaces, and warm brown action accents for consistency with admin and registrar.</p>
-                    </div>
-                    <div class="card superadmin-info-card p-3 bg-primary-subtle" data-bs-theme="dark">
-                      <h5>Layout Rules</h5>
-                      <p class="mb-0 text-secondary">Use the same sidebar, header, and dashboard card rhythm as the admin pages so superadmin feels like the same product family.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section id="superadmin-info" class="superadmin-view">
-              <div class="card superadmin-panel p-0 bg-primary-subtle shadow" data-bs-theme="dark">
-                <div class="card-header border-bottom bg-primary-subtle shadow px-4 py-4">
-                  <h2 class="superadmin-panel-title">Info</h2>
-                  <p class="superadmin-panel-subtitle">System ownership, portal purpose, and operational notes for superadmin access.</p>
-                </div>
-                <div class="card-body px-4 py-4">
-                  <div class="superadmin-info-grid">
-                    <div class="card superadmin-info-card p-3 bg-primary-subtle" data-bs-theme="dark">
-                      <h5>Portal Scope</h5>
-                      <p class="mb-0 text-secondary">Superadmin oversees staff accounts, review visibility, registrar coordination, and high-level configuration across the enrollment system.</p>
-                    </div>
-                    <div class="card superadmin-info-card p-3 bg-primary-subtle" data-bs-theme="dark">
-                      <h5>Authority Level</h5>
-                      <p class="mb-0 text-secondary">This area is reserved for highest-privilege users only, with access to dashboard control, account governance, and system guidance pages.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
           </div>
         </div>
       </main>
@@ -909,9 +862,7 @@
           "/superadmin/application-queue": "applicationQueue",
           "/superadmin/application-evaluation": "applicationEvaluation",
           "/superadmin/notification": "notification",
-          "/superadmin/rep-and-analytics": "analytics",
-          "/superadmin/design": "design",
-          "/superadmin/info": "info"
+          "/superadmin/rep-and-analytics": "analytics"
         };
 
         const currentPath = window.location.pathname.replace(/\/+$/, "") || "/superadmin";
