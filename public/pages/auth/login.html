@@ -139,7 +139,11 @@
             return "/registrar/dashboard";
         }
 
-        if (role === "admin" || role === "superadmin" || role === "super admin") {
+        if (role === "superadmin" || role === "super admin") {
+            return "/superadmin";
+        }
+
+        if (role === "admin") {
             return "/dashboard";
         }
 

@@ -469,7 +469,7 @@
               </li>
               <h5 class="text-white pt-4">System</h5>
               <li class="nav-item">
-                <a href="./superadmin.html" class="nav-link active">
+                <a href="/superadmin" class="nav-link active">
                   <i class="nav-icon fa-solid fa-user-shield"></i>
                   <p>Super Admin</p>
                 </a>
@@ -662,6 +662,15 @@
           if (!timeout) return false;
           return Date.now() < Number(timeout);
         };
+
+        const normalizedRole = String(
+          authUser?.user?.role || authUser?.role || ""
+        ).trim().toLowerCase();
+
+        if (authUser && normalizedRole !== "superadmin" && normalizedRole !== "super admin") {
+          window.location.replace("/dashboard");
+          return;
+        }
 
         if (authUser && fullName) {
           fullName.textContent =
