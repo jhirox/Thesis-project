@@ -110,56 +110,90 @@
         display: block;
       }
 
-      .superadmin-home-hero {
-        padding: 2rem 0 3rem;
+      .superadmin-dashboard-shell {
+        color: #394965;
       }
 
-      .superadmin-home-panel {
-        border-radius: 1.5rem;
-        overflow: hidden;
-        margin-bottom: 1.75rem;
+      .superadmin-dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 2rem;
       }
 
-      .superadmin-home-panel--light {
-        background: #ffffff;
-        color: #10233f;
-      }
-
-      .superadmin-home-panel--navy {
-        background: var(--qeci-navy, #021b3a);
+      .superadmin-dashboard-title {
+        margin: 0;
+        font-size: clamp(2rem, 3vw, 2.55rem);
+        font-weight: 700;
         color: #ffffff;
       }
 
-      .superadmin-home-card {
+      .superadmin-dashboard-subtitle {
+        margin: 0.45rem 0 0;
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.72);
+      }
+
+      .superadmin-dashboard-add {
+        min-width: 220px;
+      }
+
+      .superadmin-dashboard-card {
         background: #ffffff;
-        border-radius: 1.25rem;
-        padding: 1.75rem;
-        height: 100%;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        border: 1px solid rgba(98, 84, 72, 0.22);
+        border-radius: 1rem;
+        padding: 2rem 2.25rem;
+        min-height: 170px;
+        color: #394965;
       }
 
-      .superadmin-home-card--gold {
-        border-left: 4px solid var(--qeci-gold, #d4af37);
+      .superadmin-dashboard-card-head {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.85rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #394965;
       }
 
-      .superadmin-home-card--navy {
-        border-left: 4px solid var(--qeci-navy, #021b3a);
+      .superadmin-dashboard-card-head i {
+        color: #5a514a;
       }
 
-      .superadmin-home-contact {
-        border: 1px solid rgba(2, 27, 58, 0.12);
-        border-radius: 1.25rem;
-        padding: 1.75rem;
-        height: 100%;
-        color: #10233f;
-        text-decoration: none;
-        display: block;
+      .superadmin-dashboard-card-value {
+        margin: 1.45rem 0 0;
+        font-size: 2.4rem;
+        font-weight: 700;
+        color: #394965;
       }
 
-      .superadmin-home-contact p,
-      .superadmin-home-card p,
-      .superadmin-home-card li {
-        color: #5f6b7a;
+      .superadmin-dashboard-panel {
+        background: #ffffff;
+        border: 1px solid rgba(98, 84, 72, 0.22);
+        border-radius: 1rem;
+        overflow: hidden;
+      }
+
+      .superadmin-dashboard-panel-header {
+        padding: 2rem 2.25rem 1rem;
+      }
+
+      .superadmin-dashboard-panel-title {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #394965;
+      }
+
+      .superadmin-dashboard-panel-subtitle {
+        margin: 0.45rem 0 0;
+        font-size: 1rem;
+        color: #7a736d;
+      }
+
+      .superadmin-dashboard-table-wrap {
+        padding: 0 2.25rem 1.25rem;
       }
 
       .superadmin-mini-card {
@@ -303,11 +337,27 @@
           width: 100%;
           min-width: 0;
         }
+
+        .superadmin-dashboard-header {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .superadmin-dashboard-add {
+          width: 100%;
+        }
       }
 
       @media (max-width: 767.98px) {
         .superadmin-info-grid {
           grid-template-columns: 1fr;
+        }
+
+        .superadmin-dashboard-card,
+        .superadmin-dashboard-panel-header,
+        .superadmin-dashboard-table-wrap {
+          padding-left: 1.25rem;
+          padding-right: 1.25rem;
         }
       }
     </style>
@@ -478,7 +528,7 @@
               src="/assets/images/logo.png"
               alt="logo"
             />
-            <span class="brand-text fw-light fw-bold">Dashboard</span>
+            <span class="brand-text fw-light fw-bold">QEC Registrar</span>
           </a>
         </div>
         <div class="sidebar-wrapper">
@@ -493,7 +543,7 @@
             >
               <h5 class="text-white pt-2">Main</h5>
               <li class="nav-item">
-                <a href="/superadmin" class="nav-link" data-superadmin-nav="dashboard">
+                <a href="/dashboard" class="nav-link" data-superadmin-nav="dashboard">
                   <i class="nav-icon fa-solid fa-house"></i>
                   <p>Dashboard Overview</p>
                 </a>
@@ -505,26 +555,26 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/superadmin/application-queue" class="nav-link" data-superadmin-nav="applicationQueue">
+                <a href="/application-queue" class="nav-link" data-superadmin-nav="applicationQueue">
                   <i class="nav-icon fa-solid fa-list"></i>
                   <p>Application Queue</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/superadmin/application-evaluation" class="nav-link" data-superadmin-nav="applicationEvaluation">
+                <a href="/application-evaluation" class="nav-link" data-superadmin-nav="applicationEvaluation">
                   <i class="nav-icon fa-solid fa-file-circle-check"></i>
                   <p>Application Evaluation</p>
                 </a>
               </li>
               <h5 class="text-white pt-4">Management</h5>
               <li class="nav-item">
-                <a href="/superadmin/notification" class="nav-link" data-superadmin-nav="notification">
+                <a href="/notification" class="nav-link" data-superadmin-nav="notification">
                   <i class="nav-icon fa-regular fa-bell"></i>
                   <p>Notifications</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/superadmin/rep-and-analytics" class="nav-link" data-superadmin-nav="analytics">
+                <a href="/rep-and-analytics" class="nav-link" data-superadmin-nav="analytics">
                   <i class="nav-icon fa-solid fa-chart-pie"></i>
                   <p>Reports and Analytics</p>
                 </a>
@@ -566,138 +616,110 @@
         <div class="app-content">
           <div id="actual-content" class="superadmin-surface px-4 pb-4">
             <section id="superadmin-dashboard" class="superadmin-view">
-              <section class="superadmin-home-hero">
-                <div class="container-fluid px-0">
-                  <div class="row align-items-center g-4">
-                    <div class="col-lg-7">
-                      <p class="tagline text-uppercase small fw-semibold mb-2">
-                        Super Admin Portal
-                      </p>
-                      <h1 class="sub-tagline fw-bold mb-3 display-5">
-                        <span class="text-gold">Go <span class="text-white">for</span> Growth</span>
-                        with <span class="text-gold">QECI</span>
-                      </h1>
-                      <p class="lead mb-4 text-white-75">
-                        Manage registrar-facing services, monitor account access,
-                        and keep the online registration experience clear,
-                        reliable, and aligned across the system.
-                      </p>
-                      <div class="d-flex flex-column flex-sm-row gap-3">
-                        <a href="/superadmin/accounts" class="btn btn-gold px-4 py-2 fw-semibold">
-                          Manage Accounts
-                        </a>
-                        <a href="/superadmin/notification" class="btn btn-outline-gold px-4 py-2 fw-semibold">
-                          View Notifications
-                        </a>
-                      </div>
-                    </div>
-                    <div class="col-lg-5 d-none d-lg-block text-center">
-                      <img
-                        src="/assets/images/logo.png"
-                        alt="QECI logo"
-                        class="img-fluid rounded-3"
-                        style="max-width: 260px"
-                      />
-                    </div>
+              <div class="superadmin-dashboard-shell">
+                <section class="superadmin-dashboard-header">
+                  <div>
+                    <h1 class="superadmin-dashboard-title">Super Admin Dashboard</h1>
+                    <p class="superadmin-dashboard-subtitle">Manage admin and registrar accounts</p>
                   </div>
-                </div>
-              </section>
+                  <button type="button" class="superadmin-add-btn superadmin-dashboard-add">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>Add Account</span>
+                  </button>
+                </section>
 
-              <section class="superadmin-home-panel superadmin-home-panel--navy py-5 px-4 px-lg-5">
-                <div class="text-center mb-5">
-                  <h2 class="fw-bold text-gold mb-2">The Office of the Super Admin</h2>
-                  <p class="lead mb-0 mx-auto" style="max-width: 680px;">
-                    We oversee system access, support registrar operations, and
-                    keep enrollment management organized, secure, and consistent.
-                  </p>
-                </div>
-                <div class="row g-4">
-                  <div class="col-12 col-md-6 col-lg-4">
-                    <div class="superadmin-home-card superadmin-home-card--gold">
-                      <div class="d-flex align-items-center mb-3">
-                        <div class="p-3 rounded-3" style="background: rgba(212, 175, 55, 0.1);">
-                          <i class="bi bi-shield-check fs-5" style="color: var(--qeci-gold, #d4af37);"></i>
-                        </div>
-                        <h6 class="fw-bold mb-0 ms-3" style="color: var(--qeci-navy, #021b3a);">
-                          Account Governance
-                        </h6>
+                <section class="row g-4 mb-4">
+                  <div class="col-md-6 col-xl-4">
+                    <article class="superadmin-dashboard-card">
+                      <div class="superadmin-dashboard-card-head">
+                        <i class="fa-regular fa-shield"></i>
+                        <span>Super Admins</span>
                       </div>
-                      <ul class="list-unstyled mb-0">
-                        <li class="small mb-2">Manage admin and registrar access</li>
-                        <li class="small mb-2">Monitor privileged roles and activity</li>
-                        <li class="small">Keep staff permissions organized</li>
-                      </ul>
-                    </div>
+                      <p class="superadmin-dashboard-card-value">1</p>
+                    </article>
                   </div>
-                  <div class="col-12 col-md-6 col-lg-4">
-                    <div class="superadmin-home-card superadmin-home-card--navy">
-                      <div class="d-flex align-items-center mb-3">
-                        <div class="p-3 rounded-3" style="background: rgba(2, 27, 58, 0.08);">
-                          <i class="bi bi-diagram-3 fs-5" style="color: var(--qeci-navy, #021b3a);"></i>
-                        </div>
-                        <h6 class="fw-bold mb-0 ms-3" style="color: var(--qeci-navy, #021b3a);">
-                          Process Oversight
-                        </h6>
+                  <div class="col-md-6 col-xl-4">
+                    <article class="superadmin-dashboard-card">
+                      <div class="superadmin-dashboard-card-head">
+                        <i class="fa-regular fa-shield"></i>
+                        <span>Admins</span>
                       </div>
-                      <p class="small mb-2 fw-semibold">Cross-office workflow monitoring</p>
-                      <p class="small mb-2">Application flow visibility</p>
-                      <p class="small mb-0">Evaluation and reporting support</p>
-                    </div>
+                      <p class="superadmin-dashboard-card-value">1</p>
+                    </article>
                   </div>
-                  <div class="col-12 col-md-6 col-lg-4">
-                    <div class="superadmin-home-card superadmin-home-card--gold">
-                      <div class="d-flex align-items-center mb-3">
-                        <div class="p-3 rounded-3" style="background: rgba(212, 175, 55, 0.1);">
-                          <i class="bi bi-envelope-heart fs-5" style="color: var(--qeci-gold, #d4af37);"></i>
-                        </div>
-                        <h6 class="fw-bold mb-0 ms-3" style="color: var(--qeci-navy, #021b3a);">
-                          Staff Coordination
-                        </h6>
+                  <div class="col-md-6 col-xl-4">
+                    <article class="superadmin-dashboard-card">
+                      <div class="superadmin-dashboard-card-head">
+                        <i class="fa-regular fa-clipboard"></i>
+                        <span>Registrars</span>
                       </div>
-                      <p class="small mb-3">
-                        Coordinate with registrar and admin teams through
-                        notices, analytics, and account support.
-                      </p>
-                      <a
-                        href="/superadmin/rep-and-analytics"
-                        class="btn btn-sm w-100 fw-semibold"
-                        style="background: var(--qeci-gold, #d4af37); color: var(--qeci-navy, #021b3a); border: none;"
-                      >
-                        View Analytics
-                      </a>
-                    </div>
+                      <p class="superadmin-dashboard-card-value">1</p>
+                    </article>
                   </div>
-                </div>
-              </section>
+                </section>
 
-              <section class="superadmin-home-panel superadmin-home-panel--light py-5 px-4 px-lg-5 text-center">
-                <div class="row justify-content-center g-4">
-                  <div class="col-12">
-                    <h4 class="fw-bold text-dark">You can manage the portal through:</h4>
+                <section class="superadmin-dashboard-panel">
+                  <div class="superadmin-dashboard-panel-header">
+                    <h2 class="superadmin-dashboard-panel-title">Staff Accounts</h2>
+                    <p class="superadmin-dashboard-panel-subtitle">All admin and registrar accounts in the system</p>
                   </div>
-                  <div class="col-12 col-md-4">
-                    <a href="/superadmin/notification" class="superadmin-home-contact">
-                      <i class="bi bi-bell display-5 mb-2 d-block" style="color: var(--qeci-navy, #021b3a);"></i>
-                      <strong>Notifications</strong>
-                      <p class="mb-0 small">Send alerts and internal updates to staff accounts.</p>
-                    </a>
+                  <div class="table-responsive superadmin-dashboard-table-wrap">
+                    <table class="table superadmin-table align-middle">
+                      <thead>
+                        <tr>
+                          <th scope="col">User</th>
+                          <th scope="col">Email</th>
+                          <th scope="col">Role</th>
+                          <th scope="col">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <div class="superadmin-user">
+                              <span class="superadmin-avatar">SA</span>
+                              <span class="superadmin-user-name">Super Admin</span>
+                            </div>
+                          </td>
+                          <td class="superadmin-email">superadmin@eduadmin.com</td>
+                          <td>
+                            <span class="superadmin-role-badge">super admin</span>
+                          </td>
+                          <td>
+                            <div class="superadmin-actions">
+                              <button type="button" class="superadmin-action-btn" aria-label="Edit Super Admin">
+                                <i class="fa-regular fa-pen-to-square"></i>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div class="superadmin-user">
+                              <span class="superadmin-avatar">AU</span>
+                              <span class="superadmin-user-name">Admin User</span>
+                            </div>
+                          </td>
+                          <td class="superadmin-email">admin@eduadmin.com</td>
+                          <td>
+                            <span class="superadmin-role-badge">admin</span>
+                          </td>
+                          <td>
+                            <div class="superadmin-actions">
+                              <button type="button" class="superadmin-action-btn" aria-label="Edit Admin User">
+                                <i class="fa-regular fa-pen-to-square"></i>
+                              </button>
+                              <button type="button" class="superadmin-action-btn is-danger" aria-label="Delete Admin User">
+                                <i class="fa-regular fa-trash-can"></i>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
-                  <div class="col-12 col-md-4">
-                    <a href="/superadmin/accounts" class="superadmin-home-contact">
-                      <i class="bi bi-people display-5 mb-2 d-block" style="color: var(--qeci-gold, #d4af37);"></i>
-                      <strong>Accounts</strong>
-                      <p class="mb-0 small">Manage super admin, admin, and registrar access roles.</p>
-                    </a>
-                  </div>
-                  <div class="col-12 col-md-4">
-                    <a href="/superadmin/rep-and-analytics" class="superadmin-home-contact">
-                      <i class="bi bi-bar-chart-line display-5 mb-2 d-block" style="color: var(--qeci-navy, #021b3a);"></i>
-                      <strong>Reports and Analytics</strong>
-                      <p class="mb-0 small">Review trends, approvals, and system-level activity.</p>
-                    </a>
-                  </div>
-                </div>
-              </section>
+                </section>
+              </div>
             </section>
 
             <section id="superadmin-accounts" class="superadmin-view">
