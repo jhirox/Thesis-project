@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Super Admin Dashboard</title>
+    <link rel="icon" href="/assets/images/logo.png" />
+
+    <link rel="stylesheet" href="/vendor/adminlte/css/adminlte.min.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+      integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <style>
+      .superadmin-surface {
+        color: #3f4f69;
+      }
+
+      .superadmin-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1.75rem;
+      }
+
+      .superadmin-title {
+        margin: 0;
+        font-size: clamp(2rem, 3vw, 2.5rem);
+        font-weight: 700;
+        color: #394965;
+      }
+
+      .superadmin-subtitle {
+        margin: 0.4rem 0 0;
+        font-size: 1.1rem;
+        color: #7f7369;
+      }
+
+      .superadmin-add-btn {
+        border: 0;
+        border-radius: 0.9rem;
+        padding: 1rem 1.5rem;
+        min-width: 220px;
+        background: #5a514a;
+        color: #fff;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        box-shadow: 0 8px 22px rgba(90, 81, 74, 0.18);
+      }
+
+      .superadmin-add-btn i {
+        font-size: 1.15rem;
+      }
+
+      .superadmin-stat-card {
+        background: #fff;
+        border: 1px solid rgba(112, 98, 88, 0.22);
+        border-radius: 1rem;
+        padding: 2rem 2.25rem;
+        min-height: 170px;
+        box-shadow: 0 6px 18px rgba(57, 73, 101, 0.08);
+      }
+
+      .superadmin-stat-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.9rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #394965;
+      }
+
+      .superadmin-stat-label i {
+        font-size: 1.2rem;
+        color: #5a514a;
+      }
+
+      .superadmin-stat-value {
+        margin: 1.5rem 0 0;
+        font-size: clamp(2rem, 3vw, 2.4rem);
+        font-weight: 700;
+        color: #394965;
+      }
+
+      .superadmin-panel {
+        background: #fff;
+        border: 1px solid rgba(112, 98, 88, 0.22);
+        border-radius: 1rem;
+        box-shadow: 0 8px 24px rgba(57, 73, 101, 0.08);
+      }
+
+      .superadmin-panel-header {
+        padding: 2rem 2.25rem 1rem;
+      }
+
+      .superadmin-panel-title {
+        margin: 0;
+        font-size: clamp(1.8rem, 2.5vw, 2.2rem);
+        font-weight: 700;
+        color: #394965;
+      }
+
+      .superadmin-panel-subtitle {
+        margin: 0.55rem 0 0;
+        font-size: 1rem;
+        color: #7f7369;
+      }
+
+      .superadmin-table-wrap {
+        padding: 0 2.25rem 1.5rem;
+      }
+
+      .superadmin-table {
+        margin-bottom: 0;
+        color: #5b6475;
+      }
+
+      .superadmin-table thead th {
+        padding: 1.3rem 1.5rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #857668;
+        border-bottom: 1px solid rgba(112, 98, 88, 0.25);
+      }
+
+      .superadmin-table tbody td {
+        padding: 1.45rem 1.5rem;
+        vertical-align: middle;
+        border-bottom: 1px solid rgba(112, 98, 88, 0.18);
+      }
+
+      .superadmin-table tbody tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .superadmin-user {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .superadmin-avatar {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #e6e1dc;
+        color: #4f5f79;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+      }
+
+      .superadmin-user-name {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #394965;
+      }
+
+      .superadmin-email {
+        font-size: 0.95rem;
+        color: #6f7685;
+      }
+
+      .superadmin-role-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 120px;
+        padding: 0.45rem 0.9rem;
+        border-radius: 999px;
+        background: #6b625b;
+        color: #fff;
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-transform: lowercase;
+      }
+
+      .superadmin-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+      }
+
+      .superadmin-action-btn {
+        width: 3.3rem;
+        height: 3.3rem;
+        border: 0;
+        border-radius: 0.75rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #f0efed;
+        color: #5a514a;
+        font-size: 1.15rem;
+      }
+
+      .superadmin-action-btn.is-danger {
+        color: #ff3b30;
+      }
+
+      @media (max-width: 991.98px) {
+        .superadmin-toolbar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .superadmin-add-btn {
+          min-width: 0;
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 767.98px) {
+        .superadmin-panel-header,
+        .superadmin-table-wrap {
+          padding-left: 1.25rem;
+          padding-right: 1.25rem;
+        }
+
+        .superadmin-stat-card {
+          padding: 1.5rem;
+          min-height: auto;
+        }
+
+        .superadmin-table thead th,
+        .superadmin-table tbody td {
+          padding-left: 0.85rem;
+          padding-right: 0.85rem;
+        }
+      }
+    </style>
+  </head>
+  <body
+    class="page-queue layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary text-white"
+  >
+    <div class="app-wrapper">
+      <div id="page-skeleton" class="admin-page-skeleton">
+        <div class="admin-page-skeleton__header">
+          <div class="admin-page-skeleton__header-group">
+            <div class="skeleton admin-page-skeleton__hamburger"></div>
+          </div>
+          <div class="admin-page-skeleton__header-group">
+            <div class="skeleton admin-page-skeleton__header-user"></div>
+            <div class="skeleton admin-page-skeleton__header-avatar"></div>
+          </div>
+        </div>
+        <div class="admin-page-skeleton__body">
+          <aside class="admin-page-skeleton__sidebar">
+            <div class="admin-page-skeleton__brand">
+              <div class="skeleton admin-page-skeleton__brand-logo"></div>
+              <div class="skeleton admin-page-skeleton__brand-text"></div>
+            </div>
+            <div class="admin-page-skeleton__section">
+              <div class="skeleton admin-page-skeleton__section-title"></div>
+              <div class="skeleton admin-page-skeleton__nav-item"></div>
+              <div class="skeleton admin-page-skeleton__nav-item"></div>
+              <div class="skeleton admin-page-skeleton__nav-item"></div>
+            </div>
+            <div class="admin-page-skeleton__section">
+              <div class="skeleton admin-page-skeleton__section-title"></div>
+              <div class="skeleton admin-page-skeleton__nav-item is-active"></div>
+            </div>
+          </aside>
+          <div class="admin-page-skeleton__main">
+            <div class="admin-page-skeleton__page-header">
+              <div class="skeleton admin-page-skeleton__page-title"></div>
+              <div class="admin-page-skeleton__breadcrumbs">
+                <div class="skeleton admin-page-skeleton__crumb"></div>
+                <div
+                  class="skeleton admin-page-skeleton__crumb admin-page-skeleton__crumb--small"
+                ></div>
+              </div>
+            </div>
+            <div class="admin-page-skeleton__content">
+              <div class="row g-3 mb-4 px-4 py-3 pt-0">
+                <div class="col-sm-6 col-xl-4">
+                  <div class="skeleton-dashboard-card">
+                    <div
+                      class="d-flex justify-content-between align-items-start mb-4"
+                    >
+                      <div class="skeleton skeleton-label"></div>
+                      <div class="skeleton skeleton-stat-icon"></div>
+                    </div>
+                    <div class="skeleton skeleton-stat-value mb-3"></div>
+                  </div>
+                </div>
+                <div class="col-sm-6 col-xl-4">
+                  <div class="skeleton-dashboard-card">
+                    <div
+                      class="d-flex justify-content-between align-items-start mb-4"
+                    >
+                      <div class="skeleton skeleton-label"></div>
+                      <div class="skeleton skeleton-stat-icon"></div>
+                    </div>
+                    <div class="skeleton skeleton-stat-value mb-3"></div>
+                  </div>
+                </div>
+                <div class="col-sm-6 col-xl-4">
+                  <div class="skeleton-dashboard-card">
+                    <div
+                      class="d-flex justify-content-between align-items-start mb-4"
+                    >
+                      <div class="skeleton skeleton-label"></div>
+                      <div class="skeleton skeleton-stat-icon"></div>
+                    </div>
+                    <div class="skeleton skeleton-stat-value mb-3"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="px-4">
+                <div class="admin-skeleton-panel">
+                  <div class="skeleton admin-skeleton-panel-title"></div>
+                  <div class="skeleton admin-skeleton-panel-subtitle"></div>
+                  <div class="admin-skeleton-table">
+                    <div class="skeleton admin-skeleton-table-head"></div>
+                    <div class="skeleton admin-skeleton-table-row"></div>
+                    <div class="skeleton admin-skeleton-table-row"></div>
+                    <div class="skeleton admin-skeleton-table-row"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="admin-page-skeleton__footer">
+              <div class="skeleton admin-page-skeleton__footer-line"></div>
+              <div
+                class="skeleton admin-page-skeleton__footer-line admin-page-skeleton__footer-line--short"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <nav
+        class="app-header navbar navbar-expand bg-primary-subtle shadow"
+        data-bs-theme="dark"
+      >
+        <div class="container-fluid">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                data-lte-toggle="sidebar"
+                href="#"
+                role="button"
+              >
+                <i class="fa-solid fa-bars"></i>
+              </a>
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item dropdown user-menu">
+              <a
+                href="#"
+                class="nav-link dropdown-toggle"
+                data-bs-toggle="dropdown"
+              >
+                <img
+                  src="https://lh3.googleusercontent.com/a/ACg8ocJZRFDYP52Px5s5A5hCDSPAwCHlrEebkZDNYbMcQnSSdvacvufz=s360-c-no"
+                  class="user-image rounded-circle shadow"
+                  alt="User Image"
+                />
+                <span class="d-none d-md-inline" id="user-full-name"></span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+                <li class="user-header">
+                  <img
+                    src="https://lh3.googleusercontent.com/a/ACg8ocJZRFDYP52Px5s5A5hCDSPAwCHlrEebkZDNYbMcQnSSdvacvufz=s360-c-no"
+                    class="rounded-circle shadow"
+                    alt="User Image"
+                  />
+                  <p>
+                    Super Admin
+                    <small>Account management portal</small>
+                  </p>
+                </li>
+                <li class="user-footer">
+                  <a href="#" class="btn btn-default btn-flat">Profile</a>
+                  <a
+                    href="/adminlogin.html"
+                    class="btn btn-default btn-flat float-end"
+                    id="sign-out"
+                    >Sign out</a
+                  >
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <aside class="app-sidebar bg-primary-subtle shadow" data-bs-theme="dark">
+        <div class="sidebar-brand justify-content-center">
+          <a href="#" class="brand-link text-decoration-none">
+            <img
+              class="page-queue logo"
+              src="/assets/images/logo.png"
+              alt="logo"
+            />
+            <span class="brand-text fw-light fw-bold">Dashboard</span>
+          </a>
+        </div>
+        <div class="sidebar-wrapper">
+          <nav class="mt-2">
+            <ul
+              class="nav sidebar-menu flex-column"
+              data-lte-toggle="treeview"
+              role="navigation"
+              aria-label="Main navigation"
+              data-accordion="false"
+              id="navigation"
+            >
+              <h5 class="text-white pt-2">Main</h5>
+              <li class="nav-item">
+                <a href="/dashboard" class="nav-link">
+                  <i class="nav-icon fa-solid fa-house"></i>
+                  <p>Dashboard Overview</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/application-queue" class="nav-link">
+                  <i class="nav-icon fa-solid fa-list"></i>
+                  <p>Application Queue</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/application-evaluation" class="nav-link">
+                  <i class="nav-icon fa-solid fa-file-circle-check"></i>
+                  <p>Application Evaluation</p>
+                </a>
+              </li>
+              <h5 class="text-white pt-4">Management</h5>
+              <li class="nav-item">
+                <a href="/accounts" class="nav-link">
+                  <i class="nav-icon fa-solid fa-users"></i>
+                  <p>Accounts</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/notification" class="nav-link">
+                  <i class="nav-icon fa-regular fa-bell"></i>
+                  <p>Notifications</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/rep-and-analytics" class="nav-link">
+                  <i class="nav-icon fa-solid fa-chart-pie"></i>
+                  <p>Reports and Analytics</p>
+                </a>
+              </li>
+              <h5 class="text-white pt-4">System</h5>
+              <li class="nav-item">
+                <a href="./superadmin.html" class="nav-link active">
+                  <i class="nav-icon fa-solid fa-user-shield"></i>
+                  <p>Super Admin</p>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </aside>
+
+      <main
+        class="app-main bg-primary-subtle shadow text-white"
+        data-bs-theme="dark"
+      >
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6">
+                <h3 class="mx-3 fw-bold fs-2">Super Admin</h3>
+              </div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                  <li class="breadcrumb-item"><a href="#">Home</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">
+                    Super Admin
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="app-content">
+          <div id="actual-content" class="superadmin-surface px-3 px-md-4 pb-4">
+            <section class="superadmin-toolbar">
+              <div>
+                <h1 class="superadmin-title">Super Admin Dashboard</h1>
+                <p class="superadmin-subtitle">
+                  Manage admin and registrar accounts
+                </p>
+              </div>
+              <button type="button" class="superadmin-add-btn">
+                <i class="fa-solid fa-user-plus"></i>
+                <span>Add Account</span>
+              </button>
+            </section>
+
+            <section class="row g-3 g-xl-4 mb-4">
+              <div class="col-md-6 col-xl-4">
+                <article class="superadmin-stat-card">
+                  <div class="superadmin-stat-label">
+                    <i class="fa-regular fa-shield"></i>
+                    <span>Super Admins</span>
+                  </div>
+                  <p class="superadmin-stat-value">1</p>
+                </article>
+              </div>
+              <div class="col-md-6 col-xl-4">
+                <article class="superadmin-stat-card">
+                  <div class="superadmin-stat-label">
+                    <i class="fa-regular fa-shield"></i>
+                    <span>Admins</span>
+                  </div>
+                  <p class="superadmin-stat-value">1</p>
+                </article>
+              </div>
+              <div class="col-md-6 col-xl-4">
+                <article class="superadmin-stat-card">
+                  <div class="superadmin-stat-label">
+                    <i class="fa-regular fa-clipboard"></i>
+                    <span>Registrars</span>
+                  </div>
+                  <p class="superadmin-stat-value">1</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="superadmin-panel">
+              <div class="superadmin-panel-header">
+                <h2 class="superadmin-panel-title">Staff Accounts</h2>
+                <p class="superadmin-panel-subtitle">
+                  All admin and registrar accounts in the system
+                </p>
+              </div>
+
+              <div class="table-responsive superadmin-table-wrap">
+                <table class="table superadmin-table align-middle">
+                  <thead>
+                    <tr>
+                      <th scope="col">User</th>
+                      <th scope="col">Email</th>
+                      <th scope="col">Role</th>
+                      <th scope="col">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <div class="superadmin-user">
+                          <span class="superadmin-avatar">SA</span>
+                          <span class="superadmin-user-name">Super Admin</span>
+                        </div>
+                      </td>
+                      <td class="superadmin-email">superadmin@eduadmin.com</td>
+                      <td>
+                        <span class="superadmin-role-badge">super admin</span>
+                      </td>
+                      <td>
+                        <div class="superadmin-actions">
+                          <button
+                            type="button"
+                            class="superadmin-action-btn"
+                            aria-label="Edit Super Admin"
+                          >
+                            <i class="fa-regular fa-pen-to-square"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="superadmin-user">
+                          <span class="superadmin-avatar">AU</span>
+                          <span class="superadmin-user-name">Admin User</span>
+                        </div>
+                      </td>
+                      <td class="superadmin-email">admin@eduadmin.com</td>
+                      <td>
+                        <span class="superadmin-role-badge">admin</span>
+                      </td>
+                      <td>
+                        <div class="superadmin-actions">
+                          <button
+                            type="button"
+                            class="superadmin-action-btn"
+                            aria-label="Edit Admin User"
+                          >
+                            <i class="fa-regular fa-pen-to-square"></i>
+                          </button>
+                          <button
+                            type="button"
+                            class="superadmin-action-btn is-danger"
+                            aria-label="Delete Admin User"
+                          >
+                            <i class="fa-regular fa-trash-can"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+
+      <footer class="app-footer bg-primary-subtle shadow" data-bs-theme="dark">
+        <div class="float-end d-none d-sm-inline">Anything you want</div>
+        <strong>
+          Copyright &copy; 2014-2025&nbsp;
+          <a href="#" class="text-decoration-none">Yuri Oflaria</a>.
+        </strong>
+        <br />
+        All rights reserved.
+      </footer>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+    <script src="/js/utils/app.js"></script>
+    <script src="/js/core/adminlte.min.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const fullName = document.getElementById("user-full-name");
+        const signOutBtn = document.getElementById("sign-out");
+        const authUser = JSON.parse(localStorage.getItem("sessionUser") || "null");
+        const timeout = localStorage.getItem("sessionTimeout");
+
+        const logout = () => {
+          localStorage.removeItem("sessionUser");
+          localStorage.removeItem("sessionTimeout");
+          window.location.href = "/adminlogin.html";
+        };
+
+        const isSessionValid = () => {
+          if (!timeout) return false;
+          return Date.now() < Number(timeout);
+        };
+
+        if (authUser && fullName) {
+          fullName.textContent =
+            authUser.user?.fullname || authUser.fullname || "Super Admin";
+        } else if (fullName) {
+          fullName.textContent = "Super Admin";
+        }
+
+        if (signOutBtn) {
+          signOutBtn.addEventListener("click", (event) => {
+            event.preventDefault();
+            logout();
+          });
+        }
+
+        if (authUser && authUser.isRemember === false && !isSessionValid()) {
+          logout();
+        }
+
+        setTimeout(() => {
+          const skeleton = document.getElementById("page-skeleton");
+          if (!skeleton) return;
+          skeleton.style.opacity = "0";
+          skeleton.style.pointerEvents = "none";
+          skeleton.style.transition = "opacity 0.25s ease";
+          setTimeout(() => skeleton.remove(), 250);
+        }, 1200);
+      });
+    </script>
+  </body>
+</html>
