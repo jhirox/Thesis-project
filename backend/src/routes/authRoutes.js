@@ -31,10 +31,9 @@ router.post('/login', async (req, res) => {
       ...result
     });
   } catch (error) {
-    // Senior Tip: Don't tell the user WHY login failed (security)
     // Just log the real error for yourself
     console.error('Login Error:', error.message);
-    
+
     const status = error.message === 'Account is inactive' ? 403 : 401;
     res.status(status).json({ error: error.message });
   }
