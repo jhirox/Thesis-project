@@ -49,9 +49,9 @@ const routeAliases = {
     "/registrardashboard.html": "dashboard",
     "/registrar/dashboard": "dashboard",
     "/registrar/dashboard.html": "dashboard",
-    "/registrar": "accounts",
-    "/registrar.html": "accounts",
-    "./registrar.html": "accounts",
+    "/registrar": "registrar",
+    "/registrar.html": "registrar",
+    "./registrar.html": "registrar",
 
     "/accounts": "accounts",
     "/accounts.html": "accounts",
@@ -139,6 +139,10 @@ function getRoleTargetPath(role, currentPath) {
 
     if (!routeKey || !portalRoutes[role]) {
         return null;
+    }
+
+    if (routeKey === "registrar" && role === "admin") {
+        return portalRoutes.admin.accounts || null;
     }
 
     return portalRoutes[role][routeKey] || null;
