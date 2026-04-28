@@ -37,7 +37,7 @@ router.get("/registrar", serve('registrar', 'registrar'));
 
 // --- SUPERADMIN ---
 router.get("/superadmin", serve('superadmin', 'superadmin'));
-router.get("/superadmin/dashboard", serve('superadmin', 'superadmin'));
+router.get("/superadmin/dashboard", serve('admin', 'dashboard'));
 
 // Superadmin can access registrar and all admin pages
 router.get("/superadmin/registrar", serve('registrar', 'registrar'));

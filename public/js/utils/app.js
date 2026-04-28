@@ -36,6 +36,7 @@ const portalRoutes = {
         applicationEvaluation: "/superadmin/application-evaluation",
         notification: "/superadmin/notification",
         analytics: "/superadmin/rep-and-analytics",
+        superadmin: "/superadmin",
         login: "/login"
     }
 };
@@ -90,8 +91,8 @@ const routeAliases = {
     "../auth/registrarlogin.html": "login",
     "/superadmin/dashboard": "dashboard",
     "/superadmin/dashboard.html": "dashboard",
-    "/superadmin": "dashboard",
-    "/superadmin.html": "dashboard",
+    "/superadmin": "superadmin",
+    "/superadmin.html": "superadmin",
 
     "/superadmin/registrar": "registrar",
     "/superadmin/registrar.html": "registrar",
