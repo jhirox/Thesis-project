@@ -39,4 +39,10 @@ router.get("/registrar", serve('registrar', 'registrar'));
 router.get("/superadmin", serve('superadmin', 'superadmin'));
 router.get("/superadmin/dashboard", serve('superadmin', 'superadmin'));
 
+// Superadmin can access registrar and all admin pages
+router.get("/superadmin/registrar", serve('registrar', 'registrar'));
+adminPages.forEach(page => {
+    router.get(`/superadmin/${page}`, serve('admin', page));
+});
+
 export default router;
