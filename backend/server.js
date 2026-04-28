@@ -10,7 +10,11 @@ import viewRoutes from "./src/routes/viewRoutes.js"; // Import our new router
 
 // Config
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-dotenv.config({ path: path.resolve(__dirname, "../.env") });
+const envPath = path.resolve(__dirname, "./.env");
+dotenv.config({ path: envPath });
+if (!process.env.JWT_SECRET) {
+  console.warn(`WARNING: JWT_SECRET is not set. Checked env path: ${envPath}`);
+}
 
 const app = express();
 const publicPath = path.join(__dirname, "../public");
