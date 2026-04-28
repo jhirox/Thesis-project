@@ -29,14 +29,12 @@ const portalRoutes = {
         login: "/login"
     },
     superadmin: {
-        dashboard: "/dashboard",
-        registrar: "/registrar",
+        dashboard: "/superadmin/dashboard",
         accounts: "/accounts",
         applicationQueue: "/application-queue",
         applicationEvaluation: "/application-evaluation",
         notification: "/notification",
         analytics: "/rep-and-analytics",
-        superadmin: "/superadmin",
         login: "/login"
     }
 };
@@ -49,13 +47,13 @@ const routeAliases = {
     "/registrardashboard.html": "dashboard",
     "/registrar/dashboard": "dashboard",
     "/registrar/dashboard.html": "dashboard",
+    "/registrar": "accounts",
+    "/registrar.html": "accounts",
+    "./registrar.html": "accounts",
 
     "/accounts": "accounts",
     "/accounts.html": "accounts",
     "./accounts.html": "accounts",
-    "/registrar": "accounts",
-    "/registrar.html": "accounts",
-    "./registrar.html": "accounts",
 
     "/application-queue": "applicationQueue",
     "/application-queue.html": "applicationQueue",
