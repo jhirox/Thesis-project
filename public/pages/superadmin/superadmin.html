@@ -133,63 +133,37 @@
         border: 2px solid rgba(122, 151, 212, 0.18);
         border-left: 4px solid #1b74ff;
         border-radius: 0.75rem;
-        padding: 1.5rem;
-        height: 200px;
+        padding: 1.25rem;
+        height: 140px;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
-        align-items: stretch;
+        justify-content: center;
+        align-items: flex-start;
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
       }
 
-      .superadmin-stat-card.is-warning {
-        border-left-color: #ffc400;
-      }
-
-      .superadmin-stat-card.is-success {
-        border-left-color: #1fb56d;
-      }
-
-      .superadmin-stat-card.is-danger {
-        border-left-color: #ff5464;
+      .superadmin-stat-card .material-symbols-outlined {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        opacity: 0.8;
       }
 
       .superadmin-stat-label {
-        font-size: 0.95rem;
+        font-size: 0.85rem;
         font-weight: 500;
         color: rgba(226, 235, 255, 0.8);
-        margin: 0;
+        margin: 0.25rem 0 0.5rem;
         padding: 0;
         display: block;
       }
 
       .superadmin-stat-value {
-        font-size: 2.8rem;
+        font-size: 2rem;
         font-weight: 700;
         color: #ffffff;
-        margin: 0.5rem 0;
+        margin: 0;
         line-height: 1;
         padding: 0;
-      }
-
-      .superadmin-stat-change {
-        font-size: 0.85rem;
-        font-weight: 500;
-        color: #1b74ff;
-        margin: 0;
-        padding: 0;
-      }
-
-      .superadmin-stat-card.is-warning .superadmin-stat-change {
-        color: #ffc400;
-      }
-
-      .superadmin-stat-card.is-success .superadmin-stat-change {
-        color: #1fb56d;
-      }
-
-      .superadmin-stat-card.is-danger .superadmin-stat-change {
-        color: #ff5464;
       }
 
       .superadmin-panel {
@@ -637,29 +611,29 @@
               </button>
             </section>
 
-            <section class="row g-3 g-xl-4 mb-4">
-              <div class="col-md-6 col-xl-4">
+            <div class="row top-cards g-3 mb-4 px-4 py-3 pt-0">
+              <div class="col-sm-6 col-md-3">
                 <article class="superadmin-stat-card">
+                  <span class="material-symbols-outlined text-primary">group</span>
                   <h5 class="superadmin-stat-label">Super Admins</h5>
                   <p class="superadmin-stat-value">1</p>
-                  <small class="superadmin-stat-change">+0% from last week</small>
                 </article>
               </div>
-              <div class="col-md-6 col-xl-4">
+              <div class="col-sm-6 col-md-3">
                 <article class="superadmin-stat-card is-warning">
+                  <span class="material-symbols-outlined text-primary">group</span>
                   <h5 class="superadmin-stat-label">Admins</h5>
                   <p class="superadmin-stat-value">1</p>
-                  <small class="superadmin-stat-change">+0% from last week</small>
                 </article>
               </div>
-              <div class="col-md-6 col-xl-4">
+              <div class="col-sm-6 col-md-3">
                 <article class="superadmin-stat-card is-success">
+                  <span class="material-symbols-outlined text-primary">group</span>
                   <h5 class="superadmin-stat-label">Registrars</h5>
                   <p class="superadmin-stat-value">1</p>
-                  <small class="superadmin-stat-change">+0% from last week</small>
                 </article>
               </div>
-            </section>
+            </div>
 
             <section class="superadmin-panel">
               <div class="superadmin-panel-header">
