@@ -3692,9 +3692,11 @@ body.page-queue,
   box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.06) !important;
 }
 
+/*
 .app-main {
   min-height: 100vh;
 }
+*/
 
 .app-content-header {
   color: #f5f8ff;
@@ -3845,6 +3847,7 @@ body.page-queue,
 
 .superadmin-panel-header {
   padding: 2rem 2.25rem 1rem;
+  
 }
 
 .superadmin-panel-title {
@@ -3883,7 +3886,7 @@ body.page-queue,
   text-transform: uppercase;
   letter-spacing: 0.5px;
   padding: 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 3px solid #020024;
 }
 
 .superadmin-table tbody td {
@@ -3891,6 +3894,7 @@ body.page-queue,
   padding: 1.25rem 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   vertical-align: middle;
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 .superadmin-table tbody tr:hover {
