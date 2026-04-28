@@ -130,60 +130,66 @@
         position: relative;
         overflow: hidden;
         background: rgba(16, 39, 79, 0.88);
-        border: 1px solid rgba(122, 151, 212, 0.18);
-        border-radius: 1rem;
-        padding: 2rem 2.25rem;
-        height: 170px;
+        border: 2px solid rgba(122, 151, 212, 0.18);
+        border-left: 4px solid #1b74ff;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        height: 200px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        box-shadow: 0 18px 34px rgba(0, 0, 0, 0.18);
+        align-items: stretch;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
       }
 
-      .superadmin-stat-card::before {
-        content: "";
-        position: absolute;
-        inset: 0 auto 0 0;
-        width: 5px;
-        border-radius: 1rem 0 0 1rem;
-        background: #1b74ff;
+      .superadmin-stat-card.is-warning {
+        border-left-color: #ffc400;
       }
 
-      .superadmin-stat-card.is-warning::before {
-        background: #ffc400;
+      .superadmin-stat-card.is-success {
+        border-left-color: #1fb56d;
       }
 
-      .superadmin-stat-card.is-success::before {
-        background: #1fb56d;
+      .superadmin-stat-card.is-danger {
+        border-left-color: #ff5464;
       }
 
       .superadmin-stat-label {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.9rem;
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #f4f7ff;
-      }
-
-      .superadmin-stat-label i {
-        font-size: 1.2rem;
-        color: #1b74ff;
-      }
-
-      .superadmin-stat-card.is-warning .superadmin-stat-label i {
-        color: #ffc400;
-      }
-
-      .superadmin-stat-card.is-success .superadmin-stat-label i {
-        color: #1fb56d;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: rgba(226, 235, 255, 0.8);
+        margin: 0;
+        padding: 0;
+        display: block;
       }
 
       .superadmin-stat-value {
-        margin: 1.5rem 0 0;
-        font-size: clamp(2rem, 3vw, 2.4rem);
+        font-size: 2.8rem;
         font-weight: 700;
         color: #ffffff;
+        margin: 0.5rem 0;
+        line-height: 1;
+        padding: 0;
+      }
+
+      .superadmin-stat-change {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #1b74ff;
+        margin: 0;
+        padding: 0;
+      }
+
+      .superadmin-stat-card.is-warning .superadmin-stat-change {
+        color: #ffc400;
+      }
+
+      .superadmin-stat-card.is-success .superadmin-stat-change {
+        color: #1fb56d;
+      }
+
+      .superadmin-stat-card.is-danger .superadmin-stat-change {
+        color: #ff5464;
       }
 
       .superadmin-panel {
@@ -634,29 +640,23 @@
             <section class="row g-3 g-xl-4 mb-4">
               <div class="col-md-6 col-xl-4">
                 <article class="superadmin-stat-card">
-                  <div class="superadmin-stat-label">
-                    <i class="fa-regular fa-shield"></i>
-                    <span>Super Admins</span>
-                  </div>
+                  <h5 class="superadmin-stat-label">Super Admins</h5>
                   <p class="superadmin-stat-value">1</p>
+                  <small class="superadmin-stat-change">+0% from last week</small>
                 </article>
               </div>
               <div class="col-md-6 col-xl-4">
                 <article class="superadmin-stat-card is-warning">
-                  <div class="superadmin-stat-label">
-                    <i class="fa-regular fa-clock"></i>
-                    <span>Admins</span>
-                  </div>
+                  <h5 class="superadmin-stat-label">Admins</h5>
                   <p class="superadmin-stat-value">1</p>
+                  <small class="superadmin-stat-change">+0% from last week</small>
                 </article>
               </div>
               <div class="col-md-6 col-xl-4">
                 <article class="superadmin-stat-card is-success">
-                  <div class="superadmin-stat-label">
-                    <i class="fa-regular fa-circle-check"></i>
-                    <span>Registrars</span>
-                  </div>
+                  <h5 class="superadmin-stat-label">Registrars</h5>
                   <p class="superadmin-stat-value">1</p>
+                  <small class="superadmin-stat-change">+0% from last week</small>
                 </article>
               </div>
             </section>
