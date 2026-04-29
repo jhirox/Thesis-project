@@ -272,6 +272,11 @@
                     <option>Dropped</option>
                   </select>
                 </div>
+                <div class="col-12 col-sm-6 col-lg-3 d-flex align-items-end">
+                  <button type="button" class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#exportModal">
+                    <i class="fa-solid fa-file-export me-2"></i>Export
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -494,6 +499,96 @@
           </div>
         </div>
         <!--end::App Content-->
+
+        <!-- Export Modal -->
+        <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content text-white" style="background-color: #081b39;">
+              <div class="modal-header border-bottom border-secondary-subtle">
+                <h5 class="modal-title fw-bold" id="exportModalLabel">
+                  <i class="fa-solid fa-file-export me-2"></i>Export Applications
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p class="text-white">Select which applicants to export and choose an output format.</p>
+                <div class="row g-3 mb-4">
+                  <div class="col-sm-6 col-md-3">
+                    <label class="export-option card p-3 text-white d-flex align-items-center gap-2 rounded-3" style="background-color: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.08);">
+                      <input class="form-check-input mt-0" type="radio" name="exportFormat" value="csv" checked />
+                      <span>
+                        <strong>CSV</strong><br />
+                        <small class="text-white-50">Spreadsheet summary</small>
+                      </span>
+                    </label>
+                  </div>
+                  <div class="col-sm-6 col-md-3">
+                    <label class="export-option card p-3 text-white d-flex align-items-center gap-2 rounded-3" style="background-color: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.08);">
+                      <input class="form-check-input mt-0" type="radio" name="exportFormat" value="excel" />
+                      <span>
+                        <strong>Excel</strong><br />
+                        <small class="text-white-50">.xlsx workbook</small>
+                      </span>
+                    </label>
+                  </div>
+                  <div class="col-sm-6 col-md-3">
+                    <label class="export-option card p-3 text-white d-flex align-items-center gap-2 rounded-3" style="background-color: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.08);">
+                      <input class="form-check-input mt-0" type="radio" name="exportFormat" value="pdf" />
+                      <span>
+                        <strong>PDF</strong><br />
+                        <small class="text-white-50">Printable forms</small>
+                      </span>
+                    </label>
+                  </div>
+                  <div class="col-sm-6 col-md-3">
+                    <label class="export-option card p-3 text-white d-flex align-items-center gap-2 rounded-3" style="background-color: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.08);">
+                      <input class="form-check-input mt-0" type="radio" name="exportFormat" value="word" />
+                      <span>
+                        <strong>Word</strong><br />
+                        <small class="text-white-50">.doc export</small>
+                      </span>
+                    </label>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <strong>Applicants</strong>
+                    <button class="btn btn-link text-decoration-none text-white" id="exportSelectAll">Select all</button>
+                  </div>
+                  <div class="list-group list-group-flush bg-dark bg-opacity-10 rounded-3">
+                    <label class="list-group-item bg-transparent text-white d-flex align-items-center gap-3">
+                      <input class="form-check-input" type="checkbox" value="APP-2025-001" checked />
+                      <div>
+                        <strong>Yuri Oflaria</strong><br />
+                        <small class="text-white-50">APP-2025-001 • Computer Science</small>
+                      </div>
+                    </label>
+                    <label class="list-group-item bg-transparent text-white d-flex align-items-center gap-3">
+                      <input class="form-check-input" type="checkbox" value="APP-2025-002" checked />
+                      <div>
+                        <strong>Drex Saniel</strong><br />
+                        <small class="text-white-50">APP-2025-002 • Computer Science</small>
+                      </div>
+                    </label>
+                    <label class="list-group-item bg-transparent text-white d-flex align-items-center gap-3">
+                      <input class="form-check-input" type="checkbox" value="APP-2025-002" checked />
+                      <div>
+                        <strong>Drex Saniel</strong><br />
+                        <small class="text-white-50">APP-2025-002 • Computer Science</small>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer border-top border-secondary-subtle">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="exportApplications()">
+                  <i class="fa-solid fa-file-export me-2"></i>Export
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <!-- Add Student Modal -->
         <div
@@ -1146,6 +1241,24 @@
           }
         }
       }
+
+      // Export modal handlers
+      function exportApplications() {
+        const selectedFormat = document.querySelector('input[name="exportFormat"]:checked')?.value;
+        const selectedApplicants = Array.from(document.querySelectorAll('#exportModal .list-group input[type="checkbox"]:checked')).map(input => input.value);
+
+        console.log('Export requested:', { selectedFormat, selectedApplicants });
+        // Add your export logic here
+
+        const modal = bootstrap.Modal.getInstance(document.getElementById('exportModal'));
+        modal.hide();
+      }
+
+      document.getElementById('exportSelectAll')?.addEventListener('click', function (event) {
+        event.preventDefault();
+        const inputs = document.querySelectorAll('#exportModal .list-group input[type="checkbox"]');
+        inputs.forEach(input => input.checked = true);
+      });
     </script>
   </body>
 </html>
