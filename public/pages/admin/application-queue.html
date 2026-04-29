@@ -736,8 +736,31 @@
             </div>
           </div>
           <div class="modal-footer border-top border-secondary-subtle">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
             <button type="button" class="btn btn-primary" onclick="scheduleExport()">
+              <i class="fa-solid fa-file-export me-2"></i>Export
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Student Details Modal -->
+    <div class="modal fade" id="studentDetailsModal" tabindex="-1" aria-labelledby="studentDetailsModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content bg-primary-subtle text-white">
+          <div class="modal-header border-bottom border-secondary-subtle">
+            <h5 class="modal-title fw-bold" id="studentDetailsModalLabel">
+              <i class="fa-solid fa-user me-2"></i>Student Details
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div id="modal-student-details"></div>
+          </div>
+          <div class="modal-footer border-top border-secondary-subtle">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="scheduleApplication()">
               <i class="fa-solid fa-calendar-days me-2"></i>Schedule
             </button>
           </div>
@@ -780,6 +803,197 @@
         const modal = bootstrap.Modal.getInstance(document.getElementById('exportModal'));
         modal.hide();
       }
+
+      const studentDetailsModalEl = document.getElementById('studentDetailsModal');
+      const modalDetails = document.getElementById('modal-student-details');
+
+      function getStudentDetailsMarkup({ name = 'Not set', id = 'Not set' } = {}) {
+        return `
+          <div class="text-center mb-4">
+            <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center overflow-hidden mb-3" style="width: 120px; height: 120px">
+              <img
+                src="/assets/images/lancephoto.png"
+                alt="Profile"
+                style="width: 120px; height: 120px; object-fit: cover; display: block;"
+                onerror="this.src='/assets/images/lancephoto.png';"
+              />
+            </div>
+            <h4 class="fw-bold mb-1 text-white">${name}</h4>
+            <p class="text-white-50 mb-0">Student ID: ${id}</p>
+          </div>
+
+          <div class="card shadow-sm border-0 bg-white text-dark mb-4">
+            <div class="card-header bg-white border-bottom">
+              <h5 class="fw-bold mb-0">Personal Information</h5>
+            </div>
+            <div class="card-body">
+              <form>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label text-muted small">Full Name</label>
+                    <input type="text" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label text-muted small">Email Address</label>
+                    <input type="email" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label text-muted small">Contact Number</label>
+                    <input type="text" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label text-muted small">Date of Birth</label>
+                    <input type="date" class="form-control form-control-sm" value="" disabled />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label text-muted small">Address</label>
+                    <input type="text" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label text-muted small">Birth Place</label>
+                    <input type="text" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label text-muted small">Sex</label>
+                    <input type="text" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label text-muted small">Civil Status</label>
+                    <input type="text" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label text-muted small">Nationality</label>
+                    <input type="text" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label text-muted small">Religion</label>
+                    <input type="text" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="card shadow-sm border-0 bg-white text-dark mb-4">
+            <div class="card-header bg-white border-bottom">
+              <h5 class="fw-bold mb-0">Academic Information</h5>
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Program</label>
+                  <p class="fw-semibold mb-0">Not set</p>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Major</label>
+                  <p class="fw-semibold mb-0">Not set</p>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Entry Status</label>
+                  <p class="fw-semibold mb-0">Not set</p>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Student Type</label>
+                  <p class="fw-semibold mb-0">Not set</p>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Learning Modality</label>
+                  <p class="fw-semibold mb-0">Not set</p>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Semester</label>
+                  <p class="fw-semibold mb-0">Not set</p>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Highest Attainment</label>
+                  <p class="fw-semibold mb-0">Not set</p>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Last School Attended</label>
+                  <p class="fw-semibold mb-0">Not set</p>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Last School Year</label>
+                  <p class="fw-semibold mb-0">Not set</p>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Working Status</label>
+                  <p class="fw-semibold mb-0">Not set</p>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Enrollment Status</label>
+                  <span class="badge bg-success">Active</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card shadow-sm border-0 bg-white text-dark mb-4">
+            <div class="card-header bg-white border-bottom">
+              <h5 class="fw-bold mb-0">Family Information</h5>
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Mother's Maiden Name</label>
+                  <p class="fw-semibold mb-0">Not set</p>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Father's Name</label>
+                  <p class="fw-semibold mb-0">Not set</p>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Guardian Name</label>
+                  <p class="fw-semibold mb-0">Not set</p>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Guardian Contact</label>
+                  <p class="fw-semibold mb-0">Not set</p>
+                </div>
+              </div>
+              <div class="row mt-4">
+                <div class="col-12">
+                  <div class="card border-dashed border-secondary-subtle bg-secondary-subtle text-center p-3">
+                    <div class="mb-3">
+                      <i class="fa-solid fa-image fa-2x text-secondary"></i>
+                    </div>
+                    <p class="mb-2 fw-semibold">Upload Official Receipt / Document</p>
+                    <p class="text-muted small mb-3">Drop or select an image here to attach proof of payment.</p>
+                    <button class="btn btn-outline-secondary btn-sm">View Image</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="d-flex gap-2">
+            <button class="btn btn-success flex-fill"><i class="fa-solid fa-check me-2"></i>Approve Enrollment</button>
+            <button class="btn btn-danger flex-fill"><i class="fa-solid fa-times me-2"></i>Reject</button>
+          </div>
+        `;
+      }
+
+      function scheduleApplication() {
+        console.log('Schedule clicked');
+        const modal = bootstrap.Modal.getInstance(studentDetailsModalEl);
+        modal.hide();
+      }
+
+      document.querySelector('.queue')?.addEventListener('click', function (event) {
+        const icon = event.target.closest('.queue-icon');
+        if (!icon || icon.textContent.trim() !== 'visibility') return;
+
+        const card = icon.closest('.queue-card');
+        if (!card) return;
+
+        const name = card.querySelector('.info-main strong')?.textContent.trim() || 'Not set';
+        const appId = card.querySelector('.info-main small')?.textContent.trim() || 'Not set';
+
+        modalDetails.innerHTML = getStudentDetailsMarkup({ name, id: appId });
+        const modal = bootstrap.Modal.getOrCreateInstance(studentDetailsModalEl);
+        modal.show();
+      });
 
       document.getElementById('exportSelectAll')?.addEventListener('click', function (event) {
         event.preventDefault();
