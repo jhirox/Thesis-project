@@ -284,22 +284,22 @@
               </div>
                   <div class="table-responsive">
                     <table
-                      class="table table-bordered table-hover align-middle mb-0"
+                      class="table table-bordered table-hover align-middle mb-0 student-records-table"
                     >
                       <thead class="table-header">
                         <tr
                           
                         >
-                          <th scope="col" class="px-4 py-3 fw-bold text-white">
+                          <th scope="col" class="px-4 py-3 fw-bold text-white text-center">
                             Student ID
                           </th>
-                          <th scope="col" class="px-4 py-3 fw-bold text-white">
+                          <th scope="col" class="px-4 py-3 fw-bold text-white text-center">
                             Name
                           </th>
-                          <th scope="col" class="px-4 py-3 fw-bold text-white">
+                          <th scope="col" class="px-4 py-3 fw-bold text-white text-center">
                             Program / Year
                           </th>
-                          <th scope="col" class="px-4 py-3 fw-bold text-white">
+                          <th scope="col" class="px-4 py-3 fw-bold text-white text-center">
                             Status
                           </th>
                           <th
@@ -318,19 +318,21 @@
                           <td class="px-4 py-4">
                             <span class="badge bg-success">Enrolled</span>
                           </td>
-                          <td class="px-4 py-4 text-end">
-                            <button class="btn btn-sm btn-outline-primary me-1 btn-view">
-                              View
-                            </button>
-                            <button class="btn btn-sm btn-outline-warning me-1">
-                              Edit
-                            </button>
-                            <button class="btn btn-sm btn-outline-success me-1">
-                              Approve
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger">
-                              Reject
-                            </button>
+                          <td class="px-4 py-4 text-center">
+                            <div class="student-records-actions">
+                              <button class="btn btn-sm btn-outline-primary me-1 btn-view">
+                                View
+                              </button>
+                              <button class="btn btn-sm btn-outline-warning me-1">
+                                Edit
+                              </button>
+                              <button class="btn btn-sm btn-outline-success me-1">
+                                Approve
+                              </button>
+                              <button class="btn btn-sm btn-outline-danger">
+                                Reject
+                              </button>
+                            </div>
                           </td>
                         </tr>
                         <tr data-program="BSCS" data-year="2nd Year" data-status="Pending">
@@ -340,19 +342,21 @@
                           <td class="px-4 py-3">
                             <span class="badge bg-warning">Pending</span>
                           </td>
-                          <td class="px-4 py-3 text-end">
-                            <button class="btn btn-sm btn-outline-primary me-1 btn-view">
-                              View
-                            </button>
-                            <button class="btn btn-sm btn-outline-warning me-1">
-                              Edit
-                            </button>
-                            <button class="btn btn-sm btn-outline-success me-1">
-                              Approve
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger">
-                              Reject
-                            </button>
+                          <td class="px-4 py-3 text-center">
+                            <div class="student-records-actions">
+                              <button class="btn btn-sm btn-outline-primary me-1 btn-view">
+                                View
+                              </button>
+                              <button class="btn btn-sm btn-outline-warning me-1">
+                                Edit
+                              </button>
+                              <button class="btn btn-sm btn-outline-success me-1">
+                                Approve
+                              </button>
+                              <button class="btn btn-sm btn-outline-danger">
+                                Reject
+                              </button>
+                            </div>
                           </td>
                         </tr>
                         <tr data-program="BSCS" data-year="1st Year" data-status="Dropped">
@@ -362,11 +366,13 @@
                           <td class="px-4 py-3">
                             <span class="badge bg-danger">Dropped</span>
                           </td>
-                          <td class="px-4 py-3 text-end">
-                            <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
-                            <button class="btn btn-sm btn-outline-warning me-1">Edit</button>
-                            <button class="btn btn-sm btn-outline-success me-1">Approve</button>
-                            <button class="btn btn-sm btn-outline-danger">Reject</button>
+                          <td class="px-4 py-3 text-center">
+                            <div class="student-records-actions">
+                              <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
+                              <button class="btn btn-sm btn-outline-warning me-1">Edit</button>
+                              <button class="btn btn-sm btn-outline-success me-1">Approve</button>
+                              <button class="btn btn-sm btn-outline-danger">Reject</button>
+                            </div>
                           </td>
                         </tr>
                         <tr data-program="BSBA" data-year="3rd Year" data-status="Enrolled">
@@ -376,11 +382,13 @@
                           <td class="px-4 py-3">
                             <span class="badge bg-success">Enrolled</span>
                           </td>
-                          <td class="px-4 py-3 text-end">
-                            <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
-                            <button class="btn btn-sm btn-outline-warning me-1">Edit</button>
-                            <button class="btn btn-sm btn-outline-success me-1">Approve</button>
-                            <button class="btn btn-sm btn-outline-danger">Reject</button>
+                          <td class="px-4 py-3 text-center">
+                            <div class="student-records-actions">
+                              <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
+                              <button class="btn btn-sm btn-outline-warning me-1">Edit</button>
+                              <button class="btn btn-sm btn-outline-success me-1">Approve</button>
+                              <button class="btn btn-sm btn-outline-danger">Reject</button>
+                            </div>
                           </td>
                         </tr>
                         <tr data-program="BSED" data-year="2nd Year" data-status="Pending">
@@ -390,11 +398,13 @@
                           <td class="px-4 py-3">
                             <span class="badge bg-warning">Pending</span>
                           </td>
-                          <td class="px-4 py-3 text-end">
-                            <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
-                            <button class="btn btn-sm btn-outline-warning me-1">Edit</button>
-                            <button class="btn btn-sm btn-outline-success me-1">Approve</button>
-                            <button class="btn btn-sm btn-outline-danger">Reject</button>
+                          <td class="px-4 py-3 text-center">
+                            <div class="student-records-actions">
+                              <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
+                              <button class="btn btn-sm btn-outline-warning me-1">Edit</button>
+                              <button class="btn btn-sm btn-outline-success me-1">Approve</button>
+                              <button class="btn btn-sm btn-outline-danger">Reject</button>
+                            </div>
                           </td>
                         </tr>
                         <tr data-program="BSED" data-year="4th Year" data-status="Enrolled">
@@ -404,11 +414,13 @@
                           <td class="px-4 py-3">
                             <span class="badge bg-success">Enrolled</span>
                           </td>
-                          <td class="px-4 py-3 text-end">
-                            <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
-                            <button class="btn btn-sm btn-outline-warning me-1">Edit</button>
-                            <button class="btn btn-sm btn-outline-success me-1">Approve</button>
-                            <button class="btn btn-sm btn-outline-danger">Reject</button>
+                          <td class="px-4 py-3 text-center">
+                            <div class="student-records-actions">
+                              <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
+                              <button class="btn btn-sm btn-outline-warning me-1">Edit</button>
+                              <button class="btn btn-sm btn-outline-success me-1">Approve</button>
+                              <button class="btn btn-sm btn-outline-danger">Reject</button>
+                            </div>
                           </td>
                         </tr>
                         <tr data-program="BSCS" data-year="2nd Year" data-status="Pending">
@@ -418,11 +430,13 @@
                           <td class="px-4 py-3">
                             <span class="badge bg-warning">Pending</span>
                           </td>
-                          <td class="px-4 py-3 text-end">
-                            <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
-                            <button class="btn btn-sm btn-outline-warning me-1">Edit</button>
-                            <button class="btn btn-sm btn-outline-success me-1">Approve</button>
-                            <button class="btn btn-sm btn-outline-danger">Reject</button>
+                          <td class="px-4 py-3 text-center">
+                            <div class="student-records-actions">
+                              <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
+                              <button class="btn btn-sm btn-outline-warning me-1">Edit</button>
+                              <button class="btn btn-sm btn-outline-success me-1">Approve</button>
+                              <button class="btn btn-sm btn-outline-danger">Reject</button>
+                            </div>
                           </td>
                         </tr>
                         <tr data-program="BSBA" data-year="1st Year" data-status="Enrolled">
@@ -432,11 +446,13 @@
                           <td class="px-4 py-3">
                             <span class="badge bg-success">Enrolled</span>
                           </td>
-                          <td class="px-4 py-3 text-end">
-                            <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
-                            <button class="btn btn-sm btn-outline-warning me-1">Edit</button>
-                            <button class="btn btn-sm btn-outline-success me-1">Approve</button>
-                            <button class="btn btn-sm btn-outline-danger">Reject</button>
+                          <td class="px-4 py-3 text-center">
+                            <div class="student-records-actions">
+                              <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
+                              <button class="btn btn-sm btn-outline-warning me-1">Edit</button>
+                              <button class="btn btn-sm btn-outline-success me-1">Approve</button>
+                              <button class="btn btn-sm btn-outline-danger">Reject</button>
+                            </div>
                           </td>
                         </tr>
                       </tbody>
@@ -799,10 +815,12 @@
             <span class="badge ${statusBadgeClass}">${studentStatus}</span>
           </td>
           <td class="px-4 py-3 text-center">
-            <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
-            <button class="btn btn-sm btn-outline-warning me-1" onclick="editStudent(this)">Edit</button>
-            <button class="btn btn-sm btn-outline-success me-1">Approve</button>
-            <button class="btn btn-sm btn-outline-danger" onclick="deleteStudent(this)">Reject</button>
+            <div class="student-records-actions">
+              <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
+              <button class="btn btn-sm btn-outline-warning me-1" onclick="editStudent(this)">Edit</button>
+              <button class="btn btn-sm btn-outline-success me-1">Approve</button>
+              <button class="btn btn-sm btn-outline-danger" onclick="deleteStudent(this)">Reject</button>
+            </div>
           </td>
         `;
 
