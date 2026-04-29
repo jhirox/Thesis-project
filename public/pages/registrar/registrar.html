@@ -773,6 +773,35 @@
         </div>
       </main>
       <!--end::App Main-->
+
+      <!-- Student Details Modal -->
+      <div
+        class="modal fade"
+        id="studentDetailsModal"
+        tabindex="-1"
+        aria-labelledby="studentDetailsModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content bg-primary-subtle text-white">
+            <div class="modal-header border-bottom border-secondary-subtle">
+              <h5 class="modal-title fw-bold" id="studentDetailsModalLabel">
+                <i class="fa-solid fa-user me-2"></i>Student Details
+              </h5>
+              <button
+                type="button"
+                class="btn-close btn-close-white"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div id="modal-student-details"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!--begin::Footer-->
       <footer class="app-footer bg-primary-subtle" data-bs-theme="dark">
         <!--begin::To the end-->
@@ -883,17 +912,12 @@
         alert("Student added successfully!");
       }
 
-      // Delegated handler for View buttons — populate right pane
+      // Delegated handler for View buttons — show modal
       document.getElementById('student-records-tbody').addEventListener('click', function(e){
         const btn = e.target.closest('.btn-view');
         if(!btn) return;
         const row = btn.closest('tr');
         if(!row) return;
-
-        // remove highlight from previous
-        const prev = document.querySelector('#student-records-tbody tr.table-primary');
-        if(prev) prev.classList.remove('table-primary');
-        row.classList.add('table-primary');
 
         const cells = row.querySelectorAll('td');
         const sid = cells[0] ? cells[0].textContent.trim() : '';
@@ -901,10 +925,10 @@
         const progYear = cells[2] ? cells[2].textContent.trim() : '';
         const [program, year] = progYear.split('/').map(s=>s? s.trim(): '');
 
-        const details = document.getElementById('student-details');
-        details.innerHTML = `
+        const modalDetails = document.getElementById('modal-student-details');
+        modalDetails.innerHTML = `
           <div class="text-center mb-3">
-            <img src="/public/images/yuriphoto.jpg" class="img-fluid rounded-circle mb-2" style="width: 120px; height: 120px; object-fit: cover" alt="Profile Photo" />
+            <img src="/assets/images/yuriphoto.jpg" class="img-fluid rounded-circle mb-2" style="width: 120px; height: 120px; object-fit: cover" alt="Profile Photo" />
           </div>
           <div class="mb-3">
             <p class="mb-2"><strong>Name:</strong> ${name}</p>
@@ -916,19 +940,31 @@
           <h6 class="fw-bold mb-2 mt-3">Enrollment History</h6>
           <ul class="mb-3">
             <li>Enrolled in 2025</li>
+            <li>Completed Orientation</li>
           </ul>
           <hr class="border-secondary-subtle" />
           <h6 class="fw-bold mb-2 mt-3">Current Subjects</h6>
           <ul class="mb-3">
-            <li class="mb-1">--</li>
+            <li class="mb-1">
+              Math 101 - <span class="badge bg-success">Approved</span>
+            </li>
+            <li class="mb-1">
+              CS 101 - <span class="badge bg-warning">Waitlisted</span>
+            </li>
           </ul>
           <hr class="border-secondary-subtle" />
           <h6 class="fw-bold mb-2 mt-3">Registrar Notes</h6>
-          <textarea class="form-control mb-3" rows="3" placeholder="Add notes here..."></textarea>
-          <button class="btn btn-success w-100 mb-2"><i class="fa-solid fa-check me-2"></i>Approve Enrollment</button>
-          <button class="btn btn-warning w-100 mb-2"><i class="fa-solid fa-pause me-2"></i>Hold</button>
-          <button class="btn btn-danger w-100"><i class="fa-solid fa-times me-2"></i>Reject</button>
+          <textarea class="form-control mb-3" rows="3" placeholder="Add notes here...">Good standing student.</textarea>
+          <div class="d-flex gap-2">
+            <button class="btn btn-success flex-fill"><i class="fa-solid fa-check me-2"></i>Approve Enrollment</button>
+            <button class="btn btn-warning flex-fill"><i class="fa-solid fa-pause me-2"></i>Hold</button>
+            <button class="btn btn-danger flex-fill"><i class="fa-solid fa-times me-2"></i>Reject</button>
+          </div>
         `;
+
+        // Show modal
+        const modal = new bootstrap.Modal(document.getElementById('studentDetailsModal'));
+        modal.show();
       });
 
       // Filtering logic
@@ -994,6 +1030,62 @@
         });
       function addAdmin() {
         // Get form values
+        const adminId = document.getElementById("adminId").value;
+        const adminName = document.getElementById("adminName").value;
+        const adminEmail = document.getElementById("adminEmail").value;
+        const adminRole = document.getElementById("adminRole").value;
+        const adminPassword = document.getElementById("adminPassword").value;
+        // Validate form
+        if (
+          !adminId ||
+          !adminName ||
+          !adminEmail ||
+          !adminRole ||
+          !adminPassword
+        ) {
+          alert("Please fill in all fields.");
+          return;
+        }
+        // Here you can add logic to save the admin, e.g., send to server
+        // For now, just show success
+        alert("Admin added successfully!");
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(
+          document.getElementById("addAdminModal")
+        );
+        modal.hide();
+        // Reset form
+        document.getElementById("addAdminForm").reset();
+      }
+
+      // Logout handler
+      const signOutBtn = document.querySelector("#sign-out");
+      if (signOutBtn) {
+        const logout = () => {
+          localStorage.removeItem("sessionUser");
+          localStorage.removeItem("sessionTimeout");
+          window.location.href = "/login";
+        };
+        signOutBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          logout();
+        });
+      }
+
+      // Hide Registrar link for admin users
+      const sessionUser = JSON.parse(localStorage.getItem('sessionUser'));
+      if (sessionUser && sessionUser.user) {
+        if (sessionUser.user.role === 'admin') {
+          // Hide Registrar link for admin users
+          const registrarLink = document.querySelector('a[href="/registrar"]');
+          if (registrarLink) {
+            registrarLink.closest('.nav-item').style.display = 'none';
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
         const adminId = document.getElementById("adminId").value;
         const adminName = document.getElementById("adminName").value;
         const adminEmail = document.getElementById("adminEmail").value;
