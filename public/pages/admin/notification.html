@@ -766,6 +766,7 @@
 
       const input = document.getElementById("studentSearch");
       const suggestions = document.getElementById("studentSuggestions");
+      const emailField = document.getElementById("studentEmail");
 
       input.addEventListener("input", () => {
         const query = input.value.toLowerCase();
@@ -788,6 +789,7 @@
               li.textContent = user.fullname;
               li.onclick = () => {
                 input.value = user.fullname;
+                emailField.value = user.username || "";
                 suggestions.innerHTML = "";
               };
               suggestions.appendChild(li);
