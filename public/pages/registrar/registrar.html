@@ -835,7 +835,20 @@
       const modalDetails = document.getElementById("modal-student-details");
       const studentDetailsModalEl = document.getElementById("studentDetailsModal");
       const fixedStudentDetailsMarkup = `
-        <div class="card shadow-sm border-0 bg-white text-dark">
+        <div class="text-center mb-4">
+          <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center overflow-hidden mb-3" style="width: 120px; height: 120px">
+            <img
+              src="/assets/images/lancephoto.png"
+              alt="Profile"
+              style="width: 120px; height: 120px; object-fit: cover; display: block;"
+              onerror="this.src='/assets/images/lancephoto.png';"
+            />
+          </div>
+          <h4 class="fw-bold mb-1 text-white">Not set</h4>
+          <p class="text-white-50 mb-0">Student ID: QECI-2025-001</p>
+        </div>
+
+        <div class="card shadow-sm border-0 bg-white text-dark mb-4">
           <div class="card-header bg-white border-bottom">
             <h5 class="fw-bold mb-0">Personal Information</h5>
           </div>
@@ -885,6 +898,92 @@
               </div>
             </form>
           </div>
+        </div>
+
+        <div class="card shadow-sm border-0 bg-white text-dark mb-4">
+          <div class="card-header bg-white border-bottom">
+            <h5 class="fw-bold mb-0">Academic Information</h5>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label text-muted small">Program</label>
+                <p class="fw-semibold mb-0">Not set</p>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted small">Major</label>
+                <p class="fw-semibold mb-0">Not set</p>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted small">Entry Status</label>
+                <p class="fw-semibold mb-0">Not set</p>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted small">Student Type</label>
+                <p class="fw-semibold mb-0">Not set</p>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted small">Learning Modality</label>
+                <p class="fw-semibold mb-0">Not set</p>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted small">Semester</label>
+                <p class="fw-semibold mb-0">Not set</p>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted small">Highest Attainment</label>
+                <p class="fw-semibold mb-0">Not set</p>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted small">Last School Attended</label>
+                <p class="fw-semibold mb-0">Not set</p>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted small">Last School Year</label>
+                <p class="fw-semibold mb-0">Not set</p>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted small">Working Status</label>
+                <p class="fw-semibold mb-0">Not set</p>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted small">Enrollment Status</label>
+                <span class="badge bg-success">Active</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card shadow-sm border-0 bg-white text-dark mb-4">
+          <div class="card-header bg-white border-bottom">
+            <h5 class="fw-bold mb-0">Family Information</h5>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label text-muted small">Mother's Maiden Name</label>
+                <p class="fw-semibold mb-0">Not set</p>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted small">Father's Name</label>
+                <p class="fw-semibold mb-0">Not set</p>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted small">Guardian Name</label>
+                <p class="fw-semibold mb-0">Not set</p>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted small">Guardian Contact</label>
+                <p class="fw-semibold mb-0">Not set</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button class="btn btn-success flex-fill"><i class="fa-solid fa-check me-2"></i>Approve Enrollment</button>
+          <button class="btn btn-warning flex-fill"><i class="fa-solid fa-pause me-2"></i>Hold</button>
+          <button class="btn btn-danger flex-fill"><i class="fa-solid fa-times me-2"></i>Reject</button>
         </div>
       `;
 
