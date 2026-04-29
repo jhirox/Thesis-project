@@ -4101,19 +4101,6 @@ body.page-queue,
   border-left-color: #1fb56d;
 }
 
-.btn-black-white {
-  background-color: #000 !important;
-  color: #fff !important;
-  border-color: #000 !important;
-}
-
-.btn-black-white:hover,
-.btn-black-white:focus {
-  background-color: #111 !important;
-  color: #fff !important;
-  border-color: #000 !important;
-}
-
 .superadmin-stat-card.is-warning .material-symbols-outlined {
   color: #ffc400;
 }
