@@ -810,6 +810,7 @@
         newRow.dataset.program = studentProgram;
         newRow.dataset.year = studentYear;
         newRow.dataset.status = studentStatus;
+        newRow.dataset.studentId = studentId;
 
         // Insert at the beginning of tbody
         tbody.insertBefore(newRow, tbody.firstChild);
@@ -828,58 +829,212 @@
       }
 
       // Delegated handler for View buttons — show modal
-      document.getElementById('student-records-tbody').addEventListener('click', function(e){
-        const btn = e.target.closest('.btn-view');
-        if(!btn) return;
-        const row = btn.closest('tr');
-        if(!row) return;
+      const modalDetails = document.getElementById("modal-student-details");
+      const studentDetailsModalEl = document.getElementById("studentDetailsModal");
+      const authToken = localStorage.getItem("authToken");
 
-        const cells = row.querySelectorAll('td');
-        const sid = cells[0] ? cells[0].textContent.trim() : '';
-        const name = cells[1] ? cells[1].textContent.trim() : '';
-        const progYear = cells[2] ? cells[2].textContent.trim() : '';
-        const [program, year] = progYear.split('/').map(s=>s? s.trim(): '');
+      const escapeHtml = (value) =>
+        String(value ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
 
-        const modalDetails = document.getElementById('modal-student-details');
+      const formatNameFromEmail = (email) => {
+        if (!email) return "QECi Student";
+        return email
+          .split("@")[0]
+          .replace(/[._-]+/g, " ")
+          .split(" ")
+          .filter(Boolean)
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ");
+      };
+
+      const buildFullName = (profile, fallbackName = "") => {
+        if (profile?.full_name) {
+          return profile.full_name;
+        }
+
+        const nameParts = [
+          profile?.first_name,
+          profile?.middle_name,
+          profile?.last_name,
+          profile?.suffix,
+        ]
+          .filter(Boolean)
+          .map((part, index) => {
+            if (index === 1 && part.length === 1) {
+              return `${part.toUpperCase()}.`;
+            }
+            return part;
+          });
+
+        if (nameParts.length > 0) {
+          return nameParts.join(" ");
+        }
+
+        return fallbackName || formatNameFromEmail(profile?.email_address || "");
+      };
+
+      const formatStudentDisplayId = (studentId) => {
+        if (!studentId || studentId === "Not set") {
+          return "Not set";
+        }
+        return /^QECI-/i.test(studentId) ? studentId : `QECI-${studentId}`;
+      };
+
+      const renderStudentProfileModal = (profile, fallback = {}) => {
+        const fullNameText = buildFullName(profile, fallback.name);
+        const studentIdText = profile?.student_id || fallback.studentId || "Not set";
+        const displayStudentId = formatStudentDisplayId(studentIdText);
+
         modalDetails.innerHTML = `
-          <div class="text-center mb-3">
-            <img src="/assets/images/yuriphoto.jpg" class="img-fluid rounded-circle mb-2" style="width: 120px; height: 120px; object-fit: cover" alt="Profile Photo" />
-          </div>
-          <div class="mb-3">
-            <p class="mb-2"><strong>Name:</strong> ${name}</p>
-            <p class="mb-2"><strong>ID:</strong> ${sid}</p>
-            <p class="mb-2"><strong>Program:</strong> ${program || '--'}</p>
-            <p class="mb-3"><strong>Year:</strong> ${year || '--'}</p>
-          </div>
-          <hr class="border-secondary-subtle" />
-          <h6 class="fw-bold mb-2 mt-3">Enrollment History</h6>
-          <ul class="mb-3">
-            <li>Enrolled in 2025</li>
-            <li>Completed Orientation</li>
-          </ul>
-          <hr class="border-secondary-subtle" />
-          <h6 class="fw-bold mb-2 mt-3">Current Subjects</h6>
-          <ul class="mb-3">
-            <li class="mb-1">
-              Math 101 - <span class="badge bg-success">Approved</span>
-            </li>
-            <li class="mb-1">
-              CS 101 - <span class="badge bg-warning">Waitlisted</span>
-            </li>
-          </ul>
-          <hr class="border-secondary-subtle" />
-          <h6 class="fw-bold mb-2 mt-3">Registrar Notes</h6>
-          <textarea class="form-control mb-3" rows="3" placeholder="Add notes here...">Good standing student.</textarea>
-          <div class="d-flex gap-2">
-            <button class="btn btn-success flex-fill"><i class="fa-solid fa-check me-2"></i>Approve Enrollment</button>
-            <button class="btn btn-warning flex-fill"><i class="fa-solid fa-pause me-2"></i>Hold</button>
-            <button class="btn btn-danger flex-fill"><i class="fa-solid fa-times me-2"></i>Reject</button>
+          <div class="card shadow-sm border-0 bg-white text-dark">
+            <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between gap-3">
+              <div>
+                <h5 class="fw-bold mb-1">Personal Information</h5>
+                <p class="text-muted mb-0">Student ID: ${escapeHtml(displayStudentId)}</p>
+              </div>
+              <img
+                src="${escapeHtml(profile?.photo || "/assets/images/lancephoto.png")}"
+                class="rounded-circle border"
+                style="width: 72px; height: 72px; object-fit: cover"
+                alt="Profile Photo"
+                onerror="this.src='/assets/images/lancephoto.png';"
+              />
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Full Name</label>
+                  <input type="text" class="form-control form-control-sm" value="${escapeHtml(fullNameText || "Not set")}" disabled />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Email Address</label>
+                  <input type="email" class="form-control form-control-sm" value="${escapeHtml(profile?.email_address || fallback.email || "")}" placeholder="Not set" disabled />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Contact Number</label>
+                  <input type="text" class="form-control form-control-sm" value="${escapeHtml(profile?.contact_number || "")}" placeholder="Not set" disabled />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Date of Birth</label>
+                  <input type="date" class="form-control form-control-sm" value="${escapeHtml(profile?.birth_date ? profile.birth_date.split("T")[0] : "")}" disabled />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Address</label>
+                  <input type="text" class="form-control form-control-sm" value="${escapeHtml(profile?.complete_address || "")}" placeholder="Not set" disabled />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Birth Place</label>
+                  <input type="text" class="form-control form-control-sm" value="${escapeHtml(profile?.birth_place || "")}" placeholder="Not set" disabled />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Sex</label>
+                  <input type="text" class="form-control form-control-sm" value="${escapeHtml(profile?.sex || "")}" placeholder="Not set" disabled />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Civil Status</label>
+                  <input type="text" class="form-control form-control-sm" value="${escapeHtml(profile?.civil_status || "")}" placeholder="Not set" disabled />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Nationality</label>
+                  <input type="text" class="form-control form-control-sm" value="${escapeHtml(profile?.nationality || "")}" placeholder="Not set" disabled />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Religion</label>
+                  <input type="text" class="form-control form-control-sm" value="${escapeHtml(profile?.religion || "")}" placeholder="Not set" disabled />
+                </div>
+              </div>
+            </div>
           </div>
         `;
+      };
 
-        // Show modal
-        const modal = new bootstrap.Modal(document.getElementById('studentDetailsModal'));
+      const renderStudentModalLoading = (fallback = {}) => {
+        modalDetails.innerHTML = `
+          <div class="card shadow-sm border-0 bg-white text-dark">
+            <div class="card-body py-4 text-center">
+              <div class="spinner-border text-primary mb-3" role="status" aria-hidden="true"></div>
+              <p class="fw-semibold mb-1">Loading latest profile data...</p>
+              <p class="text-muted mb-0">${escapeHtml(fallback.name || fallback.studentId || "")}</p>
+            </div>
+          </div>
+        `;
+      };
+
+      const renderStudentModalError = (fallback = {}) => {
+        modalDetails.innerHTML = `
+          <div class="alert alert-warning mb-0">
+            <h6 class="fw-bold mb-2">Profile data unavailable</h6>
+            <p class="mb-0">
+              No latest profile record was returned for ${escapeHtml(fallback.name || fallback.studentId || "this student")}.
+            </p>
+          </div>
+        `;
+      };
+
+      const loadStudentProfile = async ({ studentId, email }) => {
+        const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
+        const rawStudentId = (studentId || "").trim();
+        const normalizedStudentId = rawStudentId.replace(/^QECI-/i, "");
+        const requestTargets = [];
+
+        if (email) {
+          requestTargets.push(`/api/students/profile?${new URLSearchParams({ email }).toString()}`);
+        }
+
+        if (rawStudentId) {
+          requestTargets.push(`/api/students/profile/${encodeURIComponent(rawStudentId)}`);
+        }
+
+        if (normalizedStudentId && normalizedStudentId !== rawStudentId) {
+          requestTargets.push(`/api/students/profile/${encodeURIComponent(normalizedStudentId)}`);
+        }
+
+        for (const target of requestTargets) {
+          const response = await fetch(target, { headers });
+          const data = await response.json();
+
+          if (response.ok && data.success && data.data) {
+            return data.data;
+          }
+        }
+
+        return null;
+      };
+
+      document.getElementById("student-records-tbody").addEventListener("click", async function (e) {
+        const btn = e.target.closest(".btn-view");
+        if (!btn) return;
+
+        const row = btn.closest("tr");
+        if (!row) return;
+
+        const cells = row.querySelectorAll("td");
+        const fallback = {
+          studentId: row.dataset.studentId || (cells[0] ? cells[0].textContent.trim() : ""),
+          name: cells[1] ? cells[1].textContent.trim() : "",
+          email: row.dataset.studentEmail || "",
+        };
+
+        const modal = bootstrap.Modal.getOrCreateInstance(studentDetailsModalEl);
+        renderStudentModalLoading(fallback);
         modal.show();
+
+        try {
+          const profile = await loadStudentProfile(fallback);
+          if (profile) {
+            renderStudentProfileModal(profile, fallback);
+            return;
+          }
+          renderStudentModalError(fallback);
+        } catch (error) {
+          console.error("Failed to load student profile:", error);
+          renderStudentModalError(fallback);
+        }
       });
 
       // Filtering logic
