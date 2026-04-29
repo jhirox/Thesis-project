@@ -464,13 +464,12 @@
 
                     <!--begin::Col-->
                     <div class="col-md-6">
-                      <label for="studentEmail" class="fw-semibold mb-2">Student Email <span class="text-muted" style="font-size:.9rem">(auto-filled)</span></label>
+                      <label for="studentEmail" class="fw-semibold mb-2">Student Email</label>
                       <input
                         type="email"
                         class="form-control custom-input"
                         id="studentEmail"
                         placeholder="a.smith@email.com"
-                        readonly
                       />
                     </div>
                     <!--end::Col-->
@@ -767,12 +766,10 @@
 
       const input = document.getElementById("studentSearch");
       const suggestions = document.getElementById("studentSuggestions");
-      const emailField = document.getElementById("studentEmail");
 
       input.addEventListener("input", () => {
         const query = input.value.toLowerCase();
         suggestions.innerHTML = "";
-        emailField.value = "";
 
         if (query.length > 0) {
           const matches = user_data.filter(user =>
@@ -791,7 +788,6 @@
               li.textContent = user.fullname;
               li.onclick = () => {
                 input.value = user.fullname;
-                emailField.value = user.username || "";
                 suggestions.innerHTML = "";
               };
               suggestions.appendChild(li);
