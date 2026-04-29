@@ -277,6 +277,11 @@
                     <i class="fa-solid fa-file-export me-2"></i>Export
                   </button>
                 </div>
+                <div class="col-12 col-sm-6 col-lg-3 d-flex align-items-end">
+                  <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#scheduleAppointmentModal">
+                    <i class="fa-regular fa-calendar-days me-2"></i>Schedule Appointment
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -586,6 +591,53 @@
                   <i class="fa-solid fa-file-export me-2"></i>Export
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Schedule Appointment Modal -->
+        <div class="modal fade" id="scheduleAppointmentModal" tabindex="-1" aria-labelledby="scheduleAppointmentModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content bg-white text-dark rounded-4 overflow-hidden shadow-sm">
+              <div class="modal-header border-0 px-4 pt-4">
+                <h5 class="modal-title fw-bold" id="scheduleAppointmentModalLabel">
+                  <i class="fa-regular fa-calendar-days me-2"></i>Schedule Enrollment Appointment
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <form id="scheduleAppointmentForm">
+                <div class="modal-body px-4 pb-4">
+                  <p class="text-muted mb-4">Set the date and time. The student will be notified via email and in-app notification with an enrollment form copy as proof.</p>
+                  <div class="card rounded-4 border-0 bg-light mb-4">
+                    <div class="card-body py-4 px-4">
+                      <p class="mb-1 text-muted small">Student</p>
+                      <h5 class="fw-bold mb-1">Alexandra Smith</h5>
+                      <p class="mb-0 text-muted">APP-2024-089 • Computer Science</p>
+                    </div>
+                  </div>
+                  <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                      <label for="appointmentDate" class="form-label fw-semibold">Date</label>
+                      <input type="date" class="form-control" id="appointmentDate" value="2026-04-30" required />
+                    </div>
+                    <div class="col-md-6">
+                      <label for="appointmentTime" class="form-label fw-semibold">Time</label>
+                      <input type="time" class="form-control" id="appointmentTime" value="09:00" required />
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="appointmentEmail" class="form-label fw-semibold">Student Email (auto-filled)</label>
+                    <input type="email" class="form-control" id="appointmentEmail" value="a.smith@email.com" readonly />
+                    <div class="form-text">Notification + enrollment form copy will be sent here.</div>
+                  </div>
+                </div>
+                <div class="modal-footer border-0 px-4 pb-4 pt-0">
+                  <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button type="submit" class="btn btn-dark">
+                    <i class="fa-solid fa-paper-plane me-2"></i>Send & Schedule
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
@@ -1107,7 +1159,7 @@
         </div>
 
         <div class="d-flex gap-2">
-          <button class="btn btn-success flex-fill"><i class="fa-solid fa-check me-2"></i>Approve Enrollment</button>
+          <button type="button" class="btn btn-success flex-fill" onclick="openScheduleFromDetails()"><i class="fa-solid fa-check me-2"></i>Approve Enrollment</button>
           <button class="btn btn-warning flex-fill"><i class="fa-solid fa-pause me-2"></i>Hold</button>
           <button class="btn btn-danger flex-fill"><i class="fa-solid fa-times me-2"></i>Reject</button>
         </div>
@@ -1258,6 +1310,39 @@
         event.preventDefault();
         const inputs = document.querySelectorAll('#exportModal .list-group input[type="checkbox"]');
         inputs.forEach(input => input.checked = true);
+      });
+
+      function openScheduleFromDetails() {
+        const detailModal = bootstrap.Modal.getInstance(studentDetailsModalEl);
+        if (detailModal) {
+          detailModal.hide();
+        }
+        const scheduleModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('scheduleAppointmentModal'));
+        scheduleModal.show();
+      }
+
+      document.getElementById('scheduleAppointmentForm')?.addEventListener('submit', function (event) {
+        event.preventDefault();
+        const appointmentDate = document.getElementById('appointmentDate').value;
+        const appointmentTime = document.getElementById('appointmentTime').value;
+        const appointmentEmail = document.getElementById('appointmentEmail').value;
+
+        if (!appointmentDate || !appointmentTime) {
+          alert('Please select both a date and time.');
+          return;
+        }
+
+        console.log('Schedule appointment:', {
+          date: appointmentDate,
+          time: appointmentTime,
+          email: appointmentEmail,
+        });
+
+        alert('Enrollment appointment scheduled successfully.');
+        const modal = bootstrap.Modal.getInstance(document.getElementById('scheduleAppointmentModal'));
+        if (modal) {
+          modal.hide();
+        }
       });
     </script>
   </body>
