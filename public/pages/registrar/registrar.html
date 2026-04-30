@@ -642,6 +642,202 @@
           </div>
         </div>
 
+        <!-- Enrollment Confirmation Modal -->
+        <div class="modal fade" id="enrollmentPrintModal" tabindex="-1" aria-labelledby="enrollmentPrintModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-xl modal-dialog-centered modal-fullscreen-sm-down">
+            <div class="modal-content bg-white text-dark rounded-4 overflow-hidden shadow-sm">
+              <div class="modal-header border-0 px-4 pt-4">
+                <h5 class="modal-title fw-bold" id="enrollmentPrintModalLabel">
+                  <i class="fa-solid fa-file-alt me-2"></i>Enrollment Form
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body p-0">
+                <div id="certificatePrintArea" class="p-4">
+                  <div class="cert-reg-container bg-light rounded-4 p-4">
+                    <div class="cert-reg-header mb-4">
+                      <div class="d-flex align-items-center gap-3 mb-3">
+                        <img src="/assets/images/logo.png" alt="QECI Logo" style="width: 70px; height: auto;" />
+                        <div>
+                          <h5 class="mb-1">QUEZONIAN EDUCATIONAL COLLEGE, INC.</h5>
+                          <p class="mb-0">Dr. Ramon Solar Street, Zone II Poblacion, Atimonan, Quezon</p>
+                          <p class="mb-0">Tel. No. (042) 316-4129 | Email: qeciatimonan@yahoo.com.ph</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="cert-reg-title-section text-center mb-4">
+                      <div class="fw-semibold">COLLEGIATE DEPARTMENT</div>
+                      <div class="fs-5 fw-bold">CERTIFICATE OF REGISTRATION</div>
+                    </div>
+                    <div class="cert-reg-student-info row g-3 mb-4">
+                      <div class="col-md-4">
+                        <label class="form-label small">Student Last Name:</label>
+                        <input id="certLastName" type="text" class="form-control form-control-sm" readonly />
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label small">Student First Name:</label>
+                        <input id="certFirstName" type="text" class="form-control form-control-sm" readonly />
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label small">Student Middle Name:</label>
+                        <input id="certMiddleName" type="text" class="form-control form-control-sm" readonly />
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label small">StudNo:</label>
+                        <input id="certStudNo" type="text" class="form-control form-control-sm" readonly />
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label small">Birthday:</label>
+                        <input id="certBirthday" type="text" class="form-control form-control-sm" readonly />
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label small">Birthplace:</label>
+                        <input id="certBirthplace" type="text" class="form-control form-control-sm" readonly />
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label small">School Year:</label>
+                        <input id="certSchoolYear" type="text" class="form-control form-control-sm" readonly />
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label small">Semester:</label>
+                        <input id="certSemester" type="text" class="form-control form-control-sm" readonly />
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label small">Course:</label>
+                        <input id="certCourse" type="text" class="form-control form-control-sm" readonly />
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label small">Year & Section:</label>
+                        <input id="certYearSection" type="text" class="form-control form-control-sm" readonly />
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label small">Contact No:</label>
+                        <input id="certContactNo" type="text" class="form-control form-control-sm" readonly />
+                      </div>
+                      <div class="col-md-8">
+                        <label class="form-label small">Address:</label>
+                        <input id="certAddress" type="text" class="form-control form-control-sm" readonly />
+                      </div>
+                    </div>
+                    <div class="cert-reg-table-section mb-4">
+                      <div class="table-responsive">
+                        <table class="table table-bordered">
+                          <thead class="table-light">
+                            <tr>
+                              <th>CODE</th>
+                              <th>DESCRIPTION</th>
+                              <th>UNITS</th>
+                              <th>TIME</th>
+                              <th>DAYS</th>
+                              <th>ROOM</th>
+                              <th>INSTRUCTOR</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="GE" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="Art Appreciation" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="3" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="--:--" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="MTWFSaSu" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="Room 101" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="Instructor" readonly /></td>
+                            </tr>
+                            <tr>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="CS ELECTION 1" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="Graphics and Visual Computing" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="3" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="--:--" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="MTWFSaSu" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="Room 101" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="Instructor" readonly /></td>
+                            </tr>
+                            <tr>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="HC 101/IAS 101" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="Human Computer Interaction, Information Assurance and Security" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="3" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="--:--" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="MTWFSaSu" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="Room 101" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="Instructor" readonly /></td>
+                            </tr>
+                            <tr>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="SP 101" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="Social Issues and Professional Practice" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="3" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="--:--" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="MTWFSaSu" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="Room 101" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="Instructor" readonly /></td>
+                            </tr>
+                            <tr>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="SE 102" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="Software Engineering 2" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="3" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="--:--" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="MTWFSaSu" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="Room 101" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="Instructor" readonly /></td>
+                            </tr>
+                            <tr>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="THS 101" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="Thesis 1" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="3" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="--:--" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="MTWFSaSu" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="Room 101" readonly /></td>
+                              <td><input type="text" class="form-control form-control-sm" placeholder="Instructor" readonly /></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="cert-reg-bottom-info row g-3 mb-4">
+                      <div class="col-md-4">
+                        <label class="form-label small">Number of units earned:</label>
+                        <input id="certUnitsEarned" type="text" class="form-control form-control-sm" readonly />
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label small">Remarks:</label>
+                        <input id="certRemarks" type="text" class="form-control form-control-sm" readonly />
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label small">Learning Modality:</label>
+                        <input id="certModality" type="text" class="form-control form-control-sm" readonly />
+                      </div>
+                      <div class="col-12">
+                        <label class="form-label small">Student Signature:</label>
+                        <input id="certStudentSignature" type="text" class="form-control form-control-sm" readonly />
+                      </div>
+                    </div>
+                    <div class="cert-reg-staff-only-section row g-3">
+                      <div class="col-md-4">
+                        <label class="form-label small">Admission Officer</label>
+                        <input id="certAdmissionOfficer" type="text" class="form-control form-control-sm" readonly />
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label small">Signature</label>
+                        <input id="certSignature" type="text" class="form-control form-control-sm" readonly />
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label small">Date</label>
+                        <input id="certProcessDate" type="text" class="form-control form-control-sm" readonly />
+                      </div>
+                    </div>
+                    <div class="cert-reg-important-notice mt-4 p-3 rounded-3 bg-secondary bg-opacity-10">
+                      <strong>IMPORTANT:</strong> Keep this portion. Present it to your instructors on the first day of classes for his/her signature.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer border-top px-4 pb-4 pt-3">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="printEnrollmentForm()">Print Enrollment Form</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Add Student Modal -->
         <div
           class="modal fade"
@@ -1326,24 +1522,66 @@
         const appointmentDate = document.getElementById('appointmentDate').value;
         const appointmentTime = document.getElementById('appointmentTime').value;
         const appointmentEmail = document.getElementById('appointmentEmail').value;
+        const studentName = document.querySelector('#scheduleAppointmentModal .card-body h5')?.textContent || 'Alexandra Smith';
+        const studentProgramInfo = document.querySelector('#scheduleAppointmentModal .card-body p.mb-0')?.textContent || 'APP-2024-089 • Computer Science';
 
         if (!appointmentDate || !appointmentTime) {
           alert('Please select both a date and time.');
           return;
         }
 
-        console.log('Schedule appointment:', {
-          date: appointmentDate,
-          time: appointmentTime,
-          email: appointmentEmail,
+        const scheduleModal = bootstrap.Modal.getInstance(document.getElementById('scheduleAppointmentModal'));
+        if (scheduleModal) {
+          scheduleModal.hide();
+        }
+
+        populateEnrollmentForm({
+          studentName,
+          studentProgramInfo,
+          appointmentDate,
+          appointmentTime,
+          appointmentEmail,
         });
 
-        alert('Enrollment appointment scheduled successfully.');
-        const modal = bootstrap.Modal.getInstance(document.getElementById('scheduleAppointmentModal'));
-        if (modal) {
-          modal.hide();
-        }
+        const printModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('enrollmentPrintModal'));
+        printModal.show();
       });
+
+      function populateEnrollmentForm({ studentName, studentProgramInfo, appointmentDate, appointmentTime, appointmentEmail }) {
+        const nameParts = studentName.split(' ');
+        document.getElementById('certFirstName').value = nameParts[0] || '';
+        document.getElementById('certLastName').value = nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
+        document.getElementById('certMiddleName').value = nameParts.length > 2 ? nameParts.slice(1, -1).join(' ') : '';
+        document.getElementById('certStudNo').value = appointmentEmail ? appointmentEmail.split('@')[0].toUpperCase() : '';
+        document.getElementById('certCourse').value = studentProgramInfo.split('•')[1]?.trim() || '';
+        document.getElementById('certYearSection').value = studentProgramInfo.split('•')[0]?.trim() || '';
+        document.getElementById('certSchoolYear').value = 'SY 2025-2026';
+        document.getElementById('certSemester').value = '2nd Sem';
+        document.getElementById('certContactNo').value = 'N/A';
+        document.getElementById('certAddress').value = 'Not Provided';
+        document.getElementById('certBirthday').value = '';
+        document.getElementById('certBirthplace').value = '';
+        document.getElementById('certUnitsEarned').value = '18';
+        document.getElementById('certRemarks').value = 'Approved';
+        document.getElementById('certModality').value = 'Face-to-face';
+        document.getElementById('certStudentSignature').value = studentName;
+        document.getElementById('certAdmissionOfficer').value = 'Registrar';
+        document.getElementById('certSignature').value = 'Registrar Signature';
+        document.getElementById('certProcessDate').value = appointmentDate;
+      }
+
+      function printEnrollmentForm() {
+        const content = document.getElementById('certificatePrintArea').innerHTML;
+        const printWindow = window.open('', '_blank', 'width=900,height=700');
+        if (!printWindow) {
+          alert('Please allow popups to print the enrollment form.');
+          return;
+        }
+        printWindow.document.write(`<!DOCTYPE html><html><head><title>Enrollment Form</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"><style>body{margin:20px;font-family:Arial,Helvetica,sans-serif;} .cert-reg-container{max-width:100%;} .table td,.table th{padding:.5rem .75rem;font-size:.85rem;} .form-control[readonly]{background:#f8f9fa; border:1px solid #ced4da;}</style></head><body>${content}</body></html>`);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+      }
     </script>
   </body>
 </html>
