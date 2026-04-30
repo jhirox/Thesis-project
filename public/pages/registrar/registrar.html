@@ -1523,11 +1523,17 @@
 
       function openScheduleFromDetails() {
         const detailModal = bootstrap.Modal.getInstance(studentDetailsModalEl);
-        if (detailModal) {
-          detailModal.hide();
-        }
         const scheduleModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('scheduleAppointmentModal'));
-        scheduleModal.show();
+        
+        if (detailModal) {
+          studentDetailsModalEl.addEventListener('hidden.bs.modal', function onModalHidden() {
+            scheduleModal.show();
+            studentDetailsModalEl.removeEventListener('hidden.bs.modal', onModalHidden);
+          }, { once: true });
+          detailModal.hide();
+        } else {
+          scheduleModal.show();
+        }
       }
 
       document.getElementById('scheduleAppointmentForm')?.addEventListener('submit', function (event) {

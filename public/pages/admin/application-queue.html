@@ -964,12 +964,17 @@
         document.getElementById('appointmentStudentInfo').textContent = `${selectedStudentId} • Computer Science`;
 
         const detailsModal = bootstrap.Modal.getInstance(studentDetailsModalEl);
-        if (detailsModal) {
-          detailsModal.hide();
-        }
-
         const scheduleModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('scheduleAppointmentModal'));
-        scheduleModal.show();
+
+        if (detailsModal) {
+          studentDetailsModalEl.addEventListener('hidden.bs.modal', function onModalHidden() {
+            scheduleModal.show();
+            studentDetailsModalEl.removeEventListener('hidden.bs.modal', onModalHidden);
+          }, { once: true });
+          detailsModal.hide();
+        } else {
+          scheduleModal.show();
+        }
       }
 
       document.getElementById('scheduleAppointmentForm')?.addEventListener('submit', function (event) {
