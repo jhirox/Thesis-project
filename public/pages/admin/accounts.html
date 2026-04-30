@@ -325,7 +325,7 @@
                     >group</span
                   >
                 </div>
-                <h3>1,247</h3>
+                <h3 id="accounts-total-applications">0</h3>
                 <small
                   ><span class="text-primary">+12%</span> from last week</small
                 >
@@ -1014,7 +1014,38 @@
     <script src="/js/filters/dashboard.js"></script>
 
     <script>
+      async function loadAccountsApplicationTotal() {
+        const totalApplicationsElement = document.getElementById("accounts-total-applications");
+        if (!totalApplicationsElement) {
+          return;
+        }
+
+        try {
+          const response = await fetch("/api/students/enrollments/all");
+          const result = await response.json();
+
+          if (!response.ok || !result.success) {
+            throw new Error(result.message || "Failed to load total applications");
+          }
+
+          const totalApplications = Array.isArray(result.data)
+            ? result.data.length
+            : Number(result.totalEnrollments) || 0;
+
+          totalApplicationsElement.textContent = formatCount(totalApplications);
+        } catch (error) {
+          console.error("Error loading total applications:", error);
+          totalApplicationsElement.textContent = "0";
+        }
+      }
+
+      function formatCount(value) {
+        return new Intl.NumberFormat().format(Number(value) || 0);
+      }
+
       document.addEventListener("DOMContentLoaded", () => {
+        loadAccountsApplicationTotal();
+
         setTimeout(() => {
           const skeleton = document.getElementById("page-skeleton");
           if (!skeleton) return;
