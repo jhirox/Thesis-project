@@ -838,6 +838,19 @@
           </div>
         </div>
 
+        <!-- Success Toast Notification -->
+        <div class="position-fixed top-0 start-0 p-3" style="z-index: 9999;">
+          <div id="successToast" class="toast align-items-center border-0 bg-light" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+              <div class="toast-body">
+                <strong>Email sent to student</strong><br/>
+                <small id="toastEmailMessage">Notification + enrollment form copy sent to a.smith@email.com.</small>
+              </div>
+              <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+          </div>
+        </div>
+
         <!-- Add Student Modal -->
         <div
           class="modal fade"
@@ -1535,6 +1548,12 @@
           scheduleModal.hide();
         }
 
+        // Show success toast
+        document.getElementById('toastEmailMessage').textContent = `Notification + enrollment form copy sent to ${appointmentEmail}.`;
+        const toastElement = document.getElementById('successToast');
+        const toast = new bootstrap.Toast(toastElement);
+        toast.show();
+
         populateEnrollmentForm({
           studentName,
           studentProgramInfo,
@@ -1543,8 +1562,11 @@
           appointmentEmail,
         });
 
-        const printModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('enrollmentPrintModal'));
-        printModal.show();
+        // Show enrollment modal after a short delay to let toast appear
+        setTimeout(() => {
+          const printModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('enrollmentPrintModal'));
+          printModal.show();
+        }, 800);
       });
 
       function populateEnrollmentForm({ studentName, studentProgramInfo, appointmentDate, appointmentTime, appointmentEmail }) {
