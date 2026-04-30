@@ -1375,15 +1375,52 @@
       `;
 
       document.getElementById("student-records-tbody").addEventListener("click", function (e) {
-        const btn = e.target.closest(".btn-view");
-        if (!btn) return;
+        const viewBtn = e.target.closest(".btn-view");
+        if (viewBtn) {
+          const row = viewBtn.closest("tr");
+          if (!row) return;
 
-        const row = btn.closest("tr");
-        if (!row) return;
+          const modal = bootstrap.Modal.getOrCreateInstance(studentDetailsModalEl);
+          modalDetails.innerHTML = fixedStudentDetailsMarkup;
+          modal.show();
+          return;
+        }
 
-        const modal = bootstrap.Modal.getOrCreateInstance(studentDetailsModalEl);
-        modalDetails.innerHTML = fixedStudentDetailsMarkup;
-        modal.show();
+        const approveBtn = e.target.closest("button.btn-outline-success");
+        if (approveBtn) {
+          const row = approveBtn.closest("tr");
+          if (!row) return;
+
+          const badge = row.querySelector("span.badge");
+          if (badge) {
+            badge.className = "badge bg-success";
+            badge.textContent = "Enrolled";
+          }
+          row.dataset.status = "Enrolled";
+          approveBtn.disabled = true;
+          approveBtn.textContent = "Approved";
+
+          const studentId = row.children[0]?.textContent?.trim() || "UNKNOWN";
+          const studentName = row.children[1]?.textContent?.trim() || "Student";
+          const studentProgramInfo = row.children[2]?.textContent?.trim() || "Program / Year";
+          const appointmentDate = new Date().toISOString().split("T")[0];
+          const appointmentTime = "09:00";
+          const appointmentEmail = `${studentId.toLowerCase()}@school.edu`;
+
+          if (confirm(`Application for ${studentName} is approved.\nDo you want to print the enrollment form now?`)) {
+            populateEnrollmentForm({
+              studentName,
+              studentProgramInfo,
+              appointmentDate,
+              appointmentTime,
+              appointmentEmail,
+            });
+            const printModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('enrollmentPrintModal'));
+            printModal.show();
+          }
+
+          return;
+        }
       });
 
       // Filtering logic
@@ -1436,15 +1473,11 @@
       // Edit student function (placeholder)
       function editStudent(button) {
         const row = button.closest("tr");
-        const cells = row.querySelectorAll("td");
-        const studentId = cells[0]?.textContent?.trim() || 'Not set';
-        const studentName = cells[1]?.textContent?.trim() || 'Not set';
-        const programYear = cells[2]?.textContent?.trim() || 'Not set';
-        const status = cells[3]?.textContent?.trim() || 'Not set';
-        
-        console.log('Editing student:', { studentId, studentName, programYear, status });
-        alert(`Edit student: ${studentName} (${studentId}) - ${programYear} - Status: ${status}`);
-        // TODO: Open edit modal with student data for inline editing
+        if (!row) return;
+
+        const modal = bootstrap.Modal.getOrCreateInstance(studentDetailsModalEl);
+        modalDetails.innerHTML = fixedStudentDetailsMarkup;
+        modal.show();
       }
       // Add Admin Function
       document
