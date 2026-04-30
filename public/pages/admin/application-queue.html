@@ -717,6 +717,19 @@
       </div>
     </div>
 
+    <!-- Success Toast Notification -->
+    <div class="position-fixed top-0 start-0 p-3" style="z-index: 9999;">
+      <div id="successToast" class="toast align-items-center border-0 bg-light" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            <strong>Email sent to student</strong><br/>
+            <small id="toastEmailMessage">Notification + enrollment form copy sent to a.smith@email.com.</small>
+          </div>
+          <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+    </div>
+
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
@@ -962,8 +975,22 @@
       document.getElementById('scheduleAppointmentForm')?.addEventListener('submit', function (event) {
         event.preventDefault();
 
+        const email = document.getElementById('appointmentEmail')?.value || 'a.smith@email.com';
+        const toastEl = document.getElementById('successToast');
+        const toastMessageEl = document.getElementById('toastEmailMessage');
+
+        if (toastMessageEl) {
+          toastMessageEl.textContent = `Notification + enrollment form copy sent to ${email}.`;
+        }
+
         const scheduleModal = bootstrap.Modal.getInstance(document.getElementById('scheduleAppointmentModal'));
         scheduleModal?.hide();
+
+        if (toastEl) {
+          const toast = new bootstrap.Toast(toastEl);
+          toast.show();
+        }
+
         console.log('Enrollment appointment scheduled.');
       });
 
