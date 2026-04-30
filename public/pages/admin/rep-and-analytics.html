@@ -309,7 +309,7 @@
                     >group</span
                   >
                 </div>
-                <h3>1,247</h3>
+                <h3 id="reports-total-applications">0</h3>
                 <small
                   ><span class="text-primary fw-semibold">+12%</span> from last month</small
                 >
@@ -345,7 +345,7 @@
                     >schedule</span
                   >
                 </div>
-                <h3>39</h3>
+                <h3 id="reports-pending-review">0</h3>
                 <small
                   ><span class="text-warning fw-semibold">+5%</span> from last week</small
                 >
@@ -1051,6 +1051,50 @@
     <script src="/js/charts.js"></script>
 
     <script>
+      async function loadReportsApplicationTotal() {
+        const totalApplicationsElement = document.getElementById("reports-total-applications");
+        const pendingReviewElement = document.getElementById("reports-pending-review");
+        if (!totalApplicationsElement) {
+          return;
+        }
+
+        try {
+          const response = await fetch("/api/students/enrollments/all");
+          const result = await response.json();
+
+          if (!response.ok || !result.success) {
+            throw new Error(result.message || "Failed to load total applications");
+          }
+
+          const totalApplications = Array.isArray(result.data)
+            ? result.data.length
+            : Number(result.totalEnrollments) || 0;
+          const applications = Array.isArray(result.data) ? result.data : [];
+          const pendingReviewCount = applications.filter((application) =>
+            isPendingReviewStatus(application.application_status)
+          ).length;
+
+          totalApplicationsElement.textContent = formatCount(totalApplications);
+          if (pendingReviewElement) {
+            pendingReviewElement.textContent = formatCount(pendingReviewCount);
+          }
+        } catch (error) {
+          console.error("Error loading reports total applications:", error);
+          totalApplicationsElement.textContent = "0";
+          if (pendingReviewElement) {
+            pendingReviewElement.textContent = "0";
+          }
+        }
+      }
+
+      function formatCount(value) {
+        return new Intl.NumberFormat().format(Number(value) || 0);
+      }
+
+      function isPendingReviewStatus(status) {
+        return status === "Submitted" || status === "Under Review";
+      }
+
       // Hide Registrar link for admin users, hide Accounts for registrars
       const sessionUser = JSON.parse(localStorage.getItem('sessionUser'));
       if (sessionUser && sessionUser.user) {
@@ -1064,6 +1108,7 @@
       }
 
       document.addEventListener("DOMContentLoaded", () => {
+        loadReportsApplicationTotal();
 
         setTimeout(() => {
           const skeleton = document.getElementById("page-skeleton");

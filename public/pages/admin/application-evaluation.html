@@ -318,7 +318,7 @@
                     group
                   </span>
                 </div>
-                <h3>1,247</h3>
+                <h3 id="evaluation-total-applications">0</h3>
                 <small
                   ><span class="text-primary fw-semibold">+12%</span> from last
                   week</small
@@ -356,7 +356,7 @@
                     schedule
                   </span>
                 </div>
-                <h3>39</h3>
+                <h3 id="evaluation-pending-review">0</h3>
                 <small
                   ><span class="text-warning fw-semibold">+5%</span> from last
                   week</small
@@ -789,13 +789,33 @@
           const response = await fetch('/api/students/enrollments/all');
           const result = await response.json();
 
-          if (!result.success) {
+          if (!response.ok || !result.success) {
             return;
           }
 
-          renderAllApplications(result.data || []);
+          const applications = result.data || [];
+          renderAllApplications(applications);
+          updateApplicationStats(applications);
         } catch (error) {
           console.error('Error loading applications:', error);
+          updateApplicationStats([]);
+        }
+      }
+
+      function updateApplicationStats(applications) {
+        const totalApplicationsElement = document.getElementById('evaluation-total-applications');
+        const pendingReviewElement = document.getElementById('evaluation-pending-review');
+        if (!totalApplicationsElement) {
+          return;
+        }
+
+        totalApplicationsElement.textContent = formatCount(applications.length);
+
+        if (pendingReviewElement) {
+          const pendingReviewCount = applications.filter((application) =>
+            isPendingReviewStatus(application.application_status)
+          ).length;
+          pendingReviewElement.textContent = formatCount(pendingReviewCount);
         }
       }
 
@@ -863,6 +883,14 @@
         }
 
         return date.toISOString().split('T')[0];
+      }
+
+      function formatCount(value) {
+        return new Intl.NumberFormat().format(Number(value) || 0);
+      }
+
+      function isPendingReviewStatus(status) {
+        return status === 'Submitted' || status === 'Under Review';
       }
 
       function applyFilters() {

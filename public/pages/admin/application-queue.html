@@ -348,7 +348,7 @@
                     >schedule</span
                   >
                 </div>
-                <h3>39</h3>
+                <h3 id="queue-pending-review">0</h3>
                 <small
                   ><span class="text-warning">+5%</span> from last week</small
                 >
@@ -681,6 +681,40 @@
     <script src="/js/core/adminlte.min.js"></script>
 
     <script>
+      async function loadQueuePendingReviewTotal() {
+        const pendingReviewElement = document.getElementById("queue-pending-review");
+        if (!pendingReviewElement) {
+          return;
+        }
+
+        try {
+          const response = await fetch("/api/students/enrollments/all");
+          const result = await response.json();
+
+          if (!response.ok || !result.success) {
+            throw new Error(result.message || "Failed to load pending review total");
+          }
+
+          const applications = Array.isArray(result.data) ? result.data : [];
+          const pendingReviewCount = applications.filter((application) =>
+            isPendingReviewStatus(application.application_status)
+          ).length;
+
+          pendingReviewElement.textContent = formatCount(pendingReviewCount);
+        } catch (error) {
+          console.error("Error loading queue pending review total:", error);
+          pendingReviewElement.textContent = "0";
+        }
+      }
+
+      function isPendingReviewStatus(status) {
+        return status === "Submitted" || status === "Under Review";
+      }
+
+      function formatCount(value) {
+        return new Intl.NumberFormat().format(Number(value) || 0);
+      }
+
       function applyFilters() {
         const status = document.getElementById('filterStatus').value;
         const course = document.getElementById('filterCourse').value;
@@ -882,6 +916,8 @@
       });
 
       document.addEventListener("DOMContentLoaded", () => {
+        loadQueuePendingReviewTotal();
+
         setTimeout(() => {
           const skeleton = document.getElementById("page-skeleton");
           if (!skeleton) return;
