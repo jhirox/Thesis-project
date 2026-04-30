@@ -333,7 +333,7 @@
                               <button class="btn btn-sm btn-outline-primary me-1 btn-view">
                                 View
                               </button>
-                              <button class="btn btn-sm btn-outline-warning me-1">
+                              <button class="btn btn-sm btn-outline-warning me-1" onclick="editStudent(this)">
                                 Edit
                               </button>
                               <button class="btn btn-sm btn-outline-success me-1">
@@ -357,7 +357,7 @@
                               <button class="btn btn-sm btn-outline-primary me-1 btn-view">
                                 View
                               </button>
-                              <button class="btn btn-sm btn-outline-warning me-1">
+                              <button class="btn btn-sm btn-outline-warning me-1" onclick="editStudent(this)">
                                 Edit
                               </button>
                               <button class="btn btn-sm btn-outline-success me-1">
@@ -379,7 +379,7 @@
                           <td class="px-4 py-3 text-center">
                             <div class="student-records-actions">
                               <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
-                              <button class="btn btn-sm btn-outline-warning me-1">Edit</button>
+                              <button class="btn btn-sm btn-outline-warning me-1" onclick="editStudent(this)">Edit</button>
                               <button class="btn btn-sm btn-outline-success me-1">Approve</button>
                               <button class="btn btn-sm btn-outline-danger">Reject</button>
                             </div>
@@ -395,7 +395,7 @@
                           <td class="px-4 py-3 text-center">
                             <div class="student-records-actions">
                               <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
-                              <button class="btn btn-sm btn-outline-warning me-1">Edit</button>
+                              <button class="btn btn-sm btn-outline-warning me-1" onclick="editStudent(this)">Edit</button>
                               <button class="btn btn-sm btn-outline-success me-1">Approve</button>
                               <button class="btn btn-sm btn-outline-danger">Reject</button>
                             </div>
@@ -411,7 +411,7 @@
                           <td class="px-4 py-3 text-center">
                             <div class="student-records-actions">
                               <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
-                              <button class="btn btn-sm btn-outline-warning me-1">Edit</button>
+                              <button class="btn btn-sm btn-outline-warning me-1" onclick="editStudent(this)">Edit</button>
                               <button class="btn btn-sm btn-outline-success me-1">Approve</button>
                               <button class="btn btn-sm btn-outline-danger">Reject</button>
                             </div>
@@ -427,7 +427,7 @@
                           <td class="px-4 py-3 text-center">
                             <div class="student-records-actions">
                               <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
-                              <button class="btn btn-sm btn-outline-warning me-1">Edit</button>
+                              <button class="btn btn-sm btn-outline-warning me-1" onclick="editStudent(this)">Edit</button>
                               <button class="btn btn-sm btn-outline-success me-1">Approve</button>
                               <button class="btn btn-sm btn-outline-danger">Reject</button>
                             </div>
@@ -443,7 +443,7 @@
                           <td class="px-4 py-3 text-center">
                             <div class="student-records-actions">
                               <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
-                              <button class="btn btn-sm btn-outline-warning me-1">Edit</button>
+                              <button class="btn btn-sm btn-outline-warning me-1" onclick="editStudent(this)">Edit</button>
                               <button class="btn btn-sm btn-outline-success me-1">Approve</button>
                               <button class="btn btn-sm btn-outline-danger">Reject</button>
                             </div>
@@ -459,7 +459,7 @@
                           <td class="px-4 py-3 text-center">
                             <div class="student-records-actions">
                               <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
-                              <button class="btn btn-sm btn-outline-warning me-1">Edit</button>
+                              <button class="btn btn-sm btn-outline-warning me-1" onclick="editStudent(this)">Edit</button>
                               <button class="btn btn-sm btn-outline-success me-1">Approve</button>
                               <button class="btn btn-sm btn-outline-danger">Reject</button>
                             </div>
@@ -1437,8 +1437,14 @@
       function editStudent(button) {
         const row = button.closest("tr");
         const cells = row.querySelectorAll("td");
-        // You can implement edit functionality here
-        alert("Edit functionality coming soon!");
+        const studentId = cells[0]?.textContent?.trim() || 'Not set';
+        const studentName = cells[1]?.textContent?.trim() || 'Not set';
+        const programYear = cells[2]?.textContent?.trim() || 'Not set';
+        const status = cells[3]?.textContent?.trim() || 'Not set';
+        
+        console.log('Editing student:', { studentId, studentName, programYear, status });
+        alert(`Edit student: ${studentName} (${studentId}) - ${programYear} - Status: ${status}`);
+        // TODO: Open edit modal with student data for inline editing
       }
       // Add Admin Function
       document
