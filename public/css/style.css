@@ -3101,6 +3101,48 @@ span .icon:hover {
   z-index: 10000;
 }
 
+.portal-profile-modal {
+  color: #ffffff;
+  background: #12395b;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.portal-profile-editor {
+  display: grid;
+  grid-template-columns: 128px 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.portal-profile-editor__image {
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.portal-profile-editor__controls {
+  min-width: 0;
+}
+
+.portal-profile-editor .form-label {
+  color: rgba(255, 255, 255, 0.86);
+  font-weight: 600;
+}
+
+@media (max-width: 575.98px) {
+  .portal-profile-editor {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .portal-profile-editor__controls {
+    width: 100%;
+  }
+}
+
 .modal-backdrop {
   z-index: 9999;
 }

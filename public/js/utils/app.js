@@ -251,7 +251,233 @@ function hideEmptySectionHeaders() {
     });
 }
 
+const defaultPortalProfileImage = "https://lh3.googleusercontent.com/a/ACg8ocJZRFDYP52Px5s5A5hCDSPAwCHlrEebkZDNYbMcQnSSdvacvufz=s360-c-no";
+
+function getPortalProfileStorageKey(sessionUser) {
+    const user = sessionUser?.user || sessionUser || {};
+    const userKey = user.id || user.email || user.username || user.role || "portal-user";
+    return `portalProfile:${userKey}`;
+}
+
+function getStoredPortalProfile(sessionUser) {
+    try {
+        const storedProfile = localStorage.getItem(getPortalProfileStorageKey(sessionUser));
+        return storedProfile ? JSON.parse(storedProfile) : {};
+    } catch (error) {
+        return {};
+    }
+}
+
+function getPortalDisplayName(sessionUser, profile) {
+    const user = sessionUser?.user || sessionUser || {};
+    return profile.displayName ||
+        user.fullname ||
+        user.fullName ||
+        user.name ||
+        user.email ||
+        "Portal User";
+}
+
+function getPortalProfileImage(sessionUser, profile) {
+    const user = sessionUser?.user || sessionUser || {};
+    return profile.profileImage ||
+        user.profileImage ||
+        user.picture ||
+        user.photoUrl ||
+        defaultPortalProfileImage;
+}
+
+function savePortalProfile(sessionUser, profile) {
+    if (sessionUser?.user) {
+        sessionUser.user.fullname = profile.displayName;
+        sessionUser.user.profileImage = profile.profileImage;
+    } else if (sessionUser) {
+        sessionUser.fullname = profile.displayName;
+        sessionUser.profileImage = profile.profileImage;
+    }
+
+    try {
+        localStorage.setItem(getPortalProfileStorageKey(sessionUser), JSON.stringify(profile));
+        localStorage.setItem("sessionUser", JSON.stringify(sessionUser));
+        return true;
+    } catch (error) {
+        alert("The selected image is too large to save in this browser. Please choose a smaller picture.");
+        return false;
+    }
+}
+
+function updatePortalProfileUi(displayName, profileImage) {
+    const fullNameElement = document.querySelector("#user-full-name");
+    if (fullNameElement) {
+        fullNameElement.textContent = displayName;
+    }
+
+    document.querySelectorAll(".user-menu img, img.user-image").forEach((image) => {
+        image.src = profileImage || defaultPortalProfileImage;
+    });
+
+    document.querySelectorAll(".user-menu .user-header p").forEach((profileText) => {
+        const smallText = profileText.querySelector("small")?.textContent || "";
+        profileText.innerHTML = "";
+        profileText.append(document.createTextNode(displayName));
+
+        if (smallText) {
+            const small = document.createElement("small");
+            small.textContent = smallText;
+            profileText.appendChild(small);
+        }
+    });
+}
+
+function ensurePortalProfileModal() {
+    let modal = document.getElementById("portalProfileModal");
+    if (modal) {
+        return modal;
+    }
+
+    modal = document.createElement("div");
+    modal.className = "modal fade";
+    modal.id = "portalProfileModal";
+    modal.tabIndex = -1;
+    modal.setAttribute("aria-labelledby", "portalProfileModalLabel");
+    modal.setAttribute("aria-hidden", "true");
+    modal.innerHTML = `
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content portal-profile-modal">
+                <form id="portalProfileForm">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="portalProfileModalLabel">Profile</h1>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="portal-profile-editor">
+                            <img id="portalProfilePreview" class="portal-profile-editor__image" src="${defaultPortalProfileImage}" alt="Profile preview" />
+                            <div class="portal-profile-editor__controls">
+                                <label for="portalProfileName" class="form-label">Display name</label>
+                                <input id="portalProfileName" class="form-control" type="text" maxlength="80" required />
+                                <label for="portalProfileImageInput" class="form-label mt-3">Profile picture</label>
+                                <input id="portalProfileImageInput" class="form-control" type="file" accept="image/*" />
+                                <button id="portalProfileRemoveImage" class="btn btn-outline-light btn-sm mt-3" type="button">
+                                    <i class="fa-solid fa-trash me-2"></i>Remove picture
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    return modal;
+}
+
+function setupPortalProfileEditor() {
+    const sessionUser = getStoredSessionUser();
+    if (!sessionUser) {
+        return;
+    }
+
+    let profile = getStoredPortalProfile(sessionUser);
+    profile = {
+        displayName: getPortalDisplayName(sessionUser, profile),
+        profileImage: getPortalProfileImage(sessionUser, profile)
+    };
+
+    savePortalProfile(sessionUser, profile);
+    updatePortalProfileUi(profile.displayName, profile.profileImage);
+
+    const profileLink = Array.from(document.querySelectorAll(".user-menu .user-footer a")).find((link) =>
+        (link.textContent || "").trim().toLowerCase() === "profile"
+    );
+
+    if (!profileLink || typeof bootstrap === "undefined") {
+        return;
+    }
+
+    profileLink.href = "#";
+    profileLink.setAttribute("data-bs-toggle", "modal");
+    profileLink.setAttribute("data-bs-target", "#portalProfileModal");
+
+    const modal = ensurePortalProfileModal();
+    const profileForm = modal.querySelector("#portalProfileForm");
+    const nameInput = modal.querySelector("#portalProfileName");
+    const imageInput = modal.querySelector("#portalProfileImageInput");
+    const imagePreview = modal.querySelector("#portalProfilePreview");
+    const removeImageButton = modal.querySelector("#portalProfileRemoveImage");
+    let selectedProfileImage = profile.profileImage;
+
+    modal.addEventListener("show.bs.modal", () => {
+        const latestSessionUser = getStoredSessionUser();
+        const latestProfile = getStoredPortalProfile(latestSessionUser);
+        profile = {
+            displayName: getPortalDisplayName(latestSessionUser, latestProfile),
+            profileImage: getPortalProfileImage(latestSessionUser, latestProfile)
+        };
+        selectedProfileImage = profile.profileImage;
+        nameInput.value = profile.displayName;
+        imagePreview.src = selectedProfileImage;
+        imageInput.value = "";
+    });
+
+    imageInput.addEventListener("change", () => {
+        const file = imageInput.files?.[0];
+        if (!file) {
+            return;
+        }
+
+        if (!file.type.startsWith("image/")) {
+            imageInput.value = "";
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+            selectedProfileImage = reader.result;
+            imagePreview.src = selectedProfileImage;
+        });
+        reader.readAsDataURL(file);
+    });
+
+    removeImageButton.addEventListener("click", () => {
+        selectedProfileImage = defaultPortalProfileImage;
+        imagePreview.src = selectedProfileImage;
+        imageInput.value = "";
+    });
+
+    profileForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const latestSessionUser = getStoredSessionUser();
+        const displayName = nameInput.value.trim();
+        if (!displayName || !latestSessionUser) {
+            return;
+        }
+
+        profile = {
+            displayName,
+            profileImage: selectedProfileImage || defaultPortalProfileImage
+        };
+
+        if (!savePortalProfile(latestSessionUser, profile)) {
+            return;
+        }
+        updatePortalProfileUi(profile.displayName, profile.profileImage);
+
+        const modalInstance = bootstrap.Modal.getInstance(modal);
+        if (document.activeElement) {
+            document.activeElement.blur();
+        }
+        modalInstance?.hide();
+    });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+    setupPortalProfileEditor();
+
     const role = getStoredRole();
     const currentPath = normalizePath(window.location.pathname);
 
