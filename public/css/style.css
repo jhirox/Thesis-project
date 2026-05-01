@@ -3147,7 +3147,7 @@ body.page-certificate-registration {
 .page-certificate-registration .cert-reg-title-section div:first-child {
   font-size: 12px;
   opacity: 0.88;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
 }
 
 .page-certificate-registration .cert-reg-title-section div:last-child {
@@ -4314,7 +4314,7 @@ body.page-schedule-fees {
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-title-section {
     margin-bottom: 4px !important;
-    padding: 6px !important;
+    padding: 5px !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-student-info,
@@ -4469,7 +4469,7 @@ body.page-schedule-fees {
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-title-section div:last-child {
-    font-size: 9px !important;
+    font-size: 11px !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table-section .cert-reg-table th,
