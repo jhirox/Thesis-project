@@ -4378,6 +4378,8 @@ body.page-schedule-fees {
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-title-section div:first-child,
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-info-field label,
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-bottom-field label,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-staff-only-label,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-process-by-label,
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-signature-label,
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-signature-label,
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-tagline,
