@@ -4395,7 +4395,9 @@ body.page-schedule-fees {
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-fee-amount input,
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-signature-input,
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-section-header-input,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-student-info .cert-reg-info-field input {
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-student-info .cert-reg-info-field input,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-bottom-info .cert-reg-bottom-field input {
+    padding: 1px 2px !important; 
     font-size: 10px !important;
   }
 
