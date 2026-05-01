@@ -4155,18 +4155,29 @@ body.page-schedule-fees {
     background-color: #fff;
   }
 
-  #certificatePrintArea,
-  #certificatePrintArea * {
-    font-size: 11px !important;   /* base size for everything */
-    line-height: 1.2 !important;  /* keep spacing readable */
+  #certificatePrintArea {
+    font-size: 12px !important; /* base size for general text */
   }
 
-  /* Optional: make headers stand out a bit more */
+  #certificatePrintArea label,
+  #certificatePrintArea input,
+  #certificatePrintArea p,
+  #certificatePrintArea td,
+  #certificatePrintArea th {
+    font-size: 11px !important; /* slightly larger for readability */
+  }
+
   #certificatePrintArea h2,
-  #certificatePrintArea .sched-fees-header,
-  #certificatePrintArea .cert-reg-title-section div:last-child {
-    font-size: 13px !important;
-    font-weight: bold !important;
+  #certificatePrintArea .sched-fees-header {
+    font-size: 13px !important; /* headers stand out */
+  }
+
+  #certificatePrintArea .sched-fees-tagline {
+    font-size: 11px !important;
+  }
+
+  #certificatePrintArea .cert-reg-important-notice {
+    font-size: 9px !important; /* notices still compact but readable */
   }
 
   .cert-reg-header {
