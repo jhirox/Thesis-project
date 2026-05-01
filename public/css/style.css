@@ -3657,7 +3657,7 @@ body.page-schedule-fees {
 .page-schedule-fees .sched-fees-section-header {
   background: linear-gradient(135deg, var(--qeci-gold), #c4961f);
   color: var(--qeci-navy);
-  padding: 8px;
+  padding: 5px;
   font-weight: 700;
   font-size: 12px;
   text-align: center;
