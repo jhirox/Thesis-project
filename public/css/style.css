@@ -4321,7 +4321,7 @@ body.page-schedule-fees {
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-important-notice {
     margin-top: 8px !important;
     padding: 4px 6px !important;
-    font-size: 9px !important;
+    font-size: 7px !important;
     line-height: 1.1 !important;
   }
 
@@ -4404,7 +4404,7 @@ body.page-schedule-fees {
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-important-notice strong {
-    font-size: 9px !important;
+    font-size: 7px !important;
     line-height: 1.1 !important;
   }
 
