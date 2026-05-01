@@ -1650,8 +1650,15 @@
         console.log('Export requested:', { selectedFormat, selectedApplicants });
         // Add your export logic here
 
-        const modal = bootstrap.Modal.getInstance(document.getElementById('exportModal'));
-        modal.hide();
+        const exportModal = bootstrap.Modal.getInstance(document.getElementById('exportModal'));
+        if (exportModal) {
+          exportModal.hide();
+        }
+
+        const printModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('enrollmentPrintModal'));
+        setTimeout(() => {
+          printModal.show();
+        }, 250);
       }
 
       document.getElementById('exportSelectAll')?.addEventListener('click', function (event) {
