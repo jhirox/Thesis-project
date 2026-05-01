@@ -4172,20 +4172,21 @@ body.page-schedule-fees {
     inset: 0 !important;
     display: block !important;
     overflow: visible !important;
-    background: #fff !important;
+    background: transparent !important;
   }
 
   body.page-registrar.printing-enrollment-form #enrollmentPrintModal .modal-dialog {
-    width: 100% !important;
+    width: auto !important;
     max-width: none !important;
     margin: 0 !important;
+    padding: 0 !important;
   }
 
   body.page-registrar.printing-enrollment-form #enrollmentPrintModal .modal-content {
     border: 0 !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-    background: #fff !important;
+    background: transparent !important;
   }
 
   body.page-registrar.printing-enrollment-form #enrollmentPrintModal .modal-header,
@@ -4199,14 +4200,15 @@ body.page-schedule-fees {
     max-height: none !important;
     overflow: visible !important;
     padding: 0 !important;
+    background: transparent !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea {
     position: relative !important;
-    width: 100% !important;
+    width: auto !important;
     padding: 0 !important;
-    margin: 0 !important;
-    background: #fff !important;
+    margin: 0 auto !important;
+    background: transparent !important;
     color-adjust: exact !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
