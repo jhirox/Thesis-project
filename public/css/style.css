@@ -4256,11 +4256,18 @@ body.page-schedule-fees {
     margin: 0 auto !important;
     background: transparent !important;
     page-break-inside: avoid !important;
-    transform: scale(0.70) !important;
+    transform: none !important;
     transform-origin: top center !important;
     color-adjust: exact !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+  }
+
+  .cert-reg-container,
+  .cert-reg-table-section,
+  .page-certificate-registration {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-container {
