@@ -4142,6 +4142,26 @@ body.page-schedule-fees {
     padding: 0;
     background-color: #fff;
   }
+  
+  .cert-reg-header {
+    margin-bottom: 8px !important;
+    padding: 8px !important;
+  }
+
+  .cert-reg-institution-logo {
+    width: 60px !important;
+    height: 60px !important;
+  }
+
+  .cert-reg-institution-info h2 {
+    font-size: 14px !important;
+    line-height: 1.2 !important;
+  }
+
+  .cert-reg-institution-info p {
+    font-size: 10px !important;
+    margin: 2px 0 !important;
+  }
 
   .page-certificate-registration .cert-reg-container,
   .page-schedule-fees .sched-fees-container {
