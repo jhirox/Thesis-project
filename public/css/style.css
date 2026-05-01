@@ -4399,10 +4399,6 @@ body.page-schedule-fees {
     font-size: 10px !important;
   }
 
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-bottom-info .cert-reg-bottom-field-input {
-    padding-top: 3px !important; 
-    font-size: 10px !important;
-  }
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-section-header {
     padding: 4px !important;
   }
