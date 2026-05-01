@@ -3094,8 +3094,8 @@ body.page-certificate-registration {
 }
 
 .page-certificate-registration .cert-reg-institution-logo {
-  width: 84px;
-  height: 84px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -4306,8 +4306,8 @@ body.page-schedule-fees {
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-institution-logo {
-    width: 84px !important;
-    height: 84px !important;
+    width: 60px !important;
+    height: 60px !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-header-content {
