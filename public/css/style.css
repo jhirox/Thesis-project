@@ -3376,19 +3376,29 @@ body.page-certificate-registration {
 
 .page-certificate-registration .sched-fees-content-wrapper {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1.6fr) minmax(220px, 0.8fr);
   gap: 30px;
   margin-bottom: 30px;
   position: relative;
+  align-items: start;
 }
 
 .page-certificate-registration .sched-fees-fee-section,
-.page-certificate-registration .sched-fees-payment-section {
+.page-certificate-registration .sched-fees-payment-section,
+.page-certificate-registration .sched-fees-side-panel {
   background: linear-gradient(180deg, rgba(2, 27, 58, 0.03), rgba(212, 175, 55, 0.04));
   border: 1px solid rgba(2, 27, 58, 0.1);
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 12px 26px rgba(2, 27, 58, 0.08);
+}
+
+.page-certificate-registration .sched-fees-side-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px;
 }
 
 .page-certificate-registration .sched-fees-section-header {
@@ -3539,16 +3549,16 @@ body.page-certificate-registration {
   color: var(--qeci-navy);
   white-space: nowrap;
   opacity: 0.95;
-  margin-top: 20px;
+  margin-top: 0;
 }
 
 .page-certificate-registration .sched-fees-signature-section {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 50px;
-  margin-top: 40px;
-  margin-bottom: 30px;
-  padding-top: 30px;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 18px;
   border-top: 1px solid rgba(212, 175, 55, 0.45);
 }
 
@@ -3579,7 +3589,7 @@ body.page-certificate-registration {
 .page-certificate-registration .sched-fees-important-notice {
   background: linear-gradient(135deg, var(--qeci-navy), var(--qeci-navy-2));
   color: #fff;
-  padding: 20px;
+  padding: 16px;
   border-radius: 12px;
   font-size: 12px;
   line-height: 1.6;
@@ -4328,11 +4338,17 @@ body.page-schedule-fees {
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-content-wrapper {
     gap: 8px !important;
     margin-bottom: 8px !important;
+    grid-template-columns: minmax(0, 1.8fr) minmax(110px, 0.7fr) !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-fee-table td {
     padding: 4px 4px !important;
     font-size: 8px !important;
+  }
+
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-side-panel {
+    gap: 6px !important;
+    padding: 6px !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-fee-amount input,
@@ -4342,10 +4358,10 @@ body.page-schedule-fees {
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-signature-section {
-    gap: 8px !important;
-    margin-top: 8px !important;
-    margin-bottom: 8px !important;
-    padding-top: 8px !important;
+    gap: 6px !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 6px !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-important-notice {
