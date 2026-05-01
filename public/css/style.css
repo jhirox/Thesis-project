@@ -4213,13 +4213,13 @@ body.page-schedule-fees {
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea {
     position: relative !important;
-    width: calc(100% / 0.92) !important;
-    max-width: none !important;
+    width: 210mm !important;
+    max-width: 100% !important;
     padding: 0 !important;
     margin: 0 auto !important;
     background: transparent !important;
     page-break-inside: avoid !important;
-    transform: scale(0.92) !important;
+    transform: scale(0.95) !important;
     transform-origin: top center !important;
     color-adjust: exact !important;
     -webkit-print-color-adjust: exact !important;
@@ -4280,8 +4280,9 @@ body.page-schedule-fees {
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-important-notice {
     margin-top: 14px !important;
-    padding: 12px 14px !important;
-    line-height: 1.4 !important;
+    padding: 6px !important;
+    font-size: 10px !important;
+    line-height: 1.2 !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-institution-logo {
@@ -4333,7 +4334,7 @@ body.page-schedule-fees {
   }
 
   @page {
-    size: auto;
+    size: A4 portrait;
     margin: 6mm;
   }
 }
