@@ -4153,40 +4153,40 @@ body.page-schedule-fees {
   body.page-registrar.printing-enrollment-form {
     background: #fff !important;
     overflow: visible !important;
-    font-size: 10px !important;
   }
 
-  body.page-registrar.printing-enrollment-form .app-wrapper,
-  body.page-registrar.printing-enrollment-form .app-wrapper * {
-    visibility: hidden !important;
+  body.page-registrar.printing-enrollment-form .app-wrapper {
+    background: transparent !important;
   }
 
-  body.page-registrar.printing-enrollment-form #enrollmentPrintModal,
-  body.page-registrar.printing-enrollment-form #enrollmentPrintModal *,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea * {
-    visibility: visible !important;
+  body.page-registrar.printing-enrollment-form .app-wrapper > *:not(#enrollmentPrintModal) {
+    display: none !important;
   }
 
   body.page-registrar.printing-enrollment-form #enrollmentPrintModal {
-    position: absolute !important;
-    inset: 0 !important;
+    position: static !important;
     display: block !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
     overflow: visible !important;
-    background: #fff !important;
+    background: transparent !important;
   }
 
   body.page-registrar.printing-enrollment-form #enrollmentPrintModal .modal-dialog {
-    width: 100% !important;
-    max-width: none !important;
+    display: inline-block !important;
+    width: fit-content !important;
+    max-width: 100% !important;
     margin: 0 !important;
   }
 
   body.page-registrar.printing-enrollment-form #enrollmentPrintModal .modal-content {
+    width: auto !important;
     border: 0 !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-    background: #fff !important;
+    background: transparent !important;
   }
 
   body.page-registrar.printing-enrollment-form #enrollmentPrintModal .modal-header,
@@ -4204,23 +4204,22 @@ body.page-schedule-fees {
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea {
     position: relative !important;
-    width: 100% !important;
+    width: auto !important;
     padding: 0 !important;
     margin: 0 !important;
-    background: #fff !important;
+    background: transparent !important;
     color-adjust: exact !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
-    break-inside: avoid !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-container {
-    max-width: 100% !important;
+    display: block !important;
+    max-width: 1000px !important;
     margin: 0 !important;
-    padding: 8mm !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    border: 0 !important;
+    padding: 20px !important;
+    box-shadow: 0 20px 48px rgba(2, 27, 58, 0.12) !important;
+    border-radius: 14px !important;
     color-adjust: exact !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -4232,165 +4231,9 @@ body.page-schedule-fees {
     print-color-adjust: exact !important;
   }
 
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-header,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-title-section,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-student-info,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table-section,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-bottom-info,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-staff-only-section,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-important-notice,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table thead,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table tbody,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table tr {
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
-  }
-
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-header,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-title-section,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-student-info,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-bottom-info,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-important-notice {
-    background: #fff !important;
-    box-shadow: none !important;
-  }
-
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-header {
-    color: var(--qeci-navy) !important;
-    border: 1px solid rgba(2, 27, 58, 0.22) !important;
-    padding: 10px 14px !important;
-    margin-bottom: 12px !important;
-  }
-
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-header-content {
-    gap: 12px !important;
-  }
-
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-institution-logo {
-    width: 52px !important;
-    height: 52px !important;
-    border-width: 1px !important;
-    box-shadow: none !important;
-    background: #fff !important;
-  }
-
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-institution-info h2 {
-    font-size: 13px !important;
-    line-height: 1.25 !important;
-  }
-
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-institution-info p {
-    font-size: 9px !important;
-    line-height: 1.25 !important;
-    margin-top: 3px !important;
-    color: #333 !important;
-  }
-
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-title-section {
-    color: var(--qeci-navy) !important;
-    border: 1px solid rgba(2, 27, 58, 0.22) !important;
-    padding: 8px 12px !important;
-    margin-bottom: 12px !important;
-    letter-spacing: 0.6px !important;
-  }
-
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-title-section div:first-child {
-    font-size: 9px !important;
-    margin-bottom: 3px !important;
-  }
-
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-title-section div:last-child {
-    font-size: 12px !important;
-  }
-
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-student-info,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-bottom-info {
-    gap: 10px 14px !important;
-    padding: 10px 12px !important;
-    margin-bottom: 12px !important;
-    border: 1px solid rgba(2, 27, 58, 0.16) !important;
-  }
-
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-info-field label,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-bottom-field label,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-staff-only-label,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-process-by-label,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-signature-label {
-    font-size: 8px !important;
-    margin-bottom: 3px !important;
-    letter-spacing: 0.2px !important;
-  }
-
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-info-field input,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-bottom-field input,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-signature-input {
-    padding: 3px 0 !important;
-    font-size: 9px !important;
-    line-height: 1.15 !important;
-  }
-
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table-section {
-    margin-bottom: 12px !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    border: 1px solid rgba(2, 27, 58, 0.16) !important;
-    overflow: visible !important;
-  }
-
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table thead th {
-    padding: 5px 4px !important;
-    font-size: 8px !important;
-    line-height: 1.15 !important;
-    background: #fff !important;
-    color: var(--qeci-navy) !important;
-    border: 1px solid rgba(2, 27, 58, 0.22) !important;
-  }
-
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table tbody td {
-    padding: 3px 4px !important;
-    min-height: 0 !important;
-    font-size: 8px !important;
-    line-height: 1.15 !important;
-    background: #fff !important;
-    border: 1px solid rgba(2, 27, 58, 0.16) !important;
-  }
-
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table tbody tr:nth-child(odd),
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table tbody tr:nth-child(even),
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table tbody tr:hover {
-    background: #fff !important;
-  }
-
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table tbody td input {
-    padding: 1px 0 !important;
-    font-size: 8px !important;
-    line-height: 1.1 !important;
-  }
-
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-staff-only-section {
-    margin-top: 12px !important;
-    padding-top: 10px !important;
-  }
-
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-signature-section {
-    gap: 12px !important;
-    margin-bottom: 10px !important;
-  }
-
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-important-notice {
-    margin-top: 10px !important;
-    padding: 8px 10px !important;
-    font-size: 8px !important;
-    line-height: 1.25 !important;
-    color: #333 !important;
-    border: 1px solid rgba(2, 27, 58, 0.16) !important;
-    border-left: 3px solid rgba(2, 27, 58, 0.45) !important;
-  }
-
   @page {
-    size: A4 landscape;
-    margin: 6mm;
+    size: auto;
+    margin: 12mm;
   }
 }
 
