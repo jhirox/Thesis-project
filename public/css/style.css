@@ -4185,19 +4185,15 @@ body.page-schedule-fees {
   }
 
   body.page-registrar.printing-enrollment-form #enrollmentPrintModal .modal-dialog {
-    width: auto !important;
-    max-width: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    min-height: 0 !important;
+    display: contents !important;
   }
 
   body.page-registrar.printing-enrollment-form #enrollmentPrintModal .modal-content {
+    display: contents !important;
     border: 0 !important;
     border-radius: 0 !important;
     box-shadow: none !important;
     background: transparent !important;
-    min-height: 0 !important;
   }
 
   body.page-registrar.printing-enrollment-form #enrollmentPrintModal .modal-header,
@@ -4208,6 +4204,7 @@ body.page-schedule-fees {
   }
 
   body.page-registrar.printing-enrollment-form #enrollmentPrintModal .modal-body {
+    display: block !important;
     max-height: none !important;
     overflow: visible !important;
     padding: 0 !important;
