@@ -904,7 +904,13 @@
         
         // Close the modal
         const modal = bootstrap.Modal.getInstance(document.getElementById('filterModal'));
-        modal.hide();
+        if (modal) {
+          // Blur the active element to prevent focus retention on hidden modal
+          if (document.activeElement) {
+            document.activeElement.blur();
+          }
+          modal.hide();
+        }
       }
 
       // Review button functionality

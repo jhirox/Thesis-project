@@ -786,7 +786,13 @@
         
         // Close the modal
         const modal = bootstrap.Modal.getInstance(document.getElementById('filterModal'));
-        modal.hide();
+        if (modal) {
+          // Blur the active element to prevent focus retention on hidden modal
+          if (document.activeElement) {
+            document.activeElement.blur();
+          }
+          modal.hide();
+        }
       }
 
       const studentDetailsModalEl = document.getElementById('studentDetailsModal');
@@ -967,6 +973,10 @@
         const scheduleModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('scheduleAppointmentModal'));
 
         if (detailsModal) {
+          // Blur the active element to prevent focus retention on hidden modal
+          if (document.activeElement) {
+            document.activeElement.blur();
+          }
           studentDetailsModalEl.addEventListener('hidden.bs.modal', function onModalHidden() {
             scheduleModal.show();
             studentDetailsModalEl.removeEventListener('hidden.bs.modal', onModalHidden);
@@ -989,7 +999,13 @@
         }
 
         const scheduleModal = bootstrap.Modal.getInstance(document.getElementById('scheduleAppointmentModal'));
-        scheduleModal?.hide();
+        if (scheduleModal) {
+          // Blur the active element to prevent focus retention on hidden modal
+          if (document.activeElement) {
+            document.activeElement.blur();
+          }
+          scheduleModal.hide();
+        }
 
         if (toastEl) {
           const toast = new bootstrap.Toast(toastEl);
