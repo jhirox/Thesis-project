@@ -4383,8 +4383,8 @@ body.page-schedule-fees {
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-fee-table td {
-    padding: 2px 2px !important;
-    font-size: 7px !important;
+    padding: 1px 1px !important;
+    font-size: 9px !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-side-panel {
