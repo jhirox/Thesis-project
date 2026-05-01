@@ -22,6 +22,7 @@ const publicPath = path.join(__dirname, "../public");
 
 // 1. GLOBAL MIDDLEWARE
 import corsMiddleware from "./src/middlewares/corsMiddleware.js";
+import errorMiddleware from "./src/middlewares/errorMiddleware.js";
 import jsonMiddleware from "./src/middlewares/jsonMiddleware.js";
 app.use(corsMiddleware);
 app.use(jsonMiddleware);
@@ -48,6 +49,8 @@ app.use("/api/students", studentRoutes);
 app.get("/getStudents", getStudents);
 app.use("/api/auth", authRoutes);
 app.use("/", viewRoutes); // Handles all HTML serving
+
+app.use(errorMiddleware);
 
 // 5. 404 HANDLER
 app.use((req, res) => {
