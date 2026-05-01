@@ -4164,7 +4164,7 @@ body.page-schedule-fees {
   #certificatePrintArea input,
   #certificatePrintArea label,
   #certificatePrintArea p {
-    font-size: 10px !important; /* bump up from 7–8px */
+    font-size: 12px !important; /* bump up from 7–8px */
   }
 
   #certificatePrintArea h2,
