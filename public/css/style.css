@@ -4155,6 +4155,10 @@ body.page-schedule-fees {
     overflow: visible !important;
   }
 
+  body.page-registrar.printing-enrollment-form > *:not(#enrollmentPrintModal):not(.modal-backdrop) {
+    display: none !important;
+  }
+
   body.page-registrar.printing-enrollment-form .app-wrapper,
   body.page-registrar.printing-enrollment-form .app-wrapper * {
     visibility: hidden !important;
@@ -4180,6 +4184,7 @@ body.page-schedule-fees {
     max-width: none !important;
     margin: 0 !important;
     padding: 0 !important;
+    min-height: 0 !important;
   }
 
   body.page-registrar.printing-enrollment-form #enrollmentPrintModal .modal-content {
@@ -4187,6 +4192,7 @@ body.page-schedule-fees {
     border-radius: 0 !important;
     box-shadow: none !important;
     background: transparent !important;
+    min-height: 0 !important;
   }
 
   body.page-registrar.printing-enrollment-form #enrollmentPrintModal .modal-header,
@@ -4209,6 +4215,7 @@ body.page-schedule-fees {
     padding: 0 !important;
     margin: 0 auto !important;
     background: transparent !important;
+    page-break-inside: avoid !important;
     color-adjust: exact !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -4217,12 +4224,44 @@ body.page-schedule-fees {
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-container {
     max-width: 100% !important;
     margin: 0 !important;
-    padding: 20px !important;
+    padding: 12px !important;
     box-shadow: none !important;
     border-radius: 0 !important;
+    page-break-inside: avoid !important;
     color-adjust: exact !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+  }
+
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-header {
+    margin-bottom: 16px !important;
+    padding: 20px 18px !important;
+  }
+
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-title-section {
+    margin-bottom: 14px !important;
+  }
+
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-student-info,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table-section,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-bottom-info,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-staff-only-section,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-important-notice {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table th,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table td {
+    padding: 6px 4px !important;
+  }
+
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table input,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-student-info input,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-bottom-info input,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-signature-input {
+    padding: 4px 6px !important;
+    min-height: 0 !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea input {
@@ -4233,7 +4272,7 @@ body.page-schedule-fees {
 
   @page {
     size: auto;
-    margin: 12mm;
+    margin: 6mm;
   }
 }
 
