@@ -3683,6 +3683,296 @@ body.page-schedule-fees {
   font-size: 13px;
 }
 
+/* Certificate Registration Modal Styles (for modals across all pages) */
+.cert-reg-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 50px;
+  border-radius: 14px;
+  border: 1px solid rgba(2, 27, 58, 0.08);
+  box-shadow: 0 20px 48px rgba(2, 27, 58, 0.12);
+}
+
+.cert-reg-header {
+  background: linear-gradient(135deg, var(--qeci-navy), var(--qeci-navy-2));
+  color: #fff;
+  padding: 35px 25px;
+  text-align: center;
+  margin-bottom: 30px;
+  border-radius: 12px;
+  border: 1px solid rgba(212, 175, 55, 0.24);
+  box-shadow: 0 14px 30px rgba(2, 27, 58, 0.2);
+}
+
+.cert-reg-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 25px;
+}
+
+.cert-reg-institution-logo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--qeci-navy);
+  overflow: hidden;
+  background: linear-gradient(180deg, #fffdf5, #f4ead0);
+  border: 3px solid rgba(212, 175, 55, 0.75);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+  flex-shrink: 0;
+}
+
+.cert-reg-institution-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 5px;
+}
+
+.cert-reg-institution-info h2 {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.5px;
+}
+
+.cert-reg-institution-info p {
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 8px;
+  opacity: 0.95;
+}
+
+.cert-reg-title-section {
+  background: linear-gradient(135deg, var(--qeci-gold), #c4961f);
+  color: var(--qeci-navy);
+  padding: 25px;
+  text-align: center;
+  margin-bottom: 35px;
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 10px;
+  letter-spacing: 1px;
+  box-shadow: 0 10px 24px rgba(212, 175, 55, 0.28);
+}
+
+.cert-reg-title-section div:first-child {
+  font-size: 12px;
+  opacity: 0.88;
+  margin-bottom: 8px;
+}
+
+.cert-reg-title-section div:last-child {
+  font-size: 16px;
+}
+
+.cert-reg-student-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 25px;
+  margin-bottom: 35px;
+  background: linear-gradient(180deg, rgba(2, 27, 58, 0.03), rgba(212, 175, 55, 0.05));
+  padding: 25px;
+  border-radius: 12px;
+  border: 1px solid rgba(2, 27, 58, 0.08);
+}
+
+.cert-reg-info-field,
+.cert-reg-bottom-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.cert-reg-info-field label,
+.cert-reg-bottom-field label {
+  font-weight: 700;
+  font-size: 12px;
+  margin-bottom: 8px;
+  color: var(--qeci-navy);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cert-reg-info-field input,
+.cert-reg-bottom-field input {
+  border: none;
+  border-bottom: 2px solid rgba(2, 27, 58, 0.45);
+  padding: 8px 0;
+  font-size: 13px;
+  background-color: transparent;
+  transition: border-color 0.3s ease;
+}
+
+.cert-reg-info-field input:focus,
+.cert-reg-bottom-field input:focus {
+  outline: none;
+  border-bottom-color: var(--qeci-gold);
+  background-color: rgba(212, 175, 55, 0.08);
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.cert-reg-spacer {
+  grid-column: span 2;
+}
+
+.cert-reg-table-section {
+  margin-bottom: 35px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(2, 27, 58, 0.08);
+  box-shadow: 0 12px 26px rgba(2, 27, 58, 0.08);
+}
+
+.cert-reg-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0;
+}
+
+.cert-reg-table thead {
+  background: linear-gradient(135deg, var(--qeci-navy), var(--qeci-navy-2));
+  color: #fff;
+}
+
+.cert-reg-table thead th {
+  border: none;
+  padding: 15px 12px;
+  font-weight: 700;
+  font-size: 12px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cert-reg-table tbody td {
+  border: 1px solid rgba(2, 27, 58, 0.12);
+  padding: 8px 12px;
+  font-size: 13px;
+  text-align: center;
+  min-height: 50px;
+  background-color: #fff;
+}
+
+.cert-reg-table tbody td input {
+  width: 100%;
+  border: none;
+  padding: 6px 0;
+  font-size: 13px;
+  text-align: center;
+  background-color: transparent;
+  font-family: inherit;
+}
+
+.cert-reg-table tbody td input:focus {
+  outline: none;
+  background-color: rgba(212, 175, 55, 0.1);
+}
+
+.cert-reg-table tbody tr:nth-child(odd) {
+  background-color: rgba(2, 27, 58, 0.025);
+}
+
+.cert-reg-table tbody tr:nth-child(even) {
+  background-color: #fff;
+}
+
+.cert-reg-table tbody tr:hover {
+  background-color: rgba(212, 175, 55, 0.08);
+}
+
+.cert-reg-bottom-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 25px;
+  background: linear-gradient(180deg, rgba(2, 27, 58, 0.03), rgba(212, 175, 55, 0.05));
+  padding: 25px;
+  border-radius: 12px;
+  border: 1px solid rgba(2, 27, 58, 0.08);
+}
+
+.cert-reg-staff-only-section {
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 1px solid rgba(212, 175, 55, 0.45);
+}
+
+.cert-reg-staff-only-label,
+.cert-reg-process-by-label {
+  font-size: 12px;
+  color: var(--qeci-navy);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cert-reg-staff-only-label {
+  margin-bottom: 15px;
+}
+
+.cert-reg-process-by-label {
+  margin-bottom: 20px;
+}
+
+.cert-reg-signature-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.cert-reg-signature-block {
+  text-align: center;
+}
+
+.cert-reg-signature-input {
+  width: 100%;
+  border: none;
+  border-bottom: 1.5px solid rgba(2, 27, 58, 0.65);
+  padding: 12px 0;
+  font-size: 13px;
+  text-align: center;
+  background-color: transparent;
+  margin-bottom: 8px;
+  font-family: inherit;
+}
+
+.cert-reg-signature-input:focus {
+  outline: none;
+  background-color: rgba(212, 175, 55, 0.08);
+}
+
+.cert-reg-signature-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--qeci-navy);
+}
+
+.cert-reg-important-notice {
+  background: linear-gradient(135deg, var(--qeci-navy), var(--qeci-navy-2));
+  color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 30px;
+  font-size: 12px;
+  line-height: 1.6;
+  border-left: 5px solid var(--qeci-gold);
+  box-shadow: 0 14px 30px rgba(2, 27, 58, 0.18);
+}
+
+.cert-reg-important-notice strong {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--qeci-gold);
+}
+
 .page-schedule-fees .sched-fees-fee-name {
   text-align: left;
   font-weight: 600;
