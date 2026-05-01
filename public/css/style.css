@@ -4362,7 +4362,7 @@ body.page-schedule-fees {
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-important-notice {
     margin-top: 3px !important;
     padding: 3px 4px !important;
-    font-size: 8px !important;
+    font-size: 9px !important;
     line-height: 1.1 !important;
   }
 
@@ -4420,13 +4420,13 @@ body.page-schedule-fees {
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-important-notice {
     padding: 3px 4px !important;
-    font-size: 8px !important;
+    font-size: 9px !important;
     line-height: 1 !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-important-notice strong {
     padding: 3px 4px !important;
-    font-size: 8px !important;
+    font-size: 9px !important;
     line-height: 1 !important;
   }
 
@@ -4464,7 +4464,7 @@ body.page-schedule-fees {
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-important-notice strong {
-    font-size: 8px !important;
+    font-size: 9px !important;
     line-height: 1.1 !important;
   }
 
