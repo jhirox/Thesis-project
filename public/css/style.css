@@ -4279,7 +4279,11 @@ body.page-schedule-fees {
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table-section,
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-bottom-info,
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-staff-only-section,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-important-notice {
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-important-notice,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-fees-section,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .sched-fees-fee-section,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .sched-fees-payment-section,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .sched-fees-important-notice {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
@@ -4310,6 +4314,49 @@ body.page-schedule-fees {
     padding: 6px !important;
     font-size: 10px !important;
     line-height: 1.2 !important;
+  }
+
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration {
+    margin-top: 14px !important;
+  }
+
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-header {
+    margin-bottom: 12px !important;
+    padding: 12px !important;
+    font-size: 14px !important;
+  }
+
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-content-wrapper {
+    gap: 14px !important;
+    margin-bottom: 14px !important;
+  }
+
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-fee-table td,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-payment-table tbody td,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-payment-table thead th {
+    padding: 8px 6px !important;
+    font-size: 10px !important;
+  }
+
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-fee-amount input,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-payment-table input,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-signature-input,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-section-header-input {
+    font-size: 10px !important;
+    padding: 4px 0 !important;
+  }
+
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-signature-section {
+    gap: 16px !important;
+    margin-top: 14px !important;
+    margin-bottom: 14px !important;
+    padding-top: 14px !important;
+  }
+
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-important-notice {
+    padding: 8px !important;
+    font-size: 10px !important;
+    line-height: 1.25 !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-institution-logo {
