@@ -4156,7 +4156,7 @@ body.page-schedule-fees {
   }
   
   #certificatePrintArea {
-    font-size: 11px !important; /* base size */
+    font-size: 15px !important; /* base size */
   }
 
   #certificatePrintArea .cert-reg-table th,
@@ -4164,12 +4164,12 @@ body.page-schedule-fees {
   #certificatePrintArea input,
   #certificatePrintArea label,
   #certificatePrintArea p {
-    font-size: 12px !important; /* bump up from 7–8px */
+    font-size: 15px !important; /* bump up from 7–8px */
   }
 
   #certificatePrintArea h2,
   #certificatePrintArea .sched-fees-header {
-    font-size: 12px !important; /* headers slightly larger */
+    font-size: 15px !important; /* headers slightly larger */
   }
 
   .cert-reg-header {
