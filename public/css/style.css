@@ -4286,12 +4286,12 @@ body.page-schedule-fees {
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-institution-logo {
-    width: 84px !important;
-    height: 84px !important;
+    width: 100px !important;
+    height: 100px !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-header-content {
-    gap: 16px !important;
+    gap: 15px !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-institution-info h2 {
