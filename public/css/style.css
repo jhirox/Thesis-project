@@ -4469,10 +4469,10 @@ body.page-schedule-fees {
     font-size: 9px !important;
   }
 
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table th,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table td {
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table-section .cert-reg-table th,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table-section .cert-reg-table td {
     padding: 2px 2px !important;
-    font-size: 8px !important;
+    font-size: 10px !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table input,
