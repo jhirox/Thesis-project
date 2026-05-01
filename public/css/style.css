@@ -4353,6 +4353,12 @@ body.page-schedule-fees {
     padding-top: 8px !important;
   }
 
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-important-notice {
+    padding: 4px 6px !important;
+    font-size: 8px !important;
+    line-height: 1.1 !important;
+  }
+
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-important-notice strong {
     padding: 4px 6px !important;
     font-size: 8px !important;
