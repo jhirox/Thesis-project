@@ -4164,6 +4164,11 @@ body.page-schedule-fees {
     visibility: hidden !important;
   }
 
+  body.page-registrar.printing-enrollment-form .app-footer {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
   body.page-registrar.printing-enrollment-form #enrollmentPrintModal,
   body.page-registrar.printing-enrollment-form #enrollmentPrintModal *,
   body.page-registrar.printing-enrollment-form #certificatePrintArea,
