@@ -4213,11 +4213,14 @@ body.page-schedule-fees {
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea {
     position: relative !important;
-    width: auto !important;
+    width: calc(100% / 0.92) !important;
+    max-width: none !important;
     padding: 0 !important;
     margin: 0 auto !important;
     background: transparent !important;
     page-break-inside: avoid !important;
+    transform: scale(0.92) !important;
+    transform-origin: top center !important;
     color-adjust: exact !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -4226,7 +4229,7 @@ body.page-schedule-fees {
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-container {
     max-width: 100% !important;
     margin: 0 !important;
-    padding: 12px !important;
+    padding: 10px !important;
     box-shadow: none !important;
     border-radius: 0 !important;
     page-break-inside: avoid !important;
@@ -4236,12 +4239,13 @@ body.page-schedule-fees {
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-header {
-    margin-bottom: 16px !important;
-    padding: 20px 18px !important;
+    margin-bottom: 12px !important;
+    padding: 16px 14px !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-title-section {
-    margin-bottom: 14px !important;
+    margin-bottom: 10px !important;
+    padding: 14px !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-student-info,
@@ -4253,17 +4257,73 @@ body.page-schedule-fees {
     break-inside: avoid !important;
   }
 
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-student-info,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-bottom-info {
+    gap: 14px !important;
+    margin-bottom: 14px !important;
+    padding: 14px !important;
+  }
+
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table-section {
+    margin-bottom: 14px !important;
+  }
+
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-staff-only-section {
+    margin-top: 14px !important;
+    padding-top: 14px !important;
+  }
+
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-signature-section {
+    gap: 16px !important;
+    margin-bottom: 14px !important;
+  }
+
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-important-notice {
+    margin-top: 14px !important;
+    padding: 12px 14px !important;
+    line-height: 1.4 !important;
+  }
+
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-institution-logo {
+    width: 84px !important;
+    height: 84px !important;
+  }
+
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-header-content {
+    gap: 16px !important;
+  }
+
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-institution-info h2 {
+    font-size: 16px !important;
+    line-height: 1.25 !important;
+  }
+
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-institution-info p,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-title-section div:first-child,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-info-field label,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-bottom-field label,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-signature-label,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-important-notice {
+    font-size: 11px !important;
+  }
+
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-title-section div:last-child {
+    font-size: 14px !important;
+  }
+
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table th,
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table td {
-    padding: 6px 4px !important;
+    padding: 4px 3px !important;
+    font-size: 11px !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-table input,
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-student-info input,
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-bottom-info input,
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-signature-input {
-    padding: 4px 6px !important;
+    padding: 2px 4px !important;
     min-height: 0 !important;
+    font-size: 11px !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea input {
