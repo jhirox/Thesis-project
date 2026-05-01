@@ -4342,8 +4342,8 @@ body.page-schedule-fees {
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-fee-table td {
-    padding: 4px 4px !important;
-    font-size: 8px !important;
+    padding: 3px 3px !important;
+    font-size: 7px !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-side-panel {
@@ -4354,7 +4354,7 @@ body.page-schedule-fees {
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-fee-amount input,
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-signature-input,
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-section-header-input {
-    font-size: 8px !important;
+    font-size: 7px !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-signature-section {
@@ -4400,7 +4400,7 @@ body.page-schedule-fees {
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-signature-label,
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-tagline,
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-fee-name {
-    font-size: 8px !important;
+    font-size: 7px !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-important-notice strong {
