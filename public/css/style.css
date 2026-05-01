@@ -3657,7 +3657,7 @@ body.page-schedule-fees {
 .page-schedule-fees .sched-fees-section-header {
   background: linear-gradient(135deg, var(--qeci-gold), #c4961f);
   color: var(--qeci-navy);
-  padding: 12px;
+  padding: 10px;
   font-weight: 700;
   font-size: 12px;
   text-align: center;
@@ -4393,10 +4393,13 @@ body.page-schedule-fees {
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-fee-amount input,
-  body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-section-header-input,
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-student-info .cert-reg-info-field input,
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-bottom-info .cert-reg-bottom-field input {
     padding: 2px 2px !important; 
+    font-size: 10px !important;
+  }
+
+  body.page-registrar.printing-enrollment-form #certificatePrintArea .page-certificate-registration .sched-fees-section-header-input {
     font-size: 10px !important;
   }
 
