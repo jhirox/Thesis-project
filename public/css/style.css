@@ -4256,7 +4256,7 @@ body.page-schedule-fees {
     margin: 0 auto !important;
     background: transparent !important;
     page-break-inside: avoid !important;
-    transform: scale(0.75) !important;
+    transform: scale(0.70) !important;
     transform-origin: top center !important;
     color-adjust: exact !important;
     -webkit-print-color-adjust: exact !important;
@@ -4449,7 +4449,7 @@ body.page-schedule-fees {
 
   @page {
     size: A4 portrait;
-    margin: 2mm 2mm 1mm 2mm;
+    margin: 0mm 0mm 0mm 0mm;;
   }
 }
 
