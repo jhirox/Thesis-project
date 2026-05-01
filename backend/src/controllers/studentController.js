@@ -3,13 +3,87 @@ import db from "../config/db.js";
 // GET all students
 export const getStudents = async (req, res) => {
   try {
-    const [rows] = await db.query("SELECT * FROM students");
-    if (rows.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "No students found",
-      });
+    const { course, status, search } = req.query;
+    const conditions = [];
+    const params = [];
+
+    if (course) {
+      conditions.push(`(
+        CAST(p.program_id AS CHAR) = ?
+        OR p.program_code LIKE ?
+        OR p.program_name LIKE ?
+      )`);
+      const courseSearch = `%${course}%`;
+      params.push(course, courseSearch, courseSearch);
     }
+
+    if (status && ["active", "inactive"].includes(status.toLowerCase())) {
+      conditions.push("s.is_active = ?");
+      params.push(status.toLowerCase() === "active" ? 1 : 0);
+    }
+
+    if (search) {
+      conditions.push(`(
+        s.first_name LIKE ?
+        OR s.middle_name LIKE ?
+        OR s.last_name LIKE ?
+        OR s.email_address LIKE ?
+        OR CONCAT(
+          s.first_name,
+          ' ',
+          IFNULL(CONCAT(s.middle_name, ' '), ''),
+          s.last_name,
+          IFNULL(CONCAT(' ', s.suffix), '')
+        ) LIKE ?
+      )`);
+      const searchValue = `%${search}%`;
+      params.push(searchValue, searchValue, searchValue, searchValue, searchValue);
+    }
+
+    const whereClause = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
+    const [rows] = await db.query(
+      `
+        SELECT
+          s.student_id,
+          s.first_name,
+          s.middle_name,
+          s.last_name,
+          s.suffix,
+          CONCAT(
+            s.first_name,
+            ' ',
+            IFNULL(CONCAT(s.middle_name, ' '), ''),
+            s.last_name,
+            IFNULL(CONCAT(' ', s.suffix), '')
+          ) AS full_name,
+          s.email_address,
+          s.contact_number,
+          s.is_active,
+          CASE
+            WHEN s.is_active = 1 THEN 'Active'
+            ELSE 'Inactive'
+          END AS status,
+          p.program_id,
+          p.program_code,
+          p.program_name,
+          e.enrollment_id,
+          e.queue_number,
+          e.application_status,
+          e.created_at AS latest_enrollment_created_at
+        FROM students s
+        LEFT JOIN enrollments e ON s.student_id = e.student_id
+          AND e.enrollment_id = (
+            SELECT MAX(e2.enrollment_id)
+            FROM enrollments e2
+            WHERE e2.student_id = s.student_id
+          )
+        LEFT JOIN programs p ON e.program_id = p.program_id
+        ${whereClause}
+        ORDER BY s.created_date DESC, s.student_id DESC
+      `,
+      params
+    );
+
     res.status(200).json({
       success: true,
       message: "Students retrieved successfully",

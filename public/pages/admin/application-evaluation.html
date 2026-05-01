@@ -424,79 +424,75 @@
                 class="evaluation-toolbar d-flex flex-wrap justify-content-between align-items-center mb-3"
               >
                 <div>
-                  <h2 class="section-title">All Applications</h2>
+                  <h2 class="section-title">Student Table</h2>
                   <p class="section-subtitle">
-                    Overview of all application submissions
+                    Filter students by course, enrollment status, name, or email
                   </p>
                 </div>
-                <div class="evaluation-toolbar__actions d-flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="Search applications..."
-                    class="form-control evaluation-toolbar__search"
-                  />
-                  <button class="btn btn-primary evaluation-toolbar__filter-btn" data-bs-toggle="modal" data-bs-target="#filterModal">
-                    <i class="fa-solid fa-filter me-2"></i>Filter
+              </div>
+
+              <form id="student-filter-bar" class="student-filter-bar mb-3">
+                <div class="student-filter-bar__field student-filter-bar__search">
+                  <label for="studentSearchInput" class="form-label">Search</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input
+                      type="search"
+                      id="studentSearchInput"
+                      class="form-control"
+                      placeholder="Name or email"
+                      autocomplete="off"
+                    />
+                  </div>
+                </div>
+
+                <div class="student-filter-bar__field">
+                  <label for="studentCourseFilter" class="form-label">Course</label>
+                  <select id="studentCourseFilter" class="form-select">
+                    <option value="">All Courses</option>
+                    <option value="BSCS">BSCS</option>
+                    <option value="BSBA">BSBA</option>
+                    <option value="BEED">BEED</option>
+                    <option value="BSED">BSED</option>
+                    <option value="BSCRIM">BSCRIM</option>
+                  </select>
+                </div>
+
+                <div class="student-filter-bar__field">
+                  <label for="studentStatusFilter" class="form-label">Status</label>
+                  <select id="studentStatusFilter" class="form-select">
+                    <option value="">All Status</option>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                  </select>
+                </div>
+
+                <div class="student-filter-bar__actions">
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-filter me-2"></i>Apply
+                  </button>
+                  <button type="button" id="resetStudentFilters" class="btn btn-outline-light">
+                    <i class="fa-solid fa-rotate-left me-2"></i>Reset
                   </button>
                 </div>
-              </div>
+              </form>
 
               <div class="table-responsive">
                 <table class="table table-bordered table-hover align-middle mb-0 ">
                   <thead class="table-header">
                     <tr>
-                      <th scope="col">ID</th>
-                      <th scope="col">Application</th>
+                      <th scope="col">Student ID</th>
+                      <th scope="col">Student</th>
+                      <th scope="col">Email</th>
                       <th scope="col">Course</th>
                       <th scope="col">Status</th>
-                      <th scope="col">Evaluator</th>
-                      <th scope="col">Submitted</th>
+                      <th scope="col">Contact</th>
                     </tr>
                   </thead>
 
-                  <tbody class="table-body" id="all-applications-body">
+                  <tbody class="table-body" id="student-table-body">
                     <tr>
-                      <td>APP001</td>
-                      <td>Zairus Jester</td>
-                      <td>BSCS</td>
-                      <td>
-                        <span class="badge text-bg-success">Approved</span>
-                      </td>
-                      <td>Mrs. Chin</td>
-                      <td>2025-01-27</td>
-                    </tr>
-
-                    <tr>
-                      <td>APP004</td>
-                      <td>Zairus Jester</td>
-                      <td>BSCS</td>
-                      <td>
-                        <span class="badge bg-danger">Rejected</span>
-                      </td>
-                      <td>Mrs. Chin</td>
-                      <td>2025-01-29</td>
-                    </tr>
-
-                    <tr>
-                      <td>APP007</td>
-                      <td>Zairus Jester</td>
-                      <td>BSCS</td>
-                      <td>
-                        <span class="badge bg-warning">Under Review</span>
-                      </td>
-                      <td>Mrs. Chin</td>
-                      <td>2025-01-12</td>
-                    </tr>
-
-                    <tr>
-                      <td>APP009</td>
-                      <td>Zairus Jester</td>
-                      <td>BSCS</td>
-                      <td>
-                        <span class="badge bg-warning">Pending</span>
-                      </td>
-                      <td>Mrs. Chin</td>
-                      <td>2025-01-10</td>
+                      <td colspan="6" class="text-center text-muted">Loading students...</td>
                     </tr>
                   </tbody>
                 </table>
@@ -796,12 +792,118 @@
           }
 
           const applications = result.data || [];
-          renderAllApplications(applications);
           updateApplicationStats(applications);
         } catch (error) {
           console.error('Error loading applications:', error);
           updateApplicationStats([]);
         }
+      }
+
+      async function loadStudents() {
+        const tableBody = document.getElementById('student-table-body');
+        if (tableBody) {
+          tableBody.innerHTML = `
+            <tr>
+              <td colspan="6" class="text-center text-muted">Loading students...</td>
+            </tr>
+          `;
+        }
+
+        try {
+          const query = buildStudentFilterQuery();
+          const response = await fetch(`/getStudents${query}`);
+          const result = await response.json();
+
+          if (!response.ok || !result.success) {
+            throw new Error(result.message || 'Unable to load students');
+          }
+
+          renderStudentTable(result.data || []);
+        } catch (error) {
+          console.error('Error loading students:', error);
+          if (tableBody) {
+            tableBody.innerHTML = `
+              <tr>
+                <td colspan="6" class="text-center text-danger">Unable to load students.</td>
+              </tr>
+            `;
+          }
+        }
+      }
+
+      function buildStudentFilterQuery() {
+        const params = new URLSearchParams();
+        const course = document.getElementById('studentCourseFilter')?.value;
+        const status = document.getElementById('studentStatusFilter')?.value;
+        const search = document.getElementById('studentSearchInput')?.value.trim();
+
+        if (course) {
+          params.set('course', course);
+        }
+
+        if (status) {
+          params.set('status', status);
+        }
+
+        if (search) {
+          params.set('search', search);
+        }
+
+        const query = params.toString();
+        return query ? `?${query}` : '';
+      }
+
+      function renderStudentTable(students) {
+        const tableBody = document.getElementById('student-table-body');
+        if (!tableBody) {
+          return;
+        }
+
+        tableBody.innerHTML = '';
+
+        if (!students.length) {
+          tableBody.innerHTML = `
+            <tr>
+              <td colspan="6" class="text-center text-muted">No students found.</td>
+            </tr>
+          `;
+          return;
+        }
+
+        students.forEach((student) => {
+          const row = document.createElement('tr');
+          const course = student.program_code || student.program_name || 'N/A';
+
+          row.innerHTML = `
+            <td>${escapeHtml(student.student_id || 'N/A')}</td>
+            <td>${escapeHtml(student.full_name || buildStudentName(student))}</td>
+            <td>${escapeHtml(student.email_address || 'N/A')}</td>
+            <td>${escapeHtml(course)}</td>
+            <td>${buildStudentStatusBadge(student.status)}</td>
+            <td>${escapeHtml(student.contact_number || 'N/A')}</td>
+          `;
+
+          tableBody.appendChild(row);
+        });
+      }
+
+      function buildStudentName(student) {
+        return `${student.first_name || ''} ${student.middle_name || ''} ${student.last_name || ''}`.trim() || 'N/A';
+      }
+
+      function buildStudentStatusBadge(status) {
+        const normalizedStatus = status === 'Inactive' ? 'Inactive' : 'Active';
+        const badgeClass = normalizedStatus === 'Active' ? 'text-bg-success' : 'text-bg-secondary';
+        return `<span class="badge ${badgeClass}">${normalizedStatus}</span>`;
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
       }
 
       function updateApplicationStats(applications) {
@@ -896,13 +998,7 @@
       }
 
       function applyFilters() {
-        const status = document.getElementById('filterStatus').value;
-        const course = document.getElementById('filterCourse').value;
-        const evaluator = document.getElementById('filterEvaluator').value;
-        const date = document.getElementById('filterDate').value;
-        
-        console.log('Filters Applied:', { status, course, evaluator, date });
-        // Add your filter logic here
+        loadStudents();
         
         // Close the modal
         const modal = bootstrap.Modal.getInstance(document.getElementById('filterModal'));
@@ -1102,6 +1198,33 @@
 
       document.addEventListener("DOMContentLoaded", () => {
         loadAllApplications();
+        loadStudents();
+
+        const studentFilterBar = document.getElementById('student-filter-bar');
+        const resetStudentFilters = document.getElementById('resetStudentFilters');
+        const studentSearchInput = document.getElementById('studentSearchInput');
+        let searchDebounce;
+
+        if (studentFilterBar) {
+          studentFilterBar.addEventListener('submit', (event) => {
+            event.preventDefault();
+            loadStudents();
+          });
+        }
+
+        if (resetStudentFilters) {
+          resetStudentFilters.addEventListener('click', () => {
+            studentFilterBar.reset();
+            loadStudents();
+          });
+        }
+
+        if (studentSearchInput) {
+          studentSearchInput.addEventListener('input', () => {
+            window.clearTimeout(searchDebounce);
+            searchDebounce = window.setTimeout(loadStudents, 350);
+          });
+        }
 
         setTimeout(() => {
           const skeleton = document.getElementById("page-skeleton");

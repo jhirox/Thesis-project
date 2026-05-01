@@ -1294,6 +1294,44 @@ body.page-credentials {
   flex-shrink: 0;
 }
 
+.student-filter-bar {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.4fr) minmax(160px, 0.8fr) minmax(150px, 0.7fr) auto;
+  gap: 1rem;
+  align-items: end;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.student-filter-bar__field {
+  min-width: 0;
+}
+
+.student-filter-bar .form-label {
+  margin-bottom: 0.35rem;
+  color: rgba(255, 255, 255, 0.84);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.student-filter-bar__actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.student-filter-bar__actions .btn {
+  white-space: nowrap;
+}
+
+.student-filter-bar .input-group-text,
+.student-filter-bar .form-control,
+.student-filter-bar .form-select {
+  min-height: 40px;
+}
+
 .quick-actions {
   background: rgba(255, 255, 255, 0.08);
   border-radius: 10px;
@@ -1372,6 +1410,18 @@ body.page-credentials {
 
   .page-evaluation .evaluation-toolbar__search,
   .page-evaluation .evaluation-toolbar__filter-btn {
+    width: 100%;
+  }
+
+  .page-evaluation .student-filter-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .page-evaluation .student-filter-bar__actions {
+    flex-direction: column;
+  }
+
+  .page-evaluation .student-filter-bar__actions .btn {
     width: 100%;
   }
 }
