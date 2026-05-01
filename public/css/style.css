@@ -4155,38 +4155,37 @@ body.page-schedule-fees {
     overflow: visible !important;
   }
 
-  body.page-registrar.printing-enrollment-form .app-wrapper {
-    background: transparent !important;
+  body.page-registrar.printing-enrollment-form .app-wrapper,
+  body.page-registrar.printing-enrollment-form .app-wrapper * {
+    visibility: hidden !important;
   }
 
-  body.page-registrar.printing-enrollment-form .app-wrapper > *:not(#enrollmentPrintModal) {
-    display: none !important;
+  body.page-registrar.printing-enrollment-form #enrollmentPrintModal,
+  body.page-registrar.printing-enrollment-form #enrollmentPrintModal *,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea,
+  body.page-registrar.printing-enrollment-form #certificatePrintArea * {
+    visibility: visible !important;
   }
 
   body.page-registrar.printing-enrollment-form #enrollmentPrintModal {
-    position: static !important;
+    position: absolute !important;
+    inset: 0 !important;
     display: block !important;
-    width: auto !important;
-    height: auto !important;
-    padding: 0 !important;
-    margin: 0 !important;
     overflow: visible !important;
-    background: transparent !important;
+    background: #fff !important;
   }
 
   body.page-registrar.printing-enrollment-form #enrollmentPrintModal .modal-dialog {
-    display: inline-block !important;
-    width: fit-content !important;
-    max-width: 100% !important;
+    width: 100% !important;
+    max-width: none !important;
     margin: 0 !important;
   }
 
   body.page-registrar.printing-enrollment-form #enrollmentPrintModal .modal-content {
-    width: auto !important;
     border: 0 !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-    background: transparent !important;
+    background: #fff !important;
   }
 
   body.page-registrar.printing-enrollment-form #enrollmentPrintModal .modal-header,
@@ -4204,22 +4203,21 @@ body.page-schedule-fees {
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea {
     position: relative !important;
-    width: auto !important;
+    width: 100% !important;
     padding: 0 !important;
     margin: 0 !important;
-    background: transparent !important;
+    background: #fff !important;
     color-adjust: exact !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
   body.page-registrar.printing-enrollment-form #certificatePrintArea .cert-reg-container {
-    display: block !important;
-    max-width: 1000px !important;
+    max-width: 100% !important;
     margin: 0 !important;
     padding: 20px !important;
-    box-shadow: 0 20px 48px rgba(2, 27, 58, 0.12) !important;
-    border-radius: 14px !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
     color-adjust: exact !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
