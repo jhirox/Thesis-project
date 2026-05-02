@@ -14,7 +14,12 @@ if (!fs.existsSync(uploadsDir)) {
 
 const upload = multer({
   storage: multer.diskStorage({
-    destination: uploadsDir,
+    destination: (req, file, cb) => {
+      if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+      }
+      cb(null, uploadsDir);
+    },
     filename: (req, file, cb) => {
       const extension = path.extname(file.originalname).toLowerCase();
       const safeName = `student-${Date.now()}-${Math.round(Math.random() * 1e6)}${extension}`;
