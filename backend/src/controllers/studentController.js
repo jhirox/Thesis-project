@@ -1,5 +1,6 @@
 import { asyncHandler } from "../middlewares/asyncHandler.js";
 import * as studentService from "../services/studentService.js";
+import { buildStoredFileUrl } from "../config/uploadStorage.js";
 import {
   submitEnrollmentSchema,
   updateStudentProfileSchema,
@@ -98,10 +99,7 @@ export const updateStudentProfile = asyncHandler(async (req, res) => {
   const payload = updateStudentProfileSchema.parse(req.body);
 
   if (req.file) {
-    console.log("File uploaded:", req.file);
-    payload.profilePhotoUrl = `/uploads/${req.file.filename}`;
-  } else {
-    console.log("No file in request");
+    payload.profilePhotoUrl = buildStoredFileUrl(req.file.filename);
   }
 
   const profile = await studentService.updateStudentProfile(payload);
@@ -116,7 +114,7 @@ export const updateStudentReceipt = asyncHandler(async (req, res) => {
   const payload = updateStudentReceiptSchema.parse(req.body);
 
   if (req.file) {
-    payload.officialReceiptFileUrl = `/uploads/${req.file.filename}`;
+    payload.officialReceiptFileUrl = buildStoredFileUrl(req.file.filename);
     payload.officialReceiptFileName = req.file.originalname;
     payload.officialReceiptFileType = req.file.mimetype;
   }

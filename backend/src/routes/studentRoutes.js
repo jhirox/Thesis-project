@@ -1,23 +1,15 @@
 import express from 'express';
 import multer from 'multer';
-import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { getStudents, getStudentByID, submitEnrollment, getEnrollments, getRecentEnrollments, getEnrollmentApplicantDetails, getStudentProfile, updateStudentProfile, updateStudentReceipt } from '../controllers/studentController.js';
+import { ensureUploadsDir, uploadsDir } from '../config/uploadStorage.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const uploadsDir = path.join(__dirname, '../../../uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
+ensureUploadsDir();
 
 const upload = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
-      if (!fs.existsSync(uploadsDir)) {
-        fs.mkdirSync(uploadsDir, { recursive: true });
-      }
+      ensureUploadsDir();
       cb(null, uploadsDir);
     },
     filename: (req, file, cb) => {
