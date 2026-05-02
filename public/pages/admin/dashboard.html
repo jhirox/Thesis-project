@@ -591,8 +591,6 @@
 
     <script src="https://code.highcharts.com/highcharts.js"></script>
 
-    <script src="https://code.highcharts.com/modules/export-data.js"></script>
-
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
 
     <script src="https://code.highcharts.com/themes/adaptive.js"></script>
@@ -669,11 +667,19 @@
         async function loadDashboardData() {
           try {
             const enrollmentsResponse = await fetch('/api/students/enrollments/all');
+            if (!enrollmentsResponse.ok) {
+              const errorBody = await enrollmentsResponse.text();
+              console.error('Failed to load dashboard data:', enrollmentsResponse.status, errorBody);
+              return;
+            }
+
             const enrollmentsResult = await enrollmentsResponse.json();
 
             if (enrollmentsResult.success) {
               updateDashboardStats(enrollmentsResult.data);
               updateRecentApplications(enrollmentsResult.data);
+            } else {
+              console.error('Dashboard API returned unsuccessful response:', enrollmentsResult);
             }
           } catch (error) {
             console.error('Error loading dashboard data:', error);
