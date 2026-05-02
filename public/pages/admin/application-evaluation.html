@@ -515,53 +515,18 @@
                 <table class="table table-bordered table-hover align-middle mb-0">
                   <thead class="table-header">
                     <tr>
+                      <th scope="col">Application ID</th>
                       <th scope="col">Applicant</th>
                       <th scope="col">Course</th>
-                      <th scope="col">Evaluator</th>
-                      <th scope="col">Submitted Date</th>
-                      <th scope="col">Approved Date</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Submitted</th>
+                      <th scope="col" class="text-end">Actions</th>
                     </tr>
                   </thead>
 
-                  <tbody class="table-body">
+                  <tbody class="table-body" id="approved-applications-body">
                     <tr>
-                      <td>Yuri Oflaria</td>
-                      <td>BSCS</td>
-                      <td>Mrs. Chin</td>
-                      <td>2025-01-15</td>
-                      <td>2025-01-20</td>
-                    </tr>
-
-                    <tr>
-                      <td>Maria Santos</td>
-                      <td>BSCRIM</td>
-                      <td>Mr. Reyes</td>
-                      <td>2025-01-10</td>
-                      <td>2025-01-18</td>
-                    </tr>
-
-                    <tr>
-                      <td>Juan Dela Cruz</td>
-                      <td>BEED</td>
-                      <td>Mrs. Garcia</td>
-                      <td>2025-01-08</td>
-                      <td>2025-01-16</td>
-                    </tr>
-
-                    <tr>
-                      <td>Ana Lopez</td>
-                      <td>BSBA</td>
-                      <td>Mr. Santos</td>
-                      <td>2025-01-12</td>
-                      <td>2025-01-19</td>
-                    </tr>
-
-                    <tr>
-                      <td>Carlos Mendoza</td>
-                      <td>BSCS</td>
-                      <td>Mrs. Chin</td>
-                      <td>2025-01-14</td>
-                      <td>2025-01-21</td>
+                      <td colspan="6" class="text-center text-muted">No approved applications yet.</td>
                     </tr>
                   </tbody>
                 </table>
@@ -588,42 +553,9 @@
                     </tr>
                   </thead>
 
-                  <tbody class="table-body">
+                  <tbody class="table-body" id="pending-applications-body">
                     <tr>
-                      <td>APP001</td>
-                      <td>Zairus Jester</td>
-                      <td>BSCS</td>
-                      <td>
-                        <span class="badge status-pending">Pending</span>
-                      </td>
-                      <td>2025-01-27</td>
-                      <td class="text-end">
-                        <button class="review-btn">Review</button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>APP001</td>
-                      <td>Zairus Jester</td>
-                      <td>BSCS</td>
-                      <td>
-                        <span class="badge status-pending">Pending</span>
-                      </td>
-                      <td>2025-01-27</td>
-                      <td class="text-end">
-                        <button class="review-btn">Review</button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>APP001</td>
-                      <td>Zairus Jester</td>
-                      <td>BSCS</td>
-                      <td>
-                        <span class="badge status-pending">Pending</span>
-                      </td>
-                      <td>2025-01-27</td>
-                      <td class="text-end">
-                        <button class="review-btn">Review</button>
-                      </td>
+                      <td colspan="6" class="text-center text-muted">Loading applications...</td>
                     </tr>
                   </tbody>
                 </table>
@@ -648,31 +580,14 @@
                   <th scope="col">Application ID</th>
                   <th scope="col">Applicant</th>
                   <th scope="col">Course</th>
-                  <th scope="col">Evaluator</th>
-                  <th scope="col">Rejected Date</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Submitted</th>
+                  <th scope="col" class="text-end">Actions</th>
                 </tr>
                </thead>
-               <tbody class="table-body">
+               <tbody class="table-body" id="rejected-applications-body">
                 <tr>
-                  <td>APP002</td>
-                  <td>Zairus Jester</td>
-                  <td>BSCS</td>
-                  <td>Mrs. Chin</td>
-                  <td>2025-01-22</td>
-                </tr>
-                <tr>
-                  <td>APP002</td>
-                  <td>Zairus Jester</td>
-                  <td>BSCS</td>
-                  <td>Mrs. Chin</td>
-                  <td>2025-01-22</td>
-                </tr>
-                <tr>
-                  <td>APP002</td>
-                  <td>Zairus Jester</td>
-                  <td>BSCS</td>
-                  <td>Mrs. Chin</td>
-                  <td>2025-01-22</td>
+                  <td colspan="6" class="text-center text-muted">No rejected applications yet.</td>
                 </tr>
                </tbody>
                </table>
@@ -809,12 +724,14 @@
           updateApplicationStats(allApplications);
           renderAllApplications(allApplications);
           renderStudentTable(getFilteredApplications());
+          renderApplicationStatusTables(allApplications);
         } catch (error) {
           console.error('Error loading applications:', error);
           allApplications = [];
           updateApplicationStats([]);
           renderAllApplications([]);
           renderStudentTable([]);
+          renderApplicationStatusTables([]);
         }
       }
 
@@ -1004,6 +921,75 @@
             <td>${buildStatusBadge(status)}</td>
             <td>Unassigned</td>
             <td>${submittedDate}</td>
+            <td class="text-end">
+              <button
+                type="button"
+                class="review-btn"
+                data-student-id="${escapeHtml(application.student_id || '')}"
+                data-enrollment-id="${escapeHtml(application.enrollment_id || '')}"
+              >
+                Review
+              </button>
+            </td>
+          `;
+
+          tableBody.appendChild(row);
+        });
+      }
+
+      function renderApplicationStatusTables(applications) {
+        renderStatusTable({
+          tableBodyId: 'approved-applications-body',
+          applications: applications.filter((application) => isApprovedStatus(application.application_status)),
+          emptyMessage: 'No approved applications yet.',
+        });
+
+        renderStatusTable({
+          tableBodyId: 'pending-applications-body',
+          applications: applications.filter((application) => isPendingReviewStatus(application.application_status)),
+          emptyMessage: 'No pending review applications found.',
+        });
+
+        renderStatusTable({
+          tableBodyId: 'rejected-applications-body',
+          applications: applications.filter((application) => isRejectedStatus(application.application_status)),
+          emptyMessage: 'No rejected applications yet.',
+        });
+      }
+
+      function renderStatusTable({ tableBodyId, applications, emptyMessage }) {
+        const tableBody = document.getElementById(tableBodyId);
+        if (!tableBody) {
+          return;
+        }
+
+        tableBody.innerHTML = '';
+
+        if (!applications.length) {
+          tableBody.innerHTML = `
+            <tr>
+              <td colspan="6" class="text-center text-muted">${escapeHtml(emptyMessage)}</td>
+            </tr>
+          `;
+          return;
+        }
+
+        applications.forEach((application) => {
+          const row = document.createElement('tr');
+          const applicationId = application.queue_number || `ENR-${application.enrollment_id}`;
+          const applicantName =
+            application.full_name ||
+            `${application.first_name || ''} ${application.middle_name || ''} ${application.last_name || ''}`.trim() ||
+            'N/A';
+          const course = application.program_code || application.program_name || 'N/A';
+          const submittedDate = formatDate(application.created_at || application.enrollment_date);
+
+          row.innerHTML = `
+            <td>${escapeHtml(applicationId)}</td>
+            <td>${escapeHtml(applicantName)}</td>
+            <td>${escapeHtml(course)}</td>
+            <td>${buildStatusBadge(application.application_status || 'Submitted')}</td>
+            <td>${escapeHtml(submittedDate)}</td>
             <td class="text-end">
               <button
                 type="button"
