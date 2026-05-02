@@ -430,9 +430,9 @@
                       >group</span
                     >
                   </div>
-                  <h3>1,247</h3>
+                  <h3>0</h3>
                   <small
-                    ><span class="text-primary">+12%</span> from last week</small
+                    ><span class="text-primary">Live</span> enrollment data</small
                   >
                 </div>
               </div>
@@ -448,9 +448,9 @@
                       >schedule</span
                     >
                   </div>
-                  <h3>69</h3>
+                  <h3>0</h3>
                   <small
-                    ><span class="text-warning">+12%</span> from last week</small
+                    ><span class="text-warning">Live</span> enrollment data</small
                   >
                 </div>
               </div>
@@ -466,9 +466,9 @@
                       >check_circle</span
                     >
                   </div>
-                  <h3>69</h3>
+                  <h3>0</h3>
                   <small
-                    ><span class="text-success">+12%</span> from last week</small
+                    ><span class="text-success">Live</span> enrollment data</small
                   >
                 </div>
               </div>
@@ -484,9 +484,9 @@
                       >warning</span
                     >
                   </div>
-                  <h3>7</h3>
+                  <h3>0</h3>
                   <small
-                    ><span class="text-danger">+5%</span> from last week</small
+                    ><span class="text-danger">Live</span> enrollment data</small
                   >
                 </div>
               </div>
@@ -495,13 +495,13 @@
             <div class="row g-3 mb-4 px-4">
               <div class="col-lg-7">
                 <div class="chart-card rounded-2 p-3">
-                  <h6>Total Application Volume</h6>
+                  <h6>Daily Application Volume</h6>
                   <div id="barchart" style="width: 100%; height: 250px"></div>
                 </div>
               </div>
               <div class="col-lg-5">
                 <div class="chart-card rounded-2 p-3">
-                  <h6>Student Courses</h6>
+                  <h6>Application Distribution by Course</h6>
                   <div id="piechart" style="width: 100%; height: 250px"></div>
                 </div>
               </div>
@@ -511,6 +511,11 @@
             <div class="px-4">
               <div class="recent-applications p-3">
                 <h6>Recent Applications</h6>
+                <div id="recent-applications-list" class="d-flex flex-column gap-3 mt-3">
+                  <div class="card p-3 text-center">
+                    <small class="text-muted">Loading recent applications...</small>
+                  </div>
+                </div>
                 <div class="justify-content-center d-flex">
                   <a href="/application-evaluation">
                     <button class="btn btn-light w-100% mt-3">
@@ -597,8 +602,6 @@
 
     <script src="https://unpkg.com/singledivui/dist/singledivui.min.js"></script>
 
-    <script src="/js/charts.js"></script>
-
     <script src="/js/utils/app.js"></script>
 
     <script type="module">
@@ -666,111 +669,302 @@
         // Load dashboard data from API
         async function loadDashboardData() {
           try {
-            const enrollmentsResponse = await fetch('/api/students/enrollments/all');
+            const enrollmentsResponse = await fetch("/api/students/enrollments/all");
             if (!enrollmentsResponse.ok) {
               const errorBody = await enrollmentsResponse.text();
-              console.error('Failed to load dashboard data:', enrollmentsResponse.status, errorBody);
-              return;
+              console.error("Failed to load dashboard data:", enrollmentsResponse.status, errorBody);
+              throw new Error("Failed to load dashboard data.");
             }
 
             const enrollmentsResult = await enrollmentsResponse.json();
 
-            if (enrollmentsResult.success) {
-              updateDashboardStats(enrollmentsResult.data);
-              updateRecentApplications(enrollmentsResult.data);
-            } else {
-              console.error('Dashboard API returned unsuccessful response:', enrollmentsResult);
+            if (!enrollmentsResult.success) {
+              console.error("Dashboard API returned unsuccessful response:", enrollmentsResult);
+              throw new Error(enrollmentsResult.message || "Dashboard API returned unsuccessful response.");
             }
+
+            const enrollments = Array.isArray(enrollmentsResult.data) ? enrollmentsResult.data : [];
+            updateDashboardStats(enrollments);
+            renderDashboardCharts(enrollments);
+            updateRecentApplications(enrollments);
           } catch (error) {
-            console.error('Error loading dashboard data:', error);
+            console.error("Error loading dashboard data:", error);
+            updateDashboardStats([]);
+            renderDashboardCharts([]);
+            updateRecentApplications([]);
           }
         }
 
         function updateDashboardStats(enrollments) {
           const totalApplications = enrollments.length;
-          const pendingReview = enrollments.filter(e => e.application_status === 'Submitted' || e.application_status === 'Under Review').length;
-          const approvedToday = enrollments.filter(e => e.application_status === 'Approved' && isToday(e.updated_at)).length;
-          const rejectedToday = enrollments.filter(e => e.application_status === 'Rejected' && isToday(e.updated_at)).length;
+          const pendingReview = enrollments.filter((enrollment) =>
+            enrollment.application_status === "Submitted" || enrollment.application_status === "Under Review"
+          ).length;
+          const approvedToday = enrollments.filter((enrollment) =>
+            (enrollment.application_status === "Approved" || enrollment.application_status === "Enrolled") &&
+            isToday(enrollment.updated_at)
+          ).length;
+          const rejectedToday = enrollments.filter((enrollment) =>
+            enrollment.application_status === "Rejected" && isToday(enrollment.updated_at)
+          ).length;
 
-          // Update cards
-          document.querySelector('.card-total h3').textContent = totalApplications.toLocaleString();
-          document.querySelector('.card-pending h3').textContent = pendingReview.toLocaleString();
-          document.querySelector('.card-approved h3').textContent = approvedToday.toLocaleString();
-          document.querySelector('.card-rejected h3').textContent = rejectedToday.toLocaleString();
+          document.querySelector(".card-total h3").textContent = totalApplications.toLocaleString();
+          document.querySelector(".card-pending h3").textContent = pendingReview.toLocaleString();
+          document.querySelector(".card-approved h3").textContent = approvedToday.toLocaleString();
+          document.querySelector(".card-rejected h3").textContent = rejectedToday.toLocaleString();
+        }
+
+        function renderDashboardCharts(enrollments) {
+          renderApplicationVolumeChart(enrollments);
+          renderCourseDistributionChart(enrollments);
+        }
+
+        function renderApplicationVolumeChart(enrollments) {
+          if (!document.getElementById("barchart")) {
+            return;
+          }
+
+          const dailyVolume = buildDailyVolumeSeries(enrollments);
+          const hasData = dailyVolume.length > 0;
+
+          Highcharts.chart("barchart", {
+            chart: {
+              backgroundColor: null,
+              type: "column",
+            },
+            title: {
+              text: "",
+            },
+            subtitle: {
+              text: hasData ? "" : "No application data available.",
+              style: { color: "#d7e3f1" },
+            },
+            xAxis: {
+              categories: dailyVolume.map((entry) => entry.label),
+              labels: {
+                style: { color: "#ffffff" },
+              },
+            },
+            yAxis: {
+              min: 0,
+              allowDecimals: false,
+              title: {
+                text: "",
+              },
+              labels: {
+                style: { color: "#ffffff" },
+              },
+            },
+            legend: {
+              enabled: false,
+            },
+            credits: {
+              enabled: false,
+            },
+            exporting: {
+              enabled: false,
+            },
+            tooltip: {
+              pointFormat: "<b>{point.y}</b> application(s)",
+            },
+            series: [
+              {
+                name: "Applications",
+                data: dailyVolume.map((entry) => entry.total),
+                color: "#2196f3",
+              },
+            ],
+          });
+        }
+
+        function renderCourseDistributionChart(enrollments) {
+          if (!document.getElementById("piechart")) {
+            return;
+          }
+
+          const courseDistribution = buildCourseDistribution(enrollments);
+          const hasData = courseDistribution.length > 0;
+
+          Highcharts.chart("piechart", {
+            chart: {
+              backgroundColor: null,
+              type: "pie",
+            },
+            title: {
+              text: "",
+            },
+            subtitle: {
+              text: hasData ? "" : "No application data available.",
+              style: { color: "#d7e3f1" },
+            },
+            credits: {
+              enabled: false,
+            },
+            exporting: {
+              enabled: false,
+            },
+            tooltip: {
+              pointFormat: "<b>{point.y}</b> application(s)",
+            },
+            plotOptions: {
+              pie: {
+                allowPointSelect: true,
+                cursor: "pointer",
+                dataLabels: {
+                  enabled: hasData,
+                  format: "<b>{point.name}</b>: {point.y}",
+                  style: {
+                    color: "#ffffff",
+                    textOutline: "none",
+                  },
+                },
+              },
+            },
+            series: [
+              {
+                name: "Applications",
+                colorByPoint: true,
+                data: courseDistribution,
+              },
+            ],
+          });
+        }
+
+        function buildDailyVolumeSeries(enrollments) {
+          const countsByDate = new Map();
+
+          enrollments.forEach((enrollment) => {
+            const sourceDate = enrollment.created_at || enrollment.enrollment_date;
+            const date = new Date(sourceDate);
+
+            if (Number.isNaN(date.getTime())) {
+              return;
+            }
+
+            const label = date.toLocaleDateString("en-CA");
+            countsByDate.set(label, (countsByDate.get(label) || 0) + 1);
+          });
+
+          return Array.from(countsByDate.entries())
+            .sort(([left], [right]) => left.localeCompare(right))
+            .map(([label, total]) => ({ label, total }));
+        }
+
+        function buildCourseDistribution(enrollments) {
+          const countsByCourse = new Map();
+
+          enrollments.forEach((enrollment) => {
+            const course = enrollment.program_code || enrollment.program_name || "Unassigned";
+            countsByCourse.set(course, (countsByCourse.get(course) || 0) + 1);
+          });
+
+          return Array.from(countsByCourse.entries())
+            .sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]))
+            .map(([name, total]) => ({ name, y: total }));
         }
 
         function updateRecentApplications(enrollments) {
-          const recentContainer = document.querySelector('#actual-content .recent-applications');
+          const recentContainer = document.getElementById("recent-applications-list");
           if (!recentContainer) {
             return;
           }
-          const existingCards = recentContainer.querySelectorAll('.card');
-          
-          // Remove existing cards while keeping the view-all button container.
-          existingCards.forEach(card => {
-            if (!card.querySelector('a')) {
-              card.remove();
-            }
-          });
+          recentContainer.innerHTML = "";
 
           const previewCount = Math.min(enrollments.length, 5);
-          const recentEnrollments = enrollments.slice(0, previewCount);
+          const recentEnrollments = [...enrollments]
+            .sort(
+              (left, right) =>
+                new Date(right.created_at || right.enrollment_date) -
+                new Date(left.created_at || left.enrollment_date)
+            )
+            .slice(0, previewCount);
 
           if (!recentEnrollments.length) {
             const emptyState = document.createElement('div');
             emptyState.className = 'card p-3 text-center';
             emptyState.innerHTML = '<small class="text-muted">No recent applications found.</small>';
-            recentContainer.insertBefore(emptyState, recentContainer.lastElementChild);
+            recentContainer.appendChild(emptyState);
             return;
           }
 
-          recentEnrollments.forEach(enrollment => {
-            const fullName = enrollment.full_name || `${enrollment.first_name} ${enrollment.middle_name || ''} ${enrollment.last_name}`.trim();
-            const course = enrollment.program_code || enrollment.program_name || 'No course';
+          recentEnrollments.forEach((enrollment) => {
+            const fullName =
+              enrollment.full_name ||
+              `${enrollment.first_name} ${enrollment.middle_name || ""} ${enrollment.last_name}`.trim();
+            const course = enrollment.program_code || enrollment.program_name || "No course";
             const applicationId = enrollment.queue_number || `ENR-${enrollment.enrollment_id}`;
-            const card = document.createElement('div');
-            card.className = 'card p-3 d-flex flex-row justify-content-between align-items-center';
+            const card = document.createElement("div");
+            card.className = "card p-3 d-flex flex-row justify-content-between align-items-center";
             card.innerHTML = `
               <div>
-                <strong>${fullName}</strong><br />
-                <small>${course} • ${applicationId}</small>
+                <strong>${escapeHtml(fullName)}</strong><br />
+                <small>${escapeHtml(course)} • ${escapeHtml(applicationId)}</small>
               </div>
               <div class="d-flex justify-content-center align-items-center gap-3">
-                <span class="status-badge status-${getStatusClass(enrollment.application_status)}">${enrollment.application_status}</span>
-                <small class="text-muted">${formatTimeAgo(enrollment.enrollment_date || enrollment.created_at)}</small>
+                <span class="status-badge status-${getStatusClass(enrollment.application_status)}">${escapeHtml(enrollment.application_status || "Submitted")}</span>
+                <small class="text-muted">${escapeHtml(formatTimeAgo(enrollment.enrollment_date || enrollment.created_at))}</small>
               </div>
             `;
-            recentContainer.insertBefore(card, recentContainer.lastElementChild);
+            recentContainer.appendChild(card);
           });
         }
 
         function getStatusClass(status) {
           switch (status) {
-            case 'Submitted': return 'pending';
-            case 'Under Review': return 'pending';
-            case 'Approved': return 'approved';
-            case 'Rejected': return 'rejected';
-            case 'Enrolled': return 'approved';
-            default: return 'pending';
+            case "Submitted":
+            case "Under Review":
+              return "pending";
+            case "Approved":
+            case "Enrolled":
+              return "approved";
+            case "Rejected":
+              return "rejected";
+            default:
+              return "pending";
           }
         }
 
         function isToday(dateString) {
+          if (!dateString) {
+            return false;
+          }
+
           const date = new Date(dateString);
+          if (Number.isNaN(date.getTime())) {
+            return false;
+          }
+
           const today = new Date();
           return date.toDateString() === today.toDateString();
         }
 
         function formatTimeAgo(dateString) {
+          if (!dateString) {
+            return "Unknown date";
+          }
+
           const now = new Date();
           const date = new Date(dateString);
+          if (Number.isNaN(date.getTime())) {
+            return "Unknown date";
+          }
+
           const diffMs = now - date;
           const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
           
-          if (diffHours < 1) return 'Just now';
+          if (diffHours < 1) return "Just now";
           if (diffHours < 24) return `${diffHours} hours ago`;
           const diffDays = Math.floor(diffHours / 24);
           return `${diffDays} days ago`;
+        }
+
+        function escapeHtml(value) {
+          return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
         }
 
         // Skeleton loader simulation
