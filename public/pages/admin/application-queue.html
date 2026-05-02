@@ -330,7 +330,7 @@
                     >group</span
                   >
                 </div>
-                <h3>1,247</h3>
+                <h3 id="queue-total-count">0</h3>
                 <small
                   ><span class="text-primary">+12%</span> from last week</small
                 >
@@ -366,7 +366,7 @@
                     >warning</span
                   >
                 </div>
-                <h3>7</h3>
+                <h3 id="queue-average-wait">0d</h3>
                 <small
                   ><span class="text-danger">+5%</span> from last week</small
                 >
@@ -384,7 +384,7 @@
                     >check_circle</span
                   >
                 </div>
-                <h3>69</h3>
+                <h3 id="queue-processing-rate">0%</h3>
                 <small
                   ><span class="text-success">+12%</span> from last week</small
                 >
@@ -417,152 +417,23 @@
                 </div>
               </div>
 
-              <!-- Card 1 -->
-              <div
-                class="card text-white p-3 d-flex justify-content-between align-items-center mb-3 queue-card"
-              >
-                <div class="queue-card-main">
-                  <div class="info-main">
-                    <strong>Yuri Oflaria</strong><br />
-                    <small>APP-2025-001</small>
-                  </div>
-                  <div class="info-secondary">
-                    <p class="course mb-0">Computer Science</p>
-                    <small class="date">Submitted: 2025-01-15</small>
-                  </div>
-
-                  <div class="wait">
-                    <p class="days mb-0">3 days</p>
-                    <small>Wait time</small>
-                  </div>
-                </div>
-
-                <div class="status queue-status">
-                  <span class="status-badge pending">Pending</span>
-                  <div class="icons queue-icons">
-                    <span
-                      class="material-symbols-outlined icon queue-icon"
-                      >visibility</span
-                    >
-                    <span
-                      class="material-symbols-outlined icon queue-icon"
-                      >check</span
-                    >
-                    <span
-                      class="material-symbols-outlined icon queue-icon"
-                      >close</span
-                    >
-                  </div>
-                </div>
-              </div>
-
-              <!-- Card 2 -->
-              <div
-                class="card text-white p-3 d-flex justify-content-between align-items-center mb-3 queue-card"
-              >
-                <div class="queue-card-main">
-                  <div class="info-main">
-                    <strong>Drex Saniel</strong><br />
-                    <small>APP-2025-002</small>
-                  </div>
-                  <div class="info-secondary">
-                    <p class="course mb-0">Computer Science</p>
-                    <small class="date">Submitted: 2025-01-23</small>
-                  </div>
-                  <div class="wait">
-                    <p class="days mb-0">3 days</p>
-                    <small>Wait time</small>
-                  </div>
-                </div>
-                <div class="status queue-status">
-                  <span class="status-badge review">Review</span>
-                  <div class="icons queue-icons">
-                    <span
-                      class="material-symbols-outlined icon queue-icon"
-                      >visibility</span
-                    >
-                    <span
-                      class="material-symbols-outlined icon queue-icon"
-                      >check</span
-                    >
-                    <span
-                      class="material-symbols-outlined icon queue-icon"
-                      >close</span
-                    >
-                  </div>
-                </div>
-              </div>
-
-              <!-- Card 3 -->
-              <div
-                class="card text-white p-3 d-flex justify-content-between align-items-center mb-3 queue-card"
-              >
-                <div class="queue-card-main">
-                  <div class="info-main">
-                    <strong>Drex Saniel</strong><br />
-                    <small>APP-2025-002</small>
-                  </div>
-                  <div class="info-secondary">
-                    <p class="course mb-0">Computer Science</p>
-                    <small class="date">Submitted: 2025-01-20</small>
-                  </div>
-                  <div class="wait">
-                    <p class="days mb-0">3 days</p>
-                    <small>Wait time</small>
-                  </div>
-                </div>
-                <div class="status queue-status">
-                  <span class="status-badge pending">Pending</span>
-                  <div class="icons queue-icons">
-                    <span
-                      class="material-symbols-outlined icon queue-icon"
-                      >visibility</span
-                    >
-                    <span
-                      class="material-symbols-outlined icon queue-icon"
-                      >check</span
-                    >
-                    <span
-                      class="material-symbols-outlined icon queue-icon"
-                      >close</span
-                    >
-                  </div>
-                </div>
-              </div>
-
-              <!-- Card 4 -->
-              <div
-                class="card text-white p-3 d-flex justify-content-between align-items-center mb-3 queue-card"
-              >
-                <div class="queue-card-main">
-                  <div class="info-main">
-                    <strong>Drex Saniel</strong><br />
-                    <small>APP-2025-002</small>
-                  </div>
-                  <div class="info-secondary">
-                    <p class="course mb-0">Computer Science</p>
-                    <small class="date">Submitted: 2025-01-27</small>
-                  </div>
-                  <div class="wait">
-                    <p class="days mb-0">3 days</p>
-                    <small>Wait time</small>
-                  </div>
-                </div>
-                <div class="status queue-status">
-                  <span class="status-badge pending">Pending</span>
-                  <div class="icons queue-icons">
-                    <span
-                      class="material-symbols-outlined icon queue-icon"
-                      >visibility</span
-                    >
-                    <span
-                      class="material-symbols-outlined icon queue-icon"
-                      >check</span
-                    >
-                    <span
-                      class="material-symbols-outlined icon queue-icon"
-                      >close</span
-                    >
+              <div id="queue-cards-list">
+                <div
+                  class="card text-white p-3 d-flex justify-content-between align-items-center mb-3 queue-card"
+                >
+                  <div class="queue-card-main">
+                    <div class="info-main">
+                      <strong>Loading applications...</strong><br />
+                      <small>Please wait</small>
+                    </div>
+                    <div class="info-secondary">
+                      <p class="course mb-0">Queue</p>
+                      <small class="date">Submitted: --</small>
+                    </div>
+                    <div class="wait">
+                      <p class="days mb-0">--</p>
+                      <small>Wait time</small>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -760,48 +631,254 @@
     <script src="/js/core/adminlte.min.js"></script>
 
     <script>
-      async function loadQueuePendingReviewTotal() {
-        const pendingReviewElement = document.getElementById("queue-pending-review");
-        if (!pendingReviewElement) {
-          return;
-        }
+      let queueApplications = [];
 
+      async function loadQueueData() {
         try {
           const response = await fetch("/api/students/enrollments/all");
           const result = await response.json();
 
           if (!response.ok || !result.success) {
-            throw new Error(result.message || "Failed to load pending review total");
+            throw new Error(result.message || "Failed to load queue applications");
           }
 
-          const applications = Array.isArray(result.data) ? result.data : [];
-          const pendingReviewCount = applications.filter((application) =>
-            isPendingReviewStatus(application.application_status)
-          ).length;
-
-          pendingReviewElement.textContent = formatCount(pendingReviewCount);
+          queueApplications = Array.isArray(result.data) ? result.data : [];
+          updateQueueStats(queueApplications);
+          renderQueueCards(getFilteredQueueApplications());
         } catch (error) {
-          console.error("Error loading queue pending review total:", error);
-          pendingReviewElement.textContent = "0";
+          console.error("Error loading queue data:", error);
+          queueApplications = [];
+          updateQueueStats([]);
+          renderQueueCards([]);
         }
+      }
+
+      function updateQueueStats(applications) {
+        const queueItems = applications.filter((application) => isPendingReviewStatus(application.application_status));
+        const underReviewCount = applications.filter((application) => application.application_status === "Under Review").length;
+        const processedCount = applications.filter((application) =>
+          application.application_status === "Approved" ||
+          application.application_status === "Rejected" ||
+          application.application_status === "Enrolled"
+        ).length;
+
+        const totalQueueElement = document.getElementById("queue-total-count");
+        const pendingReviewElement = document.getElementById("queue-pending-review");
+        const averageWaitElement = document.getElementById("queue-average-wait");
+        const processingRateElement = document.getElementById("queue-processing-rate");
+
+        if (totalQueueElement) {
+          totalQueueElement.textContent = formatCount(queueItems.length);
+        }
+
+        if (pendingReviewElement) {
+          pendingReviewElement.textContent = formatCount(underReviewCount);
+        }
+
+        if (averageWaitElement) {
+          averageWaitElement.textContent = formatAverageWait(queueItems);
+        }
+
+        if (processingRateElement) {
+          const processingRate = applications.length ? Math.round((processedCount / applications.length) * 100) : 0;
+          processingRateElement.textContent = `${processingRate}%`;
+        }
+      }
+
+      function getFilteredQueueApplications() {
+        const status = document.getElementById('filterStatus')?.value || '';
+        const course = document.getElementById('filterCourse')?.value.trim().toLowerCase() || '';
+        const waitTime = document.getElementById('filterWaitTime')?.value || '';
+        const date = document.getElementById('filterDate')?.value || '';
+        const search = document.querySelector('.queue-search')?.value.trim().toLowerCase() || '';
+
+        return queueApplications
+          .filter((application) => isPendingReviewStatus(application.application_status))
+          .filter((application) => {
+            const applicationId = String(application.queue_number || `ENR-${application.enrollment_id}`).toLowerCase();
+            const applicantName = (
+              application.full_name ||
+              `${application.first_name || ''} ${application.middle_name || ''} ${application.last_name || ''}`.trim()
+            ).toLowerCase();
+            const courseName = (application.program_code || application.program_name || '').toLowerCase();
+            const submittedDate = formatDate(application.created_at || application.enrollment_date);
+            const waitDays = calculateWaitDays(application.created_at || application.enrollment_date);
+
+            const matchesSearch = !search || applicantName.includes(search) || applicationId.includes(search);
+            const matchesCourse = !course || courseName.includes(course);
+            const matchesStatus = !status || getQueueStatusKey(application.application_status) === status;
+            const matchesDate = !date || submittedDate === date;
+            const matchesWaitTime = !waitTime || isWithinWaitTimeBucket(waitDays, waitTime);
+
+            return matchesSearch && matchesCourse && matchesStatus && matchesDate && matchesWaitTime;
+          });
+      }
+
+      function renderQueueCards(applications) {
+        const queueCardsList = document.getElementById('queue-cards-list');
+        if (!queueCardsList) {
+          return;
+        }
+
+        queueCardsList.innerHTML = '';
+
+        if (!applications.length) {
+          queueCardsList.innerHTML = `
+            <div class="card text-white p-4 mb-3 queue-card">
+              <div class="text-center w-100">
+                <strong>No applications found.</strong><br />
+                <small>Try adjusting your search or filters.</small>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        applications
+          .sort((left, right) => new Date(left.created_at || left.enrollment_date) - new Date(right.created_at || right.enrollment_date))
+          .forEach((application) => {
+            const applicantName =
+              application.full_name ||
+              `${application.first_name || ''} ${application.middle_name || ''} ${application.last_name || ''}`.trim() ||
+              'Not set';
+            const applicationId = application.queue_number || `ENR-${application.enrollment_id}`;
+            const course = application.program_code || application.program_name || 'N/A';
+            const submittedDate = formatDate(application.created_at || application.enrollment_date);
+            const waitDays = calculateWaitDays(application.created_at || application.enrollment_date);
+            const statusLabel = getQueueStatusLabel(application.application_status);
+            const statusClass = getQueueStatusClass(application.application_status);
+
+            const card = document.createElement('div');
+            card.className = 'card text-white p-3 d-flex justify-content-between align-items-center mb-3 queue-card';
+            card.dataset.studentId = application.student_id || '';
+            card.dataset.enrollmentId = application.enrollment_id || '';
+
+            card.innerHTML = `
+              <div class="queue-card-main">
+                <div class="info-main">
+                  <strong>${escapeHtml(applicantName)}</strong><br />
+                  <small>${escapeHtml(applicationId)}</small>
+                </div>
+                <div class="info-secondary">
+                  <p class="course mb-0">${escapeHtml(course)}</p>
+                  <small class="date">Submitted: ${escapeHtml(submittedDate)}</small>
+                </div>
+
+                <div class="wait">
+                  <p class="days mb-0">${escapeHtml(formatWaitDays(waitDays))}</p>
+                  <small>Wait time</small>
+                </div>
+              </div>
+
+              <div class="status queue-status">
+                <span class="status-badge ${statusClass}">${escapeHtml(statusLabel)}</span>
+                <div class="icons queue-icons">
+                  <span class="material-symbols-outlined icon queue-icon">visibility</span>
+                  <span class="material-symbols-outlined icon queue-icon">check</span>
+                  <span class="material-symbols-outlined icon queue-icon">close</span>
+                </div>
+              </div>
+            `;
+
+            queueCardsList.appendChild(card);
+          });
       }
 
       function isPendingReviewStatus(status) {
         return status === "Submitted" || status === "Under Review";
       }
 
+      function getQueueStatusKey(status) {
+        if (status === "Under Review") {
+          return "review";
+        }
+
+        if (status === "Approved" || status === "Rejected" || status === "Enrolled") {
+          return "completed";
+        }
+
+        return "pending";
+      }
+
+      function getQueueStatusLabel(status) {
+        return status === "Under Review" ? "Review" : "Pending";
+      }
+
+      function getQueueStatusClass(status) {
+        return status === "Under Review" ? "review" : "pending";
+      }
+
+      function calculateWaitDays(dateValue) {
+        const submittedDate = new Date(dateValue);
+        if (Number.isNaN(submittedDate.getTime())) {
+          return 0;
+        }
+
+        const now = new Date();
+        const diffMs = now - submittedDate;
+        return Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+      }
+
+      function formatWaitDays(days) {
+        return `${days} day${days === 1 ? "" : "s"}`;
+      }
+
+      function formatAverageWait(applications) {
+        if (!applications.length) {
+          return "0d";
+        }
+
+        const totalDays = applications.reduce((sum, application) => {
+          return sum + calculateWaitDays(application.created_at || application.enrollment_date);
+        }, 0);
+
+        return `${Math.round(totalDays / applications.length)}d`;
+      }
+
+      function isWithinWaitTimeBucket(waitDays, bucket) {
+        if (bucket === "0-3") {
+          return waitDays >= 0 && waitDays <= 3;
+        }
+
+        if (bucket === "3-7") {
+          return waitDays > 3 && waitDays <= 7;
+        }
+
+        if (bucket === "7+") {
+          return waitDays > 7;
+        }
+
+        return true;
+      }
+
+      function formatDate(dateValue) {
+        if (!dateValue) {
+          return "N/A";
+        }
+
+        const date = new Date(dateValue);
+        if (Number.isNaN(date.getTime())) {
+          return "N/A";
+        }
+
+        return date.toISOString().split("T")[0];
+      }
+
       function formatCount(value) {
         return new Intl.NumberFormat().format(Number(value) || 0);
       }
 
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
       function applyFilters() {
-        const status = document.getElementById('filterStatus').value;
-        const course = document.getElementById('filterCourse').value;
-        const waitTime = document.getElementById('filterWaitTime').value;
-        const date = document.getElementById('filterDate').value;
-        
-        console.log('Filters Applied:', { status, course, waitTime, date });
-        // Add your filter logic here
+        renderQueueCards(getFilteredQueueApplications());
         
         // Close the modal
         const modal = bootstrap.Modal.getInstance(document.getElementById('filterModal'));
@@ -1074,21 +1151,41 @@
 
       document.querySelector('.queue')?.addEventListener('click', function (event) {
         const icon = event.target.closest('.queue-icon');
-        if (!icon || icon.textContent.trim() !== 'visibility') return;
+        if (!icon) return;
 
         const card = icon.closest('.queue-card');
         if (!card) return;
 
-        const name = card.querySelector('.info-main strong')?.textContent.trim() || 'Not set';
-        const appId = card.querySelector('.info-main small')?.textContent.trim() || 'Not set';
+        if (icon.textContent.trim() === 'visibility') {
+          const name = card.querySelector('.info-main strong')?.textContent.trim() || 'Not set';
+          const appId = card.querySelector('.info-main small')?.textContent.trim() || 'Not set';
 
-        modalDetails.innerHTML = getStudentDetailsMarkup({ name, id: appId });
-        const modal = bootstrap.Modal.getOrCreateInstance(studentDetailsModalEl);
-        modal.show();
+          modalDetails.innerHTML = getStudentDetailsMarkup({ name, id: appId });
+          const modal = bootstrap.Modal.getOrCreateInstance(studentDetailsModalEl);
+          modal.show();
+          return;
+        }
+
+        if (icon.textContent.trim() === 'check') {
+          const badge = card.querySelector('.status-badge');
+          if (badge) {
+            badge.className = 'status-badge review';
+            badge.textContent = 'Review';
+          }
+          return;
+        }
+
+        if (icon.textContent.trim() === 'close') {
+          card.remove();
+        }
       });
 
       document.addEventListener("DOMContentLoaded", () => {
-        loadQueuePendingReviewTotal();
+        loadQueueData();
+
+        document.querySelector('.queue-search')?.addEventListener('input', () => {
+          renderQueueCards(getFilteredQueueApplications());
+        });
 
         setTimeout(() => {
           const skeleton = document.getElementById("page-skeleton");
