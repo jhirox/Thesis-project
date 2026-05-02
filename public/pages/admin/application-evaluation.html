@@ -337,7 +337,7 @@
                     check_circle
                   </span>
                 </div>
-                <h3>69</h3>
+                <h3 id="evaluation-approved-count">0</h3>
                 <small
                   ><span class="text-success fw-semibold">+12%</span> from last
                   week</small
@@ -375,7 +375,7 @@
                     schedule
                   </span>
                 </div>
-                <h3>39</h3>
+                <h3 id="evaluation-rejected-count">0</h3>
                 <small
                   ><span class="text-danger fw-semibold">+5%</span> from last
                   week</small
@@ -937,6 +937,8 @@
       function updateApplicationStats(applications) {
         const totalApplicationsElement = document.getElementById('evaluation-total-applications');
         const pendingReviewElement = document.getElementById('evaluation-pending-review');
+        const approvedCountElement = document.getElementById('evaluation-approved-count');
+        const rejectedCountElement = document.getElementById('evaluation-rejected-count');
         if (!totalApplicationsElement) {
           return;
         }
@@ -948,6 +950,20 @@
             isPendingReviewStatus(application.application_status)
           ).length;
           pendingReviewElement.textContent = formatCount(pendingReviewCount);
+        }
+
+        if (approvedCountElement) {
+          const approvedCount = applications.filter((application) =>
+            isApprovedStatus(application.application_status)
+          ).length;
+          approvedCountElement.textContent = formatCount(approvedCount);
+        }
+
+        if (rejectedCountElement) {
+          const rejectedCount = applications.filter((application) =>
+            isRejectedStatus(application.application_status)
+          ).length;
+          rejectedCountElement.textContent = formatCount(rejectedCount);
         }
       }
 
@@ -1033,6 +1049,14 @@
 
       function isPendingReviewStatus(status) {
         return status === 'Submitted' || status === 'Under Review';
+      }
+
+      function isApprovedStatus(status) {
+        return status === 'Approved' || status === 'Enrolled';
+      }
+
+      function isRejectedStatus(status) {
+        return status === 'Rejected';
       }
 
       function applyFilters() {
