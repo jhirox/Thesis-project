@@ -2690,13 +2690,13 @@ span .icon:hover {
   align-items: center;
   justify-content: space-between;
   gap: 1.25rem;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   padding-bottom: 0.5rem;
 }
 
 .queue-toolbar-title {
-  flex: 0 0 320px;
-  min-width: 320px;
+  flex: 1 1 260px;
+  min-width: 0;
 }
 
 .queue-toolbar-title h2 {
@@ -2710,7 +2710,7 @@ span .icon:hover {
 .queue-toolbar-actions {
   display: flex;
   flex: 1 1 auto;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   justify-content: flex-end;
   align-items: center;
   gap: 0.75rem;
@@ -2718,7 +2718,7 @@ span .icon:hover {
 }
 
 .queue-search {
-  flex: 1 1 auto;
+  flex: 1 1 24rem;
   min-width: 0;
   max-width: 100%;
 }
@@ -2735,18 +2735,22 @@ span .icon:hover {
 .queue-card {
   background-color: rgba(255, 255, 255, 0.08) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 0.65rem !important;
+  border-radius: 10px !important;
   box-shadow: none;
-  display: grid !important;
-  grid-template-columns: minmax(240px, 1.55fr) minmax(180px, 1fr) 140px auto auto;
+  display: flex !important;
+  justify-content: space-between;
   align-items: center !important;
-  gap: 1.5rem;
-  backdrop-filter: blur(14px);
+  gap: 1rem;
+  backdrop-filter: blur(18px);
   padding: 1rem 1.25rem !important;
 }
 
 .queue-card-main {
-  display: contents;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .queue-card-main > div {
@@ -2760,45 +2764,37 @@ span .icon:hover {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-height: 100%;
   min-width: 0;
 }
 
 .info-main {
   align-items: flex-start;
-  grid-column: 1;
+  flex: 1.2 1 220px;
 }
 
 .info-secondary {
   align-items: flex-start;
-  grid-column: 2;
+  flex: 1 1 180px;
 }
 
 .wait {
-  padding-left: 0.85rem;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
   align-items: flex-start;
-  grid-column: 3;
+  flex: 0 0 110px;
 }
 
 .queue-status {
-  display: contents;
-}
-
-.queue-status .status-badge {
-  grid-column: 4;
-  justify-self: end;
-  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  flex: 0 0 auto;
+  min-width: 0;
 }
 
 .queue-icons {
-  grid-column: 5;
-  justify-self: end;
   display: grid;
   grid-template-columns: repeat(3, 2.25rem);
   gap: 0.45rem;
-  padding-left: 0.9rem;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .queue-icon {
@@ -2863,11 +2859,6 @@ span .icon:hover {
 }
 
 @media (max-width: 767.98px) {
-  .queue-toolbar {
-    flex-wrap: wrap;
-    align-items: stretch;
-  }
-
   .queue-toolbar-title {
     flex: 1 1 100%;
     min-width: 0;
@@ -2890,44 +2881,24 @@ span .icon:hover {
   }
 
   .queue-card {
-    grid-template-columns: 1fr;
+    flex-direction: column;
     align-items: stretch !important;
   }
 
   .queue-card-main {
-    display: flex;
     flex-direction: column;
     gap: 0.9rem;
+    align-items: flex-start;
   }
 
   .wait {
-    width: 100%;
-    padding-left: 0;
-    border-left: 0;
-    padding-top: 0.75rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    flex: 1 1 auto;
   }
 
   .queue-status {
     width: 100%;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    gap: 0.75rem;
+    justify-content: space-between;
     padding-top: 0.75rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .queue-status .status-badge {
-    grid-column: auto;
-    justify-self: start;
-  }
-
-  .queue-icons {
-    grid-column: auto;
-    justify-self: end;
-    padding-left: 0;
-    border-left: 0;
   }
 }
 
@@ -2942,7 +2913,7 @@ span .icon:hover {
   }
 
   .queue-status {
-    grid-template-columns: 1fr;
+    flex-direction: column;
     align-items: stretch;
   }
 
