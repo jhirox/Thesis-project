@@ -61,6 +61,14 @@ document.addEventListener('DOMContentLoaded', function() {
   } catch (error) {
     console.log("Storage error:", error);
   }
+
+  const signOutButtons = document.querySelectorAll('#sign-out');
+  signOutButtons.forEach((button) => {
+    button.addEventListener('click', function(event) {
+      event.preventDefault();
+      logout();
+    });
+  });
 });
 
 // ======================
