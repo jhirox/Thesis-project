@@ -221,6 +221,17 @@
                     </div>
                     
                     <div class="col-md-6">
+                        <label class="form-label">Year Level <span class="text-danger">*</span></label>
+                        <select id="yearLevel" class="form-select" required>
+                            <option value="">Select</option>
+                            <option>1st Year</option>
+                            <option>2nd Year</option>
+                            <option>3rd Year</option>
+                            <option>4th Year</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
                         <label class="form-label">Semester of Enrollment</label>
                         <select id="semester" class="form-select" required>
                             <option value="">Select</option>
@@ -571,6 +582,7 @@
                 lastSchool: document.getElementById("lastSchool").value.trim(),
                 lastSchoolYear: document.getElementById("lastSchoolYear").value.trim(),
                 academicYear: document.getElementById("lastSchoolYear").value.trim(),
+                yearLevel: document.getElementById("yearLevel").value,
                 semester: document.getElementById("semester").value,
                 workingStatus: document.getElementById("workingStatus").value,
                 motherMaiden: document.getElementById("motherMaiden").value.trim(),

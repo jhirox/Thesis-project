@@ -263,8 +263,8 @@
               >
                 <div>
                   <h4 class="fw-bold mb-1">All Notifications</h4>
-                  <p class="text-muted small mb-0">
-                    You have 0 new notifications
+                  <p class="text-muted small mb-0" id="notificationsCountLabel">
+                    Loading notifications...
                   </p>
                 </div>
                 <div class="d-flex flex-column-lg flex-sm-row gap-3">
@@ -316,7 +316,7 @@
           </div>
 
           <div class="row">
-            <div class="col-lg-12">
+            <div class="col-lg-12" id="notificationsList">
               <!-- Notifications will be loaded here dynamically -->
             </div>
           </div>
@@ -422,58 +422,212 @@
     </script>
 
     <script>
-      // Mark all notifications as read
-      function markAllAsRead() {
-        const notifications = document.querySelectorAll(
-          ".notification-item.unread"
-        );
-        notifications.forEach((notif) => {
-          notif.classList.remove("unread");
-        });
-        alert("All notifications marked as read");
+      let notificationsState = [];
+      let activeFilter = "all";
+      let currentUserEmail = "";
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
       }
 
-      // Remove individual notification
-      function removeNotification(id) {
-        const notif = document.querySelector(`[data-id="${id}"]`);
-        if (notif) {
-          notif.style.opacity = "0";
-          setTimeout(() => notif.remove(), 300);
+      function formatNotificationDate(value) {
+        if (!value) return "Not set";
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return value;
+        return date.toLocaleString();
+      }
+
+      function getImportantClass(notification) {
+        return notification.includes_soft_copy ? "border-primary" : "border-secondary";
+      }
+
+      function getFilteredNotifications() {
+        if (activeFilter === "unread") {
+          return notificationsState.filter((notification) => !notification.is_read);
         }
-      }
-
-      // Clear all notifications
-      function clearAllNotifications() {
-        if (confirm("Are you sure you want to clear all notifications?")) {
-          document.querySelectorAll(".notification-item").forEach((notif) => {
-            notif.style.opacity = "0";
-            setTimeout(() => notif.remove(), 300);
-          });
+        if (activeFilter === "important") {
+          return notificationsState.filter((notification) => notification.includes_soft_copy);
         }
+        return notificationsState;
       }
 
-      // Filter notifications
-      function filterNotifications(type, element) {
-        // Update active tab
-        document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-        element.classList.add('active');
+      function updateNotificationsCount() {
+        const label = document.getElementById("notificationsCountLabel");
+        if (!label) return;
 
-        const notifications = document.querySelectorAll(".notification-item");
-        notifications.forEach((notif) => {
-          if (type === "all") {
-            notif.style.display = "block";
-          } else if (type === "unread") {
-            notif.style.display = notif.classList.contains("unread")
-              ? "block"
-              : "none";
-          } else if (type === "important") {
-            const hasImportant =
-              notif.classList.contains("border-primary") ||
-              notif.classList.contains("border-warning");
-            notif.style.display = hasImportant ? "block" : "none";
+        const unreadCount = notificationsState.filter((notification) => !notification.is_read).length;
+        label.textContent = unreadCount > 0
+          ? `You have ${unreadCount} unread notification${unreadCount === 1 ? "" : "s"}`
+          : "You're all caught up.";
+      }
+
+      function renderNotifications() {
+        const list = document.getElementById("notificationsList");
+        const emptyState = document.getElementById("emptyState");
+        if (!list || !emptyState) return;
+
+        const notifications = getFilteredNotifications();
+        updateNotificationsCount();
+
+        if (!notifications.length) {
+          list.innerHTML = "";
+          emptyState.style.display = "block";
+          return;
+        }
+
+        emptyState.style.display = "none";
+        list.innerHTML = notifications.map((notification) => `
+          <div class="card shadow-sm border ${getImportantClass(notification)} mb-3 notification-item ${notification.is_read ? "" : "unread"}" data-id="${notification.notification_id}">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start gap-3">
+                <div class="flex-grow-1">
+                  <div class="d-flex align-items-center gap-2 mb-2">
+                    <h5 class="mb-0 fw-bold">${escapeHtml(notification.title)}</h5>
+                    ${notification.is_read ? "" : '<span class="badge bg-primary">New</span>'}
+                  </div>
+                  <p class="mb-2 text-muted">${escapeHtml(notification.message)}</p>
+                  <div class="small text-muted">
+                    <div>Date: ${escapeHtml(notification.appointment_date || "Not set")}</div>
+                    <div>Time: ${escapeHtml(notification.appointment_time || "Not set")}</div>
+                    <div>Email delivery: ${escapeHtml(notification.email_delivery_status || "pending")}</div>
+                    ${notification.includes_soft_copy ? "<div>Soft copy of enrollment form included.</div>" : ""}
+                    <div>Received: ${escapeHtml(formatNotificationDate(notification.created_at))}</div>
+                  </div>
+                </div>
+                <div class="d-flex flex-column gap-2">
+                  ${notification.is_read ? "" : `<button class="btn btn-outline-primary btn-sm" onclick="markNotificationAsRead(${notification.notification_id})">Mark read</button>`}
+                  <button class="btn btn-outline-danger btn-sm" onclick="removeNotification(${notification.notification_id})">Remove</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      async function loadNotifications() {
+        const sessionUserStr = localStorage.getItem("sessionUser");
+        const sessionUser = sessionUserStr ? JSON.parse(sessionUserStr) : null;
+        currentUserEmail = sessionUser?.user?.email || "";
+
+        if (!currentUserEmail) {
+          const label = document.getElementById("notificationsCountLabel");
+          if (label) {
+            label.textContent = "No active user email found.";
           }
-        });
+          return;
+        }
+
+        try {
+          const response = await fetch(`/api/notifications?email=${encodeURIComponent(currentUserEmail)}`);
+          const result = await response.json();
+
+          if (!response.ok || !result.success) {
+            throw new Error(result.message || "Failed to load notifications.");
+          }
+
+          notificationsState = Array.isArray(result.data) ? result.data : [];
+          renderNotifications();
+        } catch (error) {
+          console.error("Error loading notifications:", error);
+          const label = document.getElementById("notificationsCountLabel");
+          if (label) {
+            label.textContent = "Unable to load notifications right now.";
+          }
+        }
       }
+
+      async function markNotificationAsRead(id) {
+        try {
+          const response = await fetch(`/api/notifications/${encodeURIComponent(id)}/read`, {
+            method: "PATCH",
+          });
+          const result = await response.json();
+          if (!response.ok || !result.success) {
+            throw new Error(result.message || "Failed to mark notification as read.");
+          }
+          notificationsState = notificationsState.map((notification) =>
+            notification.notification_id === id ? { ...notification, is_read: 1 } : notification
+          );
+          renderNotifications();
+        } catch (error) {
+          alert(error.message || "Unable to update notification.");
+        }
+      }
+
+      async function markAllAsRead() {
+        if (!currentUserEmail) return;
+
+        try {
+          const response = await fetch("/api/notifications/read-all", {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email: currentUserEmail }),
+          });
+          const result = await response.json();
+          if (!response.ok || !result.success) {
+            throw new Error(result.message || "Failed to mark all notifications as read.");
+          }
+          notificationsState = notificationsState.map((notification) => ({ ...notification, is_read: 1 }));
+          renderNotifications();
+        } catch (error) {
+          alert(error.message || "Unable to mark all notifications as read.");
+        }
+      }
+
+      async function removeNotification(id) {
+        try {
+          const response = await fetch(`/api/notifications/${encodeURIComponent(id)}`, {
+            method: "DELETE",
+          });
+          const result = await response.json();
+          if (!response.ok || !result.success) {
+            throw new Error(result.message || "Failed to remove notification.");
+          }
+          notificationsState = notificationsState.filter((notification) => notification.notification_id !== id);
+          renderNotifications();
+        } catch (error) {
+          alert(error.message || "Unable to remove notification.");
+        }
+      }
+
+      async function clearAllNotifications() {
+        if (!currentUserEmail) return;
+        if (!confirm("Are you sure you want to clear all notifications?")) return;
+
+        try {
+          const response = await fetch("/api/notifications", {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email: currentUserEmail }),
+          });
+          const result = await response.json();
+          if (!response.ok || !result.success) {
+            throw new Error(result.message || "Failed to clear notifications.");
+          }
+          notificationsState = [];
+          renderNotifications();
+        } catch (error) {
+          alert(error.message || "Unable to clear notifications.");
+        }
+      }
+
+      function filterNotifications(type, element) {
+        document.querySelectorAll(".nav-tabs .nav-link").forEach((link) => link.classList.remove("active"));
+        element.classList.add("active");
+        activeFilter = type;
+        renderNotifications();
+      }
+
+      document.addEventListener("DOMContentLoaded", loadNotifications);
     </script>
     <script src="/js/auth.js"></script>
   </body>

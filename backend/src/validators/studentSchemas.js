@@ -34,6 +34,7 @@ export const submitEnrollmentSchema = z.object({
   highestAttainment: trimmedString.min(1, "highestAttainment is required"),
   lastSchool: optionalTrimmedString,
   lastSchoolYear: trimmedString.min(1, "lastSchoolYear is required"),
+  yearLevel: trimmedString.min(1, "yearLevel is required"),
   semester: trimmedString.min(1, "semester is required"),
   workingStatus: optionalTrimmedString,
   motherMaiden: optionalTrimmedString,

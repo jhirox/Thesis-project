@@ -254,11 +254,13 @@
                   </select>
                 </div>
                 <div class="col-12 col-sm-6 col-lg-3">
-                  <label class="form-label fw-semibold mb-2">Semester</label>
+                  <label class="form-label fw-semibold mb-2">Year Level</label>
                   <select id="filter-year" class="form-select">
-                    <option value="">All Semesters</option>
-                    <option>First Semester</option>
-                    <option>Second Semester</option>
+                    <option value="">All Years</option>
+                    <option>1st Year</option>
+                    <option>2nd Year</option>
+                    <option>3rd Year</option>
+                    <option>4th Year</option>
                   </select>
                 </div>
                 <div class="col-12 col-sm-6 col-lg-3">
@@ -307,7 +309,7 @@
                             Name
                           </th>
                           <th scope="col" class="px-4 py-3 fw-bold text-white text-center">
-                            Program / Semester
+                            Program / Year
                           </th>
                           <th scope="col" class="px-4 py-3 fw-bold text-white text-center">
                             Status
@@ -1110,172 +1112,6 @@
       // Delegated handler for View buttons — show modal
       const modalDetails = document.getElementById("modal-student-details");
       const studentDetailsModalEl = document.getElementById("studentDetailsModal");
-      const fixedStudentDetailsMarkup = `
-        <div class="text-center mb-4">
-          <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center overflow-hidden mb-3" style="width: 120px; height: 120px">
-            <img
-              src="/assets/images/lancephoto.png"
-              alt="Profile"
-              style="width: 120px; height: 120px; object-fit: cover; display: block;"
-              onerror="this.src='/assets/images/lancephoto.png';"
-            />
-          </div>
-          <h4 class="fw-bold mb-1 text-white">Not set</h4>
-          <p class="text-white-50 mb-0">Student ID: QECI-2025-001</p>
-        </div>
-
-        <div class="card shadow-sm border-0 bg-white text-dark mb-4">
-          <div class="card-header bg-white border-bottom">
-            <h5 class="fw-bold mb-0">Personal Information</h5>
-          </div>
-          <div class="card-body">
-            <form>
-              <div class="row g-3">
-                <div class="col-md-6">
-                  <label class="form-label text-muted small">Full Name</label>
-                  <input type="text" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label text-muted small">Email Address</label>
-                  <input type="email" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label text-muted small">Contact Number</label>
-                  <input type="text" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label text-muted small">Date of Birth</label>
-                  <input type="date" class="form-control form-control-sm" value="" disabled />
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label text-muted small">Address</label>
-                  <input type="text" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label text-muted small">Birth Place</label>
-                  <input type="text" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label text-muted small">Sex</label>
-                  <input type="text" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label text-muted small">Civil Status</label>
-                  <input type="text" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label text-muted small">Nationality</label>
-                  <input type="text" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label text-muted small">Religion</label>
-                  <input type="text" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        <div class="card shadow-sm border-0 bg-white text-dark mb-4">
-          <div class="card-header bg-white border-bottom">
-            <h5 class="fw-bold mb-0">Academic Information</h5>
-          </div>
-          <div class="card-body">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label class="form-label text-muted small">Program</label>
-                <p class="fw-semibold mb-0">Not set</p>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label text-muted small">Major</label>
-                <p class="fw-semibold mb-0">Not set</p>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label text-muted small">Entry Status</label>
-                <p class="fw-semibold mb-0">Not set</p>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label text-muted small">Student Type</label>
-                <p class="fw-semibold mb-0">Not set</p>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label text-muted small">Learning Modality</label>
-                <p class="fw-semibold mb-0">Not set</p>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label text-muted small">Semester</label>
-                <p class="fw-semibold mb-0">Not set</p>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label text-muted small">Highest Attainment</label>
-                <p class="fw-semibold mb-0">Not set</p>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label text-muted small">Last School Attended</label>
-                <p class="fw-semibold mb-0">Not set</p>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label text-muted small">Last School Year</label>
-                <p class="fw-semibold mb-0">Not set</p>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label text-muted small">Working Status</label>
-                <p class="fw-semibold mb-0">Not set</p>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label text-muted small">Enrollment Status</label>
-                <span class="badge bg-success">Active</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card shadow-sm border-0 bg-white text-dark mb-4">
-          <div class="card-header bg-white border-bottom">
-            <h5 class="fw-bold mb-0">Family Information</h5>
-          </div>
-          <div class="card-body">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label class="form-label text-muted small">Mother's Maiden Name</label>
-                <p class="fw-semibold mb-0">Not set</p>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label text-muted small">Father's Name</label>
-                <p class="fw-semibold mb-0">Not set</p>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label text-muted small">Guardian Name</label>
-                <p class="fw-semibold mb-0">Not set</p>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label text-muted small">Guardian Contact</label>
-                <p class="fw-semibold mb-0">Not set</p>
-              </div>
-            </div>
-            <div class="row mt-4">
-              <div class="col-12">
-                <div class="card border-dashed border-secondary-subtle bg-secondary-subtle text-center p-3">
-                  <div class="mb-3">
-                    <i class="fa-solid fa-image fa-2x text-secondary"></i>
-                  </div>
-                  <p class="mb-2 fw-semibold">Upload Official Receipt / Document</p>
-                  <p class="text-muted small mb-3">Drop or select an image here to attach proof of payment.</p>
-                  <button class="btn btn-outline-secondary btn-sm">View Image</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <div class="d-flex gap-2">
-          <button type="button" class="btn btn-success flex-fill" onclick="openScheduleFromDetails()"><i class="fa-solid fa-check me-2"></i>Approve Enrollment</button>
-          <button type="button" class="btn btn-warning flex-fill" id="detailHoldBtn"><i class="fa-solid fa-pause me-2"></i>Hold</button>
-          <button type="button" class="btn btn-danger flex-fill" id="detailRejectBtn"><i class="fa-solid fa-times me-2"></i>Reject</button>
-        </div>
-      `;
-
       const studentRecordsTbody = document.getElementById("student-records-tbody");
       const studentRecordsSummary = document.getElementById("student-records-summary");
       const filterSearchInput = document.getElementById("filter-search");
@@ -1437,8 +1273,12 @@
         return record.semester || record.semester_types || "Not set";
       }
 
-      function getProgramSemesterLabel(record = {}) {
-        return `${getProgramCode(record)} / ${getSemesterValue(record)}`;
+      function getYearLevelValue(record = {}) {
+        return record.year_level || "Not set";
+      }
+
+      function getProgramYearLabel(record = {}) {
+        return `${getProgramCode(record)} / ${getYearLevelValue(record)}`;
       }
 
       function toRegistrarRecord(record = {}) {
@@ -1447,6 +1287,7 @@
           full_name: record.full_name || buildStudentName(record) || "Not set",
           registrar_status: normalizeRegistrarStatus(record),
           program_label: getProgramCode(record),
+          year_label: getYearLevelValue(record),
           semester_label: getSemesterValue(record),
         };
       }
@@ -1475,9 +1316,9 @@
 
         if (filterSemesterInput) {
           const selected = filterSemesterInput.value;
-          const semesterOptions = Array.from(new Set(records.map((record) => getSemesterValue(record)).filter(Boolean))).sort();
-          filterSemesterInput.innerHTML = `<option value="">All Semesters</option>${semesterOptions.map((semester) => `<option value="${escapeHtml(semester)}">${escapeHtml(semester)}</option>`).join("")}`;
-          filterSemesterInput.value = semesterOptions.includes(selected) ? selected : "";
+          const yearOptions = ["1st Year", "2nd Year", "3rd Year", "4th Year"];
+          filterSemesterInput.innerHTML = `<option value="">All Years</option>${yearOptions.map((yearLevel) => `<option value="${escapeHtml(yearLevel)}">${escapeHtml(yearLevel)}</option>`).join("")}`;
+          filterSemesterInput.value = yearOptions.includes(selected) ? selected : "";
         }
       }
 
@@ -1504,7 +1345,7 @@
             >
               <td class="px-4 py-3">${escapeHtml(record.student_id || "Not set")}</td>
               <td class="px-4 py-3">${escapeHtml(record.full_name || "Not set")}</td>
-              <td class="px-4 py-3">${escapeHtml(getProgramSemesterLabel(record))}</td>
+                <td class="px-4 py-3">${escapeHtml(getProgramYearLabel(record))}</td>
               <td class="px-4 py-3">
                 <span class="badge ${getStatusBadgeClass(status)}">${escapeHtml(status)}</span>
               </td>
@@ -1531,7 +1372,7 @@
           const studentId = String(record.student_id || "").toLowerCase();
           const fullName = String(record.full_name || "").toLowerCase();
           const program = String(record.program_label || "").toLowerCase();
-          const recordSemester = String(record.semester_label || "").toLowerCase();
+          const recordSemester = String(record.year_label || "").toLowerCase();
           const recordStatus = String(record.registrar_status || "").toLowerCase();
 
           if (query && !studentId.includes(query) && !fullName.includes(query)) {
@@ -1570,7 +1411,7 @@
       }
 
       function getActiveStudentProgramInfo() {
-        return getProgramSemesterLabel(activeStudentProfile || activeStudentRecord || {});
+        return getProgramYearLabel(activeStudentProfile || activeStudentRecord || {});
       }
 
       function populateScheduleAppointmentFields() {
@@ -1784,24 +1625,28 @@
                   <p class="fw-semibold mb-0">${getDisplayValue(program)}</p>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label text-muted small">Semester</label>
-                  <p class="fw-semibold mb-0">${getDisplayValue(profile.semester || profile.semester_types)}</p>
+                  <label class="form-label text-muted small">Year Level</label>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.year_level)}</p>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Application Status</label>
                   <p class="fw-semibold mb-0">${getDisplayValue(profile.application_status)}</p>
                 </div>
                 <div class="col-md-6">
+                  <label class="form-label text-muted small">Semester</label>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.semester || profile.semester_types)}</p>
+                </div>
+                <div class="col-md-6">
                   <label class="form-label text-muted small">Student Type</label>
                   <p class="fw-semibold mb-0">${getDisplayValue(profile.student_type)}</p>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label text-muted small">Learning Modality</label>
-                  <p class="fw-semibold mb-0">${getDisplayValue(profile.modality_name)}</p>
-                </div>
-                <div class="col-md-6">
                   <label class="form-label text-muted small">Enrollment Status</label>
                   ${statusBadge}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Learning Modality</label>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.modality_name)}</p>
                 </div>
               </div>
             </div>
@@ -2091,18 +1936,52 @@
 
       document.getElementById('sendEnrollmentSoftCopy')?.addEventListener('change', updateAppointmentSummaryNote);
 
-      document.getElementById('scheduleAppointmentForm')?.addEventListener('submit', function (event) {
+      document.getElementById('scheduleAppointmentForm')?.addEventListener('submit', async function (event) {
         event.preventDefault();
         const appointmentDate = document.getElementById('appointmentDate').value;
         const appointmentTime = document.getElementById('appointmentTime').value;
         const appointmentEmail = document.getElementById('appointmentEmail').value;
         const appointmentMessage = document.getElementById('appointmentMessage')?.value.trim() || '';
         const sendEnrollmentSoftCopy = document.getElementById('sendEnrollmentSoftCopy')?.checked ?? true;
+        const activeRecord = activeStudentProfile || activeStudentRecord;
         const studentName = document.querySelector('#scheduleAppointmentModal .card-body h5')?.textContent || 'Alexandra Smith';
         const studentProgramInfo = document.querySelector('#scheduleAppointmentModal .card-body p.mb-0')?.textContent || 'APP-2024-089 • Computer Science';
 
         if (!appointmentDate || !appointmentTime) {
           alert('Please select both a date and time.');
+          return;
+        }
+
+        if (!activeRecord?.enrollment_id) {
+          alert('No active student record selected for scheduling.');
+          return;
+        }
+
+        let scheduleResult;
+        try {
+          const response = await fetch('/api/notifications/schedule', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              enrollmentId: activeRecord.enrollment_id,
+              studentId: activeRecord.student_id,
+              studentEmail: appointmentEmail,
+              appointmentDate,
+              appointmentTime,
+              message: appointmentMessage,
+              includesSoftCopy: sendEnrollmentSoftCopy,
+            }),
+          });
+
+          scheduleResult = await response.json();
+          if (!response.ok || !scheduleResult.success) {
+            throw new Error(scheduleResult.message || 'Failed to send appointment schedule.');
+          }
+        } catch (error) {
+          console.error('Error scheduling appointment notification:', error);
+          alert(error.message || 'Unable to send appointment schedule right now.');
           return;
         }
 
@@ -2119,6 +1998,13 @@
         const toastMessageParts = [`Appointment notification sent to ${appointmentEmail}.`];
         if (sendEnrollmentSoftCopy) {
           toastMessageParts.push('Soft copy of the enrollment form included.');
+        }
+        if (scheduleResult?.data?.emailDeliveryStatus === 'sent') {
+          toastMessageParts.push('Email delivery completed.');
+        } else if (scheduleResult?.data?.emailDeliveryStatus === 'skipped') {
+          toastMessageParts.push('Saved to in-app notifications. Email delivery is not configured yet.');
+        } else if (scheduleResult?.data?.emailDeliveryStatus === 'failed') {
+          toastMessageParts.push('Saved to in-app notifications, but email delivery failed.');
         }
         if (appointmentMessage) {
           toastMessageParts.push(`Message: "${appointmentMessage}"`);

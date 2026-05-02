@@ -10,6 +10,7 @@ import {
 
 // Route Imports
 import studentRoutes from "./src/routes/studentRoutes.js";
+import notificationRoutes from "./src/routes/notificationRoutes.js";
 import { getStudents } from "./src/controllers/studentController.js";
 import authRoutes from "./src/routes/authRoutes.js";
 import viewRoutes from "./src/routes/viewRoutes.js"; // Import our new router
@@ -55,6 +56,7 @@ app.use(express.static(publicPath));
 
 // 4. API & VIEW ROUTES
 app.use("/api/students", studentRoutes);
+app.use("/api/notifications", notificationRoutes);
 app.get("/getStudents", getStudents);
 app.use("/api/auth", authRoutes);
 app.use("/", viewRoutes); // Handles all HTML serving

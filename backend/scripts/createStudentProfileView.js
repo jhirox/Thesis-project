@@ -37,6 +37,7 @@ try {
       -- Academic & Enrollment Info
       p.program_name,
       p.program_code,
+      e.year_level,
       e.semester_types AS semester,
       lm.modality_name AS learning_modality,
       
