@@ -2687,6 +2687,14 @@ span .icon:hover {
 
 .queue-toolbar {
   row-gap: 0.75rem;
+  align-items: center;
+}
+
+.queue-toolbar-title h2 {
+  font-size: clamp(1.8rem, 2.4vw, 2.4rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  white-space: normal;
 }
 
 .queue-toolbar-actions {
@@ -2698,7 +2706,7 @@ span .icon:hover {
 }
 
 .queue-search {
-  flex: 1 1 20rem;
+  flex: 1 1 24rem;
   min-width: 0;
   max-width: 100%;
 }
@@ -2717,17 +2725,18 @@ span .icon:hover {
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 0.65rem !important;
   box-shadow: none;
-  flex-direction: row;
-  gap: 1.25rem;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center !important;
+  gap: 1.5rem;
   backdrop-filter: blur(14px);
   padding: 1rem 1.25rem !important;
 }
 
 .queue-card-main {
-  display: flex;
-  justify-content: space-between;
-  gap: 1.25rem;
-  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: minmax(220px, 1.55fr) minmax(180px, 1fr) minmax(110px, 0.72fr);
+  gap: 1.5rem;
   min-width: 0;
   align-items: center;
 }
@@ -2747,26 +2756,26 @@ span .icon:hover {
 }
 
 .info-main {
-  flex: 1.2 1 240px;
+  align-items: flex-start;
 }
 
 .info-secondary {
-  flex: 1 1 180px;
+  align-items: flex-start;
 }
 
 .wait {
-  flex: 0 0 120px;
   padding-left: 1rem;
   border-left: 1px solid rgba(255, 255, 255, 0.1);
+  align-items: flex-start;
 }
 
 .queue-status {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto auto;
   align-items: center;
   gap: 0.75rem;
   flex: 0 0 auto;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  justify-content: end;
   padding-left: 1.25rem;
   border-left: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -2817,6 +2826,10 @@ span .icon:hover {
   line-height: 1.2;
 }
 
+.info-main strong {
+  max-width: 100%;
+}
+
 .info-secondary .course {
   font-size: 0.95rem;
 }
@@ -2835,6 +2848,10 @@ span .icon:hover {
 }
 
 @media (max-width: 767.98px) {
+  .queue-toolbar-title h2 {
+    white-space: normal;
+  }
+
   .queue-toolbar-actions {
     justify-content: stretch;
   }
@@ -2846,17 +2863,16 @@ span .icon:hover {
   }
 
   .queue-card {
-    flex-direction: column;
+    grid-template-columns: 1fr;
     align-items: stretch !important;
   }
 
   .queue-card-main {
-    flex-direction: column;
-    align-items: flex-start;
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
   }
 
   .wait {
-    flex: 1 1 auto;
     width: 100%;
     padding-left: 0;
     border-left: 0;
@@ -2866,7 +2882,7 @@ span .icon:hover {
 
   .queue-status {
     width: 100%;
-    justify-content: space-between;
+    grid-template-columns: 1fr auto;
     padding-left: 0;
     padding-top: 0.75rem;
     border-left: 0;
@@ -2885,7 +2901,7 @@ span .icon:hover {
   }
 
   .queue-status {
-    flex-direction: column;
+    grid-template-columns: 1fr;
     align-items: stretch;
   }
 
