@@ -2723,12 +2723,6 @@ span .icon:hover {
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.queue-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.2) !important;
-  box-shadow: 0 22px 48px rgba(10, 24, 40, 0.22);
-}
-
 .queue-card-main {
   display: flex;
   justify-content: space-between;
