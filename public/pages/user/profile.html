@@ -1086,6 +1086,11 @@
                 formData.append('email', userEmail);
               }
 
+              console.log("FormData contents:");
+              for (let [key, value] of formData.entries()) {
+                console.log(key, value);
+              }
+
               const response = await fetch('/api/students/profile', {
                 method: 'PUT',
                 headers: {
@@ -1094,7 +1099,9 @@
                 body: formData,
               });
 
+              console.log("Response status:", response.status);
               const result = await response.json();
+              console.log("Response data:", result);
               if (!response.ok || !result.success) {
                 throw new Error(result.message || 'Unable to upload profile photo.');
               }
