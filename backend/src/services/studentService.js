@@ -16,20 +16,35 @@ export async function submitEnrollment(payload) {
     await connection.beginTransaction();
 
     const programId = await Lookup.resolveProgramId(connection, payload.program);
+    const modalityId = await Lookup.resolveModalityId(connection, payload.learningModality);
+    const studentTypeId = await Lookup.resolveStudentTypeId(connection, payload.studentType);
     const studentId = await Student.upsert(connection, payload);
 
+    if (!programId) {
+      throw new Error(`Program lookup failed for "${payload.program}".`);
+    }
+
+    if (!modalityId) {
+      throw new Error(`Learning modality lookup failed for "${payload.learningModality}".`);
+    }
+
+    if (!studentTypeId) {
+      throw new Error(`Student type lookup failed for "${payload.studentType}".`);
+    }
+
     const queueNumber = await ApplicationQueue.getNextPosition(connection);
+    const agreedAtDate = payload.agreedAt ? new Date(payload.agreedAt) : null;
     const enrollmentId = await Enrollment.insert(connection, {
       studentId,
       programId,
-      modalityId: payload.learningModality,
-      studentTypeId: payload.studentType,
+      modalityId,
+      studentTypeId,
       semester: payload.semester,
-      academicYear: payload.academicYear || null,
+      academicYear: (payload.academicYear ?? payload.lastSchoolYear) || null,
       queueNumber,
       remarks: payload.remarks,
       agreedToTerms: payload.agreedToTerms,
-      formattedAgreedAt: payload.agreedAt,
+      formattedAgreedAt: agreedAtDate,
     });
 
     await ApplicationQueue.addToQueue(connection, enrollmentId, queueNumber);
