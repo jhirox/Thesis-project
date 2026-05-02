@@ -19,14 +19,36 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-    const currentPath = window.location.pathname;
+    const currentPath = window.location.pathname.replace(/\/+$|^\s+|\s+$/g, '') || '/';
 
     // ✅ STRICTLY protected pages - No guest mode allowed
-    const restrictedPages = ['/profile', '/enrollment-form', '/notifications'];
+    const restrictedPages = [
+      '/profile',
+      '/enrollment-form',
+      '/notifications',
+      '/registrar',
+      '/dashboard',
+      '/accounts',
+      '/application-evaluation',
+      '/application-queue',
+      '/notification',
+      '/rep-and-analytics',
+      '/superadmin',
+      '/superadmin/dashboard',
+      '/superadmin/registrar',
+      '/superadmin/accounts',
+      '/superadmin/application-evaluation',
+      '/superadmin/application-queue',
+      '/superadmin/notification',
+      '/superadmin/rep-and-analytics',
+    ];
 
-    if (restrictedPages.includes(currentPath) && !hasValidSession) {
-      // Use replace to prevent browser back button
-      window.location.replace('/login');
+    const isRestrictedPage = restrictedPages.includes(currentPath) ||
+      currentPath.startsWith('/registrar/') ||
+      currentPath.startsWith('/superadmin/');
+
+    if (isRestrictedPage && !hasValidSession) {
+      window.location.replace('/login?next=' + encodeURIComponent(window.location.pathname));
       return;
     }
 
