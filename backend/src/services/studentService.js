@@ -3,7 +3,12 @@ import Student from "../models/Student.js";
 import Enrollment from "../models/Enrollment.js";
 import ApplicationQueue from "../models/ApplicationQueue.js";
 import Lookup from "../models/Lookup.js";
-import { normalizePagination } from "../utils/sqlBuilders.js";
+import {
+  fullNameSql,
+  latestEnrollmentJoinSql,
+  normalizePagination,
+  studentStatusSql,
+} from "../utils/sqlBuilders.js";
 
 export async function submitEnrollment(payload) {
   const connection = await db.getConnection();
@@ -151,12 +156,25 @@ export async function findEnrollmentApplicantDetails(id) {
       CONCAT(s.first_name, ' ', IFNULL(CONCAT(s.middle_name, ' '), ''), s.last_name, IFNULL(CONCAT(' ', s.suffix), '')) AS full_name,
       s.email_address,
       s.contact_number,
+      s.profile_photo_url AS photo,
+      s.birth_date,
+      s.birth_place,
       s.complete_address,
+      s.sex,
+      s.civil_status,
+      s.nationality,
+      s.religion,
       p.program_name,
-      p.program_code
+      p.program_code,
+      st.type_name AS student_type,
+      lm.modality_name AS modality_name,
+      e.semester_types,
+      ${studentStatusSql("s")} AS enrollment_status
     FROM enrollments e
     LEFT JOIN students s ON e.student_id = s.student_id
     LEFT JOIN programs p ON e.program_id = p.program_id
+    LEFT JOIN student_types st ON e.student_type_id = st.type_id
+    LEFT JOIN learning_modalities lm ON e.modality_id = lm.modality_id
     WHERE e.enrollment_id = ?
     LIMIT 1`,
     [id]
@@ -167,11 +185,65 @@ export async function findEnrollmentApplicantDetails(id) {
 
 export async function findStudents(query) {
   const { limit, offset } = normalizePagination(query, { defaultLimit: 25, maxLimit: 100 });
+  const { course, status, search } = query;
+  const filters = [];
+  const values = [];
+
+  if (course) {
+    filters.push("(p.program_code = ? OR p.program_name = ?)");
+    values.push(course, course);
+  }
+
+  if (status) {
+    filters.push(`${studentStatusSql("s")} = ?`);
+    values.push(status);
+  }
+
+  if (search) {
+    filters.push(`(
+      ${fullNameSql("s")} LIKE ?
+      OR s.email_address LIKE ?
+      OR CAST(s.student_id AS CHAR) LIKE ?
+    )`);
+    const searchValue = `%${search}%`;
+    values.push(searchValue, searchValue, searchValue);
+  }
+
+  const whereClause = filters.length ? `WHERE ${filters.join(" AND ")}` : "";
+
   const [data] = await db.query(
-    `SELECT * FROM students ORDER BY created_date DESC LIMIT ? OFFSET ?`,
-    [limit, offset]
+    `SELECT
+      s.student_id,
+      s.first_name,
+      s.middle_name,
+      s.last_name,
+      s.suffix,
+      ${fullNameSql("s")} AS full_name,
+      s.email_address,
+      s.contact_number,
+      s.profile_photo_url AS photo,
+      ${studentStatusSql("s")} AS enrollment_status,
+      e.enrollment_id,
+      e.queue_number,
+      e.application_status,
+      p.program_name,
+      p.program_code
+    FROM students s
+    ${latestEnrollmentJoinSql("e", "le")}
+    LEFT JOIN programs p ON e.program_id = p.program_id
+    ${whereClause}
+    ORDER BY s.created_date DESC
+    LIMIT ? OFFSET ?`,
+    [...values, limit, offset]
   );
-  const [[countResult]] = await db.query("SELECT COUNT(*) AS total FROM students");
+  const [[countResult]] = await db.query(
+    `SELECT COUNT(*) AS total
+    FROM students s
+    ${latestEnrollmentJoinSql("e", "le")}
+    LEFT JOIN programs p ON e.program_id = p.program_id
+    ${whereClause}`,
+    values
+  );
 
   return {
     total: Number(countResult.total || 0),
@@ -188,7 +260,25 @@ export async function findStudentById(id) {
 
 export async function findStudentProfile({ studentId, email }) {
   const [rows] = await db.query(
-    `SELECT * FROM student_profile_view WHERE student_id = ? OR email_address = ? LIMIT 1`,
+    `SELECT
+      ${Student.getProfileSelectionSql()},
+      s.profile_photo_url AS photo,
+      p.program_name,
+      p.program_code,
+      st.type_name AS student_type,
+      lm.modality_name AS modality_name,
+      e.semester_types,
+      e.academic_year,
+      e.queue_number,
+      e.application_status,
+      e.special_remarks
+    FROM students s
+    ${latestEnrollmentJoinSql("e", "le")}
+    LEFT JOIN programs p ON e.program_id = p.program_id
+    LEFT JOIN learning_modalities lm ON e.modality_id = lm.modality_id
+    LEFT JOIN student_types st ON e.student_type_id = st.type_id
+    WHERE s.student_id = ? OR s.email_address = ?
+    LIMIT 1`,
     [studentId || null, email || null]
   );
 

@@ -487,12 +487,13 @@
                       <th scope="col">Course</th>
                       <th scope="col">Status</th>
                       <th scope="col">Contact</th>
+                      <th scope="col" class="text-center">Actions</th>
                     </tr>
                   </thead>
 
                   <tbody class="table-body" id="student-table-body">
                     <tr>
-                      <td colspan="6" class="text-center text-muted">Loading students...</td>
+                      <td colspan="7" class="text-center text-muted">Loading students...</td>
                     </tr>
                   </tbody>
                 </table>
@@ -793,9 +794,11 @@
 
           const applications = result.data || [];
           updateApplicationStats(applications);
+          renderAllApplications(applications);
         } catch (error) {
           console.error('Error loading applications:', error);
           updateApplicationStats([]);
+          renderAllApplications([]);
         }
       }
 
@@ -804,7 +807,7 @@
         if (tableBody) {
           tableBody.innerHTML = `
             <tr>
-              <td colspan="6" class="text-center text-muted">Loading students...</td>
+              <td colspan="7" class="text-center text-muted">Loading students...</td>
             </tr>
           `;
         }
@@ -824,7 +827,7 @@
           if (tableBody) {
             tableBody.innerHTML = `
               <tr>
-                <td colspan="6" class="text-center text-danger">Unable to load students.</td>
+                <td colspan="7" class="text-center text-danger">Unable to load students.</td>
               </tr>
             `;
           }
@@ -864,7 +867,7 @@
         if (!students.length) {
           tableBody.innerHTML = `
             <tr>
-              <td colspan="6" class="text-center text-muted">No students found.</td>
+              <td colspan="7" class="text-center text-muted">No students found.</td>
             </tr>
           `;
           return;
@@ -873,14 +876,31 @@
         students.forEach((student) => {
           const row = document.createElement('tr');
           const course = student.program_code || student.program_name || 'N/A';
+          const studentId = student.student_id || '';
+          const enrollmentId = student.enrollment_id || '';
+
+          row.dataset.studentId = studentId;
+          if (enrollmentId) {
+            row.dataset.enrollmentId = enrollmentId;
+          }
 
           row.innerHTML = `
-            <td>${escapeHtml(student.student_id || 'N/A')}</td>
+            <td>${escapeHtml(studentId || 'N/A')}</td>
             <td>${escapeHtml(student.full_name || buildStudentName(student))}</td>
             <td>${escapeHtml(student.email_address || 'N/A')}</td>
             <td>${escapeHtml(course)}</td>
-            <td>${buildStudentStatusBadge(student.status)}</td>
+            <td>${buildStudentStatusBadge(student.enrollment_status)}</td>
             <td>${escapeHtml(student.contact_number || 'N/A')}</td>
+            <td class="text-center">
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-primary student-view-btn"
+                data-student-id="${escapeHtml(studentId)}"
+                data-enrollment-id="${escapeHtml(enrollmentId)}"
+              >
+                View
+              </button>
+            </td>
           `;
 
           tableBody.appendChild(row);
@@ -892,8 +912,16 @@
       }
 
       function buildStudentStatusBadge(status) {
-        const normalizedStatus = status === 'Inactive' ? 'Inactive' : 'Active';
-        const badgeClass = normalizedStatus === 'Active' ? 'text-bg-success' : 'text-bg-secondary';
+        let normalizedStatus = 'Not set';
+        let badgeClass = 'text-bg-secondary';
+
+        if (status === 'Active') {
+          normalizedStatus = 'Active';
+          badgeClass = 'text-bg-success';
+        } else if (status === 'Inactive') {
+          normalizedStatus = 'Inactive';
+        }
+
         return `<span class="badge ${badgeClass}">${normalizedStatus}</span>`;
       }
 
@@ -934,7 +962,7 @@
         if (!applications.length) {
           tableBody.innerHTML = `
             <tr>
-              <td colspan="6" class="text-center text-muted">No applications found.</td>
+              <td colspan="7" class="text-center text-muted">No applications found.</td>
             </tr>
           `;
           return;
@@ -958,6 +986,16 @@
             <td>${buildStatusBadge(status)}</td>
             <td>Unassigned</td>
             <td>${submittedDate}</td>
+            <td class="text-end">
+              <button
+                type="button"
+                class="review-btn"
+                data-student-id="${escapeHtml(application.student_id || '')}"
+                data-enrollment-id="${escapeHtml(application.enrollment_id || '')}"
+              >
+                Review
+              </button>
+            </td>
           `;
 
           tableBody.appendChild(row);
@@ -1014,19 +1052,60 @@
       const modalDetails = document.getElementById('modal-student-details');
       const studentDetailsModalEl = document.getElementById('studentDetailsModal');
 
-      function getStudentDetailsMarkup({ name = 'Not set', id = 'Not set', program = 'Not set' } = {}) {
+      function getDisplayValue(value) {
+        if (value === null || value === undefined || value === '') {
+          return 'Not set';
+        }
+
+        return escapeHtml(value);
+      }
+
+      function getDateInputValue(value) {
+        if (!value) {
+          return '';
+        }
+
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) {
+          return '';
+        }
+
+        return date.toISOString().split('T')[0];
+      }
+
+      function getWorkingStatus(value) {
+        if (value === 1 || value === '1') {
+          return 'Working student';
+        }
+
+        if (value === 0 || value === '0') {
+          return 'Non-working';
+        }
+
+        return 'Not set';
+      }
+
+      function getStudentDetailsMarkup(profile = {}) {
+        const name = profile.full_name || buildStudentName(profile) || 'Not set';
+        const id = profile.student_id || 'Not set';
+        const program = (profile.program_code || profile.program_name)
+          ? [profile.program_code, profile.program_name].filter(Boolean).join(' - ')
+          : 'Not set';
+        const statusBadge = buildStudentStatusBadge(profile.enrollment_status);
+        const photo = profile.photo || '/assets/images/lancephoto.png';
+
         return `
           <div class="text-center mb-4">
             <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center overflow-hidden mb-3" style="width: 120px; height: 120px">
               <img
-                src="/assets/images/lancephoto.png"
+                src="${escapeHtml(photo)}"
                 alt="Profile"
                 style="width: 120px; height: 120px; object-fit: cover; display: block;"
                 onerror="this.src='/assets/images/lancephoto.png';"
               />
             </div>
-            <h4 class="fw-bold mb-1 text-white">${name}</h4>
-            <p class="text-white-50 mb-0">Student ID: ${id}</p>
+            <h4 class="fw-bold mb-1 text-white">${getDisplayValue(name)}</h4>
+            <p class="text-white-50 mb-0">Student ID: ${getDisplayValue(id)}</p>
           </div>
 
           <div class="card shadow-sm border-0 bg-white text-dark mb-4">
@@ -1038,43 +1117,43 @@
                 <div class="row g-3">
                   <div class="col-md-6">
                     <label class="form-label text-muted small">Full Name</label>
-                    <input type="text" class="form-control form-control-sm" value="${name}" disabled />
+                    <input type="text" class="form-control form-control-sm" value="${getDisplayValue(name)}" disabled />
                   </div>
                   <div class="col-md-6">
                     <label class="form-label text-muted small">Email Address</label>
-                    <input type="email" class="form-control form-control-sm" value="Not set" disabled />
+                    <input type="email" class="form-control form-control-sm" value="${getDisplayValue(profile.email_address)}" disabled />
                   </div>
                   <div class="col-md-6">
                     <label class="form-label text-muted small">Contact Number</label>
-                    <input type="text" class="form-control form-control-sm" value="Not set" disabled />
+                    <input type="text" class="form-control form-control-sm" value="${getDisplayValue(profile.contact_number)}" disabled />
                   </div>
                   <div class="col-md-6">
                     <label class="form-label text-muted small">Date of Birth</label>
-                    <input type="date" class="form-control form-control-sm" value="" disabled />
+                    <input type="date" class="form-control form-control-sm" value="${getDateInputValue(profile.birth_date)}" disabled />
                   </div>
                   <div class="col-md-6">
                     <label class="form-label text-muted small">Address</label>
-                    <input type="text" class="form-control form-control-sm" value="Not set" disabled />
+                    <input type="text" class="form-control form-control-sm" value="${getDisplayValue(profile.complete_address)}" disabled />
                   </div>
                   <div class="col-md-6">
                     <label class="form-label text-muted small">Birth Place</label>
-                    <input type="text" class="form-control form-control-sm" value="Not set" disabled />
+                    <input type="text" class="form-control form-control-sm" value="${getDisplayValue(profile.birth_place)}" disabled />
                   </div>
                   <div class="col-md-6">
                     <label class="form-label text-muted small">Sex</label>
-                    <input type="text" class="form-control form-control-sm" value="Not set" disabled />
+                    <input type="text" class="form-control form-control-sm" value="${getDisplayValue(profile.sex)}" disabled />
                   </div>
                   <div class="col-md-6">
                     <label class="form-label text-muted small">Civil Status</label>
-                    <input type="text" class="form-control form-control-sm" value="Not set" disabled />
+                    <input type="text" class="form-control form-control-sm" value="${getDisplayValue(profile.civil_status)}" disabled />
                   </div>
                   <div class="col-md-6">
                     <label class="form-label text-muted small">Nationality</label>
-                    <input type="text" class="form-control form-control-sm" value="Not set" disabled />
+                    <input type="text" class="form-control form-control-sm" value="${getDisplayValue(profile.nationality)}" disabled />
                   </div>
                   <div class="col-md-6">
                     <label class="form-label text-muted small">Religion</label>
-                    <input type="text" class="form-control form-control-sm" value="Not set" disabled />
+                    <input type="text" class="form-control form-control-sm" value="${getDisplayValue(profile.religion)}" disabled />
                   </div>
                 </div>
               </form>
@@ -1089,47 +1168,47 @@
               <div class="row g-3">
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Program</label>
-                  <p class="fw-semibold mb-0">${program}</p>
+                  <p class="fw-semibold mb-0">${getDisplayValue(program)}</p>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Major</label>
-                  <p class="fw-semibold mb-0">Not set</p>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.program_code)}</p>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Entry Status</label>
-                  <p class="fw-semibold mb-0">Not set</p>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.application_status)}</p>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Student Type</label>
-                  <p class="fw-semibold mb-0">Not set</p>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.student_type)}</p>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Learning Modality</label>
-                  <p class="fw-semibold mb-0">Not set</p>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.modality_name)}</p>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Semester</label>
-                  <p class="fw-semibold mb-0">Not set</p>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.semester_types)}</p>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Highest Attainment</label>
-                  <p class="fw-semibold mb-0">Not set</p>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.highest_attainment)}</p>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Last School Attended</label>
-                  <p class="fw-semibold mb-0">Not set</p>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.last_school_attended)}</p>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Last School Year</label>
-                  <p class="fw-semibold mb-0">Not set</p>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.last_school_year)}</p>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Working Status</label>
-                  <p class="fw-semibold mb-0">Not set</p>
+                  <p class="fw-semibold mb-0">${getDisplayValue(getWorkingStatus(profile.is_working))}</p>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Enrollment Status</label>
-                  <span class="badge bg-success">Active</span>
+                  ${statusBadge}
                 </div>
               </div>
             </div>
@@ -1143,19 +1222,19 @@
               <div class="row g-3">
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Mother's Maiden Name</label>
-                  <p class="fw-semibold mb-0">Not set</p>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.mother_maiden_name)}</p>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Father's Name</label>
-                  <p class="fw-semibold mb-0">Not set</p>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.father_name)}</p>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Guardian Name</label>
-                  <p class="fw-semibold mb-0">Not set</p>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.guardian_name)}</p>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Guardian Contact</label>
-                  <p class="fw-semibold mb-0">Not set</p>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.guardian_contact)}</p>
                 </div>
               </div>
               <div class="row mt-4">
@@ -1164,9 +1243,9 @@
                     <div class="mb-3">
                       <i class="fa-solid fa-image fa-2x text-secondary"></i>
                     </div>
-                    <p class="mb-2 fw-semibold">Upload Official Receipt / Document</p>
-                    <p class="text-muted small mb-3">Drop or select an image here to attach proof of payment.</p>
-                    <button class="btn btn-outline-secondary btn-sm">View Image</button>
+                    <p class="mb-2 fw-semibold">Queue / Remarks</p>
+                    <p class="text-muted small mb-2">Queue Number: ${getDisplayValue(profile.queue_number)}</p>
+                    <p class="text-muted small mb-0">Remarks: ${getDisplayValue(profile.special_remarks)}</p>
                   </div>
                 </div>
               </div>
@@ -1181,18 +1260,82 @@
         `;
       }
 
+      async function openStudentDetails({ studentId = '', enrollmentId = '', fallbackProfile = null } = {}) {
+        if (!modalDetails || !studentDetailsModalEl) {
+          return;
+        }
+
+        modalDetails.innerHTML = `
+          <div class="text-center py-5">
+            <div class="spinner-border text-light mb-3" role="status"></div>
+            <p class="mb-0 text-white-50">Loading student details...</p>
+          </div>
+        `;
+
+        const modal = bootstrap.Modal.getOrCreateInstance(studentDetailsModalEl);
+        modal.show();
+
+        if (!studentId && !enrollmentId) {
+          modalDetails.innerHTML = getStudentDetailsMarkup(fallbackProfile || {});
+          return;
+        }
+
+        try {
+          const targetUrl = enrollmentId
+            ? `/api/students/enrollments/details/${encodeURIComponent(enrollmentId)}`
+            : `/api/students/profile/${encodeURIComponent(studentId)}`;
+
+          const response = await fetch(targetUrl);
+          const result = await response.json();
+          const profile = result.data || result.studentDetails;
+
+          if (!response.ok || !result.success || !profile) {
+            throw new Error(result.message || 'Unable to load student details.');
+          }
+
+          modalDetails.innerHTML = getStudentDetailsMarkup(profile);
+        } catch (error) {
+          console.error('Error loading student details:', error);
+          modalDetails.innerHTML = `
+            <div class="alert alert-danger mb-0">
+              Unable to load student details right now.
+            </div>
+          `;
+        }
+      }
+
       document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('review-btn')) {
-          const row = e.target.closest('tr');
-          if (!row) return;
+        const reviewButton = e.target.closest('.review-btn');
+        if (reviewButton) {
+          const row = reviewButton.closest('tr');
+          openStudentDetails({
+            studentId: reviewButton.dataset.studentId || '',
+            enrollmentId: reviewButton.dataset.enrollmentId || '',
+            fallbackProfile: row ? {
+              student_id: row.children[0]?.textContent?.trim() || '',
+              full_name: row.children[1]?.textContent?.trim() || '',
+              program_name: row.children[2]?.textContent?.trim() || '',
+              application_status: row.children[3]?.textContent?.trim() || '',
+            } : null,
+          });
+          return;
+        }
 
-          const studentName = row.children[1]?.textContent?.trim() || 'Not set';
-          const studentId = row.children[0]?.textContent?.trim() || 'Not set';
-          const program = row.children[2]?.textContent?.trim() || 'Not set';
-
-          modalDetails.innerHTML = getStudentDetailsMarkup({ name: studentName, id: studentId, program });
-          const modal = bootstrap.Modal.getOrCreateInstance(studentDetailsModalEl);
-          modal.show();
+        const viewButton = e.target.closest('.student-view-btn');
+        if (viewButton) {
+          const row = viewButton.closest('tr');
+          openStudentDetails({
+            studentId: viewButton.dataset.studentId || '',
+            enrollmentId: viewButton.dataset.enrollmentId || '',
+            fallbackProfile: row ? {
+              student_id: row.children[0]?.textContent?.trim() || '',
+              full_name: row.children[1]?.textContent?.trim() || '',
+              email_address: row.children[2]?.textContent?.trim() || '',
+              program_name: row.children[3]?.textContent?.trim() || '',
+              enrollment_status: row.children[4]?.textContent?.trim() || '',
+              contact_number: row.children[5]?.textContent?.trim() || '',
+            } : null,
+          });
         }
       });
 
