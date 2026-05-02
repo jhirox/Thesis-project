@@ -1066,53 +1066,56 @@
               return;
             }
 
-            const reader = new FileReader();
-            reader.onload = async () => {
-              try {
-                const formData = new FormData();
-                formData.append('profilePhoto', file);
-
-                if (currentProfile?.student_id) {
-                  formData.append('studentId', currentProfile.student_id);
-                } else if (storedStudentProfileId) {
-                  formData.append('studentId', storedStudentProfileId);
-                } else if (userEmail) {
-                  formData.append('email', userEmail);
-                }
-
-                const response = await fetch('/api/students/profile', {
-                  method: 'PUT',
-                  headers: {
-                    Authorization: authToken ? `Bearer ${authToken}` : '',
-                  },
-                  body: formData,
-                });
-
-                const result = await response.json();
-                if (!response.ok || !result.success) {
-                  throw new Error(result.message || 'Unable to upload profile photo.');
-                }
-
-                profileImg.src = reader.result;
-                renderProfile(result.data);
-
-                Swal.fire({
-                  icon: 'success',
-                  title: 'Avatar updated',
-                  text: 'Your profile photo has been uploaded successfully.',
-                  timer: 1800,
-                  showConfirmButton: false,
-                });
-              } catch (error) {
-                console.error('Profile photo upload failed:', error);
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Upload failed',
-                  text: error.message || 'Please try again.',
-                });
-              }
+            // Show preview immediately
+            const previewReader = new FileReader();
+            previewReader.onload = () => {
+              profileImg.src = previewReader.result;
             };
-            reader.readAsDataURL(file);
+            previewReader.readAsDataURL(file);
+
+            // Upload file to server
+            try {
+              const formData = new FormData();
+              formData.append('profilePhoto', file);
+
+              if (currentProfile?.student_id) {
+                formData.append('studentId', currentProfile.student_id);
+              } else if (storedStudentProfileId) {
+                formData.append('studentId', storedStudentProfileId);
+              } else if (userEmail) {
+                formData.append('email', userEmail);
+              }
+
+              const response = await fetch('/api/students/profile', {
+                method: 'PUT',
+                headers: {
+                  Authorization: authToken ? `Bearer ${authToken}` : '',
+                },
+                body: formData,
+              });
+
+              const result = await response.json();
+              if (!response.ok || !result.success) {
+                throw new Error(result.message || 'Unable to upload profile photo.');
+              }
+
+              renderProfile(result.data);
+
+              Swal.fire({
+                icon: 'success',
+                title: 'Avatar updated',
+                text: 'Your profile photo has been uploaded successfully.',
+                timer: 1800,
+                showConfirmButton: false,
+              });
+            } catch (error) {
+              console.error('Profile photo upload failed:', error);
+              Swal.fire({
+                icon: 'error',
+                title: 'Upload failed',
+                text: error.message || 'Please try again.',
+              });
+            }
           });
         }
 
