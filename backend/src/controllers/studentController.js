@@ -83,7 +83,7 @@ export const getEnrollmentApplicantDetails = asyncHandler(async (req, res) => {
 
 export const getStudentProfile = asyncHandler(async (req, res) => {
   const profile = await studentService.findStudentProfile({
-    id: req.params.id,
+    studentId: req.params.id,
     email: req.query.email,
   });
 
