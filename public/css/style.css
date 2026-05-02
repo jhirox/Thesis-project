@@ -2713,8 +2713,20 @@ span .icon:hover {
 }
 
 .queue-card {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 18px 40px rgba(10, 24, 40, 0.16);
   flex-direction: row;
   gap: 1rem;
+  backdrop-filter: blur(10px);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.queue-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 22px 48px rgba(10, 24, 40, 0.22);
 }
 
 .queue-card-main {
@@ -2727,6 +2739,15 @@ span .icon:hover {
 
 .queue-card-main > div {
   min-width: 0;
+  padding: 0.25rem 0.5rem 0.25rem 0;
+}
+
+.info-main,
+.info-secondary,
+.wait {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .queue-status {
@@ -2736,6 +2757,8 @@ span .icon:hover {
   flex: 0 0 auto;
   flex-wrap: wrap;
   justify-content: flex-end;
+  padding-left: 1rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .queue-icons {
@@ -2752,12 +2775,23 @@ span .icon:hover {
   justify-content: center;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.92);
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.queue-icon:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
 }
 
 .info-main strong,
 .info-secondary .course,
 .wait .days {
   overflow-wrap: anywhere;
+  color: #ffffff;
+  font-weight: 700;
 }
 
 .info-main small,
@@ -2765,6 +2799,17 @@ span .icon:hover {
 .wait small {
   display: inline-block;
   overflow-wrap: anywhere;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.wait .days {
+  font-size: 1.05rem;
+}
+
+.wait small,
+.info-secondary .date,
+.info-main small {
+  font-size: 0.85rem;
 }
 
 @media (max-width: 767.98px) {
@@ -2791,6 +2836,10 @@ span .icon:hover {
   .queue-status {
     width: 100%;
     justify-content: space-between;
+    padding-left: 0;
+    padding-top: 0.75rem;
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
   }
 }
 
