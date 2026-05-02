@@ -682,7 +682,7 @@
           </div>
           <form id="scheduleAppointmentForm">
             <div class="modal-body px-4 pb-4">
-              <p class="text-muted mb-4">Set the date and time. The student will be notified via email and in-app notification with an enrollment form copy as proof.</p>
+              <p class="text-muted mb-4">Set the date and time. You can also include an optional message and choose whether to send a soft copy of the enrollment form for registration.</p>
               <div class="card rounded-4 border-0 bg-light mb-4">
                 <div class="card-body py-4 px-4">
                   <p class="mb-1 text-muted small">Student</p>
@@ -703,7 +703,26 @@
               <div class="mb-3">
                 <label for="appointmentEmail" class="form-label fw-semibold">Student Email (auto-filled)</label>
                 <input type="email" class="form-control" id="appointmentEmail" value="a.smith@email.com" readonly />
-                <div class="form-text">Notification + enrollment form copy will be sent here.</div>
+                <div class="form-text">Appointment notification will be sent here.</div>
+              </div>
+              <div class="mb-3">
+                <label for="appointmentMessage" class="form-label fw-semibold">Optional Message</label>
+                <textarea
+                  class="form-control"
+                  id="appointmentMessage"
+                  rows="3"
+                  placeholder="Add extra instructions or reminders for the student."
+                ></textarea>
+              </div>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="sendEnrollmentSoftCopy" checked />
+                <label class="form-check-label fw-semibold" for="sendEnrollmentSoftCopy">
+                  Also send a soft copy of the enrollment form for registration
+                </label>
+              </div>
+              <div class="form-text">Turn this off if you only want to send the appointment schedule.</div>
+              <div id="appointmentSummaryNote" class="alert alert-light border mt-3 mb-0 small text-muted">
+                The student will receive the appointment schedule. If checked, the certificate of registration soft copy will also be marked for sending.
               </div>
             </div>
             <div class="modal-footer border-0 px-4 pb-4 pt-0">
@@ -987,15 +1006,53 @@
         }
       }
 
+      function updateAppointmentSummaryNote() {
+        const note = document.getElementById('appointmentSummaryNote');
+        const sendEnrollmentSoftCopy = document.getElementById('sendEnrollmentSoftCopy')?.checked ?? true;
+        if (!note) {
+          return;
+        }
+
+        note.textContent = sendEnrollmentSoftCopy
+          ? 'The student will receive the appointment schedule and the certificate of registration soft copy will also be marked for sending.'
+          : 'The student will receive only the appointment schedule notification.';
+      }
+
+      const scheduleAppointmentModalEl = document.getElementById('scheduleAppointmentModal');
+      scheduleAppointmentModalEl?.addEventListener('show.bs.modal', function () {
+        const appointmentMessageInput = document.getElementById('appointmentMessage');
+        const sendEnrollmentSoftCopyInput = document.getElementById('sendEnrollmentSoftCopy');
+
+        if (appointmentMessageInput) {
+          appointmentMessageInput.value = '';
+        }
+        if (sendEnrollmentSoftCopyInput) {
+          sendEnrollmentSoftCopyInput.checked = true;
+        }
+
+        updateAppointmentSummaryNote();
+      });
+
+      document.getElementById('sendEnrollmentSoftCopy')?.addEventListener('change', updateAppointmentSummaryNote);
+
       document.getElementById('scheduleAppointmentForm')?.addEventListener('submit', function (event) {
         event.preventDefault();
 
         const email = document.getElementById('appointmentEmail')?.value || 'a.smith@email.com';
+        const appointmentMessage = document.getElementById('appointmentMessage')?.value.trim() || '';
+        const sendEnrollmentSoftCopy = document.getElementById('sendEnrollmentSoftCopy')?.checked ?? true;
         const toastEl = document.getElementById('successToast');
         const toastMessageEl = document.getElementById('toastEmailMessage');
 
         if (toastMessageEl) {
-          toastMessageEl.textContent = `Notification + enrollment form copy sent to ${email}.`;
+          const toastMessageParts = [`Appointment notification sent to ${email}.`];
+          if (sendEnrollmentSoftCopy) {
+            toastMessageParts.push('Soft copy of the enrollment form included.');
+          }
+          if (appointmentMessage) {
+            toastMessageParts.push(`Message: "${appointmentMessage}"`);
+          }
+          toastMessageEl.textContent = toastMessageParts.join(' ');
         }
 
         const scheduleModal = bootstrap.Modal.getInstance(document.getElementById('scheduleAppointmentModal'));
