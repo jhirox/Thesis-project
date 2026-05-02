@@ -424,9 +424,9 @@
                 class="evaluation-toolbar d-flex flex-wrap justify-content-between align-items-center mb-3"
               >
                 <div>
-                  <h2 class="section-title">Student Table</h2>
+                  <h2 class="section-title">Application Table</h2>
                   <p class="section-subtitle">
-                    Filter students by course, enrollment status, name, or email
+                    Filter applications by applicant, application number, course, or review status
                   </p>
                 </div>
               </div>
@@ -440,7 +440,7 @@
                       type="search"
                       id="studentSearchInput"
                       class="form-control"
-                      placeholder="Name or email"
+                      placeholder="Applicant name or application ID"
                       autocomplete="off"
                     />
                   </div>
@@ -462,8 +462,11 @@
                   <label for="studentStatusFilter" class="form-label">Status</label>
                   <select id="studentStatusFilter" class="form-select">
                     <option value="">All Status</option>
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
+                    <option value="Submitted">Submitted</option>
+                    <option value="Under Review">Under Review</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Enrolled">Enrolled</option>
+                    <option value="Rejected">Rejected</option>
                   </select>
                 </div>
 
@@ -481,19 +484,18 @@
                 <table class="table table-bordered table-hover align-middle mb-0 ">
                   <thead class="table-header">
                     <tr>
-                      <th scope="col">Student ID</th>
-                      <th scope="col">Student</th>
-                      <th scope="col">Email</th>
+                      <th scope="col">Application ID</th>
+                      <th scope="col">Applicant</th>
                       <th scope="col">Course</th>
                       <th scope="col">Status</th>
-                      <th scope="col">Contact</th>
+                      <th scope="col">Submitted</th>
                       <th scope="col" class="text-center">Actions</th>
                     </tr>
                   </thead>
 
                   <tbody class="table-body" id="student-table-body">
                     <tr>
-                      <td colspan="7" class="text-center text-muted">Loading students...</td>
+                      <td colspan="6" class="text-center text-muted">Loading applications...</td>
                     </tr>
                   </tbody>
                 </table>
@@ -783,22 +785,36 @@
     <script src="/js/core/adminlte.min.js"></script>
 
     <script>
+      let allApplications = [];
+
       async function loadAllApplications() {
+        const tableBody = document.getElementById('student-table-body');
+        if (tableBody) {
+          tableBody.innerHTML = `
+            <tr>
+              <td colspan="6" class="text-center text-muted">Loading applications...</td>
+            </tr>
+          `;
+        }
+
         try {
           const response = await fetch('/api/students/enrollments/all');
           const result = await response.json();
 
           if (!response.ok || !result.success) {
-            return;
+            throw new Error(result.message || 'Unable to load applications');
           }
 
-          const applications = result.data || [];
-          updateApplicationStats(applications);
-          renderAllApplications(applications);
+          allApplications = result.data || [];
+          updateApplicationStats(allApplications);
+          renderAllApplications(allApplications);
+          renderStudentTable(getFilteredApplications());
         } catch (error) {
           console.error('Error loading applications:', error);
+          allApplications = [];
           updateApplicationStats([]);
           renderAllApplications([]);
+          renderStudentTable([]);
         }
       }
 
@@ -807,56 +823,37 @@
         if (tableBody) {
           tableBody.innerHTML = `
             <tr>
-              <td colspan="7" class="text-center text-muted">Loading students...</td>
+              <td colspan="6" class="text-center text-muted">Loading applications...</td>
             </tr>
           `;
         }
 
-        try {
-          const query = buildStudentFilterQuery();
-          const response = await fetch(`/getStudents${query}`);
-          const result = await response.json();
-
-          if (!response.ok || !result.success) {
-            throw new Error(result.message || 'Unable to load students');
-          }
-
-          renderStudentTable(result.data || []);
-        } catch (error) {
-          console.error('Error loading students:', error);
-          if (tableBody) {
-            tableBody.innerHTML = `
-              <tr>
-                <td colspan="7" class="text-center text-danger">Unable to load students.</td>
-              </tr>
-            `;
-          }
-        }
+        renderStudentTable(getFilteredApplications());
       }
 
-      function buildStudentFilterQuery() {
-        const params = new URLSearchParams();
+      function getFilteredApplications() {
         const course = document.getElementById('studentCourseFilter')?.value;
         const status = document.getElementById('studentStatusFilter')?.value;
-        const search = document.getElementById('studentSearchInput')?.value.trim();
+        const search = document.getElementById('studentSearchInput')?.value.trim().toLowerCase();
 
-        if (course) {
-          params.set('course', course);
-        }
+        return allApplications.filter((application) => {
+          const applicationCourse = (application.program_code || application.program_name || '').toLowerCase();
+          const applicationStatus = application.application_status || '';
+          const applicationId = String(application.queue_number || `ENR-${application.enrollment_id}` || '').toLowerCase();
+          const applicantName = (
+            application.full_name ||
+            `${application.first_name || ''} ${application.middle_name || ''} ${application.last_name || ''}`.trim()
+          ).toLowerCase();
 
-        if (status) {
-          params.set('status', status);
-        }
+          const matchesCourse = !course || applicationCourse.includes(course.toLowerCase());
+          const matchesStatus = !status || applicationStatus === status;
+          const matchesSearch = !search || applicantName.includes(search) || applicationId.includes(search);
 
-        if (search) {
-          params.set('search', search);
-        }
-
-        const query = params.toString();
-        return query ? `?${query}` : '';
+          return matchesCourse && matchesStatus && matchesSearch;
+        });
       }
 
-      function renderStudentTable(students) {
+      function renderStudentTable(applications) {
         const tableBody = document.getElementById('student-table-body');
         if (!tableBody) {
           return;
@@ -864,20 +861,26 @@
 
         tableBody.innerHTML = '';
 
-        if (!students.length) {
+        if (!applications.length) {
           tableBody.innerHTML = `
             <tr>
-              <td colspan="7" class="text-center text-muted">No students found.</td>
+              <td colspan="6" class="text-center text-muted">No applications found.</td>
             </tr>
           `;
           return;
         }
 
-        students.forEach((student) => {
+        applications.forEach((application) => {
           const row = document.createElement('tr');
-          const course = student.program_code || student.program_name || 'N/A';
-          const studentId = student.student_id || '';
-          const enrollmentId = student.enrollment_id || '';
+          const course = application.program_code || application.program_name || 'N/A';
+          const studentId = application.student_id || '';
+          const enrollmentId = application.enrollment_id || '';
+          const applicationId = application.queue_number || `ENR-${enrollmentId}`;
+          const applicantName =
+            application.full_name ||
+            `${application.first_name || ''} ${application.middle_name || ''} ${application.last_name || ''}`.trim() ||
+            'N/A';
+          const submittedDate = formatDate(application.created_at || application.enrollment_date);
 
           row.dataset.studentId = studentId;
           if (enrollmentId) {
@@ -885,20 +888,19 @@
           }
 
           row.innerHTML = `
-            <td>${escapeHtml(studentId || 'N/A')}</td>
-            <td>${escapeHtml(student.full_name || buildStudentName(student))}</td>
-            <td>${escapeHtml(student.email_address || 'N/A')}</td>
+            <td>${escapeHtml(applicationId)}</td>
+            <td>${escapeHtml(applicantName)}</td>
             <td>${escapeHtml(course)}</td>
-            <td>${buildStudentStatusBadge(student.enrollment_status)}</td>
-            <td>${escapeHtml(student.contact_number || 'N/A')}</td>
+            <td>${buildStatusBadge(application.application_status || 'Submitted')}</td>
+            <td>${escapeHtml(submittedDate)}</td>
             <td class="text-center">
               <button
                 type="button"
-                class="btn btn-sm btn-outline-primary student-view-btn"
+                class="btn btn-sm btn-outline-primary review-btn"
                 data-student-id="${escapeHtml(studentId)}"
                 data-enrollment-id="${escapeHtml(enrollmentId)}"
               >
-                View
+                Review
               </button>
             </td>
           `;
@@ -1389,7 +1391,7 @@
             studentId: reviewButton.dataset.studentId || '',
             enrollmentId: reviewButton.dataset.enrollmentId || '',
             fallbackProfile: row ? {
-              student_id: row.children[0]?.textContent?.trim() || '',
+              queue_number: row.children[0]?.textContent?.trim() || '',
               full_name: row.children[1]?.textContent?.trim() || '',
               program_name: row.children[2]?.textContent?.trim() || '',
               application_status: row.children[3]?.textContent?.trim() || '',
@@ -1398,27 +1400,10 @@
           return;
         }
 
-        const viewButton = e.target.closest('.student-view-btn');
-        if (viewButton) {
-          const row = viewButton.closest('tr');
-          openStudentDetails({
-            studentId: viewButton.dataset.studentId || '',
-            enrollmentId: viewButton.dataset.enrollmentId || '',
-            fallbackProfile: row ? {
-              student_id: row.children[0]?.textContent?.trim() || '',
-              full_name: row.children[1]?.textContent?.trim() || '',
-              email_address: row.children[2]?.textContent?.trim() || '',
-              program_name: row.children[3]?.textContent?.trim() || '',
-              enrollment_status: row.children[4]?.textContent?.trim() || '',
-              contact_number: row.children[5]?.textContent?.trim() || '',
-            } : null,
-          });
-        }
       });
 
       document.addEventListener("DOMContentLoaded", () => {
         loadAllApplications();
-        loadStudents();
 
         const studentFilterBar = document.getElementById('student-filter-bar');
         const resetStudentFilters = document.getElementById('resetStudentFilters');
