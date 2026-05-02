@@ -64,3 +64,18 @@ export const updateStudentProfileSchema = z
     message: "Student id or email is required to update profile",
     path: ["studentId"],
   });
+
+export const updateStudentReceiptSchema = z
+  .object({
+    enrollmentId: z.union([z.string().trim(), z.number()]).optional(),
+    studentId: z.union([z.string().trim(), z.number()]).optional(),
+    email: optionalTrimmedString,
+    officialReceiptNumber: optionalTrimmedString,
+    officialReceiptFileUrl: optionalTrimmedString.optional(),
+    officialReceiptFileName: optionalTrimmedString.optional(),
+    officialReceiptFileType: optionalTrimmedString.optional(),
+  })
+  .refine((payload) => payload.enrollmentId || payload.studentId || payload.email, {
+    message: "Enrollment id, student id, or email is required to update official receipt",
+    path: ["enrollmentId"],
+  });

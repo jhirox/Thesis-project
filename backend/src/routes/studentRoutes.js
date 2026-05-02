@@ -3,7 +3,7 @@ import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { getStudents, getStudentByID, submitEnrollment, getEnrollments, getRecentEnrollments, getEnrollmentApplicantDetails, getStudentProfile, updateStudentProfile } from '../controllers/studentController.js';
+import { getStudents, getStudentByID, submitEnrollment, getEnrollments, getRecentEnrollments, getEnrollmentApplicantDetails, getStudentProfile, updateStudentProfile, updateStudentReceipt } from '../controllers/studentController.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,7 +22,8 @@ const upload = multer({
     },
     filename: (req, file, cb) => {
       const extension = path.extname(file.originalname).toLowerCase();
-      const safeName = `student-${Date.now()}-${Math.round(Math.random() * 1e6)}${extension}`;
+      const prefix = file.fieldname === 'officialReceiptFile' ? 'or' : 'student';
+      const safeName = `${prefix}-${Date.now()}-${Math.round(Math.random() * 1e6)}${extension}`;
       cb(null, safeName);
     },
   }),
@@ -51,6 +52,7 @@ router.get('/profile/:id', getStudentProfile);
 
 // UPDATE profile by email or student ID
 router.put('/profile', upload.single('profilePhoto'), updateStudentProfile);
+router.put('/profile/receipt', upload.single('officialReceiptFile'), updateStudentReceipt);
 
 // GET student by ID
 router.get('/:id', getStudentByID);

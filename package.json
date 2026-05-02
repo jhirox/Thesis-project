@@ -8,7 +8,8 @@
     "start": "node backend/server.js",
     "dev": "nodemon backend/server.js",
     "seed:enrollment-lookups": "node backend/scripts/seedEnrollmentLookups.js",
-    "seed:student-profile-view": "node backend/scripts/createStudentProfileView.js"
+    "seed:student-profile-view": "node backend/scripts/createStudentProfileView.js",
+    "migrate:enrollment-receipt-fields": "node backend/scripts/addEnrollmentReceiptFields.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

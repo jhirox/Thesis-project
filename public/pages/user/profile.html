@@ -813,10 +813,7 @@
         const guestMode = localStorage.getItem('guestMode') === 'true';
 
         let currentProfile = null;
-        const buildOrStorageKey = () => {
-          const baseId = currentProfile?.student_id || storedStudentProfileId || authUser?.user?.id || authUser?.user?.email || 'guest';
-          return `studentOR:${baseId}`;
-        };
+        let receiptTextSaveTimeout = null;
 
         const logout = () => {
           try {
@@ -895,58 +892,81 @@
           return formatNameFromEmail(profile.email_address || userEmail);
         };
 
-        const renderStoredOR = () => {
-          try {
-            const savedOR = JSON.parse(localStorage.getItem(buildOrStorageKey()) || '{}');
-
-            if (orNumberInput) {
-              orNumberInput.value = savedOR.text || '';
-            }
-
-            if (!orPreviewBox || !orFileName) return;
-
-            if (savedOR.fileName) {
-              orFileName.textContent = `Uploaded file: ${savedOR.fileName}`;
-            } else {
-              orFileName.textContent = 'No OR uploaded yet.';
-            }
-
-            if (savedOR.fileData && savedOR.fileType?.startsWith('image/')) {
-              orPreviewBox.innerHTML = `<img src="${savedOR.fileData}" alt="Official Receipt Preview" />`;
-              return;
-            }
-
-            if (savedOR.fileName && savedOR.fileType === 'application/pdf') {
-              orPreviewBox.innerHTML = `
-                <div class="text-center">
-                  <i class="bi bi-file-earmark-pdf fs-1 text-danger d-block mb-2"></i>
-                  <span>${savedOR.fileName}</span>
-                </div>
-              `;
-              return;
-            }
-
-            orPreviewBox.textContent = 'OR preview will appear here.';
-          } catch (error) {
-            if (orPreviewBox) {
-              orPreviewBox.textContent = 'OR preview will appear here.';
-            }
-            if (orFileName) {
-              orFileName.textContent = 'No OR uploaded yet.';
-            }
+        const renderReceiptPreview = ({ fileUrl, fileName, fileType, receiptNumber, previewDataUrl } = {}) => {
+          if (orNumberInput) {
+            orNumberInput.value = receiptNumber || '';
           }
+
+          if (!orPreviewBox || !orFileName) return;
+
+          if (fileName) {
+            orFileName.textContent = `Uploaded file: ${fileName}`;
+          } else {
+            orFileName.textContent = 'No OR uploaded yet.';
+          }
+
+          const previewSource = previewDataUrl || fileUrl;
+          if (previewSource && fileType?.startsWith('image/')) {
+            orPreviewBox.innerHTML = `<img src="${previewSource}" alt="Official Receipt Preview" />`;
+            return;
+          }
+
+          if (fileName && fileType === 'application/pdf') {
+            const pdfAction = fileUrl
+              ? `<a href="${fileUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger btn-sm mt-2">Open PDF</a>`
+              : '';
+            orPreviewBox.innerHTML = `
+              <div class="text-center">
+                <i class="bi bi-file-earmark-pdf fs-1 text-danger d-block mb-2"></i>
+                <span>${fileName}</span>
+                ${pdfAction}
+              </div>
+            `;
+            return;
+          }
+
+          orPreviewBox.textContent = 'OR preview will appear here.';
         };
 
-        const saveORText = () => {
-          if (!orNumberInput) return;
-
-          try {
-            const existing = JSON.parse(localStorage.getItem(buildOrStorageKey()) || '{}');
-            existing.text = orNumberInput.value.trim();
-            localStorage.setItem(buildOrStorageKey(), JSON.stringify(existing));
-          } catch (error) {
-            console.error('Unable to save OR text:', error);
+        const uploadOfficialReceipt = async ({ file = null, receiptNumber = null } = {}) => {
+          if (!currentProfile?.student_id && !storedStudentProfileId && !userEmail) {
+            return;
           }
+
+          const formData = new FormData();
+
+          if (file) {
+            formData.append('officialReceiptFile', file);
+          }
+
+          if (receiptNumber !== null) {
+            formData.append('officialReceiptNumber', receiptNumber);
+          }
+
+          if (currentProfile?.student_id) {
+            formData.append('studentId', currentProfile.student_id);
+          } else if (storedStudentProfileId) {
+            formData.append('studentId', storedStudentProfileId);
+          } else if (userEmail) {
+            formData.append('email', userEmail);
+          }
+
+          const response = await fetch('/api/students/profile/receipt', {
+            method: 'PUT',
+            headers: {
+              Authorization: authToken ? `Bearer ${authToken}` : '',
+            },
+            body: formData,
+          });
+
+          const result = await response.json();
+
+          if (!response.ok || !result.success) {
+            throw new Error(result.message || 'Unable to upload official receipt.');
+          }
+
+          renderProfile(result.data);
+          return result.data;
         };
 
         const renderProfile = (profile) => {
@@ -988,7 +1008,12 @@
             profileBody.classList.add('authenticated');
           }
 
-          renderStoredOR();
+          renderReceiptPreview({
+            fileUrl: profile.official_receipt_file_url,
+            fileName: profile.official_receipt_file_name,
+            fileType: profile.official_receipt_file_type,
+            receiptNumber: profile.official_receipt_number,
+          });
         };
 
         const loadProfile = async () => {
@@ -1030,29 +1055,55 @@
         }
 
         if (orNumberInput) {
-          orNumberInput.addEventListener('input', saveORText);
+          orNumberInput.addEventListener('input', () => {
+            window.clearTimeout(receiptTextSaveTimeout);
+            receiptTextSaveTimeout = window.setTimeout(async () => {
+              try {
+                await uploadOfficialReceipt({
+                  receiptNumber: orNumberInput.value.trim(),
+                });
+              } catch (error) {
+                console.error('Unable to save OR text:', error);
+              }
+            }, 450);
+          });
         }
 
         if (orFileInput) {
-          orFileInput.addEventListener('change', (event) => {
+          orFileInput.addEventListener('change', async (event) => {
             const [file] = event.target.files || [];
 
             if (!file) {
-              renderStoredOR();
+              renderReceiptPreview({
+                fileUrl: currentProfile?.official_receipt_file_url,
+                fileName: currentProfile?.official_receipt_file_name,
+                fileType: currentProfile?.official_receipt_file_type,
+                receiptNumber: currentProfile?.official_receipt_number,
+              });
               return;
             }
 
             const reader = new FileReader();
-            reader.onload = () => {
+            reader.onload = async () => {
+              renderReceiptPreview({
+                previewDataUrl: reader.result,
+                fileName: file.name,
+                fileType: file.type || 'application/octet-stream',
+                receiptNumber: orNumberInput?.value.trim() || currentProfile?.official_receipt_number || '',
+              });
+
               try {
-                const existing = JSON.parse(localStorage.getItem(buildOrStorageKey()) || '{}');
-                existing.fileName = file.name;
-                existing.fileType = file.type || 'application/octet-stream';
-                existing.fileData = reader.result;
-                localStorage.setItem(buildOrStorageKey(), JSON.stringify(existing));
-                renderStoredOR();
+                await uploadOfficialReceipt({
+                  file,
+                  receiptNumber: orNumberInput?.value.trim() || '',
+                });
               } catch (error) {
                 console.error('Unable to save OR file:', error);
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Upload failed',
+                  text: error.message || 'Unable to save official receipt.',
+                });
               }
             };
             reader.readAsDataURL(file);

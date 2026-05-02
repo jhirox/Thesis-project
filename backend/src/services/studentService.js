@@ -60,6 +60,10 @@ export async function findEnrollments(query) {
       e.queue_number,
       e.application_status,
       e.special_remarks,
+      e.official_receipt_number,
+      e.official_receipt_file_url,
+      e.official_receipt_file_name,
+      e.official_receipt_file_type,
       e.agreed_to_terms,
       e.agreed_at,
       e.created_at,
@@ -105,6 +109,10 @@ export async function findRecentEnrollments(query) {
       e.queue_number,
       e.application_status,
       e.special_remarks,
+      e.official_receipt_number,
+      e.official_receipt_file_url,
+      e.official_receipt_file_name,
+      e.official_receipt_file_type,
       e.agreed_to_terms,
       e.agreed_at,
       e.created_at,
@@ -145,6 +153,10 @@ export async function findEnrollmentApplicantDetails(id) {
       e.queue_number,
       e.application_status,
       e.special_remarks,
+      e.official_receipt_number,
+      e.official_receipt_file_url,
+      e.official_receipt_file_name,
+      e.official_receipt_file_type,
       e.agreed_to_terms,
       e.agreed_at,
       e.created_at,
@@ -226,6 +238,7 @@ export async function findStudents(query) {
       e.enrollment_id,
       e.queue_number,
       e.application_status,
+      e.official_receipt_file_url,
       p.program_name,
       p.program_code
     FROM students s
@@ -271,12 +284,40 @@ export async function findStudentProfile({ studentId, email }) {
       e.academic_year,
       e.queue_number,
       e.application_status,
-      e.special_remarks
+      e.special_remarks,
+      e.official_receipt_number,
+      e.official_receipt_file_url,
+      e.official_receipt_file_name,
+      e.official_receipt_file_type
     FROM students s
     ${latestEnrollmentJoinSql("e", "le")}
     LEFT JOIN programs p ON e.program_id = p.program_id
     LEFT JOIN learning_modalities lm ON e.modality_id = lm.modality_id
     LEFT JOIN student_types st ON e.student_type_id = st.type_id
+    WHERE s.student_id = ? OR s.email_address = ?
+    LIMIT 1`,
+    [studentId || null, email || null]
+  );
+
+  return rows[0] || null;
+}
+
+async function resolveEnrollmentTarget({ enrollmentId, studentId, email }) {
+  if (enrollmentId) {
+    const [rows] = await db.query(
+      `SELECT enrollment_id, student_id
+      FROM enrollments
+      WHERE enrollment_id = ?
+      LIMIT 1`,
+      [enrollmentId]
+    );
+    return rows[0] || null;
+  }
+
+  const [rows] = await db.query(
+    `SELECT e.enrollment_id, s.student_id
+    FROM students s
+    ${latestEnrollmentJoinSql("e", "le")}
     WHERE s.student_id = ? OR s.email_address = ?
     LIMIT 1`,
     [studentId || null, email || null]
@@ -340,4 +381,51 @@ export async function updateStudentProfile(payload) {
   }
 
   return findStudentProfile({ studentId: payload.studentId, email: payload.email });
+}
+
+export async function updateStudentReceipt(payload) {
+  const enrollmentTarget = await resolveEnrollmentTarget(payload);
+
+  if (!enrollmentTarget?.enrollment_id) {
+    throw new Error("Enrollment record not found for official receipt update.");
+  }
+
+  const updates = [];
+  const values = [];
+
+  if (payload.officialReceiptNumber !== undefined) {
+    updates.push("official_receipt_number = ?");
+    values.push(payload.officialReceiptNumber ?? null);
+  }
+
+  if (payload.officialReceiptFileUrl != null) {
+    updates.push("official_receipt_file_url = ?");
+    values.push(payload.officialReceiptFileUrl);
+    updates.push("official_receipt_file_name = ?");
+    values.push(payload.officialReceiptFileName ?? null);
+    updates.push("official_receipt_file_type = ?");
+    values.push(payload.officialReceiptFileType ?? null);
+  }
+
+  if (!updates.length) {
+    throw new Error("No official receipt fields provided to update.");
+  }
+
+  values.push(enrollmentTarget.enrollment_id);
+
+  const [result] = await db.query(
+    `UPDATE enrollments
+    SET ${updates.join(", ")}
+    WHERE enrollment_id = ?`,
+    values
+  );
+
+  if (result.affectedRows === 0) {
+    throw new Error("Enrollment record not found.");
+  }
+
+  return findStudentProfile({
+    studentId: payload.studentId || enrollmentTarget.student_id,
+    email: payload.email,
+  });
 }
