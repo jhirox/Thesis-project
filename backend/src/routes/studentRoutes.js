@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
-import { getStudents, getStudentByID, submitEnrollment, getEnrollments, getRecentEnrollments, getEnrollmentApplicantDetails, getStudentProfile, updateStudentProfile, updateStudentReceipt } from '../controllers/studentController.js';
+import { getStudents, getStudentByID, submitEnrollment, getEnrollments, getRecentEnrollments, getEnrollmentApplicantDetails, getStudentProfile, updateStudentProfile, updateStudentReceipt, updateEnrollmentStatus } from '../controllers/studentController.js';
 import { ensureUploadsDir, uploadsDir } from '../config/uploadStorage.js';
 
 ensureUploadsDir();
@@ -34,6 +34,9 @@ router.get('/enrollments/recent', getRecentEnrollments);
 
 // GET applicant name and course by enrollment ID or application ID
 router.get('/enrollments/details/:id', getEnrollmentApplicantDetails);
+
+// UPDATE enrollment application status
+router.put('/enrollments/status', updateEnrollmentStatus);
 
 // POST submit enrollment
 router.post('/enrollment', submitEnrollment);

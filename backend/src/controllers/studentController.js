@@ -3,6 +3,7 @@ import * as studentService from "../services/studentService.js";
 import { buildStoredFileUrl } from "../config/uploadStorage.js";
 import {
   submitEnrollmentSchema,
+  updateEnrollmentStatusSchema,
   updateStudentProfileSchema,
   updateStudentReceiptSchema,
 } from "../validators/studentSchemas.js";
@@ -124,5 +125,16 @@ export const updateStudentReceipt = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     data: profile,
+  });
+});
+
+export const updateEnrollmentStatus = asyncHandler(async (req, res) => {
+  const payload = updateEnrollmentStatusSchema.parse(req.body);
+  const enrollment = await studentService.updateEnrollmentStatus(payload);
+
+  res.status(200).json({
+    success: true,
+    message: "Enrollment status updated successfully",
+    data: enrollment,
   });
 });

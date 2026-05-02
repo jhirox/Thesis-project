@@ -444,3 +444,24 @@ export async function updateStudentReceipt(payload) {
     email: payload.email,
   });
 }
+
+export async function updateEnrollmentStatus(payload) {
+  const enrollmentId = Number.parseInt(payload.enrollmentId, 10);
+
+  if (!Number.isInteger(enrollmentId) || enrollmentId <= 0) {
+    throw new Error("A valid enrollment id is required to update status.");
+  }
+
+  const [result] = await db.query(
+    `UPDATE enrollments
+    SET application_status = ?, updated_at = NOW()
+    WHERE enrollment_id = ?`,
+    [payload.applicationStatus, enrollmentId]
+  );
+
+  if (result.affectedRows === 0) {
+    throw new Error("Enrollment record not found.");
+  }
+
+  return findEnrollmentApplicantDetails(enrollmentId);
+}

@@ -79,3 +79,16 @@ export const updateStudentReceiptSchema = z
     message: "Enrollment id, student id, or email is required to update official receipt",
     path: ["enrollmentId"],
   });
+
+export const updateEnrollmentStatusSchema = z.object({
+  enrollmentId: z.union([z.string().trim(), z.number()]),
+  applicationStatus: z.enum([
+    "Submitted",
+    "Under Review",
+    "Approved",
+    "Enrolled",
+    "On Hold",
+    "Rejected",
+    "Dropped",
+  ]),
+});
