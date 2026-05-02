@@ -95,6 +95,11 @@ export const getStudentProfile = asyncHandler(async (req, res) => {
 
 export const updateStudentProfile = asyncHandler(async (req, res) => {
   const payload = updateStudentProfileSchema.parse(req.body);
+
+  if (req.file) {
+    payload.profilePhotoUrl = `/uploads/${req.file.filename}`;
+  }
+
   const profile = await studentService.updateStudentProfile(payload);
 
   res.status(200).json({

@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -19,6 +20,10 @@ if (!process.env.JWT_SECRET) {
 
 const app = express();
 const publicPath = path.join(__dirname, "../public");
+const uploadsPath = path.join(__dirname, "../uploads");
+if (!fs.existsSync(uploadsPath)) {
+  fs.mkdirSync(uploadsPath, { recursive: true });
+}
 
 // 1. GLOBAL MIDDLEWARE
 import corsMiddleware from "./src/middlewares/corsMiddleware.js";
@@ -42,6 +47,7 @@ app.use((req, res, next) => {
 });
 
 // 3. STATIC FILES
+app.use("/uploads", express.static(uploadsPath));
 app.use(express.static(publicPath));
 
 // 4. API & VIEW ROUTES

@@ -803,6 +803,7 @@
         const orFileInput = document.querySelector('#orFileInput');
         const orFileName = document.querySelector('#orFileName');
         const orPreviewBox = document.querySelector('#orPreviewBox');
+        const profilePhotoInput = document.querySelector('#profilePhotoInput');
         const signOutBtn = document.querySelector('#sign-out');
         const sessionUserStr = localStorage.getItem('sessionUser');
         const authToken = localStorage.getItem('authToken');
@@ -1052,6 +1053,63 @@
                 renderStoredOR();
               } catch (error) {
                 console.error('Unable to save OR file:', error);
+              }
+            };
+            reader.readAsDataURL(file);
+          });
+        }
+
+        if (profilePhotoInput) {
+          profilePhotoInput.addEventListener('change', async (event) => {
+            const [file] = event.target.files || [];
+            if (!file || !file.type.startsWith('image/')) {
+              return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = async () => {
+              try {
+                const formData = new FormData();
+                formData.append('profilePhoto', file);
+
+                if (currentProfile?.student_id) {
+                  formData.append('studentId', currentProfile.student_id);
+                } else if (storedStudentProfileId) {
+                  formData.append('studentId', storedStudentProfileId);
+                } else if (userEmail) {
+                  formData.append('email', userEmail);
+                }
+
+                const response = await fetch('/api/students/profile', {
+                  method: 'PUT',
+                  headers: {
+                    Authorization: authToken ? `Bearer ${authToken}` : '',
+                  },
+                  body: formData,
+                });
+
+                const result = await response.json();
+                if (!response.ok || !result.success) {
+                  throw new Error(result.message || 'Unable to upload profile photo.');
+                }
+
+                profileImg.src = reader.result;
+                renderProfile(result.data);
+
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Avatar updated',
+                  text: 'Your profile photo has been uploaded successfully.',
+                  timer: 1800,
+                  showConfirmButton: false,
+                });
+              } catch (error) {
+                console.error('Profile photo upload failed:', error);
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Upload failed',
+                  text: error.message || 'Please try again.',
+                });
               }
             };
             reader.readAsDataURL(file);

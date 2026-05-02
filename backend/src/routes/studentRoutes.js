@@ -1,5 +1,27 @@
 import express from 'express';
+import multer from 'multer';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { getStudents, getStudentByID, submitEnrollment, getEnrollments, getRecentEnrollments, getEnrollmentApplicantDetails, getStudentProfile, updateStudentProfile } from '../controllers/studentController.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const uploadsDir = path.join(__dirname, '../../uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: uploadsDir,
+    filename: (req, file, cb) => {
+      const extension = path.extname(file.originalname).toLowerCase();
+      const safeName = `student-${Date.now()}-${Math.round(Math.random() * 1e6)}${extension}`;
+      cb(null, safeName);
+    },
+  }),
+});
 
 const router = express.Router();
 
@@ -23,7 +45,7 @@ router.get('/profile', getStudentProfile);
 router.get('/profile/:id', getStudentProfile);
 
 // UPDATE profile by email or student ID
-router.put('/profile', updateStudentProfile);
+router.put('/profile', upload.single('profilePhoto'), updateStudentProfile);
 
 // GET student by ID
 router.get('/:id', getStudentByID);

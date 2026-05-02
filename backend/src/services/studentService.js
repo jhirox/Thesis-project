@@ -216,6 +216,11 @@ export async function updateStudentProfile(payload) {
     values.push(payload.sex);
   }
 
+  if (payload.profilePhotoUrl != null) {
+    updates.push("profile_photo_url = ?");
+    values.push(payload.profilePhotoUrl);
+  }
+
   if (!updates.length) {
     throw new Error("No profile fields provided to update.");
   }

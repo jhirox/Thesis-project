@@ -28,6 +28,7 @@ try {
       s.suffix,
       CONCAT(s.first_name, ' ', IFNULL(CONCAT(s.middle_name, ' '), ''), s.last_name, IFNULL(CONCAT(' ', s.suffix), '')) AS full_name,
       s.email_address,
+      s.profile_photo_url AS photo,
       s.contact_number,
       s.birth_date,
       s.complete_address,

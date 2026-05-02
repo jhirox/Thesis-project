@@ -54,6 +54,7 @@ export const updateStudentProfileSchema = z
   .object({
     studentId: z.union([z.string().trim(), z.number()]).optional(),
     email: optionalTrimmedString,
+    profilePhotoUrl: optionalTrimmedString.optional(),
     contactNumber: optionalTrimmedString.optional(),
     birthDate: optionalTrimmedString.optional(),
     completeAddress: optionalTrimmedString.optional(),
