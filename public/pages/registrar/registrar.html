@@ -269,6 +269,8 @@
                     <option value="">All Status</option>
                     <option>Enrolled</option>
                     <option>Pending</option>
+                    <option>On Hold</option>
+                    <option>Rejected</option>
                     <option>Dropped</option>
                   </select>
                 </div>
@@ -374,7 +376,7 @@
                           <td class="px-4 py-3">Zairus Jester</td>
                           <td class="px-4 py-3">BSCS / 1st Year</td>
                           <td class="px-4 py-3">
-                            <span class="badge bg-danger">Dropped</span>
+                            <span class="badge bg-dark">Dropped</span>
                           </td>
                           <td class="px-4 py-3 text-center">
                             <div class="student-records-actions">
@@ -1055,6 +1057,8 @@
                         <option value="">Select Status</option>
                         <option value="Enrolled">Enrolled</option>
                         <option value="Pending">Pending</option>
+                        <option value="On Hold">On Hold</option>
+                        <option value="Rejected">Rejected</option>
                         <option value="Dropped">Dropped</option>
                       </select>
                     </div>
@@ -1267,14 +1271,7 @@
         }
 
         // Get status badge class
-        let statusBadgeClass = "bg-secondary";
-        if (studentStatus === "Enrolled") {
-          statusBadgeClass = "bg-success";
-        } else if (studentStatus === "Pending") {
-          statusBadgeClass = "bg-warning";
-        } else if (studentStatus === "Dropped") {
-          statusBadgeClass = "bg-danger";
-        }
+        const statusBadgeClass = getStatusBadgeClass(studentStatus);
 
         // Get tbody element
         const tbody = document.getElementById("student-records-tbody");
@@ -1294,7 +1291,7 @@
               <button class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
               <button class="btn btn-sm btn-outline-warning me-1" onclick="editStudent(this)">Edit</button>
               <button class="btn btn-sm btn-outline-success me-1">Approve</button>
-              <button class="btn btn-sm btn-outline-danger" onclick="deleteStudent(this)">Reject</button>
+              <button class="btn btn-sm btn-outline-danger">Reject</button>
             </div>
           </td>
         `;
@@ -1494,10 +1491,72 @@
 
         <div class="d-flex gap-2">
           <button type="button" class="btn btn-success flex-fill" onclick="openScheduleFromDetails()"><i class="fa-solid fa-check me-2"></i>Approve Enrollment</button>
-          <button class="btn btn-warning flex-fill"><i class="fa-solid fa-pause me-2"></i>Hold</button>
-          <button class="btn btn-danger flex-fill"><i class="fa-solid fa-times me-2"></i>Reject</button>
+          <button type="button" class="btn btn-warning flex-fill" id="detailHoldBtn"><i class="fa-solid fa-pause me-2"></i>Hold</button>
+          <button type="button" class="btn btn-danger flex-fill" id="detailRejectBtn"><i class="fa-solid fa-times me-2"></i>Reject</button>
         </div>
       `;
+
+      let activeStudentRow = null;
+
+      function getStatusBadgeClass(status) {
+        if (status === "Enrolled") {
+          return "bg-success";
+        }
+        if (status === "Pending") {
+          return "bg-warning";
+        }
+        if (status === "On Hold") {
+          return "bg-secondary";
+        }
+        if (status === "Rejected") {
+          return "bg-danger";
+        }
+        if (status === "Dropped") {
+          return "bg-dark";
+        }
+        return "bg-secondary";
+      }
+
+      function updateStudentRowStatus(row, status) {
+        if (!row) return;
+
+        const badge = row.querySelector("span.badge");
+        if (badge) {
+          badge.className = `badge ${getStatusBadgeClass(status)}`;
+          badge.textContent = status;
+        }
+
+        row.dataset.status = status;
+
+        const approveBtn = row.querySelector("button.btn-outline-success");
+        if (approveBtn) {
+          if (status === "Enrolled") {
+            approveBtn.disabled = true;
+            approveBtn.textContent = "Approved";
+          } else {
+            approveBtn.disabled = false;
+            approveBtn.textContent = "Approve";
+          }
+        }
+      }
+
+      function bindStudentDetailsActions() {
+        const detailHoldBtn = document.getElementById("detailHoldBtn");
+        const detailRejectBtn = document.getElementById("detailRejectBtn");
+        const detailModal = bootstrap.Modal.getOrCreateInstance(studentDetailsModalEl);
+
+        detailHoldBtn?.addEventListener("click", function () {
+          updateStudentRowStatus(activeStudentRow, "On Hold");
+          detailModal.hide();
+          alert("Student application has been placed on hold.");
+        });
+
+        detailRejectBtn?.addEventListener("click", function () {
+          updateStudentRowStatus(activeStudentRow, "Rejected");
+          detailModal.hide();
+          alert("Student application has been rejected.");
+        });
+      }
 
       document.getElementById("student-records-tbody").addEventListener("click", function (e) {
         const viewBtn = e.target.closest(".btn-view");
@@ -1505,8 +1564,10 @@
           const row = viewBtn.closest("tr");
           if (!row) return;
 
+          activeStudentRow = row;
           const modal = bootstrap.Modal.getOrCreateInstance(studentDetailsModalEl);
           modalDetails.innerHTML = fixedStudentDetailsMarkup;
+          bindStudentDetailsActions();
           modal.show();
           return;
         }
@@ -1516,14 +1577,7 @@
           const row = approveBtn.closest("tr");
           if (!row) return;
 
-          const badge = row.querySelector("span.badge");
-          if (badge) {
-            badge.className = "badge bg-success";
-            badge.textContent = "Enrolled";
-          }
-          row.dataset.status = "Enrolled";
-          approveBtn.disabled = true;
-          approveBtn.textContent = "Approved";
+          updateStudentRowStatus(row, "Enrolled");
 
           const studentId = row.children[0]?.textContent?.trim() || "UNKNOWN";
           const studentName = row.children[1]?.textContent?.trim() || "Student";
@@ -1544,6 +1598,15 @@
             printModal.show();
           }
 
+          return;
+        }
+
+        const rejectBtn = e.target.closest("button.btn-outline-danger");
+        if (rejectBtn) {
+          const row = rejectBtn.closest("tr");
+          if (!row) return;
+
+          updateStudentRowStatus(row, "Rejected");
           return;
         }
       });
@@ -1600,8 +1663,10 @@
         const row = button.closest("tr");
         if (!row) return;
 
+        activeStudentRow = row;
         const modal = bootstrap.Modal.getOrCreateInstance(studentDetailsModalEl);
         modalDetails.innerHTML = fixedStudentDetailsMarkup;
+        bindStudentDetailsActions();
         modal.show();
       }
       // Add Admin Function
