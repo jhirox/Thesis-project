@@ -2686,27 +2686,39 @@ span .icon:hover {
 }
 
 .queue-toolbar {
-  row-gap: 0.75rem;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  flex-wrap: nowrap;
+  padding-bottom: 0.5rem;
+}
+
+.queue-toolbar-title {
+  flex: 0 0 320px;
+  min-width: 320px;
 }
 
 .queue-toolbar-title h2 {
-  font-size: clamp(1.8rem, 2.4vw, 2.4rem);
-  line-height: 1.05;
+  font-size: clamp(1.9rem, 2.2vw, 2.6rem);
+  line-height: 0.98;
   letter-spacing: -0.02em;
   white-space: normal;
+  margin: 0;
 }
 
 .queue-toolbar-actions {
   display: flex;
-  flex-wrap: wrap;
+  flex: 1 1 auto;
+  flex-wrap: nowrap;
   justify-content: flex-end;
   align-items: center;
   gap: 0.75rem;
+  min-width: 0;
 }
 
 .queue-search {
-  flex: 1 1 24rem;
+  flex: 1 1 auto;
   min-width: 0;
   max-width: 100%;
 }
@@ -2726,7 +2738,7 @@ span .icon:hover {
   border-radius: 0.65rem !important;
   box-shadow: none;
   display: grid !important;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(240px, 1.55fr) minmax(180px, 1fr) 140px auto auto;
   align-items: center !important;
   gap: 1.5rem;
   backdrop-filter: blur(14px);
@@ -2734,11 +2746,7 @@ span .icon:hover {
 }
 
 .queue-card-main {
-  display: grid;
-  grid-template-columns: minmax(220px, 1.55fr) minmax(180px, 1fr) minmax(110px, 0.72fr);
-  gap: 1.5rem;
-  min-width: 0;
-  align-items: center;
+  display: contents;
 }
 
 .queue-card-main > div {
@@ -2753,37 +2761,44 @@ span .icon:hover {
   flex-direction: column;
   justify-content: center;
   min-height: 100%;
+  min-width: 0;
 }
 
 .info-main {
   align-items: flex-start;
+  grid-column: 1;
 }
 
 .info-secondary {
   align-items: flex-start;
+  grid-column: 2;
 }
 
 .wait {
-  padding-left: 1rem;
+  padding-left: 0.85rem;
   border-left: 1px solid rgba(255, 255, 255, 0.1);
   align-items: flex-start;
+  grid-column: 3;
 }
 
 .queue-status {
-  display: grid;
-  grid-template-columns: auto auto;
-  align-items: center;
-  gap: 0.75rem;
-  flex: 0 0 auto;
-  justify-content: end;
-  padding-left: 1.25rem;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  display: contents;
+}
+
+.queue-status .status-badge {
+  grid-column: 4;
+  justify-self: end;
+  align-self: center;
 }
 
 .queue-icons {
+  grid-column: 5;
+  justify-self: end;
   display: grid;
   grid-template-columns: repeat(3, 2.25rem);
   gap: 0.45rem;
+  padding-left: 0.9rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .queue-icon {
@@ -2848,12 +2863,24 @@ span .icon:hover {
 }
 
 @media (max-width: 767.98px) {
+  .queue-toolbar {
+    flex-wrap: wrap;
+    align-items: stretch;
+  }
+
+  .queue-toolbar-title {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
   .queue-toolbar-title h2 {
     white-space: normal;
   }
 
   .queue-toolbar-actions {
+    flex: 1 1 100%;
     justify-content: stretch;
+    flex-wrap: wrap;
   }
 
   .queue-search,
@@ -2868,7 +2895,8 @@ span .icon:hover {
   }
 
   .queue-card-main {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 0.9rem;
   }
 
@@ -2882,11 +2910,24 @@ span .icon:hover {
 
   .queue-status {
     width: 100%;
+    display: grid;
     grid-template-columns: 1fr auto;
-    padding-left: 0;
+    align-items: center;
+    gap: 0.75rem;
     padding-top: 0.75rem;
-    border-left: 0;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .queue-status .status-badge {
+    grid-column: auto;
+    justify-self: start;
+  }
+
+  .queue-icons {
+    grid-column: auto;
+    justify-self: end;
+    padding-left: 0;
+    border-left: 0;
   }
 }
 
