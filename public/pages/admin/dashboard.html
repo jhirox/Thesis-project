@@ -495,7 +495,7 @@
             <div class="row g-3 mb-4 px-4">
               <div class="col-lg-7">
                 <div class="chart-card rounded-2 p-3">
-                  <h6>Daily Application Volume</h6>
+                  <h6>Application Status Volume</h6>
                   <div id="barchart" style="width: 100%; height: 250px"></div>
                 </div>
               </div>
@@ -724,8 +724,8 @@
             return;
           }
 
-          const dailyVolume = buildDailyVolumeSeries(enrollments);
-          const hasData = dailyVolume.length > 0;
+          const dailyVolume = buildDailyStatusSeries(enrollments);
+          const hasData = dailyVolume.categories.length > 0;
 
           Highcharts.chart("barchart", {
             chart: {
@@ -740,7 +740,7 @@
               style: { color: "#d7e3f1" },
             },
             xAxis: {
-              categories: dailyVolume.map((entry) => entry.label),
+              categories: dailyVolume.categories,
               labels: {
                 style: { color: "#ffffff" },
               },
@@ -756,7 +756,8 @@
               },
             },
             legend: {
-              enabled: false,
+              itemStyle: { color: "#ffffff" },
+              itemHoverStyle: { color: "#ffffff" },
             },
             credits: {
               enabled: false,
@@ -765,13 +766,29 @@
               enabled: false,
             },
             tooltip: {
-              pointFormat: "<b>{point.y}</b> application(s)",
+              shared: true,
+              valueSuffix: " application(s)",
             },
             series: [
               {
-                name: "Applications",
-                data: dailyVolume.map((entry) => entry.total),
+                name: "Total Applicants",
+                data: dailyVolume.totalApplicants,
                 color: "#2196f3",
+              },
+              {
+                name: "Pending",
+                data: dailyVolume.pending,
+                color: "#ff9800",
+              },
+              {
+                name: "Approved",
+                data: dailyVolume.approved,
+                color: "#4caf50",
+              },
+              {
+                name: "Rejected",
+                data: dailyVolume.rejected,
+                color: "#f44336",
               },
             ],
           });
@@ -830,7 +847,7 @@
           });
         }
 
-        function buildDailyVolumeSeries(enrollments) {
+        function buildDailyStatusSeries(enrollments) {
           const countsByDate = new Map();
 
           enrollments.forEach((enrollment) => {
@@ -842,12 +859,37 @@
             }
 
             const label = date.toLocaleDateString("en-CA");
-            countsByDate.set(label, (countsByDate.get(label) || 0) + 1);
+            const bucket = countsByDate.get(label) || {
+              totalApplicants: 0,
+              pending: 0,
+              approved: 0,
+              rejected: 0,
+            };
+
+            bucket.totalApplicants += 1;
+
+            if (enrollment.application_status === "Approved" || enrollment.application_status === "Enrolled") {
+              bucket.approved += 1;
+            } else if (enrollment.application_status === "Rejected") {
+              bucket.rejected += 1;
+            } else if (enrollment.application_status === "Submitted" || enrollment.application_status === "Under Review") {
+              bucket.pending += 1;
+            }
+
+            countsByDate.set(label, bucket);
           });
 
-          return Array.from(countsByDate.entries())
+          const sortedEntries = Array.from(countsByDate.entries())
             .sort(([left], [right]) => left.localeCompare(right))
-            .map(([label, total]) => ({ label, total }));
+            .map(([label, counts]) => ({ label, ...counts }));
+
+          return {
+            categories: sortedEntries.map((entry) => entry.label),
+            totalApplicants: sortedEntries.map((entry) => entry.totalApplicants),
+            pending: sortedEntries.map((entry) => entry.pending),
+            approved: sortedEntries.map((entry) => entry.approved),
+            rejected: sortedEntries.map((entry) => entry.rejected),
+          };
         }
 
         function buildCourseDistribution(enrollments) {
