@@ -2737,25 +2737,29 @@ span .icon:hover {
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 10px !important;
   box-shadow: none;
-  display: flex !important;
-  justify-content: space-between;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center !important;
-  gap: 1rem;
+  column-gap: 1.5rem;
+  row-gap: 1rem;
   backdrop-filter: blur(18px);
   padding: 1rem 1.25rem !important;
+  text-align: left;
 }
 
 .queue-card-main {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(220px, 1.45fr) minmax(180px, 1fr) minmax(110px, 0.7fr);
   align-items: center;
   gap: 1.5rem;
-  flex: 1 1 auto;
   min-width: 0;
+  width: 100%;
 }
 
 .queue-card-main > div {
   min-width: 0;
   padding: 0;
+  text-align: left;
 }
 
 .info-main,
@@ -2764,22 +2768,21 @@ span .icon:hover {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: flex-start;
   min-width: 0;
+  text-align: left;
 }
 
 .info-main {
-  align-items: flex-start;
-  flex: 1.2 1 220px;
+  width: 100%;
 }
 
 .info-secondary {
-  align-items: flex-start;
-  flex: 1 1 180px;
+  width: 100%;
 }
 
 .wait {
-  align-items: flex-start;
-  flex: 0 0 110px;
+  width: 100%;
 }
 
 .queue-status {
@@ -2787,8 +2790,10 @@ span .icon:hover {
   align-items: center;
   justify-content: flex-end;
   gap: 1rem;
-  flex: 0 0 auto;
   min-width: 0;
+  justify-self: end;
+  align-self: center;
+  white-space: nowrap;
 }
 
 .queue-icons {
@@ -2858,6 +2863,17 @@ span .icon:hover {
   padding: 0.45rem 0.9rem;
 }
 
+@media (max-width: 1199.98px) {
+  .queue-card-main {
+    grid-template-columns: minmax(180px, 1.3fr) minmax(150px, 1fr) minmax(96px, 0.7fr);
+    gap: 1rem;
+  }
+
+  .queue-status {
+    gap: 0.75rem;
+  }
+}
+
 @media (max-width: 767.98px) {
   .queue-toolbar-title {
     flex: 1 1 100%;
@@ -2881,24 +2897,21 @@ span .icon:hover {
   }
 
   .queue-card {
-    flex-direction: column;
+    grid-template-columns: 1fr;
     align-items: stretch !important;
   }
 
   .queue-card-main {
-    flex-direction: column;
+    grid-template-columns: 1fr;
     gap: 0.9rem;
     align-items: flex-start;
-  }
-
-  .wait {
-    flex: 1 1 auto;
   }
 
   .queue-status {
     width: 100%;
     justify-content: space-between;
     padding-top: 0.75rem;
+    justify-self: stretch;
   }
 }
 

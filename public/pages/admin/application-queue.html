@@ -418,12 +418,10 @@
               </div>
 
               <div id="queue-cards-list">
-                <div
-                  class="card text-white p-3 d-flex justify-content-between align-items-center mb-3 queue-card"
-                >
+                <div class="card text-white p-3 mb-3 queue-card">
                   <div class="queue-card-main">
                     <div class="info-main">
-                      <strong>Loading applications...</strong><br />
+                      <strong>Loading applications...</strong>
                       <small>Please wait</small>
                     </div>
                     <div class="info-secondary">
@@ -749,14 +747,14 @@
             const statusClass = getQueueStatusClass(application.application_status);
 
             const card = document.createElement('div');
-            card.className = 'card text-white p-3 d-flex justify-content-between align-items-center mb-3 queue-card';
+            card.className = 'card text-white p-3 mb-3 queue-card';
             card.dataset.studentId = application.student_id || '';
             card.dataset.enrollmentId = application.enrollment_id || '';
 
             card.innerHTML = `
               <div class="queue-card-main">
                 <div class="info-main">
-                  <strong>${escapeHtml(applicantName)}</strong><br />
+                  <strong>${escapeHtml(applicantName)}</strong>
                   <small>${escapeHtml(applicationId)}</small>
                 </div>
                 <div class="info-secondary">
