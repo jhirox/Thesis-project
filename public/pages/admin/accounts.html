@@ -320,7 +320,7 @@
                 data-bs-theme="dark"
               >
                 <div class="d-flex justify-content-between align-items-center">
-                  <h6>Total Applications</h6>
+                  <h6>Total Accounts</h6>
                   <span class="material-symbols-outlined text-primary"
                     >group</span
                   >
@@ -356,14 +356,14 @@
                 data-bs-theme="dark"
               >
                 <div class="d-flex justify-content-between align-items-center">
-                  <h6>Rejected</h6>
-                  <span class="material-symbols-outlined text-danger"
-                    >check_circle</span
+                  <h6>Inactive Accounts</h6>
+                  <span class="material-symbols-outlined text-secondary"
+                    >person_off</span
                   >
                 </div>
-                <h3>69</h3>
+                <h3>12</h3>
                 <small
-                  ><span class="text-danger">+12%</span> from last week</small
+                  ><span class="text-secondary">+2%</span> from last week</small
                 >
               </div>
             </div>
@@ -419,7 +419,7 @@
               >
                 <h4 class="fw-bold">Account Overview</h4>
                 <p class="text-muted mb-2">
-                  All accounts — Active, Rejected, and Inactive
+                  All accounts - Active and Inactive
                 </p>
                 <hr />
 
@@ -471,7 +471,6 @@
                       <option value="">All Status</option>
                       <option value="Active">Active</option>
                       <option value="Inactive">Inactive</option>
-                      <option value="Rejected">Rejected</option>
                     </select>
                   </div>
                   <div class="col-md-2">
@@ -539,15 +538,15 @@
                           <span class="status-badge status-active bg-success">Active</span>
                         </td>
                         <td class="px-4 py-3 text-end account-action-cell">
-                          <div class="account-actions account-actions--icons">
-                            <i class="fa-solid fa-edit account-action-icon text-info" title="Edit"></i>
-                            <i class="fa-solid fa-lock account-action-icon text-warning" title="Lock"></i>
-                            <i class="fa-solid fa-ban account-action-icon text-danger" title="Reject"></i>
+                          <div class="account-actions account-actions--buttons justify-content-end">
+                            <button class="btn btn-outline-light btn-sm" type="button">View</button>
+                            <button class="btn btn-outline-info btn-sm" type="button">Edit</button>
+                            <button class="btn btn-outline-danger btn-sm" type="button">Delete</button>
                           </div>
                         </td>
                       </tr>
 
-                      <!-- Mark Delacruz (Rejected) -->
+                      <!-- Mark Delacruz (Inactive) -->
                       <tr class="border-bottom border-secondary-subtle">
                         <td class="px-4 py-3">
                           <div class="d-flex align-items-center">
@@ -566,13 +565,13 @@
                         <td class="px-4 py-3 fw-semibold">Irregular</td>
                         <td class="px-4 py-3 fw-semibold">2025-09-30</td>
                         <td class="px-4 py-3">
-                          <span class="status-badge status-rejected bg-danger">Rejected</span>
+                          <span class="status-badge status-inactive bg-secondary">Inactive</span>
                         </td>
                         <td class="px-4 py-3 text-end account-action-cell">
-                          <div class="account-actions account-actions--icons">
-                            <i class="fa-solid fa-edit account-action-icon text-info" title="Edit"></i>
-                            <i class="fa-solid fa-lock account-action-icon text-warning" title="Lock"></i>
-                            <i class="fa-solid fa-ban account-action-icon text-danger" title="Reject"></i>
+                          <div class="account-actions account-actions--buttons justify-content-end">
+                            <button class="btn btn-outline-light btn-sm" type="button">View</button>
+                            <button class="btn btn-outline-info btn-sm" type="button">Edit</button>
+                            <button class="btn btn-outline-danger btn-sm" type="button">Delete</button>
                           </div>
                         </td>
                       </tr>
@@ -599,10 +598,10 @@
                           <span class="status-badge status-inactive bg-secondary">Inactive</span>
                         </td>
                         <td class="px-4 py-3 text-end account-action-cell">
-                          <div class="account-actions account-actions--icons">
-                            <i class="fa-solid fa-edit account-action-icon text-info" title="Edit"></i>
-                            <i class="fa-solid fa-lock account-action-icon text-warning" title="Lock"></i>
-                            <i class="fa-solid fa-ban account-action-icon text-danger" title="Reject"></i>
+                          <div class="account-actions account-actions--buttons justify-content-end">
+                            <button class="btn btn-outline-light btn-sm" type="button">View</button>
+                            <button class="btn btn-outline-info btn-sm" type="button">Edit</button>
+                            <button class="btn btn-outline-danger btn-sm" type="button">Delete</button>
                           </div>
                         </td>
                       </tr>
@@ -629,10 +628,10 @@
                           <span class="status-badge status-inactive bg-secondary">Inactive</span>
                         </td>
                         <td class="px-4 py-3 text-end account-action-cell">
-                          <div class="account-actions account-actions--icons">
-                            <i class="fa-solid fa-edit account-action-icon text-info" title="Edit"></i>
-                            <i class="fa-solid fa-lock account-action-icon text-warning" title="Lock"></i>
-                            <i class="fa-solid fa-ban account-action-icon text-danger" title="Reject"></i>
+                          <div class="account-actions account-actions--buttons justify-content-end">
+                            <button class="btn btn-outline-light btn-sm" type="button">View</button>
+                            <button class="btn btn-outline-info btn-sm" type="button">Edit</button>
+                            <button class="btn btn-outline-danger btn-sm" type="button">Delete</button>
                           </div>
                         </td>
                       </tr>
@@ -753,10 +752,10 @@
                           <span class="status-badge status-active bg-success">Active</span>
                         </td>
                         <td class="px-4 py-3 text-end account-action-cell">
-                          <div class="account-actions account-actions--icons">
-                            <i class="fa-solid fa-edit account-action-icon text-info" title="Edit"></i>
-                            <i class="fa-solid fa-lock account-action-icon text-warning" title="Lock"></i>
-                            <i class="fa-solid fa-ban account-action-icon text-danger" title="Reject"></i>
+                          <div class="account-actions account-actions--buttons justify-content-end">
+                            <button class="btn btn-outline-light btn-sm" type="button">View</button>
+                            <button class="btn btn-outline-info btn-sm" type="button">Edit</button>
+                            <button class="btn btn-outline-danger btn-sm" type="button">Delete</button>
                           </div>
                         </td>
                       </tr>
@@ -781,10 +780,10 @@
                           <span class="status-badge status-active bg-success">Active</span>
                         </td>
                         <td class="px-4 py-3 text-end account-action-cell">
-                          <div class="account-actions account-actions--icons">
-                            <i class="fa-solid fa-edit account-action-icon text-info" title="Edit"></i>
-                            <i class="fa-solid fa-lock account-action-icon text-warning" title="Lock"></i>
-                            <i class="fa-solid fa-ban account-action-icon text-danger" title="Reject"></i>
+                          <div class="account-actions account-actions--buttons justify-content-end">
+                            <button class="btn btn-outline-light btn-sm" type="button">View</button>
+                            <button class="btn btn-outline-info btn-sm" type="button">Edit</button>
+                            <button class="btn btn-outline-danger btn-sm" type="button">Delete</button>
                           </div>
                         </td>
                       </tr>
@@ -809,10 +808,10 @@
                           <span class="status-badge status-active bg-success">Active</span>
                         </td>
                         <td class="px-4 py-3 text-end account-action-cell">
-                          <div class="account-actions account-actions--icons">
-                            <i class="fa-solid fa-edit account-action-icon text-info" title="Edit"></i>
-                            <i class="fa-solid fa-lock account-action-icon text-warning" title="Lock"></i>
-                            <i class="fa-solid fa-ban account-action-icon text-danger" title="Reject"></i>
+                          <div class="account-actions account-actions--buttons justify-content-end">
+                            <button class="btn btn-outline-light btn-sm" type="button">View</button>
+                            <button class="btn btn-outline-info btn-sm" type="button">Edit</button>
+                            <button class="btn btn-outline-danger btn-sm" type="button">Delete</button>
                           </div>
                         </td>
                       </tr>
@@ -933,13 +932,10 @@
                           <span class="status-badge status-inactive bg-secondary">Inactive</span>
                         </td>
                         <td class="px-4 py-3 text-end account-action-cell">
-                          <div class="account-actions account-actions--buttons">
-                            <button class="btn btn-outline-secondary btn-sm" type="button">
-                              Send Reminder
-                            </button>
-                            <button class="btn btn-outline-primary btn-sm" type="button">
-                              Activate
-                            </button>
+                          <div class="account-actions account-actions--buttons justify-content-end">
+                            <button class="btn btn-outline-light btn-sm" type="button">View</button>
+                            <button class="btn btn-outline-info btn-sm" type="button">Edit</button>
+                            <button class="btn btn-outline-danger btn-sm" type="button">Delete</button>
                           </div>
                         </td>
                       </tr>
@@ -964,13 +960,10 @@
                           <span class="status-badge status-inactive bg-secondary">Inactive</span>
                         </td>
                         <td class="px-4 py-3 text-end account-action-cell">
-                          <div class="account-actions account-actions--buttons">
-                            <button class="btn btn-outline-secondary btn-sm" type="button">
-                              Send Reminder
-                            </button>
-                            <button class="btn btn-outline-primary btn-sm" type="button">
-                              Activate
-                            </button>
+                          <div class="account-actions account-actions--buttons justify-content-end">
+                            <button class="btn btn-outline-light btn-sm" type="button">View</button>
+                            <button class="btn btn-outline-info btn-sm" type="button">Edit</button>
+                            <button class="btn btn-outline-danger btn-sm" type="button">Delete</button>
                           </div>
                         </td>
                       </tr>

@@ -2580,7 +2580,7 @@ span .icon:hover {
 /* ===== ACCOUNTS PAGE STYLES ===== */
 .account-action-cell {
   width: 1%;
-  min-width: 9.5rem;
+  min-width: 14rem;
   white-space: nowrap;
 }
 
@@ -2635,13 +2635,13 @@ span .icon:hover {
 
 @media (max-width: 991.98px) {
   .account-action-cell {
-    min-width: 8.75rem;
+    min-width: 12.5rem;
   }
 }
 
 @media (max-width: 767.98px) {
   .account-action-cell {
-    min-width: 8.5rem;
+    min-width: 11.5rem;
     text-align: center !important;
   }
 
@@ -2657,7 +2657,7 @@ span .icon:hover {
 
 @media (max-width: 575.98px) {
   .account-action-cell {
-    min-width: 7.5rem;
+    min-width: 9rem;
   }
 
   .account-actions--icons {
