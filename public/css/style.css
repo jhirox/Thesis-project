@@ -3578,7 +3578,7 @@ body.page-certificate-registration {
   width: 100%;
   border: none;
   border-bottom: 1.5px solid rgba(2, 27, 58, 0.65);
-  padding: 12px 0;
+  padding: 8px 0;
   font-size: 13px;
   text-align: center;
   background-color: transparent;
@@ -4210,7 +4210,7 @@ body.page-schedule-fees {
   width: 100%;
   border: none;
   border-bottom: 1.5px solid rgba(2, 27, 58, 0.65);
-  padding: 12px 0;
+  padding: 8px 0;
   font-size: 13px;
   text-align: center;
   background-color: transparent;
