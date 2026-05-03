@@ -554,11 +554,29 @@
         };
       }
 
+      function formatSemesterLabel(value) {
+        const normalized = String(value || "").trim();
+        if (!normalized) return "2nd Sem";
+        if (/sem/i.test(normalized)) return normalized;
+        return `${normalized} Sem`;
+      }
+
+      function buildProgramFields(payload = {}) {
+        const programCode = String(payload.programCode || "").trim();
+        const programName = String(payload.programName || "").trim();
+        const yearLevel = String(payload.yearLevel || "").trim();
+
+        return {
+          courseField: yearLevel || programCode || "Not set",
+          yearSectionField: programName || programCode || "Not set",
+          feesTitle: [programCode || "BSCS", yearLevel || "2", formatSemesterLabel(payload.semester), "SY 2025-2026"].join(" "),
+        };
+      }
+
       function buildEnrollmentFormHtml(notification, payload) {
         const nameParts = splitStudentName(payload?.studentName || notification?.title || "Student");
-        const courseLabel = [payload?.programCode, payload?.programName].filter(Boolean).join(" - ") || "Not set";
-        const yearSection = payload?.yearLevel || "Not set";
-        const semester = payload?.semester || "Not set";
+        const { courseField, yearSectionField, feesTitle } = buildProgramFields(payload);
+        const semester = formatSemesterLabel(payload?.semester);
         const appointmentDate = payload?.appointmentDate || notification?.appointment_date || "Not set";
         const appointmentTime = payload?.appointmentTime || notification?.appointment_time || "Not set";
         const studentNumber = payload?.studentId || notification?.student_id || "";
@@ -572,43 +590,324 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${escapedTitle}</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; background: #f5f7fb; color: #1f2937; }
-    .wrapper { max-width: 1100px; margin: 24px auto; background: #ffffff; border: 1px solid #d7deea; padding: 32px; }
-    .cert-reg-header { border-bottom: 2px solid #0b2545; padding-bottom: 16px; margin-bottom: 20px; }
-    .cert-reg-header-content { display: flex; gap: 16px; align-items: center; }
-    .cert-reg-institution-logo img { width: 72px; height: 72px; object-fit: contain; }
-    .cert-reg-institution-info h2 { margin: 0 0 6px; font-size: 24px; color: #0b2545; }
-    .cert-reg-institution-info p { margin: 2px 0; font-size: 14px; }
-    .cert-reg-title-section { text-align: center; margin-bottom: 24px; }
-    .cert-reg-title-section div:first-child { font-size: 14px; letter-spacing: 0.08em; }
-    .cert-reg-title-section div:last-child { font-size: 26px; font-weight: 700; margin-top: 4px; }
-    .cert-reg-student-info, .cert-reg-bottom-info { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 18px; margin-bottom: 22px; }
-    .cert-reg-info-field, .cert-reg-bottom-field { display: flex; flex-direction: column; gap: 6px; }
-    .cert-reg-info-field label, .cert-reg-bottom-field label, .section-label { font-size: 12px; font-weight: 700; text-transform: uppercase; color: #4b5563; }
-    .field-value { min-height: 40px; border: 1px solid #cbd5e1; background: #f8fafc; border-radius: 8px; padding: 10px 12px; font-size: 14px; }
-    .cert-reg-table-section { margin-bottom: 22px; }
-    .cert-reg-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .cert-reg-table th, .cert-reg-table td { border: 1px solid #cbd5e1; padding: 10px; vertical-align: top; }
-    .cert-reg-table th { background: #eaf0f8; text-align: left; }
-    .cert-reg-staff-only-section, .cert-reg-important-notice, .cert-reg-fees-section { border: 1px solid #d7deea; border-radius: 12px; padding: 18px; margin-top: 20px; }
-    .cert-reg-signature-section { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
-    .cert-reg-signature-input { min-height: 40px; border: 1px solid #cbd5e1; background: #f8fafc; border-radius: 8px; padding: 10px 12px; }
-    .sched-fees-header { font-size: 20px; font-weight: 700; color: #0b2545; margin-bottom: 16px; }
-    .sched-fees-content-wrapper { display: grid; grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr); gap: 18px; }
-    .sched-fees-fee-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .sched-fees-fee-table td { border: 1px solid #cbd5e1; padding: 10px; }
-    .sched-fees-total-row td { font-weight: 700; background: #f8fafc; }
-    .sched-fees-side-panel { border: 1px solid #d7deea; border-radius: 12px; padding: 16px; background: #f8fafc; }
-    .sched-fees-tagline { margin-top: 14px; font-size: 14px; font-weight: 700; color: #0b2545; }
-    .appointment-meta { margin-top: 10px; font-size: 13px; color: #374151; }
-    @media print {
-      body { background: #fff; }
-      .wrapper { margin: 0; border: 0; padding: 0; max-width: none; }
+    body.page-certificate-registration {
+      margin: 0;
+      padding: 14px;
+      background: #d7dbe2;
+      font-family: Arial, sans-serif;
+      color: #0f172a;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .doc-shell {
+      width: 794px;
+      margin: 0 auto;
+      background: #ffffff;
+      box-shadow: 0 2px 14px rgba(15, 23, 42, 0.24);
+      border: 1px solid #9ca3af;
+      padding: 0;
+    }
+    .cert-reg-container {
+      margin: 0;
+      padding: 0;
+      background: #fffdfa;
+    }
+    .cert-reg-header {
+      background: #0b2545;
+      border: 2px solid #d5b02d;
+      border-radius: 12px;
+      margin: 12px 12px 4px;
+      padding: 6px 14px;
+      color: #fff;
+    }
+    .cert-reg-header-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .cert-reg-institution-logo {
+      width: 38px;
+      height: 38px;
+      flex: 0 0 38px;
+    }
+    .cert-reg-institution-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .cert-reg-institution-info {
+      text-align: left;
+      color: #ffffff;
+    }
+    .cert-reg-institution-info h2 {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.15;
+      letter-spacing: 0.03em;
+      font-weight: 700;
+    }
+    .cert-reg-institution-info p {
+      margin: 3px 0 0;
+      font-size: 9px;
+      line-height: 1.2;
+    }
+    .cert-reg-title-section {
+      background: #d5aa20;
+      color: #0b2545;
+      border-radius: 10px;
+      margin: 0 12px 6px;
+      padding: 6px 10px;
+      text-align: center;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .cert-reg-title-section div:first-child {
+      font-size: 9px;
+      margin-bottom: 4px;
+    }
+    .cert-reg-title-section div:last-child {
+      font-size: 13px;
+    }
+    .cert-reg-student-info {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px 8px;
+      margin: 0 12px 6px;
+      padding: 0;
+    }
+    .cert-reg-info-field,
+    .cert-reg-bottom-field {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .cert-reg-info-field label,
+    .cert-reg-bottom-field label,
+    .cert-reg-signature-label,
+    .sched-fees-fee-name,
+    .cert-reg-process-by-label,
+    .cert-reg-staff-only-label {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #0b2545;
+      letter-spacing: 0.03em;
+    }
+    .field-value {
+      min-height: 18px;
+      padding: 2px 2px 4px;
+      border: 0;
+      border-bottom: 2px solid #94a3b8;
+      background: transparent;
+      font-size: 10px;
+      line-height: 1.2;
+      color: #111827;
+    }
+    .cert-reg-table-section {
+      margin: 0 12px 6px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #d7b447;
+    }
+    .cert-reg-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 9px;
+    }
+    .cert-reg-table th {
+      background: #0b2545;
+      color: #fff;
+      font-size: 9px;
+      padding: 4px 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-right: 1px solid rgba(255,255,255,0.14);
+    }
+    .cert-reg-table td {
+      padding: 4px 5px;
+      border: 1px solid #d9dee7;
+      color: #111827;
+      background: #fff;
+    }
+    .cert-reg-bottom-info {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin: 0 12px;
+      padding: 6px 0 10px;
+      border: 1px solid #e2c459;
+      border-radius: 0 0 10px 10px;
+      border-top: 0;
+    }
+    .cert-reg-bottom-field.text-center {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      grid-column: 2 / 3;
+      margin-top: 2px;
+    }
+    .cert-reg-bottom-field.text-center .field-value {
+      width: 100%;
+      text-align: center;
+      border-bottom-color: #0b2545;
+    }
+    .cert-reg-staff-only-section {
+      margin: 0 12px;
+      padding: 6px 0 0;
+      border-top: 1px solid #e2c459;
+    }
+    .cert-reg-process-by-label {
+      margin: 8px 0 6px;
+    }
+    .cert-reg-signature-section {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .cert-reg-signature-block .field-value {
+      text-align: center;
+    }
+    .cert-reg-signature-label {
+      text-align: center;
+      margin-top: 4px;
+    }
+    .cert-reg-important-notice {
+      margin: 8px 12px 10px;
+      background: #0b2545;
+      color: #fff;
+      border: 1px solid #d5aa20;
+      border-radius: 10px;
+      padding: 6px 8px;
+      font-size: 8px;
+      line-height: 1.2;
+    }
+    .cert-reg-important-notice strong {
+      color: #ffd24a;
+      text-transform: uppercase;
+    }
+    .page-certificate-registration {
+      margin: 0 12px 12px;
+    }
+    .cert-reg-fees-section {
+      margin-top: 0;
+    }
+    .sched-fees-header {
+      background: #0b2545;
+      color: #fff;
+      border: 1px solid #d5aa20;
+      border-radius: 10px;
+      text-align: center;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    .sched-fees-content-wrapper {
+      display: grid;
+      grid-template-columns: minmax(0, 2.3fr) minmax(180px, 0.9fr);
+      gap: 6px;
+    }
+    .sched-fees-fee-section {
+      border: 1px solid #e2c459;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .sched-fees-section-header {
+      background: #d5aa20;
+      color: #0b2545;
+      text-align: center;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 6px 8px;
+      text-transform: uppercase;
+    }
+    .sched-fees-fee-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 9px;
+    }
+    .sched-fees-fee-table td {
+      border: 1px solid #d9dee7;
+      padding: 5px 6px;
+      background: #fff;
+    }
+    .sched-fees-fee-name {
+      color: #0f172a;
+    }
+    .sched-fees-fee-amount {
+      text-align: right;
+      color: #6b7280;
+      width: 110px;
+    }
+    .sched-fees-total-row td {
+      border-color: #d5aa20;
+      font-weight: 700;
+    }
+    .sched-fees-side-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid #d9dee7;
+      border-radius: 10px;
+      background: #fff;
+      overflow: hidden;
+    }
+    .sched-fees-signature-section {
+      display: grid;
+      grid-template-columns: 1fr;
+      min-height: 112px;
+    }
+    .sched-fees-signature-block {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 10px 8px;
+      border-bottom: 1px solid #d9dee7;
+    }
+    .sched-fees-signature-block:last-child {
+      border-bottom: 0;
+    }
+    .sched-fees-signature-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #0b2545;
+      text-transform: uppercase;
+      text-align: center;
+    }
+    .sched-fees-important-notice {
+      background: #0b2545;
+      color: #fff;
+      padding: 6px 8px;
+      font-size: 8px;
+      line-height: 1.2;
+      border-top: 1px solid #d5aa20;
+    }
+    .sched-fees-important-notice strong {
+      color: #ffd24a;
+      text-transform: uppercase;
+    }
+    .sched-fees-tagline {
+      text-align: right;
+      font-size: 9px;
+      font-weight: 700;
+      color: #0b2545;
+      padding-top: 3px;
+    }
+    @page {
+      size: A4 portrait;
+      margin: 0;
     }
   </style>
 </head>
-<body>
-  <div class="wrapper">
+<body class="page-certificate-registration">
+  <div class="doc-shell">
+    <div id="certificatePrintArea">
     <div class="cert-reg-header">
       <div class="cert-reg-header-content">
         <div class="cert-reg-institution-logo">
@@ -662,19 +961,19 @@
       </div>
       <div class="cert-reg-info-field">
         <label>Course</label>
-        <div class="field-value">${escapeHtml(courseLabel)}</div>
+        <div class="field-value">${escapeHtml(courseField)}</div>
       </div>
       <div class="cert-reg-info-field">
         <label>Year & Section</label>
-        <div class="field-value">${escapeHtml(yearSection)}</div>
+        <div class="field-value">${escapeHtml(yearSectionField)}</div>
       </div>
       <div class="cert-reg-info-field">
         <label>Contact No</label>
-        <div class="field-value">Not set</div>
+        <div class="field-value">N/A</div>
       </div>
       <div class="cert-reg-info-field">
         <label>Address</label>
-        <div class="field-value">Not set</div>
+        <div class="field-value">Not Provided</div>
       </div>
     </div>
 
@@ -721,9 +1020,6 @@
           </tr>
         </tbody>
       </table>
-      <div class="appointment-meta">
-        <strong>Appointment schedule:</strong> ${escapeHtml(String(appointmentDate))} at ${escapeHtml(String(appointmentTime))}
-      </div>
     </div>
 
     <div class="cert-reg-bottom-info">
@@ -739,26 +1035,27 @@
         <label>Learning Modality</label>
         <div class="field-value">Face-to-face</div>
       </div>
-      <div class="cert-reg-bottom-field">
-        <label>Student</label>
+      <div class="cert-reg-bottom-field text-center">
         <div class="field-value">${escapedStudentName}</div>
+        <label>Student<br />(Signature Over Printed Name)</label>
       </div>
     </div>
 
     <div class="cert-reg-staff-only-section">
-      <div class="section-label">(QECI Staff Only)</div>
+      <div class="cert-reg-staff-only-label">(QECI Staff Only)</div>
+      <div class="cert-reg-process-by-label">Process by:</div>
       <div class="cert-reg-signature-section">
-        <div>
-          <div class="cert-reg-signature-input">Registrar</div>
-          <div class="section-label" style="margin-top: 8px;">Admission Officer</div>
+        <div class="cert-reg-signature-block">
+          <div class="field-value">Registrar</div>
+          <div class="cert-reg-signature-label">Admission Officer</div>
         </div>
-        <div>
-          <div class="cert-reg-signature-input">Registrar Signature</div>
-          <div class="section-label" style="margin-top: 8px;">Signature</div>
+        <div class="cert-reg-signature-block">
+          <div class="field-value">Registrar Signature</div>
+          <div class="cert-reg-signature-label">Signature</div>
         </div>
-        <div>
-          <div class="cert-reg-signature-input">${escapeHtml(String(appointmentDate))}</div>
-          <div class="section-label" style="margin-top: 8px;">Date</div>
+        <div class="cert-reg-signature-block">
+          <div class="field-value">${escapeHtml(String(appointmentDate))}</div>
+          <div class="cert-reg-signature-label">Date</div>
         </div>
       </div>
     </div>
@@ -770,23 +1067,36 @@
     <section class="cert-reg-fees-section">
       <div class="sched-fees-header">ASSESSMENT OF FEES</div>
       <div class="sched-fees-content-wrapper">
-        <div>
+        <div class="sched-fees-fee-section">
+          <div class="sched-fees-section-header">${escapeHtml(feesTitle)}</div>
           <table class="sched-fees-fee-table">
-            <tr><td>Tuition Fee</td><td>5,400.00</td></tr>
-            <tr><td>Registration Fee</td><td>Included</td></tr>
-            <tr><td>Miscellaneous Fee</td><td>Included</td></tr>
-            <tr><td>Computer Lab Fee</td><td>Included</td></tr>
-            <tr class="sched-fees-total-row"><td>Total Obligation</td><td>10,700.00</td></tr>
+            <tr><td class="sched-fees-fee-name">Tuition Fee</td><td class="sched-fees-fee-amount">5,400.00</td></tr>
+            <tr><td class="sched-fees-fee-name">Registration Fee</td><td class="sched-fees-fee-amount"></td></tr>
+            <tr><td class="sched-fees-fee-name">Miscellaneous Fee</td><td class="sched-fees-fee-amount"></td></tr>
+            <tr><td class="sched-fees-fee-name">Computer Lab Fee</td><td class="sched-fees-fee-amount"></td></tr>
+            <tr><td class="sched-fees-fee-name">Cultural Fee</td><td class="sched-fees-fee-amount"></td></tr>
+            <tr><td class="sched-fees-fee-name">CSSG Fee</td><td class="sched-fees-fee-amount"></td></tr>
+            <tr><td class="sched-fees-fee-name">Class Card</td><td class="sched-fees-fee-amount"></td></tr>
+            <tr><td class="sched-fees-fee-name">Research Fee</td><td class="sched-fees-fee-amount"></td></tr>
+            <tr class="sched-fees-total-row"><td class="sched-fees-fee-name">Total Obligation</td><td class="sched-fees-fee-amount">10,700.00</td></tr>
           </table>
         </div>
         <div class="sched-fees-side-panel">
-          <div class="section-label">Notes</div>
-          <p style="margin: 10px 0 0;">Please settle your account before the examination. Present your official receipt to the Finance Officer for your examination permit.</p>
+          <div class="sched-fees-signature-section">
+            <div class="sched-fees-signature-block">
+              <div class="sched-fees-signature-label">Cashier</div>
+            </div>
+            <div class="sched-fees-signature-block">
+              <div class="sched-fees-signature-label">Finance Officer</div>
+            </div>
+          </div>
+          <div class="sched-fees-important-notice"><strong>Notes:</strong> Please, settle your account before the examination. If you have settled your account, please present your OR to our Finance Officer for your examination permit. Thank you.</div>
           <div class="sched-fees-tagline">Go For Growth!</div>
         </div>
       </div>
     </section>
   </div>
+</div>
 </body>
 </html>`;
       }
