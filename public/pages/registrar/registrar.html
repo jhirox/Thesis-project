@@ -287,7 +287,7 @@
           </div>
 
           <!-- Split View -->
-          <div class="px-4 py-3">
+          <div class="px-4 py-3" id="pending-records-section">
             <div class="card p-4 bg-primary-subtle shadow">
               <div class="mb-4">
                 <h6 class="mb-0 fw-bold fs-5">Student Records</h6>
@@ -338,7 +338,7 @@
                 </div>
               </div>
             </div>
-          <div class="px-4 py-3">
+          <div class="px-4 py-3" id="approved-records-section">
             <div class="card p-4 bg-primary-subtle shadow">
               <div class="mb-4">
                 <h6 class="mb-0 fw-bold fs-5">Approved Applicants</h6>
@@ -385,7 +385,7 @@
               </div>
             </div>
           </div>
-          <div class="px-4 py-3">
+          <div class="px-4 py-3" id="rejected-records-section">
             <div class="card p-4 bg-primary-subtle shadow">
               <div class="mb-4">
                 <h6 class="mb-0 fw-bold fs-5">Rejected Applicants</h6>
@@ -1214,6 +1214,9 @@
       const studentDetailsModalEl = document.getElementById("studentDetailsModal");
       const studentRecordsTbody = document.getElementById("student-records-tbody");
       const studentRecordsSummary = document.getElementById("student-records-summary");
+      const pendingRecordsSection = document.getElementById("pending-records-section");
+      const approvedRecordsSection = document.getElementById("approved-records-section");
+      const rejectedRecordsSection = document.getElementById("rejected-records-section");
       const approvedRecordsTbody = document.getElementById("approved-records-tbody");
       const approvedRecordsSummary = document.getElementById("approved-records-summary");
       const rejectedRecordsTbody = document.getElementById("rejected-records-tbody");
@@ -1698,24 +1701,28 @@
         const approvedRecords = records.filter((record) => String(record.registrar_status || "").toLowerCase() === "enrolled");
         const rejectedRecords = records.filter((record) => String(record.registrar_status || "").toLowerCase() === "rejected");
 
+        pendingRecordsSection?.classList.remove("d-none");
+        approvedRecordsSection?.classList.remove("d-none");
+        rejectedRecordsSection?.classList.remove("d-none");
+
         if (selectedStatus === "pending") {
           renderPendingRecords(pendingRecords);
-          renderApprovedTableMessage("Approved applicants are hidden by the current filter.");
-          renderRejectedTableMessage("Rejected applicants are hidden by the current filter.");
+          approvedRecordsSection?.classList.add("d-none");
+          rejectedRecordsSection?.classList.add("d-none");
           return;
         }
 
         if (selectedStatus === "approved") {
-          renderPendingTableMessage("Pending student records are hidden by the current filter.");
           renderApprovedRecords(approvedRecords);
-          renderRejectedTableMessage("Rejected applicants are hidden by the current filter.");
+          pendingRecordsSection?.classList.add("d-none");
+          rejectedRecordsSection?.classList.add("d-none");
           return;
         }
 
         if (selectedStatus === "rejected") {
-          renderPendingTableMessage("Pending student records are hidden by the current filter.");
-          renderApprovedTableMessage("Approved applicants are hidden by the current filter.");
           renderRejectedRecords(rejectedRecords);
+          pendingRecordsSection?.classList.add("d-none");
+          approvedRecordsSection?.classList.add("d-none");
           return;
         }
 
