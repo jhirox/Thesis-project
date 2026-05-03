@@ -269,6 +269,7 @@
                     <option value="">Show Both</option>
                     <option>Pending</option>
                     <option>Approved</option>
+                    <option>Rejected</option>
                   </select>
                 </div>
                 <div class="col-12 col-sm-6 col-lg-3 d-flex align-items-end">
@@ -380,6 +381,56 @@
                 >
                   <div id="approved-records-summary" class="text-center text-white-50 small">
                     Waiting for approved applicants...
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="px-4 py-3">
+            <div class="card p-4 bg-primary-subtle shadow">
+              <div class="mb-4">
+                <h6 class="mb-0 fw-bold fs-5">Rejected Applicants</h6>
+              </div>
+                  <div class="table-responsive">
+                    <table
+                      class="table table-bordered table-hover align-middle mb-0 student-records-table"
+                    >
+                      <thead class="table-header">
+                        <tr>
+                          <th scope="col" class="px-4 py-3 fw-bold text-white text-center">
+                            Student ID
+                          </th>
+                          <th scope="col" class="px-4 py-3 fw-bold text-white text-center">
+                            Name
+                          </th>
+                          <th scope="col" class="px-4 py-3 fw-bold text-white text-center">
+                            Program / Year
+                          </th>
+                          <th scope="col" class="px-4 py-3 fw-bold text-white text-center">
+                            Status
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 fw-bold text-white text-center"
+                          >
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                  <tbody id="rejected-records-tbody" class="table-body">
+                        <tr>
+                          <td colspan="5" class="px-4 py-5 text-center text-white-50">
+                            Waiting for rejected records...
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                <div
+                  class="card-footer border-top border-secondary-subtle bg-transparent py-4"
+                >
+                  <div id="rejected-records-summary" class="text-center text-white-50 small">
+                    Waiting for rejected records...
                   </div>
                 </div>
               </div>
@@ -1166,6 +1217,8 @@
       const studentRecordsSummary = document.getElementById("student-records-summary");
       const approvedRecordsTbody = document.getElementById("approved-records-tbody");
       const approvedRecordsSummary = document.getElementById("approved-records-summary");
+      const rejectedRecordsTbody = document.getElementById("rejected-records-tbody");
+      const rejectedRecordsSummary = document.getElementById("rejected-records-summary");
       const filterSearchInput = document.getElementById("filter-search");
       const filterCourseInput = document.getElementById("filter-course");
       const filterSemesterInput = document.getElementById("filter-year");
@@ -1471,6 +1524,20 @@
         `;
       }
 
+      function renderRejectedTableMessage(message) {
+        if (!rejectedRecordsTbody) return;
+
+        if (rejectedRecordsSummary) {
+          rejectedRecordsSummary.textContent = message;
+        }
+
+        rejectedRecordsTbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="px-4 py-5 text-center text-white-50">${escapeHtml(message)}</td>
+          </tr>
+        `;
+      }
+
       function syncFilterOptions(records) {
         if (filterCourseInput) {
           const selected = filterCourseInput.value;
@@ -1556,6 +1623,40 @@
         `).join("");
       }
 
+      function renderRejectedRecords(records) {
+        if (!rejectedRecordsTbody) return;
+
+        if (!records.length) {
+          renderRejectedTableMessage("No rejected applicants yet.");
+          return;
+        }
+
+        if (rejectedRecordsSummary) {
+          rejectedRecordsSummary.textContent = `Showing ${records.length} rejected applicant(s).`;
+        }
+
+        rejectedRecordsTbody.innerHTML = records.map((record) => `
+          <tr
+            data-enrollment-id="${escapeHtml(record.enrollment_id)}"
+            data-student-id="${escapeHtml(record.student_id)}"
+            data-section="rejected"
+          >
+            <td class="px-4 py-3">${escapeHtml(record.student_id || "Not set")}</td>
+            <td class="px-4 py-3">${escapeHtml(record.full_name || "Not set")}</td>
+            <td class="px-4 py-3">${escapeHtml(getProgramYearLabel(record))}</td>
+            <td class="px-4 py-3">
+              <span class="badge ${getStatusBadgeClass(record.registrar_status)}">${escapeHtml(record.registrar_status)}</span>
+            </td>
+            <td class="px-4 py-3 text-center">
+              <div class="student-records-actions">
+                <button type="button" class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary btn-revert-pending">Revert to Pending</button>
+              </div>
+            </td>
+          </tr>
+        `).join("");
+      }
+
       function getFilteredRecords() {
         const query = (filterSearchInput?.value || "").trim().toLowerCase();
         const course = (filterCourseInput?.value || "").trim().toLowerCase();
@@ -1583,7 +1684,7 @@
             if (recordStatus !== normalizedFilterStatus) {
               return false;
             }
-          } else if (recordStatus !== "pending" && recordStatus !== "enrolled") {
+          } else if (recordStatus !== "pending" && recordStatus !== "enrolled" && recordStatus !== "rejected") {
             return false;
           }
 
@@ -1596,21 +1697,32 @@
         const selectedStatus = (filterStatusInput?.value || "").trim().toLowerCase();
         const pendingRecords = records.filter((record) => String(record.registrar_status || "").toLowerCase() === "pending");
         const approvedRecords = records.filter((record) => String(record.registrar_status || "").toLowerCase() === "enrolled");
+        const rejectedRecords = records.filter((record) => String(record.registrar_status || "").toLowerCase() === "rejected");
 
         if (selectedStatus === "pending") {
           renderPendingRecords(pendingRecords);
           renderApprovedTableMessage("Approved applicants are hidden by the current filter.");
+          renderRejectedTableMessage("Rejected applicants are hidden by the current filter.");
           return;
         }
 
         if (selectedStatus === "approved") {
           renderPendingTableMessage("Pending student records are hidden by the current filter.");
           renderApprovedRecords(approvedRecords);
+          renderRejectedTableMessage("Rejected applicants are hidden by the current filter.");
+          return;
+        }
+
+        if (selectedStatus === "rejected") {
+          renderPendingTableMessage("Pending student records are hidden by the current filter.");
+          renderApprovedTableMessage("Approved applicants are hidden by the current filter.");
+          renderRejectedRecords(rejectedRecords);
           return;
         }
 
         renderPendingRecords(pendingRecords);
         renderApprovedRecords(approvedRecords);
+        renderRejectedRecords(rejectedRecords);
       }
 
       function updateRecordCache(updatedRecord) {
@@ -2284,6 +2396,7 @@
 
       studentRecordsTbody?.addEventListener("click", handleStudentRecordTableClick);
       approvedRecordsTbody?.addEventListener("click", handleStudentRecordTableClick);
+      rejectedRecordsTbody?.addEventListener("click", handleStudentRecordTableClick);
 
       filterSearchInput?.addEventListener("keyup", applyFilters);
       filterCourseInput?.addEventListener("change", applyFilters);
