@@ -493,7 +493,7 @@
                     <strong>Records</strong>
                     <button class="btn btn-link text-decoration-none text-white" id="exportSelectAll">Select all</button>
                   </div>
-                  <div class="list-group list-group-flush bg-dark bg-opacity-10 rounded-3">
+                  <div class="list-group list-group-flush bg-dark bg-opacity-10 rounded-3" id="exportRecordsList">
                     <label class="list-group-item bg-transparent text-white d-flex align-items-center gap-3">
                       <input class="form-check-input export-applicant-checkbox" type="checkbox" value="APP-2025-001" data-student-name="Yuri Oflaria" data-program="Computer Science" checked />
                       <div>
@@ -1692,6 +1692,7 @@
         const pendingRecords = records.filter((record) => String(record.registrar_status || "").toLowerCase() === "pending");
         const approvedRecords = records.filter((record) => String(record.registrar_status || "").toLowerCase() === "enrolled");
         const rejectedRecords = records.filter((record) => String(record.registrar_status || "").toLowerCase() === "rejected");
+        renderExportRecords();
 
         pendingRecordsSection?.classList.remove("d-none");
         approvedRecordsSection?.classList.remove("d-none");
@@ -1990,9 +1991,9 @@
           }
 
           const updatedProfile = await updateEnrollmentApplicationStatus(record, applicationStatus);
+          updateRecordCache(updatedProfile);
           if (applicationStatus === "Enrolled") {
             await saveRegistrarApprovalDraft(updatedProfile);
-            updateRecordCache(updatedProfile);
           }
           activeStudentProfile = updatedProfile;
           activeStudentRecord = toRegistrarRecord(updatedProfile);
@@ -2535,11 +2536,66 @@
         }
       }
 
+      function getExportableRecords() {
+        if (!Array.isArray(registrarRecords)) {
+          return [];
+        }
+
+        return registrarRecords.filter((record) => String(record.registrar_status || "").toLowerCase() === "enrolled");
+      }
+
+      function renderExportRecords() {
+        const exportModalList = document.getElementById('exportRecordsList') || document.querySelector('#exportModal .list-group');
+        if (!exportModalList) {
+          return;
+        }
+
+        const exportableRecords = getExportableRecords();
+        if (!exportableRecords.length) {
+          exportModalList.innerHTML = `
+            <div class="list-group-item bg-transparent text-white-50 px-3 py-4 text-center">
+              No approved or enrolled records available for export yet.
+            </div>
+          `;
+          return;
+        }
+
+        exportModalList.innerHTML = exportableRecords.map((record) => {
+          const enrollmentId = escapeHtml(record.enrollment_id || "Not set");
+          const studentName = escapeHtml(record.full_name || "Not set");
+          const programInfo = escapeHtml(getProgramCode(record));
+          const emailAddress = escapeHtml(record.email_address || "");
+
+          return `
+            <label class="list-group-item bg-transparent text-white d-flex align-items-center gap-3">
+              <input
+                class="form-check-input export-applicant-checkbox"
+                type="checkbox"
+                value="${enrollmentId}"
+                data-student-name="${studentName}"
+                data-program="${programInfo}"
+                data-email="${emailAddress}"
+                checked
+              />
+              <div>
+                <strong>${studentName}</strong><br />
+                <small class="text-white-50">${enrollmentId} • ${programInfo}</small>
+              </div>
+            </label>
+          `;
+        }).join("");
+
+        exportModalList.querySelectorAll('.export-applicant-checkbox').forEach((input) => {
+          input.addEventListener('change', updateExportSelectionSummary);
+        });
+      }
+
       function getSelectedExportApplicants() {
         return Array.from(document.querySelectorAll('#exportModal .export-applicant-checkbox:checked')).map((input) => ({
           enrollmentId: input.value,
           studentName: input.dataset.studentName || input.closest('label')?.querySelector('strong')?.textContent?.trim() || 'Student',
           program: input.dataset.program || '',
+          emailAddress: input.dataset.email || '',
         }));
       }
 
@@ -2593,7 +2649,7 @@
           studentProgramInfo: `${primaryApplicant.enrollmentId} / ${primaryApplicant.program || 'Program not set'}`,
           appointmentDate: today,
           appointmentTime: '',
-          appointmentEmail: `${primaryApplicant.enrollmentId.toLowerCase()}@qeci.edu.ph`,
+          appointmentEmail: primaryApplicant.emailAddress || `${primaryApplicant.enrollmentId.toLowerCase()}@qeci.edu.ph`,
         });
 
         document.getElementById('certRemarks').value = `Prepared for ${selectedFormat.toUpperCase()} export`;
@@ -2636,13 +2692,13 @@
         input.addEventListener('change', updateExportSelectionSummary);
       });
 
-      document.querySelectorAll('#exportModal .export-applicant-checkbox').forEach((input) => {
-        input.addEventListener('change', updateExportSelectionSummary);
-      });
-
       document.getElementById('exportApplicationsBtn')?.addEventListener('click', exportApplications);
-      document.getElementById('exportModal')?.addEventListener('show.bs.modal', updateExportSelectionSummary);
+      document.getElementById('exportModal')?.addEventListener('show.bs.modal', function () {
+        renderExportRecords();
+        updateExportSelectionSummary();
+      });
       ensureExportModalUiState();
+      renderExportRecords();
       updateExportSelectionSummary();
 
       function openScheduleFromDetails() {
