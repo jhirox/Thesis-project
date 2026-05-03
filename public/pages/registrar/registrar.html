@@ -444,12 +444,12 @@
             <div class="modal-content text-white" style="background-color: #081b39;">
               <div class="modal-header border-bottom border-secondary-subtle">
                 <h5 class="modal-title fw-bold" id="exportModalLabel">
-                  <i class="fa-solid fa-file-export me-2"></i>Export Applications
+                  <i class="fa-solid fa-file-export me-2"></i>Export
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
-                <p class="text-white">Select which applicants to export and choose an output format.</p>
+                <p class="text-white">Select records to export and choose an output format.</p>
                 <div class="row g-3 mb-4">
                   <div class="col-sm-6 col-md-3">
                     <label class="export-option card p-3 text-white d-flex align-items-center gap-2 rounded-3" style="background-color: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.08);">
@@ -490,7 +490,7 @@
                 </div>
                 <div class="mb-3">
                   <div class="d-flex justify-content-between align-items-center mb-2">
-                    <strong>Applicants</strong>
+                    <strong>Records</strong>
                     <button class="btn btn-link text-decoration-none text-white" id="exportSelectAll">Select all</button>
                   </div>
                   <div class="list-group list-group-flush bg-dark bg-opacity-10 rounded-3">
@@ -2553,11 +2553,11 @@
 
         if (summaryElement) {
           if (selectedCount === 0) {
-            summaryElement.textContent = `Select at least one applicant before exporting to ${selectedFormat}.`;
+            summaryElement.textContent = `Select at least one record before exporting to ${selectedFormat}.`;
           } else if (selectedCount === 1) {
-            summaryElement.textContent = `1 applicant selected for ${selectedFormat} export.`;
+            summaryElement.textContent = `1 record selected for ${selectedFormat} export.`;
           } else {
-            summaryElement.textContent = `${selectedCount} applicants selected for ${selectedFormat} export.`;
+            summaryElement.textContent = `${selectedCount} records selected for ${selectedFormat} export.`;
           }
         }
 
@@ -2571,7 +2571,7 @@
         const selectedApplicants = getSelectedExportApplicants();
 
         if (!selectedApplicants.length) {
-          alert('Please select at least one applicant to export.');
+          alert('Please select at least one record to export.');
           return;
         }
 
