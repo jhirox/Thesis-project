@@ -495,24 +495,24 @@
                   </div>
                   <div class="list-group list-group-flush bg-dark bg-opacity-10 rounded-3">
                     <label class="list-group-item bg-transparent text-white d-flex align-items-center gap-3">
-                      <input class="form-check-input" type="checkbox" value="APP-2025-001" checked />
+                      <input class="form-check-input export-applicant-checkbox" type="checkbox" value="APP-2025-001" data-student-name="Yuri Oflaria" data-program="Computer Science" checked />
                       <div>
                         <strong>Yuri Oflaria</strong><br />
                         <small class="text-white-50">APP-2025-001 • Computer Science</small>
                       </div>
                     </label>
                     <label class="list-group-item bg-transparent text-white d-flex align-items-center gap-3">
-                      <input class="form-check-input" type="checkbox" value="APP-2025-002" checked />
+                      <input class="form-check-input export-applicant-checkbox" type="checkbox" value="APP-2025-002" data-student-name="Drex Saniel" data-program="Computer Science" checked />
                       <div>
                         <strong>Drex Saniel</strong><br />
                         <small class="text-white-50">APP-2025-002 • Computer Science</small>
                       </div>
                     </label>
                     <label class="list-group-item bg-transparent text-white d-flex align-items-center gap-3">
-                      <input class="form-check-input" type="checkbox" value="APP-2025-002" checked />
+                      <input class="form-check-input export-applicant-checkbox" type="checkbox" value="APP-2025-003" data-student-name="Alyssa Mendoza" data-program="Computer Science" checked />
                       <div>
-                        <strong>Drex Saniel</strong><br />
-                        <small class="text-white-50">APP-2025-002 • Computer Science</small>
+                        <strong>Alyssa Mendoza</strong><br />
+                        <small class="text-white-50">APP-2025-003 • Computer Science</small>
                       </div>
                     </label>
                   </div>
@@ -520,7 +520,7 @@
               </div>
               <div class="modal-footer border-top border-secondary-subtle">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="exportApplications()">
+                <button type="button" class="btn btn-primary" id="exportApplicationsBtn">
                   <i class="fa-solid fa-file-export me-2"></i>Export
                 </button>
               </div>
@@ -2509,34 +2509,141 @@
       }
 
       // Export modal handlers
+      function ensureExportModalUiState() {
+        const exportModalList = document.querySelector('#exportModal .list-group');
+        let summaryElement = document.getElementById('exportSelectionSummary');
+
+        if (!summaryElement && exportModalList?.parentElement) {
+          summaryElement = document.createElement('div');
+          summaryElement.id = 'exportSelectionSummary';
+          summaryElement.className = 'form-text text-white-50 mt-2';
+          exportModalList.parentElement.appendChild(summaryElement);
+        }
+
+        const thirdApplicantLabel = document.querySelector('#exportModal .export-applicant-checkbox[value="APP-2025-003"]')?.closest('label');
+        if (thirdApplicantLabel) {
+          const strongElement = thirdApplicantLabel.querySelector('strong');
+          const smallElement = thirdApplicantLabel.querySelector('small');
+
+          if (strongElement) {
+            strongElement.textContent = 'Alyssa Mendoza';
+          }
+
+          if (smallElement) {
+            smallElement.textContent = 'APP-2025-003 • Computer Science';
+          }
+        }
+      }
+
+      function getSelectedExportApplicants() {
+        return Array.from(document.querySelectorAll('#exportModal .export-applicant-checkbox:checked')).map((input) => ({
+          enrollmentId: input.value,
+          studentName: input.dataset.studentName || input.closest('label')?.querySelector('strong')?.textContent?.trim() || 'Student',
+          program: input.dataset.program || '',
+        }));
+      }
+
+      function updateExportSelectionSummary() {
+        ensureExportModalUiState();
+        const summaryElement = document.getElementById('exportSelectionSummary');
+        const exportButton = document.getElementById('exportApplicationsBtn');
+        const selectedFormat = document.querySelector('input[name="exportFormat"]:checked')?.value?.toUpperCase() || 'CSV';
+        const selectedApplicants = getSelectedExportApplicants();
+        const selectedCount = selectedApplicants.length;
+
+        if (summaryElement) {
+          if (selectedCount === 0) {
+            summaryElement.textContent = `Select at least one applicant before exporting to ${selectedFormat}.`;
+          } else if (selectedCount === 1) {
+            summaryElement.textContent = `1 applicant selected for ${selectedFormat} export.`;
+          } else {
+            summaryElement.textContent = `${selectedCount} applicants selected for ${selectedFormat} export.`;
+          }
+        }
+
+        if (exportButton) {
+          exportButton.disabled = selectedCount === 0;
+        }
+      }
+
       function exportApplications() {
-        const selectedFormat = document.querySelector('input[name="exportFormat"]:checked')?.value;
-        const selectedApplicants = Array.from(document.querySelectorAll('#exportModal .list-group input[type="checkbox"]:checked')).map(input => input.value);
+        const selectedFormat = document.querySelector('input[name="exportFormat"]:checked')?.value || 'csv';
+        const selectedApplicants = getSelectedExportApplicants();
+
+        if (!selectedApplicants.length) {
+          alert('Please select at least one applicant to export.');
+          return;
+        }
+
+        const primaryApplicant = selectedApplicants[0];
+        const today = new Date().toISOString().slice(0, 10);
 
         console.log('Export requested:', { selectedFormat, selectedApplicants });
-        // Add your export logic here
 
-        const exportModal = bootstrap.Modal.getInstance(document.getElementById('exportModal'));
+        activeStudentProfile = null;
+        activeStudentRecord = {
+          enrollment_id: primaryApplicant.enrollmentId,
+          program: primaryApplicant.program,
+          full_name: primaryApplicant.studentName,
+        };
+        savedSoftCopyDraft = null;
+
+        populateEnrollmentForm({
+          studentName: primaryApplicant.studentName,
+          studentProgramInfo: `${primaryApplicant.enrollmentId} / ${primaryApplicant.program || 'Program not set'}`,
+          appointmentDate: today,
+          appointmentTime: '',
+          appointmentEmail: `${primaryApplicant.enrollmentId.toLowerCase()}@qeci.edu.ph`,
+        });
+
+        document.getElementById('certRemarks').value = `Prepared for ${selectedFormat.toUpperCase()} export`;
+        setEnrollmentFormModalMode("print");
+
+        const exportModalElement = document.getElementById('exportModal');
+        const exportModal = bootstrap.Modal.getInstance(exportModalElement);
+        const showEnrollmentPrintModal = () => {
+          const printModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('enrollmentPrintModal'));
+          printModal.show();
+        };
+
+        if (exportModalElement?.classList.contains('show')) {
+          exportModalElement.addEventListener('hidden.bs.modal', function onExportHidden() {
+            exportModalElement.removeEventListener('hidden.bs.modal', onExportHidden);
+            showEnrollmentPrintModal();
+          }, { once: true });
+        }
+
         if (exportModal) {
-          // Blur the active element to prevent focus retention on hidden modal
           if (document.activeElement) {
             document.activeElement.blur();
           }
           exportModal.hide();
+        } else {
+          showEnrollmentPrintModal();
         }
-
-        const printModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('enrollmentPrintModal'));
-        setEnrollmentFormModalMode("print");
-        setTimeout(() => {
-          printModal.show();
-        }, 250);
       }
 
       document.getElementById('exportSelectAll')?.addEventListener('click', function (event) {
         event.preventDefault();
-        const inputs = document.querySelectorAll('#exportModal .list-group input[type="checkbox"]');
-        inputs.forEach(input => input.checked = true);
+        const inputs = document.querySelectorAll('#exportModal .export-applicant-checkbox');
+        inputs.forEach((input) => {
+          input.checked = true;
+        });
+        updateExportSelectionSummary();
       });
+
+      document.querySelectorAll('input[name="exportFormat"]').forEach((input) => {
+        input.addEventListener('change', updateExportSelectionSummary);
+      });
+
+      document.querySelectorAll('#exportModal .export-applicant-checkbox').forEach((input) => {
+        input.addEventListener('change', updateExportSelectionSummary);
+      });
+
+      document.getElementById('exportApplicationsBtn')?.addEventListener('click', exportApplications);
+      document.getElementById('exportModal')?.addEventListener('show.bs.modal', updateExportSelectionSummary);
+      ensureExportModalUiState();
+      updateExportSelectionSummary();
 
       function openScheduleFromDetails() {
         scheduleModalOrigin = "record";
