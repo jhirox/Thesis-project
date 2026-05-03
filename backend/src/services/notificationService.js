@@ -3,6 +3,27 @@ import { notFound } from "../utils/httpError.js";
 import { findEnrollmentApplicantDetails } from "./studentService.js";
 import { sendEmail } from "./email.service.js";
 
+const notificationColumnDefinitions = {
+  notification_id: "INT AUTO_INCREMENT PRIMARY KEY",
+  enrollment_id: "INT NULL",
+  student_id: "INT NULL",
+  student_email: "VARCHAR(255) NOT NULL",
+  title: "VARCHAR(255) NOT NULL",
+  notification_type: "VARCHAR(100) NOT NULL",
+  message: "TEXT NOT NULL",
+  appointment_date: "DATE NULL",
+  appointment_time: "VARCHAR(20) NULL",
+  includes_soft_copy: "TINYINT(1) NOT NULL DEFAULT 0",
+  soft_copy_payload: "LONGTEXT NULL",
+  email_delivery_status: "VARCHAR(50) NOT NULL DEFAULT 'pending'",
+  email_delivery_message: "TEXT NULL",
+  is_read: "TINYINT(1) NOT NULL DEFAULT 0",
+  created_at: "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
+  updated_at: "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+};
+
+let notificationSchemaReady = false;
+
 function buildNotificationMessage({ studentName, appointmentDate, appointmentTime, customMessage, includesSoftCopy }) {
   const messageParts = [
     `Your enrollment appointment has been scheduled for ${appointmentDate} at ${appointmentTime}.`,
@@ -72,7 +93,46 @@ function buildEmailHtml({ profile, appointmentDate, appointmentTime, customMessa
   `;
 }
 
+async function ensureNotificationsTableShape() {
+  if (notificationSchemaReady) {
+    return;
+  }
+
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS notifications (
+      notification_id INT AUTO_INCREMENT PRIMARY KEY,
+      enrollment_id INT NULL,
+      student_id INT NULL,
+      student_email VARCHAR(255) NOT NULL,
+      title VARCHAR(255) NOT NULL,
+      notification_type VARCHAR(100) NOT NULL,
+      message TEXT NOT NULL,
+      appointment_date DATE NULL,
+      appointment_time VARCHAR(20) NULL,
+      includes_soft_copy TINYINT(1) NOT NULL DEFAULT 0,
+      soft_copy_payload LONGTEXT NULL,
+      email_delivery_status VARCHAR(50) NOT NULL DEFAULT 'pending',
+      email_delivery_message TEXT NULL,
+      is_read TINYINT(1) NOT NULL DEFAULT 0,
+      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    )
+  `);
+
+  const [existingColumns] = await db.query("SHOW COLUMNS FROM notifications");
+  const existingColumnNames = new Set(existingColumns.map((column) => column.Field));
+
+  for (const [columnName, definition] of Object.entries(notificationColumnDefinitions)) {
+    if (!existingColumnNames.has(columnName)) {
+      await db.query(`ALTER TABLE notifications ADD COLUMN ${columnName} ${definition}`);
+    }
+  }
+
+  notificationSchemaReady = true;
+}
+
 export async function createScheduleNotification(payload) {
+  await ensureNotificationsTableShape();
   const profile = await findEnrollmentApplicantDetails(payload.enrollmentId);
 
   if (!profile) {
@@ -151,6 +211,7 @@ export async function createScheduleNotification(payload) {
 }
 
 export async function listNotificationsByEmail(email) {
+  await ensureNotificationsTableShape();
   const [rows] = await db.query(
     `SELECT
       notification_id,
@@ -179,6 +240,7 @@ export async function listNotificationsByEmail(email) {
 }
 
 export async function markNotificationRead(notificationId) {
+  await ensureNotificationsTableShape();
   const [result] = await db.query(
     `UPDATE notifications
     SET is_read = 1, updated_at = NOW()
@@ -192,6 +254,7 @@ export async function markNotificationRead(notificationId) {
 }
 
 export async function markAllNotificationsRead(email) {
+  await ensureNotificationsTableShape();
   await db.query(
     `UPDATE notifications
     SET is_read = 1, updated_at = NOW()
@@ -201,10 +264,12 @@ export async function markAllNotificationsRead(email) {
 }
 
 export async function clearNotificationsByEmail(email) {
+  await ensureNotificationsTableShape();
   await db.query("DELETE FROM notifications WHERE student_email = ?", [email]);
 }
 
 export async function deleteNotification(notificationId) {
+  await ensureNotificationsTableShape();
   const [result] = await db.query("DELETE FROM notifications WHERE notification_id = ?", [notificationId]);
 
   if (result.affectedRows === 0) {

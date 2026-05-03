@@ -1414,6 +1414,20 @@
         return getProgramYearLabel(activeStudentProfile || activeStudentRecord || {});
       }
 
+      function normalizeUploadUrl(url) {
+        const normalized = String(url || "").trim();
+        if (!normalized) {
+          return "";
+        }
+        if (/^(https?:)?\/\//i.test(normalized) || normalized.startsWith("data:") || normalized.startsWith("/")) {
+          return normalized;
+        }
+        if (normalized.startsWith("uploads/")) {
+          return `/${normalized}`;
+        }
+        return normalized;
+      }
+
       function populateScheduleAppointmentFields() {
         const appointmentEmailInput = document.getElementById("appointmentEmail");
         const scheduleStudentName = document.querySelector("#scheduleAppointmentModal .card-body h5");
@@ -1430,26 +1444,6 @@
         }
         if (scheduleStudentProgram) {
           scheduleStudentProgram.textContent = getActiveStudentProgramInfo();
-        }
-      }
-
-      function promptPrintEnrollmentForm(record) {
-        const studentName = record.full_name || buildStudentName(record) || "Student";
-        const studentProgramInfo = getActiveStudentProgramInfo();
-        const appointmentDate = new Date().toISOString().split("T")[0];
-        const appointmentTime = "09:00";
-        const appointmentEmail = record.email_address || `${record.student_id || "student"}@school.edu`;
-
-        if (confirm(`Application for ${studentName} is approved.\nDo you want to print the enrollment form now?`)) {
-          populateEnrollmentForm({
-            studentName,
-            studentProgramInfo,
-            appointmentDate,
-            appointmentTime,
-            appointmentEmail,
-          });
-          const printModal = bootstrap.Modal.getOrCreateInstance(document.getElementById("enrollmentPrintModal"));
-          printModal.show();
         }
       }
 
@@ -1475,7 +1469,7 @@
       }
 
       async function handleRecordStatusChange(record, applicationStatus, options = {}) {
-        const { closeModal = false, showPrintPrompt = false, openSchedule = false, successMessage = "" } = options;
+        const { closeModal = false, openSchedule = false, successMessage = "" } = options;
 
         try {
           const updatedProfile = await updateEnrollmentApplicationStatus(record, applicationStatus);
@@ -1495,9 +1489,6 @@
           if (successMessage) {
             alert(successMessage);
           }
-          if (showPrintPrompt) {
-            promptPrintEnrollmentForm(activeStudentRecord);
-          }
           if (openSchedule) {
             populateScheduleAppointmentFields();
             openScheduleFromDetails();
@@ -1516,7 +1507,6 @@
         detailApproveBtn?.addEventListener("click", function () {
           if (!activeStudentRecord) return;
           handleRecordStatusChange(activeStudentRecord, "Enrolled", {
-            showPrintPrompt: true,
             openSchedule: true,
           });
         });
@@ -1545,7 +1535,7 @@
           ? [profile.program_code, profile.program_name].filter(Boolean).join(" - ")
           : "Not set";
         const statusBadge = buildStudentStatusBadge(profile.enrollment_status);
-        const photo = profile.photo || "/assets/images/lancephoto.png";
+        const photo = normalizeUploadUrl(profile.photo) || "/assets/images/lancephoto.png";
         const isApproved = normalizeRegistrarStatus(profile) === "Enrolled";
 
         return `
@@ -1771,7 +1761,7 @@
 
         if (event.target.closest(".btn-outline-success")) {
           handleRecordStatusChange(record, "Enrolled", {
-            showPrintPrompt: true,
+            openSchedule: true,
           });
           return;
         }
