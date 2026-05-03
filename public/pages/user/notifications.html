@@ -533,7 +533,262 @@
         const appointmentDate = String(notification?.appointment_date || payload?.appointmentDate || "appointment")
           .replace(/[^a-z0-9_-]+/gi, "-")
           .replace(/^-+|-+$/g, "");
-        return `enrollment-form-soft-copy-${studentIdentifier}-${appointmentDate || "summary"}.json`;
+        return `enrollment-form-soft-copy-${studentIdentifier}-${appointmentDate || "summary"}.html`;
+      }
+
+      function splitStudentName(fullName) {
+        const normalizedName = String(fullName || "").trim();
+        if (!normalizedName) {
+          return {
+            firstName: "",
+            middleName: "",
+            lastName: "",
+          };
+        }
+
+        const parts = normalizedName.split(/\s+/).filter(Boolean);
+        return {
+          firstName: parts[0] || "",
+          middleName: parts.length > 2 ? parts.slice(1, -1).join(" ") : "",
+          lastName: parts.length > 1 ? parts[parts.length - 1] : "",
+        };
+      }
+
+      function buildEnrollmentFormHtml(notification, payload) {
+        const nameParts = splitStudentName(payload?.studentName || notification?.title || "Student");
+        const courseLabel = [payload?.programCode, payload?.programName].filter(Boolean).join(" - ") || "Not set";
+        const yearSection = payload?.yearLevel || "Not set";
+        const semester = payload?.semester || "Not set";
+        const appointmentDate = payload?.appointmentDate || notification?.appointment_date || "Not set";
+        const appointmentTime = payload?.appointmentTime || notification?.appointment_time || "Not set";
+        const studentNumber = payload?.studentId || notification?.student_id || "";
+        const escapedTitle = escapeHtml(notification?.title || "Enrollment Form Soft Copy");
+        const escapedStudentName = escapeHtml(payload?.studentName || "Student");
+
+        return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${escapedTitle}</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f5f7fb; color: #1f2937; }
+    .wrapper { max-width: 1100px; margin: 24px auto; background: #ffffff; border: 1px solid #d7deea; padding: 32px; }
+    .cert-reg-header { border-bottom: 2px solid #0b2545; padding-bottom: 16px; margin-bottom: 20px; }
+    .cert-reg-header-content { display: flex; gap: 16px; align-items: center; }
+    .cert-reg-institution-logo img { width: 72px; height: 72px; object-fit: contain; }
+    .cert-reg-institution-info h2 { margin: 0 0 6px; font-size: 24px; color: #0b2545; }
+    .cert-reg-institution-info p { margin: 2px 0; font-size: 14px; }
+    .cert-reg-title-section { text-align: center; margin-bottom: 24px; }
+    .cert-reg-title-section div:first-child { font-size: 14px; letter-spacing: 0.08em; }
+    .cert-reg-title-section div:last-child { font-size: 26px; font-weight: 700; margin-top: 4px; }
+    .cert-reg-student-info, .cert-reg-bottom-info { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 18px; margin-bottom: 22px; }
+    .cert-reg-info-field, .cert-reg-bottom-field { display: flex; flex-direction: column; gap: 6px; }
+    .cert-reg-info-field label, .cert-reg-bottom-field label, .section-label { font-size: 12px; font-weight: 700; text-transform: uppercase; color: #4b5563; }
+    .field-value { min-height: 40px; border: 1px solid #cbd5e1; background: #f8fafc; border-radius: 8px; padding: 10px 12px; font-size: 14px; }
+    .cert-reg-table-section { margin-bottom: 22px; }
+    .cert-reg-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .cert-reg-table th, .cert-reg-table td { border: 1px solid #cbd5e1; padding: 10px; vertical-align: top; }
+    .cert-reg-table th { background: #eaf0f8; text-align: left; }
+    .cert-reg-staff-only-section, .cert-reg-important-notice, .cert-reg-fees-section { border: 1px solid #d7deea; border-radius: 12px; padding: 18px; margin-top: 20px; }
+    .cert-reg-signature-section { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
+    .cert-reg-signature-input { min-height: 40px; border: 1px solid #cbd5e1; background: #f8fafc; border-radius: 8px; padding: 10px 12px; }
+    .sched-fees-header { font-size: 20px; font-weight: 700; color: #0b2545; margin-bottom: 16px; }
+    .sched-fees-content-wrapper { display: grid; grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr); gap: 18px; }
+    .sched-fees-fee-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .sched-fees-fee-table td { border: 1px solid #cbd5e1; padding: 10px; }
+    .sched-fees-total-row td { font-weight: 700; background: #f8fafc; }
+    .sched-fees-side-panel { border: 1px solid #d7deea; border-radius: 12px; padding: 16px; background: #f8fafc; }
+    .sched-fees-tagline { margin-top: 14px; font-size: 14px; font-weight: 700; color: #0b2545; }
+    .appointment-meta { margin-top: 10px; font-size: 13px; color: #374151; }
+    @media print {
+      body { background: #fff; }
+      .wrapper { margin: 0; border: 0; padding: 0; max-width: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="cert-reg-header">
+      <div class="cert-reg-header-content">
+        <div class="cert-reg-institution-logo">
+          <img src="https://online-registration.up.railway.app/assets/images/logo.png" alt="QECI Logo" />
+        </div>
+        <div class="cert-reg-institution-info">
+          <h2>QUEZONIAN EDUCATIONAL COLLEGE, INC.</h2>
+          <p>Dr. Ramon Solar Street, Zone II Poblacion, Atimonan, Quezon</p>
+          <p>Tel. No. (042) 316-4129 | Email: qeciatimonan@yahoo.com.ph</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cert-reg-title-section">
+      <div>COLLEGIATE DEPARTMENT</div>
+      <div>CERTIFICATE OF REGISTRATION</div>
+    </div>
+
+    <div class="cert-reg-student-info">
+      <div class="cert-reg-info-field">
+        <label>Student Last Name</label>
+        <div class="field-value">${escapeHtml(nameParts.lastName || "Not set")}</div>
+      </div>
+      <div class="cert-reg-info-field">
+        <label>Student First Name</label>
+        <div class="field-value">${escapeHtml(nameParts.firstName || "Not set")}</div>
+      </div>
+      <div class="cert-reg-info-field">
+        <label>Student Middle Name</label>
+        <div class="field-value">${escapeHtml(nameParts.middleName || "Not set")}</div>
+      </div>
+      <div class="cert-reg-info-field">
+        <label>StudNo</label>
+        <div class="field-value">${escapeHtml(String(studentNumber || "Not set"))}</div>
+      </div>
+      <div class="cert-reg-info-field">
+        <label>Birthday</label>
+        <div class="field-value">Not set</div>
+      </div>
+      <div class="cert-reg-info-field">
+        <label>Birthplace</label>
+        <div class="field-value">Not set</div>
+      </div>
+      <div class="cert-reg-info-field">
+        <label>School Year</label>
+        <div class="field-value">SY 2025-2026</div>
+      </div>
+      <div class="cert-reg-info-field">
+        <label>Semester</label>
+        <div class="field-value">${escapeHtml(semester)}</div>
+      </div>
+      <div class="cert-reg-info-field">
+        <label>Course</label>
+        <div class="field-value">${escapeHtml(courseLabel)}</div>
+      </div>
+      <div class="cert-reg-info-field">
+        <label>Year & Section</label>
+        <div class="field-value">${escapeHtml(yearSection)}</div>
+      </div>
+      <div class="cert-reg-info-field">
+        <label>Contact No</label>
+        <div class="field-value">Not set</div>
+      </div>
+      <div class="cert-reg-info-field">
+        <label>Address</label>
+        <div class="field-value">Not set</div>
+      </div>
+    </div>
+
+    <div class="cert-reg-table-section">
+      <table class="cert-reg-table">
+        <thead>
+          <tr>
+            <th>CODE</th>
+            <th>DESCRIPTION</th>
+            <th>UNITS</th>
+            <th>TIME</th>
+            <th>DAYS</th>
+            <th>ROOM</th>
+            <th>INSTRUCTOR</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>GE</td>
+            <td>Art Appreciation</td>
+            <td>3</td>
+            <td>${escapeHtml(appointmentTime)}</td>
+            <td>TBA</td>
+            <td>Room 101</td>
+            <td>TBA</td>
+          </tr>
+          <tr>
+            <td>CS ELECTIVE 1</td>
+            <td>Graphics and Visual Computing</td>
+            <td>3</td>
+            <td>${escapeHtml(appointmentTime)}</td>
+            <td>TBA</td>
+            <td>Room 101</td>
+            <td>TBA</td>
+          </tr>
+          <tr>
+            <td>SE 102</td>
+            <td>Software Engineering 2</td>
+            <td>3</td>
+            <td>${escapeHtml(appointmentTime)}</td>
+            <td>TBA</td>
+            <td>Room 101</td>
+            <td>TBA</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="appointment-meta">
+        <strong>Appointment schedule:</strong> ${escapeHtml(String(appointmentDate))} at ${escapeHtml(String(appointmentTime))}
+      </div>
+    </div>
+
+    <div class="cert-reg-bottom-info">
+      <div class="cert-reg-bottom-field">
+        <label>Number of units earned</label>
+        <div class="field-value">18</div>
+      </div>
+      <div class="cert-reg-bottom-field">
+        <label>Remarks</label>
+        <div class="field-value">Approved</div>
+      </div>
+      <div class="cert-reg-bottom-field">
+        <label>Learning Modality</label>
+        <div class="field-value">Face-to-face</div>
+      </div>
+      <div class="cert-reg-bottom-field">
+        <label>Student</label>
+        <div class="field-value">${escapedStudentName}</div>
+      </div>
+    </div>
+
+    <div class="cert-reg-staff-only-section">
+      <div class="section-label">(QECI Staff Only)</div>
+      <div class="cert-reg-signature-section">
+        <div>
+          <div class="cert-reg-signature-input">Registrar</div>
+          <div class="section-label" style="margin-top: 8px;">Admission Officer</div>
+        </div>
+        <div>
+          <div class="cert-reg-signature-input">Registrar Signature</div>
+          <div class="section-label" style="margin-top: 8px;">Signature</div>
+        </div>
+        <div>
+          <div class="cert-reg-signature-input">${escapeHtml(String(appointmentDate))}</div>
+          <div class="section-label" style="margin-top: 8px;">Date</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cert-reg-important-notice">
+      <strong>IMPORTANT:</strong> Keep this portion. Present it to your instructors on the first day of classes for his or her signature. You will also be required to present this at the Office of the Student Affairs when applying for your identification card and in all your dealings in the School.
+    </div>
+
+    <section class="cert-reg-fees-section">
+      <div class="sched-fees-header">ASSESSMENT OF FEES</div>
+      <div class="sched-fees-content-wrapper">
+        <div>
+          <table class="sched-fees-fee-table">
+            <tr><td>Tuition Fee</td><td>5,400.00</td></tr>
+            <tr><td>Registration Fee</td><td>Included</td></tr>
+            <tr><td>Miscellaneous Fee</td><td>Included</td></tr>
+            <tr><td>Computer Lab Fee</td><td>Included</td></tr>
+            <tr class="sched-fees-total-row"><td>Total Obligation</td><td>10,700.00</td></tr>
+          </table>
+        </div>
+        <div class="sched-fees-side-panel">
+          <div class="section-label">Notes</div>
+          <p style="margin: 10px 0 0;">Please settle your account before the examination. Present your official receipt to the Finance Officer for your examination permit.</p>
+          <div class="sched-fees-tagline">Go For Growth!</div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>`;
       }
 
       function broadcastNotificationState() {
@@ -708,7 +963,8 @@
         }
 
         const filename = buildSoftCopyFilename(activeNotificationForView, payload);
-        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json;charset=utf-8" });
+        const documentHtml = buildEnrollmentFormHtml(activeNotificationForView, payload);
+        const blob = new Blob([documentHtml], { type: "text/html;charset=utf-8" });
         const objectUrl = URL.createObjectURL(blob);
         const tempLink = document.createElement("a");
         tempLink.href = objectUrl;
