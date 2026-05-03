@@ -773,7 +773,7 @@
 
         if (query.length > 0) {
           try {
-            const response = await fetch(`/students/search/by-name?query=${encodeURIComponent(query)}`);
+            const response = await fetch(`/api/students/search/by-name?query=${encodeURIComponent(query)}`);
             const result = await response.json();
 
             if (!result.success || result.data.length === 0) {
