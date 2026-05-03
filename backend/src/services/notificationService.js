@@ -121,11 +121,22 @@ async function ensureNotificationsTableShape() {
 
   const [existingColumns] = await db.query("SHOW COLUMNS FROM notifications");
   const existingColumnNames = new Set(existingColumns.map((column) => column.Field));
+  const legacyTypeIdColumn = existingColumns.find((column) => column.Field === "type_id");
 
   for (const [columnName, definition] of Object.entries(notificationColumnDefinitions)) {
     if (!existingColumnNames.has(columnName)) {
       await db.query(`ALTER TABLE notifications ADD COLUMN ${columnName} ${definition}`);
     }
+  }
+
+  // Older deployments may still have a required legacy type_id column.
+  // The current app no longer writes to it, so relax the column to keep inserts working.
+  if (
+    legacyTypeIdColumn &&
+    legacyTypeIdColumn.Null === "NO" &&
+    (legacyTypeIdColumn.Default === null || legacyTypeIdColumn.Default === undefined)
+  ) {
+    await db.query("ALTER TABLE notifications MODIFY COLUMN type_id INT NULL DEFAULT NULL");
   }
 
   notificationSchemaReady = true;
