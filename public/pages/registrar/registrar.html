@@ -2680,6 +2680,8 @@
         }
         if (scheduleResult?.data?.emailDeliveryStatus === 'sent') {
           toastMessageParts.push('Email delivery completed.');
+        } else if (scheduleResult?.data?.emailDeliveryStatus === 'queued') {
+          toastMessageParts.push('Email delivery is being processed in the background.');
         } else if (scheduleResult?.data?.emailDeliveryStatus === 'skipped') {
           toastMessageParts.push('Saved to in-app notifications. Email delivery is not configured yet.');
         } else if (scheduleResult?.data?.emailDeliveryStatus === 'failed') {
