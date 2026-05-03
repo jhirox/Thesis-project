@@ -520,7 +520,7 @@
                       <th scope="col">Course</th>
                       <th scope="col">Status</th>
                       <th scope="col">Submitted</th>
-                      <th scope="col" class="text-end">Actions</th>
+                      <th scope="col" class="text-center">Actions</th>
                     </tr>
                   </thead>
 
@@ -549,7 +549,7 @@
                       <th scope="col">Course</th>
                       <th scope="col">Status</th>
                       <th scope="col">Submitted</th>
-                      <th scope="col" class="text-end">Actions</th>
+                      <th scope="col" class="text-center">Actions</th>
                     </tr>
                   </thead>
 
@@ -582,7 +582,7 @@
                   <th scope="col">Course</th>
                   <th scope="col">Status</th>
                   <th scope="col">Submitted</th>
-                  <th scope="col" class="text-end">Actions</th>
+                  <th scope="col" class="text-center">Actions</th>
                 </tr>
                </thead>
                <tbody class="table-body" id="rejected-applications-body">
@@ -921,10 +921,10 @@
             <td>${buildStatusBadge(status)}</td>
             <td>Unassigned</td>
             <td>${submittedDate}</td>
-            <td class="text-end">
+            <td class="text-center">
               <button
                 type="button"
-                class="review-btn"
+                class="btn btn-sm btn-outline-primary review-btn"
                 data-student-id="${escapeHtml(application.student_id || '')}"
                 data-enrollment-id="${escapeHtml(application.enrollment_id || '')}"
               >
@@ -990,10 +990,10 @@
             <td>${escapeHtml(course)}</td>
             <td>${buildStatusBadge(application.application_status || 'Submitted')}</td>
             <td>${escapeHtml(submittedDate)}</td>
-            <td class="text-end">
+            <td class="text-center">
               <button
                 type="button"
-                class="review-btn"
+                class="btn btn-sm btn-outline-primary review-btn"
                 data-student-id="${escapeHtml(application.student_id || '')}"
                 data-enrollment-id="${escapeHtml(application.enrollment_id || '')}"
               >
