@@ -1475,6 +1475,19 @@
           const status = record.registrar_status;
           const isApproved = status === "Enrolled";
           const hasDraft = status === "Draft Approval";
+          const isDropped = status === "Dropped";
+          const primaryActionMarkup = isDropped
+            ? `
+                <button type="button" class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary btn-revert-pending">Revert to Pending</button>
+              `
+            : `
+                <button type="button" class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
+                <button type="button" class="btn btn-sm btn-outline-warning me-1 btn-edit">Edit</button>
+                <button type="button" class="btn btn-sm btn-outline-success me-1" ${isApproved ? "disabled" : ""}>${isApproved ? "Approved" : "Approve"}</button>
+                <button type="button" class="btn btn-sm btn-outline-info me-1 btn-save-draft">${hasDraft ? "Draft Saved" : "Save Draft"}</button>
+                <button type="button" class="btn btn-sm btn-outline-dark btn-drop-record">Drop</button>
+              `;
 
           return `
             <tr
@@ -1489,11 +1502,7 @@
               </td>
               <td class="px-4 py-3 text-center">
                 <div class="student-records-actions">
-                  <button type="button" class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
-                  <button type="button" class="btn btn-sm btn-outline-warning me-1 btn-edit">Edit</button>
-                  <button type="button" class="btn btn-sm btn-outline-success me-1" ${isApproved ? "disabled" : ""}>${isApproved ? "Approved" : "Approve"}</button>
-                  <button type="button" class="btn btn-sm btn-outline-info me-1 btn-save-draft">${hasDraft ? "Draft Saved" : "Save Draft"}</button>
-                  <button type="button" class="btn btn-sm btn-outline-danger">Reject</button>
+                  ${primaryActionMarkup}
                 </div>
               </td>
             </tr>
@@ -1863,7 +1872,7 @@
         const detailSaveDraftBtn = document.getElementById("detailSaveDraftBtn");
         const detailRevertBtn = document.getElementById("detailRevertBtn");
         const detailHoldBtn = document.getElementById("detailHoldBtn");
-        const detailRejectBtn = document.getElementById("detailRejectBtn");
+        const detailDropBtn = document.getElementById("detailDropBtn");
 
         detailApproveBtn?.addEventListener("click", function () {
           if (!activeStudentRecord) return;
@@ -1893,11 +1902,11 @@
           });
         });
 
-        detailRejectBtn?.addEventListener("click", function () {
+        detailDropBtn?.addEventListener("click", function () {
           if (!activeStudentRecord) return;
-          handleRecordStatusChange(activeStudentRecord, "Rejected", {
+          handleRecordStatusChange(activeStudentRecord, "Dropped", {
             closeModal: true,
-            successMessage: "Student application has been rejected.",
+            successMessage: "Student application has been moved to dropped records.",
           });
         });
       }
@@ -1910,8 +1919,21 @@
           : "Not set";
         const statusBadge = buildStudentStatusBadge(profile.enrollment_status);
         const photo = normalizeUploadUrl(profile.photo) || "/assets/images/lancephoto.png";
-        const isApproved = normalizeRegistrarStatus(profile) === "Enrolled";
+        const normalizedRegistrarStatus = normalizeRegistrarStatus(profile);
+        const isApproved = normalizedRegistrarStatus === "Enrolled";
+        const isDropped = normalizedRegistrarStatus === "Dropped";
         const hasDraft = hasRegistrarApprovalDraft(profile);
+        const detailsActionMarkup = isDropped
+          ? `
+            <button type="button" class="btn btn-outline-secondary flex-fill" id="detailRevertBtn"><i class="fa-solid fa-rotate-left me-2"></i>Revert to Pending</button>
+          `
+          : `
+            <button type="button" class="btn btn-success flex-fill" id="detailApproveBtn" ${isApproved ? "disabled" : ""}><i class="fa-solid fa-check me-2"></i>${isApproved ? "Approved" : "Approve Enrollment"}</button>
+            <button type="button" class="btn btn-info flex-fill" id="detailSaveDraftBtn"><i class="fa-regular fa-floppy-disk me-2"></i>${hasDraft ? "Update Draft" : "Save Draft"}</button>
+            <button type="button" class="btn btn-outline-secondary flex-fill" id="detailRevertBtn" ${!isApproved && !hasDraft ? "disabled" : ""}><i class="fa-solid fa-rotate-left me-2"></i>Revert to Pending</button>
+            <button type="button" class="btn btn-warning flex-fill" id="detailHoldBtn"><i class="fa-solid fa-pause me-2"></i>Hold</button>
+            <button type="button" class="btn btn-dark flex-fill" id="detailDropBtn"><i class="fa-solid fa-box-archive me-2"></i>Drop</button>
+          `;
 
         return `
           <div class="text-center mb-4">
@@ -2055,11 +2077,7 @@
           </div>
 
           <div class="d-flex gap-2 flex-wrap">
-            <button type="button" class="btn btn-success flex-fill" id="detailApproveBtn" ${isApproved ? "disabled" : ""}><i class="fa-solid fa-check me-2"></i>${isApproved ? "Approved" : "Approve Enrollment"}</button>
-            <button type="button" class="btn btn-info flex-fill" id="detailSaveDraftBtn"><i class="fa-regular fa-floppy-disk me-2"></i>${hasDraft ? "Update Draft" : "Save Draft"}</button>
-            <button type="button" class="btn btn-outline-secondary flex-fill" id="detailRevertBtn" ${!isApproved && !hasDraft ? "disabled" : ""}><i class="fa-solid fa-rotate-left me-2"></i>Revert to Pending</button>
-            <button type="button" class="btn btn-warning flex-fill" id="detailHoldBtn"><i class="fa-solid fa-pause me-2"></i>Hold</button>
-            <button type="button" class="btn btn-danger flex-fill" id="detailRejectBtn"><i class="fa-solid fa-times me-2"></i>Reject</button>
+            ${detailsActionMarkup}
           </div>
         `;
       }
@@ -2181,9 +2199,17 @@
           return;
         }
 
-        if (event.target.closest(".btn-outline-danger")) {
-          handleRecordStatusChange(record, "Rejected", {
-            successMessage: "Student application has been rejected.",
+        if (event.target.closest(".btn-revert-pending")) {
+          await removeRegistrarApprovalDraft(record, { silent: true });
+          await handleRecordStatusChange(record, "Pending", {
+            successMessage: "Dropped record has been moved back to pending.",
+          });
+          return;
+        }
+
+        if (event.target.closest(".btn-drop-record")) {
+          handleRecordStatusChange(record, "Dropped", {
+            successMessage: "Student application has been moved to dropped records.",
           });
         }
       });
