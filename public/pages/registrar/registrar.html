@@ -888,9 +888,14 @@
               </div>
               <!-- ADD ROW ITO PARA SA TABLE NG SUBJECT -->
               <div class="modal-body px-4 py-3 border-top">
-                <button type="button" class="btn btn-sm btn-secondary" id="addCourseRowBtn">
-                  <i class="fa-solid fa-plus me-2"></i>Add Course Row
-                </button>
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-sm btn-secondary" id="addCourseRowBtn">
+                    <i class="fa-solid fa-plus me-2"></i>Add Course/Subject Row
+                  </button>
+                  <button type="button" class="btn btn-sm btn-danger" id="removeCourseRowBtn">
+                    <i class="fa-solid fa-trash me-2"></i>Remove Last Row
+                  </button>
+                </div>
               </div>
               <div class="modal-footer border-top px-4 pb-4 pt-3">
                 <button type="button" class="btn btn-secondary" id="enrollmentFormSecondaryActionBtn">Close</button>
@@ -1225,6 +1230,22 @@
 
       // Event listener for Add Row button
       document.getElementById("addCourseRowBtn").addEventListener("click", addCourseRow);
+
+      // Remove Course Row Function
+      function removeCourseRow() {
+        const tbody = document.querySelector(".cert-reg-table tbody");
+        if (!tbody) return;
+
+        const rows = tbody.querySelectorAll("tr");
+        if (rows.length > 0) {
+          rows[rows.length - 1].remove();
+        } else {
+          alert("No rows to remove.");
+        }
+      }
+
+      // Event listener for Remove Row button
+      document.getElementById("removeCourseRowBtn").addEventListener("click", removeCourseRow);
 
       // Delegated handler for View buttons — show modal
       const modalDetails = document.getElementById("modal-student-details");
