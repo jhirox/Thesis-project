@@ -763,38 +763,43 @@
 
     <!-- NOTIFICATION JS -->
     <script type="module">
-      import { user_data } from "../../../data/user.js";
-
       const input = document.getElementById("studentSearch");
       const suggestions = document.getElementById("studentSuggestions");
       const emailField = document.getElementById("studentEmail");
 
-      input.addEventListener("input", () => {
-        const query = input.value.toLowerCase();
+      input.addEventListener("input", async () => {
+        const query = input.value.trim();
         suggestions.innerHTML = "";
 
         if (query.length > 0) {
-          const matches = user_data.filter(user =>
-            user.fullname.toLowerCase().includes(query)
-          );
+          try {
+            const response = await fetch(`/api/students/search/by-name?query=${encodeURIComponent(query)}`);
+            const result = await response.json();
 
-          if (matches.length === 0) {
+            if (!result.success || result.data.length === 0) {
+              const li = document.createElement("li");
+              li.classList.add("list-group-item");
+              li.textContent = "No student found";
+              suggestions.appendChild(li);
+            } else {
+              result.data.forEach(student => {
+                const li = document.createElement("li");
+                li.classList.add("list-group-item", "list-group-item-action");
+                li.textContent = student.full_name;
+                li.onclick = () => {
+                  input.value = student.full_name;
+                  emailField.value = student.email_address || "";
+                  suggestions.innerHTML = "";
+                };
+                suggestions.appendChild(li);
+              });
+            }
+          } catch (error) {
+            console.error("Error searching students:", error);
             const li = document.createElement("li");
             li.classList.add("list-group-item");
-            li.textContent = "No student found";
+            li.textContent = "Error loading students";
             suggestions.appendChild(li);
-          } else {
-            matches.forEach(user => {
-              const li = document.createElement("li");
-              li.classList.add("list-group-item", "list-group-item-action");
-              li.textContent = user.fullname;
-              li.onclick = () => {
-                input.value = user.fullname;
-                emailField.value = user.username || "";
-                suggestions.innerHTML = "";
-              };
-              suggestions.appendChild(li);
-            });
           }
         }
       });

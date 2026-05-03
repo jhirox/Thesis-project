@@ -581,3 +581,24 @@ export async function deleteRegistrarApprovalDraft(payload) {
 
   return { enrollment_id: enrollmentId };
 }
+
+export async function searchStudentsByName(searchQuery) {
+  const query = `%${searchQuery}%`;
+
+  const [rows] = await db.query(
+    `SELECT
+      s.student_id,
+      s.first_name,
+      s.middle_name,
+      s.last_name,
+      s.suffix,
+      s.email_address,
+      CONCAT(s.first_name, ' ', IFNULL(CONCAT(s.middle_name, ' '), ''), s.last_name, IFNULL(CONCAT(' ', s.suffix), '')) AS full_name
+    FROM students s
+    WHERE CONCAT(s.first_name, ' ', IFNULL(CONCAT(s.middle_name, ' '), ''), s.last_name) LIKE ?
+    LIMIT 10`,
+    [query]
+  );
+
+  return rows;
+}
