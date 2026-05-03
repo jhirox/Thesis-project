@@ -1743,7 +1743,17 @@
         populateScheduleAppointmentFields();
       }
 
+      function mapRegistrarStatusToApiStatus(applicationStatus) {
+        if (applicationStatus === "Pending") {
+          return "Submitted";
+        }
+
+        return applicationStatus;
+      }
+
       async function updateEnrollmentApplicationStatus(record, applicationStatus) {
+        const apiStatus = mapRegistrarStatusToApiStatus(applicationStatus);
+
         const response = await fetch("/api/students/enrollments/status", {
           method: "PUT",
           headers: {
@@ -1751,7 +1761,7 @@
           },
           body: JSON.stringify({
             enrollmentId: record.enrollment_id,
-            applicationStatus,
+            applicationStatus: apiStatus,
           }),
         });
 
