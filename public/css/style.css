@@ -3477,6 +3477,7 @@ body.page-certificate-registration {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 0;
+  table-layout: fixed;
 }
 
 .page-certificate-registration .cert-reg-table thead {
@@ -3492,6 +3493,45 @@ body.page-certificate-registration {
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+/* Column widths for print view */
+.page-certificate-registration .cert-reg-table thead th:nth-child(1),
+.page-certificate-registration .cert-reg-table tbody td:nth-child(1) {
+  width: 10%;
+}
+
+.page-certificate-registration .cert-reg-table thead th:nth-child(2),
+.page-certificate-registration .cert-reg-table tbody td:nth-child(2) {
+  width: 40%;
+  text-align: left;
+}
+
+.page-certificate-registration .cert-reg-table thead th:nth-child(3),
+.page-certificate-registration .cert-reg-table tbody td:nth-child(3) {
+  width: 8%;
+  text-align: center;
+}
+
+.page-certificate-registration .cert-reg-table thead th:nth-child(4),
+.page-certificate-registration .cert-reg-table tbody td:nth-child(4) {
+  width: 12%;
+  text-align: center;
+}
+
+.page-certificate-registration .cert-reg-table thead th:nth-child(5),
+.page-certificate-registration .cert-reg-table tbody td:nth-child(5) {
+  width: 10%;
+}
+
+.page-certificate-registration .cert-reg-table thead th:nth-child(6),
+.page-certificate-registration .cert-reg-table tbody td:nth-child(6) {
+  width: 10%;
+}
+
+.page-certificate-registration .cert-reg-table thead th:nth-child(7),
+.page-certificate-registration .cert-reg-table tbody td:nth-child(7) {
+  width: 10%;
 }
 
 .page-certificate-registration .cert-reg-table tbody td {
@@ -3511,6 +3551,11 @@ body.page-certificate-registration {
   text-align: center;
   background-color: transparent;
   font-family: inherit;
+}
+
+/* Left-align input text in DESCRIPTION column for print view */
+.page-certificate-registration .cert-reg-table tbody td:nth-child(2) input {
+  text-align: left;
 }
 
 .page-certificate-registration .cert-reg-table tbody td input:focus {
@@ -4109,6 +4154,7 @@ body.page-schedule-fees {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 0;
+  table-layout: fixed;
 }
 
 .cert-reg-table thead {
@@ -4124,6 +4170,45 @@ body.page-schedule-fees {
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+/* Column widths */
+.cert-reg-table thead th:nth-child(1),
+.cert-reg-table tbody td:nth-child(1) {
+  width: 10%;
+}
+
+.cert-reg-table thead th:nth-child(2),
+.cert-reg-table tbody td:nth-child(2) {
+  width: 40%;
+  text-align: left;
+}
+
+.cert-reg-table thead th:nth-child(3),
+.cert-reg-table tbody td:nth-child(3) {
+  width: 8%;
+  text-align: center;
+}
+
+.cert-reg-table thead th:nth-child(4),
+.cert-reg-table tbody td:nth-child(4) {
+  width: 12%;
+  text-align: center;
+}
+
+.cert-reg-table thead th:nth-child(5),
+.cert-reg-table tbody td:nth-child(5) {
+  width: 10%;
+}
+
+.cert-reg-table thead th:nth-child(6),
+.cert-reg-table tbody td:nth-child(6) {
+  width: 10%;
+}
+
+.cert-reg-table thead th:nth-child(7),
+.cert-reg-table tbody td:nth-child(7) {
+  width: 10%;
 }
 
 .cert-reg-table tbody td {
@@ -4143,6 +4228,11 @@ body.page-schedule-fees {
   text-align: center;
   background-color: transparent;
   font-family: inherit;
+}
+
+/* Left-align input text in DESCRIPTION column */
+.cert-reg-table tbody td:nth-child(2) input {
+  text-align: left;
 }
 
 .cert-reg-table tbody td input:focus {
