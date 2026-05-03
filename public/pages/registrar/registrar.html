@@ -837,7 +837,7 @@
               </div>
               <div class="modal-footer border-top px-4 pb-4 pt-3">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="printEnrollmentForm()">Print Enrollment Form</button>
+                <button type="button" class="btn btn-primary" id="enrollmentFormPrimaryActionBtn">Print Enrollment Form</button>
               </div>
             </div>
           </div>
@@ -1165,6 +1165,9 @@
       let pendingApprovalRecord = null;
       let registrarAutoRefreshTimer = null;
       let registrarRefreshInFlight = false;
+      let scheduleModalOrigin = "general";
+      let enrollmentFormModalMode = "print";
+      let savedSoftCopyDraft = null;
 
       function escapeHtml(value) {
         return String(value ?? "")
@@ -2334,6 +2337,7 @@
         }
 
         const printModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('enrollmentPrintModal'));
+        setEnrollmentFormModalMode("print");
         setTimeout(() => {
           printModal.show();
         }, 250);
@@ -2346,6 +2350,7 @@
       });
 
       function openScheduleFromDetails() {
+        scheduleModalOrigin = "record";
         const detailModal = bootstrap.Modal.getInstance(studentDetailsModalEl);
         const scheduleModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('scheduleAppointmentModal'));
 
@@ -2376,6 +2381,78 @@
           : 'The student will receive only the appointment schedule notification.';
       }
 
+      function setEnrollmentFormModalMode(mode = "print") {
+        enrollmentFormModalMode = mode === "save" ? "save" : "print";
+
+        const primaryActionButton = document.getElementById("enrollmentFormPrimaryActionBtn");
+        if (!primaryActionButton) {
+          return;
+        }
+
+        if (enrollmentFormModalMode === "save") {
+          primaryActionButton.innerHTML = '<i class="fa-regular fa-floppy-disk me-2"></i>Save';
+          primaryActionButton.classList.remove("btn-primary");
+          primaryActionButton.classList.add("btn-success");
+        } else {
+          primaryActionButton.innerHTML = 'Print Enrollment Form';
+          primaryActionButton.classList.remove("btn-success");
+          primaryActionButton.classList.add("btn-primary");
+        }
+      }
+
+      function getCurrentSoftCopyDraftKey() {
+        const appointmentEmail = String(document.getElementById("appointmentEmail")?.value || "").trim().toLowerCase();
+        const activeRecord = activeStudentProfile || activeStudentRecord || {};
+        const enrollmentId = String(activeRecord.enrollment_id || "").trim();
+        return enrollmentId || appointmentEmail || "general-soft-copy";
+      }
+
+      function collectEnrollmentFormValues() {
+        const fieldIds = [
+          "certLastName",
+          "certFirstName",
+          "certMiddleName",
+          "certStudNo",
+          "certBirthday",
+          "certBirthplace",
+          "certSchoolYear",
+          "certSemester",
+          "certCourse",
+          "certYearSection",
+          "certContactNo",
+          "certAddress",
+          "certUnitsEarned",
+          "certRemarks",
+          "certModality",
+          "certStudentSignature",
+          "certAdmissionOfficer",
+          "certSignature",
+          "certProcessDate",
+        ];
+
+        return fieldIds.reduce((accumulator, fieldId) => {
+          const field = document.getElementById(fieldId);
+          accumulator[fieldId] = field ? field.value : "";
+          return accumulator;
+        }, {});
+      }
+
+      function applyEnrollmentFormValues(values = {}) {
+        Object.entries(values).forEach(([fieldId, value]) => {
+          const field = document.getElementById(fieldId);
+          if (field) {
+            field.value = value ?? "";
+          }
+        });
+      }
+
+      function syncSavedSoftCopyDraftIfNeeded() {
+        const currentKey = getCurrentSoftCopyDraftKey();
+        if (savedSoftCopyDraft && savedSoftCopyDraft.key === currentKey) {
+          applyEnrollmentFormValues(savedSoftCopyDraft.values);
+        }
+      }
+
       function openEnrollmentSoftCopyPreview() {
         const appointmentDate = document.getElementById('appointmentDate')?.value || '';
         const appointmentTime = document.getElementById('appointmentTime')?.value || '';
@@ -2390,6 +2467,9 @@
           appointmentTime,
           appointmentEmail,
         });
+
+        syncSavedSoftCopyDraftIfNeeded();
+        setEnrollmentFormModalMode(scheduleModalOrigin === "general" ? "save" : "print");
 
         const printModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('enrollmentPrintModal'));
         printModal.show();
@@ -2420,13 +2500,36 @@
       });
 
       document.getElementById("openGeneralScheduleBtn")?.addEventListener("click", function () {
+        scheduleModalOrigin = "general";
         activeStudentProfile = null;
         activeStudentRecord = null;
+        savedSoftCopyDraft = null;
         resetScheduleAppointmentFields();
       });
 
       document.getElementById('sendEnrollmentSoftCopy')?.addEventListener('change', updateAppointmentSummaryNote);
       document.getElementById('editEnrollmentSoftCopyBtn')?.addEventListener('click', openEnrollmentSoftCopyPreview);
+      document.getElementById('enrollmentFormPrimaryActionBtn')?.addEventListener('click', function () {
+        if (enrollmentFormModalMode === "save") {
+          savedSoftCopyDraft = {
+            key: getCurrentSoftCopyDraftKey(),
+            values: collectEnrollmentFormValues(),
+          };
+
+          const printModal = bootstrap.Modal.getInstance(document.getElementById('enrollmentPrintModal'));
+          if (printModal) {
+            if (document.activeElement) {
+              document.activeElement.blur();
+            }
+            printModal.hide();
+          }
+
+          alert("Soft copy changes saved.");
+          return;
+        }
+
+        printEnrollmentForm();
+      });
 
       document.getElementById('scheduleAppointmentForm')?.addEventListener('submit', async function (event) {
         event.preventDefault();
@@ -2514,6 +2617,8 @@
             appointmentTime,
             appointmentEmail,
           });
+          syncSavedSoftCopyDraftIfNeeded();
+          setEnrollmentFormModalMode("print");
 
           // Show enrollment modal after a short delay to let toast appear
           setTimeout(() => {
@@ -2551,6 +2656,7 @@
       }
 
       function printEnrollmentForm() {
+        setEnrollmentFormModalMode("print");
         const body = document.body;
         const modalElement = document.getElementById('enrollmentPrintModal');
 
