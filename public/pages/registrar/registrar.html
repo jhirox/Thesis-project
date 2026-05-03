@@ -558,39 +558,7 @@
           </div>
         </div>
 
-        <div class="modal fade" id="approveEnrollmentConfirmModal" tabindex="-1" aria-labelledby="approveEnrollmentConfirmModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-white text-dark rounded-4 overflow-hidden shadow-sm">
-              <div class="modal-header border-0 px-4 pt-4">
-                <h5 class="modal-title fw-bold" id="approveEnrollmentConfirmModalLabel">
-                  <i class="fa-solid fa-circle-check me-2"></i>Confirm Approval
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body px-4 pb-3">
-                <p class="text-muted mb-3">Please review the student below before finalizing the enrollment approval.</p>
-                <div class="card border-0 bg-light rounded-4">
-                  <div class="card-body">
-                    <p class="mb-1 text-muted small">Student</p>
-                    <h5 class="fw-bold mb-1" id="approveConfirmStudentName">Student Name</h5>
-                    <p class="mb-0 text-muted" id="approveConfirmStudentProgram">Program information</p>
-                  </div>
-                </div>
-                <div class="alert alert-warning small mt-3 mb-0">
-                  This will move the student out of the default pending table and continue to appointment scheduling.
-                </div>
-              </div>
-              <div class="modal-footer border-0 px-4 pb-4">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Back</button>
-                <button type="button" class="btn btn-success" id="confirmApproveEnrollmentBtn">
-                  <i class="fa-solid fa-check me-2"></i>Confirm & Continue
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Enrollment Confirmation Modal -->
+        <!-- Enrollment Form Modal -->
         <div class="modal fade" id="enrollmentPrintModal" tabindex="-1" aria-labelledby="enrollmentPrintModalLabel" aria-hidden="true">
           <div class="modal-dialog modal-xl modal-dialog-centered modal-fullscreen-sm-down">
             <div class="modal-content bg-white text-dark rounded-4 overflow-hidden shadow-sm">
@@ -1207,7 +1175,6 @@
       let activeStudentRecord = null;
       let activeStudentProfile = null;
       let registrarApprovalDrafts = {};
-      let pendingApprovalRecord = null;
       let registrarAutoRefreshTimer = null;
       let registrarRefreshInFlight = false;
       let scheduleModalOrigin = "general";
@@ -1945,6 +1912,10 @@
 
       function openApproveEnrollmentConfirmation(record) {
         if (!record) return;
+        handleRecordStatusChange(record, "Enrolled", {
+          openSchedule: true,
+        });
+        return;
 
         pendingApprovalRecord = record;
 
@@ -2203,7 +2174,6 @@
         const modalIds = [
           "studentDetailsModal",
           "scheduleAppointmentModal",
-          "approveEnrollmentConfirmModal",
           "enrollmentPrintModal",
         ];
 
@@ -2334,25 +2304,6 @@
       appointmentEmailInput?.addEventListener("input", syncScheduleStudentFromEmailInput);
       appointmentEmailInput?.addEventListener("change", syncScheduleStudentFromEmailInput);
       appointmentEmailInput?.addEventListener("focus", syncScheduleStudentFromEmailInput);
-
-      document.getElementById("confirmApproveEnrollmentBtn")?.addEventListener("click", async function () {
-        if (!pendingApprovalRecord) return;
-
-        const confirmModalEl = document.getElementById("approveEnrollmentConfirmModal");
-        const confirmModal = bootstrap.Modal.getInstance(confirmModalEl) || bootstrap.Modal.getOrCreateInstance(confirmModalEl);
-
-        if (confirmModal) {
-          if (document.activeElement) {
-            document.activeElement.blur();
-          }
-          confirmModal.hide();
-        }
-
-        await handleRecordStatusChange(pendingApprovalRecord, "Enrolled", {
-          openSchedule: true,
-        });
-        pendingApprovalRecord = null;
-      });
 
       document.getElementById("appointmentEmailSuggestions")?.addEventListener("click", function (event) {
         const suggestionButton = event.target.closest(".appointment-email-suggestion");
@@ -2736,23 +2687,21 @@
         const toast = new bootstrap.Toast(toastElement);
         toast.show();
 
-        if (sendEnrollmentSoftCopy) {
-          populateEnrollmentForm({
-            studentName,
-            studentProgramInfo,
-            appointmentDate,
-            appointmentTime,
-            appointmentEmail,
-          });
-          syncSavedSoftCopyDraftIfNeeded();
-          setEnrollmentFormModalMode("print");
+        populateEnrollmentForm({
+          studentName,
+          studentProgramInfo,
+          appointmentDate,
+          appointmentTime,
+          appointmentEmail,
+        });
+        syncSavedSoftCopyDraftIfNeeded();
+        setEnrollmentFormModalMode("print");
 
-          // Show enrollment modal after a short delay to let toast appear
-          setTimeout(() => {
-            const printModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('enrollmentPrintModal'));
-            printModal.show();
-          }, 800);
-        }
+        // Show enrollment modal after a short delay to let toast appear
+        setTimeout(() => {
+          const printModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('enrollmentPrintModal'));
+          printModal.show();
+        }, 800);
       });
 
       function populateEnrollmentForm({ studentName, studentProgramInfo, appointmentDate, appointmentTime, appointmentEmail }) {
