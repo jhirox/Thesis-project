@@ -3,8 +3,8 @@ function filterTable() {
   const courseFilter = document.getElementById('courseFilter').value;
   const studentTypeFilter = document.getElementById('studentTypeFilter').value;
   const statusFilter = document.getElementById('statusFilter').value;
-  const loginFromDate = document.getElementById('loginFromDate').value;
-  const loginToDate = document.getElementById('loginToDate').value;
+  const loginFromDate = document.getElementById('loginFromDate')?.value || '';
+  const loginToDate = document.getElementById('loginToDate')?.value || '';
   const tables = document.querySelectorAll('#overview table tbody');
   
   tables.forEach(table => {
@@ -55,8 +55,16 @@ function resetFilters() {
   document.getElementById('courseFilter').value = '';
   document.getElementById('studentTypeFilter').value = '';
   document.getElementById('statusFilter').value = '';
-  document.getElementById('loginFromDate').value = '';
-  document.getElementById('loginToDate').value = '';
+  const loginFromDateInput = document.getElementById('loginFromDate');
+  const loginToDateInput = document.getElementById('loginToDate');
+
+  if (loginFromDateInput) {
+    loginFromDateInput.value = '';
+  }
+
+  if (loginToDateInput) {
+    loginToDateInput.value = '';
+  }
   filterTable();
 }
 
