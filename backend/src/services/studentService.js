@@ -123,6 +123,7 @@ export async function findEnrollments(query) {
       e.agreed_at,
       e.created_at,
       e.updated_at,
+      s.email_address,
       s.first_name,
       s.middle_name,
       s.last_name,
