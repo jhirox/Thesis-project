@@ -488,15 +488,20 @@
                       placeholder="Add extra instructions or reminders for the student."
                     ></textarea>
                   </div>
-                  <div class="form-check mb-2">
-                    <input class="form-check-input" type="checkbox" id="sendEnrollmentSoftCopy" checked />
-                    <label class="form-check-label fw-semibold" for="sendEnrollmentSoftCopy">
-                      Also send a soft copy of the enrollment form for registration
-                    </label>
+                  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                    <div class="form-check mb-0">
+                      <input class="form-check-input" type="checkbox" id="sendEnrollmentSoftCopy" checked />
+                      <label class="form-check-label fw-semibold" for="sendEnrollmentSoftCopy">
+                        Also send the enrollment form as a soft copy
+                      </label>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="editEnrollmentSoftCopyBtn">
+                      <i class="fa-solid fa-pen-to-square me-1"></i>Edit Soft Copy
+                    </button>
                   </div>
                   <div class="form-text">Turn this off if you only want to send the appointment schedule.</div>
                   <div id="appointmentSummaryNote" class="alert alert-light border mt-3 mb-0 small text-muted">
-                    The student will receive the appointment schedule. If checked, the certificate of registration soft copy will also be prepared for sending.
+                    The student will receive the appointment schedule. The enrollment form soft copy will also be prepared for sending.
                   </div>
                 </div>
                 <div class="modal-footer border-0 px-4 pb-4 pt-0">
@@ -2318,8 +2323,27 @@
         }
 
         note.textContent = sendEnrollmentSoftCopy
-          ? 'The student will receive the appointment schedule. The certificate of registration soft copy will also be prepared for sending.'
+          ? 'The student will receive the appointment schedule. The enrollment form soft copy will also be prepared for sending.'
           : 'The student will receive only the appointment schedule notification.';
+      }
+
+      function openEnrollmentSoftCopyPreview() {
+        const appointmentDate = document.getElementById('appointmentDate')?.value || '';
+        const appointmentTime = document.getElementById('appointmentTime')?.value || '';
+        const appointmentEmail = document.getElementById('appointmentEmail')?.value || '';
+        const studentName = document.querySelector('#scheduleAppointmentModal .card-body h5')?.textContent || 'Student';
+        const studentProgramInfo = document.querySelector('#scheduleAppointmentModal .card-body p.mb-0')?.textContent || 'Program information';
+
+        populateEnrollmentForm({
+          studentName,
+          studentProgramInfo,
+          appointmentDate,
+          appointmentTime,
+          appointmentEmail,
+        });
+
+        const printModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('enrollmentPrintModal'));
+        printModal.show();
       }
 
       const scheduleAppointmentModalEl = document.getElementById('scheduleAppointmentModal');
@@ -2353,6 +2377,7 @@
       });
 
       document.getElementById('sendEnrollmentSoftCopy')?.addEventListener('change', updateAppointmentSummaryNote);
+      document.getElementById('editEnrollmentSoftCopyBtn')?.addEventListener('click', openEnrollmentSoftCopyPreview);
 
       document.getElementById('scheduleAppointmentForm')?.addEventListener('submit', async function (event) {
         event.preventDefault();
