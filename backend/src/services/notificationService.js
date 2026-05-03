@@ -24,6 +24,49 @@ const notificationColumnDefinitions = {
 
 let notificationSchemaReady = false;
 
+async function updateNotificationDeliveryResult(notificationId, emailResult) {
+  await db.query(
+    `UPDATE notifications
+    SET email_delivery_status = ?, email_delivery_message = ?, updated_at = NOW()
+    WHERE notification_id = ?`,
+    [emailResult.status, emailResult.message, notificationId]
+  );
+}
+
+async function dispatchScheduleEmailInBackground({
+  notificationId,
+  studentEmail,
+  notificationTitle,
+  notificationMessage,
+  profile,
+  appointmentDate,
+  appointmentTime,
+  customMessage,
+  includesSoftCopy,
+}) {
+  try {
+    const emailResult = await sendEmail({
+      to: studentEmail,
+      subject: notificationTitle,
+      text: notificationMessage,
+      html: buildEmailHtml({
+        profile,
+        appointmentDate,
+        appointmentTime,
+        customMessage,
+        includesSoftCopy,
+      }),
+    });
+
+    await updateNotificationDeliveryResult(notificationId, emailResult);
+  } catch (error) {
+    await updateNotificationDeliveryResult(notificationId, {
+      status: "failed",
+      message: error?.message || "Failed to send email.",
+    });
+  }
+}
+
 function buildNotificationMessage({ studentName, appointmentDate, appointmentTime, customMessage, includesSoftCopy }) {
   const messageParts = [
     `Your enrollment appointment has been scheduled for ${appointmentDate} at ${appointmentTime}.`,
@@ -163,19 +206,16 @@ export async function createScheduleNotification(payload) {
   const softCopyPayload = payload.includesSoftCopy
     ? JSON.stringify(buildSoftCopySummary(profile, payload.appointmentDate, payload.appointmentTime))
     : null;
-
-  const emailResult = await sendEmail({
-    to: payload.studentEmail,
-    subject: notificationTitle,
-    text: notificationMessage,
-    html: buildEmailHtml({
-      profile,
-      appointmentDate: payload.appointmentDate,
-      appointmentTime: payload.appointmentTime,
-      customMessage: payload.message,
-      includesSoftCopy: payload.includesSoftCopy,
-    }),
-  });
+  const smtpConfigured = Boolean(
+    process.env.SMTP_HOST &&
+    process.env.SMTP_USER &&
+    process.env.SMTP_PASS &&
+    (process.env.SMTP_FROM || process.env.SMTP_USER)
+  );
+  const initialEmailDeliveryStatus = smtpConfigured ? "queued" : "skipped";
+  const initialEmailDeliveryMessage = smtpConfigured
+    ? "Email delivery queued in background."
+    : "SMTP is not configured.";
 
   const [result] = await db.query(
     `INSERT INTO notifications (
@@ -206,18 +246,36 @@ export async function createScheduleNotification(payload) {
       payload.appointmentTime,
       payload.includesSoftCopy ? 1 : 0,
       softCopyPayload,
-      emailResult.status,
-      emailResult.message,
+      initialEmailDeliveryStatus,
+      initialEmailDeliveryMessage,
     ]
   );
+
+  if (smtpConfigured) {
+    setTimeout(() => {
+      dispatchScheduleEmailInBackground({
+        notificationId: result.insertId,
+        studentEmail: payload.studentEmail,
+        notificationTitle,
+        notificationMessage,
+        profile,
+        appointmentDate: payload.appointmentDate,
+        appointmentTime: payload.appointmentTime,
+        customMessage: payload.message,
+        includesSoftCopy: payload.includesSoftCopy,
+      }).catch((error) => {
+        console.error("Background schedule email dispatch failed:", error);
+      });
+    }, 0);
+  }
 
   return {
     notificationId: result.insertId,
     title: notificationTitle,
     type: notificationType,
     message: notificationMessage,
-    emailDeliveryStatus: emailResult.status,
-    emailDeliveryMessage: emailResult.message,
+    emailDeliveryStatus: initialEmailDeliveryStatus,
+    emailDeliveryMessage: initialEmailDeliveryMessage,
   };
 }
 
