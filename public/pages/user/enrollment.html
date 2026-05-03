@@ -212,7 +212,8 @@
             <div>
               <a
                 href="/notifications"
-                class="me-3 text-decoration-none text-white"
+                class="me-3 text-decoration-none text-white position-relative"
+                data-notification-link
               >
                 <i class="bi bi-bell fs-5"></i>
               </a>
@@ -663,6 +664,7 @@
       document.addEventListener('DOMContentLoaded', updateEnrollButton);
     </script>
 
+    <script src="/js/user-notification-badge.js"></script>
     <script src="/js/auth.js"></script>
   </body>
 </html>

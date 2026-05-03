@@ -244,7 +244,7 @@
           <div class="d-flex align-items-center justify-content-between">
             <span class="text-white fw-semibold">Quezonian Educational College Inc.</span>
             <div>
-              <a href="/notifications" class="me-3 text-decoration-underline text-gold">
+              <a href="/notifications" class="me-3 text-decoration-underline text-gold position-relative" data-notification-link>
                 <i class="bi bi-bell fs-5"></i>
               </a>
               <a href="/profile" class="text-decoration-none text-white">
@@ -330,6 +330,71 @@
             </p>
           </div>
         </section>
+
+        <div class="modal fade" id="notificationViewModal" tabindex="-1" aria-labelledby="notificationViewModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow">
+              <div class="modal-header">
+                <div>
+                  <h5 class="modal-title fw-bold" id="notificationViewModalLabel">Notification Details</h5>
+                  <p class="text-muted small mb-0" id="notificationViewMeta">Review the full message and any attached soft copy.</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <p class="text-muted small mb-1">Title</p>
+                  <h5 class="fw-bold mb-0" id="notificationViewTitle">Notification title</h5>
+                </div>
+                <div class="mb-3">
+                  <p class="text-muted small mb-1">Message</p>
+                  <p class="mb-0" id="notificationViewMessage">Notification message</p>
+                </div>
+                <div class="row g-3 mb-3">
+                  <div class="col-sm-6">
+                    <div class="border rounded-3 p-3 h-100 bg-light">
+                      <p class="text-muted small mb-1">Appointment Date</p>
+                      <p class="mb-0 fw-semibold" id="notificationViewDate">Not set</p>
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="border rounded-3 p-3 h-100 bg-light">
+                      <p class="text-muted small mb-1">Appointment Time</p>
+                      <p class="mb-0 fw-semibold" id="notificationViewTime">Not set</p>
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="border rounded-3 p-3 h-100 bg-light">
+                      <p class="text-muted small mb-1">Delivery Status</p>
+                      <p class="mb-0 fw-semibold text-capitalize" id="notificationViewDeliveryStatus">Pending</p>
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="border rounded-3 p-3 h-100 bg-light">
+                      <p class="text-muted small mb-1">Received</p>
+                      <p class="mb-0 fw-semibold" id="notificationViewReceived">Not set</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="border rounded-3 p-3 bg-light" id="notificationSoftCopySection">
+                  <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start gap-3">
+                    <div>
+                      <p class="text-muted small mb-1">Soft Copy Attachment</p>
+                      <p class="mb-0 fw-semibold" id="notificationSoftCopyStatus">No soft copy attached.</p>
+                    </div>
+                    <button type="button" class="btn btn-outline-primary btn-sm d-none" id="downloadSoftCopyBtn">
+                      <i class="bi bi-download me-1"></i>Download Soft Copy
+                    </button>
+                  </div>
+                  <p class="text-muted small mb-0 mt-2 d-none" id="notificationSoftCopyFilename"></p>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </main>
     </div>
 
@@ -425,6 +490,7 @@
       let notificationsState = [];
       let activeFilter = "all";
       let currentUserEmail = "";
+      let activeNotificationForView = null;
 
       function escapeHtml(value) {
         return String(value ?? "")
@@ -440,6 +506,50 @@
         const date = new Date(value);
         if (Number.isNaN(date.getTime())) return value;
         return date.toLocaleString();
+      }
+
+      function truncateNotificationMessage(value, maxLength = 180) {
+        const normalized = String(value ?? "").trim();
+        if (normalized.length <= maxLength) return normalized;
+        return `${normalized.slice(0, maxLength).trimEnd()}...`;
+      }
+
+      function parseSoftCopyPayload(notification) {
+        if (!notification?.soft_copy_payload) {
+          return null;
+        }
+
+        try {
+          const parsedPayload = JSON.parse(notification.soft_copy_payload);
+          return parsedPayload && typeof parsedPayload === "object" ? parsedPayload : null;
+        } catch (error) {
+          console.error("Unable to parse soft copy payload:", error);
+          return null;
+        }
+      }
+
+      function buildSoftCopyFilename(notification, payload) {
+        const studentIdentifier = payload?.studentId || notification?.student_id || "student";
+        const appointmentDate = String(notification?.appointment_date || payload?.appointmentDate || "appointment")
+          .replace(/[^a-z0-9_-]+/gi, "-")
+          .replace(/^-+|-+$/g, "");
+        return `enrollment-form-soft-copy-${studentIdentifier}-${appointmentDate || "summary"}.json`;
+      }
+
+      function broadcastNotificationState() {
+        const unreadCount = notificationsState.filter((notification) => !notification.is_read).length;
+        try {
+          localStorage.setItem("userNotificationUnreadCount", String(unreadCount));
+        } catch (error) {
+          console.error("Unable to persist unread notification count:", error);
+        }
+
+        window.dispatchEvent(new CustomEvent("user-notifications-updated", {
+          detail: {
+            unreadCount,
+            notifications: notificationsState,
+          },
+        }));
       }
 
       function getImportantClass(notification) {
@@ -490,7 +600,7 @@
                     <h5 class="mb-0 fw-bold">${escapeHtml(notification.title)}</h5>
                     ${notification.is_read ? "" : '<span class="badge bg-primary">New</span>'}
                   </div>
-                  <p class="mb-2 text-muted">${escapeHtml(notification.message)}</p>
+                  <p class="mb-2 text-muted">${escapeHtml(truncateNotificationMessage(notification.message))}</p>
                   <div class="small text-muted">
                     <div>Date: ${escapeHtml(notification.appointment_date || "Not set")}</div>
                     <div>Time: ${escapeHtml(notification.appointment_time || "Not set")}</div>
@@ -500,6 +610,7 @@
                   </div>
                 </div>
                 <div class="d-flex flex-column gap-2">
+                  <button class="btn btn-outline-secondary btn-sm" onclick="viewNotification(${notification.notification_id})">View</button>
                   ${notification.is_read ? "" : `<button class="btn btn-outline-primary btn-sm" onclick="markNotificationAsRead(${notification.notification_id})">Mark read</button>`}
                   <button class="btn btn-outline-danger btn-sm" onclick="removeNotification(${notification.notification_id})">Remove</button>
                 </div>
@@ -531,6 +642,7 @@
           }
 
           notificationsState = Array.isArray(result.data) ? result.data : [];
+          broadcastNotificationState();
           renderNotifications();
         } catch (error) {
           console.error("Error loading notifications:", error);
@@ -539,6 +651,72 @@
             label.textContent = "Unable to load notifications right now.";
           }
         }
+      }
+
+      function viewNotification(id) {
+        const notification = notificationsState.find((item) => item.notification_id === id);
+        if (!notification) {
+          alert("Notification details could not be found.");
+          return;
+        }
+
+        activeNotificationForView = notification;
+        const payload = parseSoftCopyPayload(notification);
+        const hasSoftCopy = Boolean(notification.includes_soft_copy && payload);
+        const filename = hasSoftCopy ? buildSoftCopyFilename(notification, payload) : "";
+
+        document.getElementById("notificationViewTitle").textContent = notification.title || "Notification";
+        document.getElementById("notificationViewMessage").textContent = notification.message || "No message available.";
+        document.getElementById("notificationViewDate").textContent = notification.appointment_date || "Not set";
+        document.getElementById("notificationViewTime").textContent = notification.appointment_time || "Not set";
+        document.getElementById("notificationViewDeliveryStatus").textContent = notification.email_delivery_status || "pending";
+        document.getElementById("notificationViewReceived").textContent = formatNotificationDate(notification.created_at);
+        document.getElementById("notificationViewMeta").textContent = notification.is_read
+          ? "This message has already been opened or marked as read."
+          : "This is a new notification.";
+        document.getElementById("notificationSoftCopyStatus").textContent = hasSoftCopy
+          ? "A soft copy of the enrollment form is attached to this notification."
+          : "No soft copy is attached to this notification.";
+
+        const filenameLabel = document.getElementById("notificationSoftCopyFilename");
+        const downloadButton = document.getElementById("downloadSoftCopyBtn");
+
+        if (hasSoftCopy) {
+          filenameLabel.textContent = `File: ${filename}`;
+          filenameLabel.classList.remove("d-none");
+          downloadButton.classList.remove("d-none");
+        } else {
+          filenameLabel.textContent = "";
+          filenameLabel.classList.add("d-none");
+          downloadButton.classList.add("d-none");
+        }
+
+        const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById("notificationViewModal"));
+        modal.show();
+      }
+
+      function downloadSoftCopy() {
+        if (!activeNotificationForView) {
+          alert("No soft copy is available for download.");
+          return;
+        }
+
+        const payload = parseSoftCopyPayload(activeNotificationForView);
+        if (!payload) {
+          alert("Soft copy data is unavailable for this notification.");
+          return;
+        }
+
+        const filename = buildSoftCopyFilename(activeNotificationForView, payload);
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json;charset=utf-8" });
+        const objectUrl = URL.createObjectURL(blob);
+        const tempLink = document.createElement("a");
+        tempLink.href = objectUrl;
+        tempLink.download = filename;
+        document.body.appendChild(tempLink);
+        tempLink.click();
+        tempLink.remove();
+        URL.revokeObjectURL(objectUrl);
       }
 
       async function markNotificationAsRead(id) {
@@ -553,6 +731,7 @@
           notificationsState = notificationsState.map((notification) =>
             notification.notification_id === id ? { ...notification, is_read: 1 } : notification
           );
+          broadcastNotificationState();
           renderNotifications();
         } catch (error) {
           alert(error.message || "Unable to update notification.");
@@ -575,6 +754,7 @@
             throw new Error(result.message || "Failed to mark all notifications as read.");
           }
           notificationsState = notificationsState.map((notification) => ({ ...notification, is_read: 1 }));
+          broadcastNotificationState();
           renderNotifications();
         } catch (error) {
           alert(error.message || "Unable to mark all notifications as read.");
@@ -591,6 +771,7 @@
             throw new Error(result.message || "Failed to remove notification.");
           }
           notificationsState = notificationsState.filter((notification) => notification.notification_id !== id);
+          broadcastNotificationState();
           renderNotifications();
         } catch (error) {
           alert(error.message || "Unable to remove notification.");
@@ -614,6 +795,7 @@
             throw new Error(result.message || "Failed to clear notifications.");
           }
           notificationsState = [];
+          broadcastNotificationState();
           renderNotifications();
         } catch (error) {
           alert(error.message || "Unable to clear notifications.");
@@ -627,8 +809,12 @@
         renderNotifications();
       }
 
-      document.addEventListener("DOMContentLoaded", loadNotifications);
+      document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("downloadSoftCopyBtn")?.addEventListener("click", downloadSoftCopy);
+        loadNotifications();
+      });
     </script>
+    <script src="/js/user-notification-badge.js"></script>
     <script src="/js/auth.js"></script>
   </body>
 </html>
