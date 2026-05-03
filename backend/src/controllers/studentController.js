@@ -170,3 +170,21 @@ export const deleteRegistrarApprovalDraft = asyncHandler(async (req, res) => {
     data: draft,
   });
 });
+
+export const searchStudents = asyncHandler(async (req, res) => {
+  const { query } = req.query;
+
+  if (!query || query.trim().length === 0) {
+    return res.status(200).json({
+      success: true,
+      data: [],
+    });
+  }
+
+  const students = await studentService.searchStudentsByName(query.trim());
+
+  res.status(200).json({
+    success: true,
+    data: students,
+  });
+});
