@@ -1163,6 +1163,8 @@
       let activeStudentProfile = null;
       let registrarApprovalDrafts = {};
       let pendingApprovalRecord = null;
+      let registrarAutoRefreshTimer = null;
+      let registrarRefreshInFlight = false;
 
       function escapeHtml(value) {
         return String(value ?? "")
@@ -2090,6 +2092,11 @@
       }
 
       async function loadRegistrarRecords() {
+        if (registrarRefreshInFlight) {
+          return;
+        }
+
+        registrarRefreshInFlight = true;
         renderTableMessage("Loading student records...");
 
         try {
@@ -2112,7 +2119,31 @@
         } catch (error) {
           console.error("Error loading registrar records:", error);
           renderTableMessage("Unable to load student records right now.");
+        } finally {
+          registrarRefreshInFlight = false;
         }
+      }
+
+      function refreshRegistrarRecordsSilently() {
+        if (registrarRefreshInFlight) {
+          return;
+        }
+
+        loadRegistrarRecords();
+      }
+
+      function startRegistrarAutoRefresh() {
+        if (registrarAutoRefreshTimer) {
+          clearInterval(registrarAutoRefreshTimer);
+        }
+
+        registrarAutoRefreshTimer = setInterval(() => {
+          if (document.hidden) {
+            return;
+          }
+
+          refreshRegistrarRecordsSilently();
+        }, 30000);
       }
 
       studentRecordsTbody?.addEventListener("click", async function (event) {
@@ -2149,6 +2180,14 @@
       filterSemesterInput?.addEventListener("change", applyFilters);
       filterStatusInput?.addEventListener("change", applyFilters);
 
+      window.addEventListener("focus", refreshRegistrarRecordsSilently);
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) {
+          refreshRegistrarRecordsSilently();
+        }
+      });
+
+      startRegistrarAutoRefresh();
       loadRegistrarRecords();
 
       const appointmentEmailInput = document.getElementById("appointmentEmail");
