@@ -3615,9 +3615,10 @@ body.page-certificate-registration {
   color: var(--qeci-gold);
 }
 
+/* DIVIDER */
 .page-certificate-registration .cert-reg-fees-section {
-  margin-top: 15px;
-  padding-top: 15px;
+  margin-top: 10px;
+  padding-top: 10px;
   border-top: 1px solid rgba(212, 175, 55, 0.45);
 }
 
