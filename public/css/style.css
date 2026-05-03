@@ -3318,18 +3318,18 @@ span .icon:hover {
 
 /* Unified Student Details Modal Theme */
 .student-details-modal .modal-content {
-  background-color: #12395b !important;
-  color: white !important;
+  background-color: #12395b ;
+  color: white 
 }
 
 .student-details-modal .modal-header {
-  background-color: rgba(18, 57, 91, 0.9) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+  background-color: rgba(18, 57, 91, 0.9) ;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15)
 }
 
 .student-details-modal .card-header.bg-white {
-  background-color: #ffffff !important;
-  color: #12395b !important;
+  background-color: #ffffff ;
+  color: #12395b 
 }
 
 /* ===== Certificate Registration Page ===== */
