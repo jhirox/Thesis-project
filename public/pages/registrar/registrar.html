@@ -3065,12 +3065,12 @@
         document.getElementById('certLastName').value = nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
         document.getElementById('certMiddleName').value = nameParts.length > 2 ? nameParts.slice(1, -1).join(' ') : '';
         document.getElementById('certStudNo').value = appointmentEmail ? appointmentEmail.split('@')[0].toUpperCase() : '';
-        document.getElementById('certCourse').value = programInfoParts[0]?.trim() || '';
-        document.getElementById('certYearSection').value = programInfoParts[1]?.trim() || '';
+        document.getElementById('certCourse').value = programInfoParts[1]?.trim() || '';
+        document.getElementById('certYearSection').value = programInfoParts[0]?.trim() || '';
         document.getElementById('certSchoolYear').value = 'SY 2025-2026';
         document.getElementById('certSemester').value = '2nd Sem';
         document.getElementById('certContactNo').value = 'N/A';
-        document.getElementById('certAddress').value = 'Not Provided';
+        document.getElementById('certAddress').value = '';
         document.getElementById('certBirthday').value = '';
         document.getElementById('certBirthplace').value = '';
         document.getElementById('certUnitsEarned').value = '18';
