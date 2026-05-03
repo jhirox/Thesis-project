@@ -281,7 +281,7 @@
                   </button>
                 </div>
                 <div class="col-12 col-sm-6 col-lg-3 d-flex align-items-end">
-                  <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#scheduleAppointmentModal">
+                  <button type="button" class="btn btn-primary w-100" id="openGeneralScheduleBtn" data-bs-toggle="modal" data-bs-target="#scheduleAppointmentModal">
                     <i class="fa-regular fa-calendar-days me-2"></i>Schedule
                   </button>
                 </div>
@@ -459,7 +459,7 @@
                   <div class="card rounded-4 border-0 bg-light mb-4">
                     <div class="card-body py-4 px-4">
                       <p class="mb-1 text-muted small">Student</p>
-                      <h5 class="fw-bold mb-1" id="scheduleStudentName">Alexandra Smith</h5>
+                      <h5 class="fw-bold mb-1" id="scheduleStudentName">Select a student</h5>
                       <p class="mb-0 text-muted">APP-2024-089 • Computer Science</p>
                     </div>
                   </div>
@@ -475,7 +475,7 @@
                   </div>
                   <div class="mb-3 position-relative">
                     <label for="appointmentEmail" class="form-label fw-semibold">Student Email</label>
-                    <input type="email" class="form-control" id="appointmentEmail" value="a.smith@email.com" placeholder="Auto-filled but you can edit this email" autocomplete="off" />
+                    <input type="email" class="form-control" id="appointmentEmail" value="" placeholder="Type an existing applicant email" autocomplete="off" />
                     <div id="appointmentEmailSuggestions" class="appointment-email-suggestions d-none"></div>
                     <div class="form-text">Auto-filled from the student record, but you can edit it before sending the appointment notification.</div>
                   </div>
@@ -1405,7 +1405,6 @@
         const normalizedStatus = normalizeRegistrarStatus(record);
         const hasApprovalDraft =
           hasRegistrarApprovalDraft(record) &&
-          normalizedStatus !== "Enrolled" &&
           normalizedStatus !== "Rejected" &&
           normalizedStatus !== "Dropped";
 
@@ -1581,13 +1580,34 @@
         return normalized;
       }
 
+      function resetScheduleAppointmentFields() {
+        const appointmentEmailInput = document.getElementById("appointmentEmail");
+        const scheduleStudentName = document.getElementById("scheduleStudentName") || document.querySelector("#scheduleAppointmentModal .card-body h5");
+        const scheduleStudentProgram = document.getElementById("scheduleStudentProgram") || document.querySelector("#scheduleAppointmentModal .card-body p.mb-0");
+
+        if (appointmentEmailInput) {
+          appointmentEmailInput.value = "";
+        }
+        if (scheduleStudentName) {
+          scheduleStudentName.textContent = "Select a student";
+        }
+        if (scheduleStudentProgram) {
+          scheduleStudentProgram.textContent = "Choose from existing applicant emails below.";
+        }
+
+        renderAppointmentEmailSuggestions("", null);
+      }
+
       function populateScheduleAppointmentFields() {
         const appointmentEmailInput = document.getElementById("appointmentEmail");
         const scheduleStudentName = document.getElementById("scheduleStudentName") || document.querySelector("#scheduleAppointmentModal .card-body h5");
         const scheduleStudentProgram = document.getElementById("scheduleStudentProgram") || document.querySelector("#scheduleAppointmentModal .card-body p.mb-0");
         const record = activeStudentProfile || activeStudentRecord;
 
-        if (!record) return;
+        if (!record) {
+          resetScheduleAppointmentFields();
+          return;
+        }
 
         if (appointmentEmailInput) {
           appointmentEmailInput.value = record.email_address || `${record.student_id || "student"}@school.edu`;
@@ -1737,15 +1757,39 @@
         return result.data;
       }
 
+      async function ensureApprovedRecordsHaveDrafts(records = []) {
+        const approvedRecordsWithoutDraft = records.filter((record) =>
+          normalizeRegistrarStatus(record) === "Enrolled" && !hasRegistrarApprovalDraft(record)
+        );
+
+        if (!approvedRecordsWithoutDraft.length) {
+          return;
+        }
+
+        await Promise.all(
+          approvedRecordsWithoutDraft.map(async (record) => {
+            try {
+              await saveRegistrarApprovalDraft(record);
+            } catch (error) {
+              console.error("Unable to backfill registrar approval draft:", error);
+            }
+          })
+        );
+      }
+
       async function handleRecordStatusChange(record, applicationStatus, options = {}) {
         const { closeModal = false, openSchedule = false, successMessage = "" } = options;
 
         try {
-          if (applicationStatus === "Enrolled" || applicationStatus === "Rejected" || applicationStatus === "Dropped") {
+          if (applicationStatus === "Rejected" || applicationStatus === "Dropped") {
             await removeRegistrarApprovalDraft(record, { silent: true });
           }
 
           const updatedProfile = await updateEnrollmentApplicationStatus(record, applicationStatus);
+          if (applicationStatus === "Enrolled") {
+            await saveRegistrarApprovalDraft(updatedProfile);
+            updateRecordCache(updatedProfile);
+          }
           activeStudentProfile = updatedProfile;
           activeStudentRecord = toRegistrarRecord(updatedProfile);
 
@@ -2054,7 +2098,9 @@
             throw new Error(result.message || "Unable to load student records.");
           }
 
-          registrarRecords = Array.isArray(result.data) ? result.data.map(toRegistrarRecord) : [];
+          const rawRecords = Array.isArray(result.data) ? result.data : [];
+          await ensureApprovedRecordsHaveDrafts(rawRecords);
+          registrarRecords = rawRecords.map(toRegistrarRecord);
           hideAppointmentEmailSuggestions();
           syncFilterOptions(registrarRecords);
           applyFilters();
@@ -2290,6 +2336,20 @@
 
         populateScheduleAppointmentFields();
         updateAppointmentSummaryNote();
+
+        const appointmentEmailInput = document.getElementById("appointmentEmail");
+        setTimeout(() => {
+          appointmentEmailInput?.focus();
+          if (appointmentEmailInput && !(activeStudentProfile || activeStudentRecord)) {
+            renderAppointmentEmailSuggestions("", null);
+          }
+        }, 50);
+      });
+
+      document.getElementById("openGeneralScheduleBtn")?.addEventListener("click", function () {
+        activeStudentProfile = null;
+        activeStudentRecord = null;
+        resetScheduleAppointmentFields();
       });
 
       document.getElementById('sendEnrollmentSoftCopy')?.addEventListener('change', updateAppointmentSummaryNote);
