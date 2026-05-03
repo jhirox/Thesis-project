@@ -453,25 +453,7 @@
                 <div class="row g-3 mb-4">
                   <div class="col-sm-6 col-md-3">
                     <label class="export-option card p-3 text-white d-flex align-items-center gap-2 rounded-3" style="background-color: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.08);">
-                      <input class="form-check-input mt-0" type="radio" name="exportFormat" value="csv" checked />
-                      <span>
-                        <strong>CSV</strong><br />
-                        <small class="text-white-50">Spreadsheet summary</small>
-                      </span>
-                    </label>
-                  </div>
-                  <div class="col-sm-6 col-md-3">
-                    <label class="export-option card p-3 text-white d-flex align-items-center gap-2 rounded-3" style="background-color: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.08);">
-                      <input class="form-check-input mt-0" type="radio" name="exportFormat" value="excel" />
-                      <span>
-                        <strong>Excel</strong><br />
-                        <small class="text-white-50">.xlsx workbook</small>
-                      </span>
-                    </label>
-                  </div>
-                  <div class="col-sm-6 col-md-3">
-                    <label class="export-option card p-3 text-white d-flex align-items-center gap-2 rounded-3" style="background-color: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.08);">
-                      <input class="form-check-input mt-0" type="radio" name="exportFormat" value="pdf" />
+                      <input class="form-check-input mt-0" type="radio" name="exportFormat" value="pdf" checked />
                       <span>
                         <strong>PDF</strong><br />
                         <small class="text-white-50">Printable forms</small>
@@ -889,7 +871,7 @@
                 </div>
               </div>
               <div class="modal-footer border-top px-4 pb-4 pt-3">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" id="enrollmentFormSecondaryActionBtn">Close</button>
                 <button type="button" class="btn btn-primary" id="enrollmentFormPrimaryActionBtn">Print Enrollment Form</button>
               </div>
             </div>
@@ -1226,6 +1208,7 @@
       let registrarRefreshInFlight = false;
       let scheduleModalOrigin = "general";
       let enrollmentFormModalMode = "print";
+      let enrollmentFormReturnTarget = null;
       let savedSoftCopyDraft = null;
       let hasLoadedRegistrarRecordsOnce = false;
 
@@ -2603,7 +2586,7 @@
         ensureExportModalUiState();
         const summaryElement = document.getElementById('exportSelectionSummary');
         const exportButton = document.getElementById('exportApplicationsBtn');
-        const selectedFormat = document.querySelector('input[name="exportFormat"]:checked')?.value?.toUpperCase() || 'CSV';
+        const selectedFormat = document.querySelector('input[name="exportFormat"]:checked')?.value?.toUpperCase() || 'PDF';
         const selectedApplicants = getSelectedExportApplicants();
         const selectedCount = selectedApplicants.length;
 
@@ -2623,7 +2606,7 @@
       }
 
       function exportApplications() {
-        const selectedFormat = document.querySelector('input[name="exportFormat"]:checked')?.value || 'csv';
+        const selectedFormat = document.querySelector('input[name="exportFormat"]:checked')?.value || 'pdf';
         const selectedApplicants = getSelectedExportApplicants();
 
         if (!selectedApplicants.length) {
@@ -2654,6 +2637,8 @@
 
         document.getElementById('certRemarks').value = `Prepared for ${selectedFormat.toUpperCase()} export`;
         setEnrollmentFormModalMode("print");
+        enrollmentFormReturnTarget = "exportModal";
+        syncEnrollmentFormSecondaryAction();
 
         const exportModalElement = document.getElementById('exportModal');
         const exportModal = bootstrap.Modal.getInstance(exportModalElement);
@@ -2694,12 +2679,20 @@
 
       document.getElementById('exportApplicationsBtn')?.addEventListener('click', exportApplications);
       document.getElementById('exportModal')?.addEventListener('show.bs.modal', function () {
+        enrollmentFormReturnTarget = null;
         renderExportRecords();
         updateExportSelectionSummary();
+      });
+      document.getElementById('enrollmentPrintModal')?.addEventListener('hidden.bs.modal', function () {
+        if (enrollmentFormReturnTarget !== "exportModal") {
+          enrollmentFormReturnTarget = null;
+          syncEnrollmentFormSecondaryAction();
+        }
       });
       ensureExportModalUiState();
       renderExportRecords();
       updateExportSelectionSummary();
+      syncEnrollmentFormSecondaryAction();
 
       function openScheduleFromDetails() {
         scheduleModalOrigin = "record";
@@ -2750,6 +2743,15 @@
           primaryActionButton.classList.remove("btn-success");
           primaryActionButton.classList.add("btn-primary");
         }
+      }
+
+      function syncEnrollmentFormSecondaryAction() {
+        const secondaryActionButton = document.getElementById("enrollmentFormSecondaryActionBtn");
+        if (!secondaryActionButton) {
+          return;
+        }
+
+        secondaryActionButton.textContent = enrollmentFormReturnTarget === "exportModal" ? "Back" : "Close";
       }
 
       function getCurrentSoftCopyDraftKey() {
@@ -2822,6 +2824,8 @@
 
         syncSavedSoftCopyDraftIfNeeded();
         setEnrollmentFormModalMode("save");
+        enrollmentFormReturnTarget = null;
+        syncEnrollmentFormSecondaryAction();
 
         const printModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('enrollmentPrintModal'));
         printModal.show();
@@ -2861,6 +2865,41 @@
 
       document.getElementById('sendEnrollmentSoftCopy')?.addEventListener('change', updateAppointmentSummaryNote);
       document.getElementById('editEnrollmentSoftCopyBtn')?.addEventListener('click', openEnrollmentSoftCopyPreview);
+      document.getElementById('enrollmentFormSecondaryActionBtn')?.addEventListener('click', function () {
+        const printModalElement = document.getElementById('enrollmentPrintModal');
+        const printModal = bootstrap.Modal.getInstance(printModalElement);
+
+        if (enrollmentFormReturnTarget === "exportModal") {
+          const reopenExportModal = () => {
+            const exportModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('exportModal'));
+            exportModal.show();
+          };
+
+          if (printModalElement?.classList.contains('show')) {
+            printModalElement.addEventListener('hidden.bs.modal', function onPrintHidden() {
+              printModalElement.removeEventListener('hidden.bs.modal', onPrintHidden);
+              reopenExportModal();
+            }, { once: true });
+          }
+
+          if (printModal) {
+            if (document.activeElement) {
+              document.activeElement.blur();
+            }
+            printModal.hide();
+          } else {
+            reopenExportModal();
+          }
+          return;
+        }
+
+        if (printModal) {
+          if (document.activeElement) {
+            document.activeElement.blur();
+          }
+          printModal.hide();
+        }
+      });
       document.getElementById('enrollmentFormPrimaryActionBtn')?.addEventListener('click', function () {
         if (enrollmentFormModalMode === "save") {
           savedSoftCopyDraft = {
@@ -2978,6 +3017,8 @@
         });
         syncSavedSoftCopyDraftIfNeeded();
         setEnrollmentFormModalMode("print");
+        enrollmentFormReturnTarget = null;
+        syncEnrollmentFormSecondaryAction();
 
         const showEnrollmentPrintModal = () => {
           const printModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('enrollmentPrintModal'));
