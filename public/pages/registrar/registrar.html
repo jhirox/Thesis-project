@@ -2611,6 +2611,9 @@
 
       document.getElementById('scheduleAppointmentForm')?.addEventListener('submit', async function (event) {
         event.preventDefault();
+        const scheduleForm = event.currentTarget;
+        const submitButton = scheduleForm?.querySelector('button[type="submit"]');
+        const originalSubmitLabel = submitButton?.innerHTML || "";
         const appointmentDate = document.getElementById('appointmentDate').value;
         const appointmentTime = document.getElementById('appointmentTime').value;
         const appointmentEmail = document.getElementById('appointmentEmail').value;
@@ -2632,6 +2635,11 @@
 
         let scheduleResult;
         try {
+          if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Sending...';
+          }
+
           const response = await fetch('/api/notifications/schedule', {
             method: 'POST',
             headers: {
@@ -2655,17 +2663,15 @@
         } catch (error) {
           console.error('Error scheduling appointment notification:', error);
           alert(error.message || 'Unable to send appointment schedule right now.');
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalSubmitLabel;
+          }
           return;
         }
 
-        const scheduleModal = bootstrap.Modal.getInstance(document.getElementById('scheduleAppointmentModal'));
-        if (scheduleModal) {
-          // Blur the active element to prevent focus retention on hidden modal
-          if (document.activeElement) {
-            document.activeElement.blur();
-          }
-          scheduleModal.hide();
-        }
+        const scheduleModalElement = document.getElementById('scheduleAppointmentModal');
+        const scheduleModal = bootstrap.Modal.getInstance(scheduleModalElement);
 
         // Show success toast
         const toastMessageParts = [`Appointment notification sent to ${appointmentEmail}.`];
@@ -2697,11 +2703,31 @@
         syncSavedSoftCopyDraftIfNeeded();
         setEnrollmentFormModalMode("print");
 
-        // Show enrollment modal after a short delay to let toast appear
-        setTimeout(() => {
+        const showEnrollmentPrintModal = () => {
           const printModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('enrollmentPrintModal'));
           printModal.show();
-        }, 800);
+        };
+
+        if (scheduleModalElement?.classList.contains('show')) {
+          scheduleModalElement.addEventListener('hidden.bs.modal', function onScheduleHidden() {
+            scheduleModalElement.removeEventListener('hidden.bs.modal', onScheduleHidden);
+            showEnrollmentPrintModal();
+          }, { once: true });
+        }
+
+        if (scheduleModal) {
+          // Blur the active element to prevent focus retention on hidden modal
+          if (document.activeElement) {
+            document.activeElement.blur();
+          }
+          scheduleModal.hide();
+        } else {
+          showEnrollmentPrintModal();
+        }
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.innerHTML = originalSubmitLabel;
+        }
       });
 
       function populateEnrollmentForm({ studentName, studentProgramInfo, appointmentDate, appointmentTime, appointmentEmail }) {
