@@ -266,13 +266,9 @@
                 <div class="col-12 col-sm-6 col-lg-3">
                   <label class="form-label fw-semibold mb-2">Status</label>
                   <select id="filter-status" class="form-select">
-                    <option value="">Pending Only</option>
+                    <option value="">Show Both</option>
                     <option>Pending</option>
-                    <option>Draft Approval</option>
-                    <option>Enrolled</option>
-                    <option>On Hold</option>
-                    <option>Rejected</option>
-                    <option>Dropped</option>
+                    <option>Approved</option>
                   </select>
                 </div>
                 <div class="col-12 col-sm-6 col-lg-3 d-flex align-items-end">
@@ -323,7 +319,7 @@
                           </th>
                         </tr>
                       </thead>
-                      <tbody id="student-records-tbody" class="table-body">
+                  <tbody id="student-records-tbody" class="table-body">
                         <tr>
                           <td colspan="5" class="px-4 py-5 text-center text-white-50">
                             Loading student records...
@@ -337,6 +333,53 @@
                 >
                   <div id="student-records-summary" class="text-center text-white-50 small">
                     Waiting for live records...
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="px-4 py-3">
+            <div class="card p-4 bg-primary-subtle shadow">
+              <div class="mb-4">
+                <h6 class="mb-0 fw-bold fs-5">Approved Applicants</h6>
+              </div>
+                  <div class="table-responsive">
+                    <table
+                      class="table table-bordered table-hover align-middle mb-0 student-records-table"
+                    >
+                      <thead class="table-header">
+                        <tr>
+                          <th scope="col" class="px-4 py-3 fw-bold text-white text-center">
+                            Student ID
+                          </th>
+                          <th scope="col" class="px-4 py-3 fw-bold text-white text-center">
+                            Name
+                          </th>
+                          <th scope="col" class="px-4 py-3 fw-bold text-white text-center">
+                            Program / Year
+                          </th>
+                          <th scope="col" class="px-4 py-3 fw-bold text-white text-center">
+                            Status
+                          </th>
+                          <th scope="col" class="px-4 py-3 fw-bold text-white text-center">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody id="approved-records-tbody" class="table-body">
+                        <tr>
+                          <td colspan="5" class="px-4 py-5 text-center text-white-50">
+                            Loading approved applicants...
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                <div
+                  class="card-footer border-top border-secondary-subtle bg-transparent py-4"
+                >
+                  <div id="approved-records-summary" class="text-center text-white-50 small">
+                    Waiting for approved applicants...
                   </div>
                 </div>
               </div>
@@ -1153,6 +1196,8 @@
       const studentDetailsModalEl = document.getElementById("studentDetailsModal");
       const studentRecordsTbody = document.getElementById("student-records-tbody");
       const studentRecordsSummary = document.getElementById("student-records-summary");
+      const approvedRecordsTbody = document.getElementById("approved-records-tbody");
+      const approvedRecordsSummary = document.getElementById("approved-records-summary");
       const filterSearchInput = document.getElementById("filter-search");
       const filterCourseInput = document.getElementById("filter-course");
       const filterSemesterInput = document.getElementById("filter-year");
@@ -1168,6 +1213,7 @@
       let scheduleModalOrigin = "general";
       let enrollmentFormModalMode = "print";
       let savedSoftCopyDraft = null;
+      let hasLoadedRegistrarRecordsOnce = false;
 
       function escapeHtml(value) {
         return String(value ?? "")
@@ -1415,6 +1461,7 @@
         const normalizedStatus = normalizeRegistrarStatus(record);
         const hasApprovalDraft =
           hasRegistrarApprovalDraft(record) &&
+          normalizedStatus === "Pending" &&
           normalizedStatus !== "Rejected" &&
           normalizedStatus !== "Dropped";
 
@@ -1429,7 +1476,7 @@
         };
       }
 
-      function renderTableMessage(message) {
+      function renderPendingTableMessage(message) {
         if (!studentRecordsTbody) return;
 
         if (studentRecordsSummary) {
@@ -1437,6 +1484,20 @@
         }
 
         studentRecordsTbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="px-4 py-5 text-center text-white-50">${escapeHtml(message)}</td>
+          </tr>
+        `;
+      }
+
+      function renderApprovedTableMessage(message) {
+        if (!approvedRecordsTbody) return;
+
+        if (approvedRecordsSummary) {
+          approvedRecordsSummary.textContent = message;
+        }
+
+        approvedRecordsTbody.innerHTML = `
           <tr>
             <td colspan="5" class="px-4 py-5 text-center text-white-50">${escapeHtml(message)}</td>
           </tr>
@@ -1459,55 +1520,73 @@
         }
       }
 
-      function renderStudentRecords(records) {
+      function renderPendingRecords(records) {
         if (!studentRecordsTbody) return;
 
         if (!records.length) {
-          renderTableMessage("No student records found for the current filters.");
+          renderPendingTableMessage("No pending student records found.");
           return;
         }
 
         if (studentRecordsSummary) {
-          studentRecordsSummary.textContent = `Showing ${records.length} of ${registrarRecords.length} live record(s).`;
+          studentRecordsSummary.textContent = `Showing ${records.length} pending record(s).`;
         }
 
-        studentRecordsTbody.innerHTML = records.map((record) => {
-          const status = record.registrar_status;
-          const isApproved = status === "Enrolled";
-          const hasDraft = status === "Draft Approval";
-          const isDropped = status === "Dropped";
-          const primaryActionMarkup = isDropped
-            ? `
+        studentRecordsTbody.innerHTML = records.map((record) => `
+          <tr
+            data-enrollment-id="${escapeHtml(record.enrollment_id)}"
+            data-student-id="${escapeHtml(record.student_id)}"
+            data-section="pending"
+          >
+            <td class="px-4 py-3">${escapeHtml(record.student_id || "Not set")}</td>
+            <td class="px-4 py-3">${escapeHtml(record.full_name || "Not set")}</td>
+            <td class="px-4 py-3">${escapeHtml(getProgramYearLabel(record))}</td>
+            <td class="px-4 py-3">
+              <span class="badge ${getStatusBadgeClass(record.registrar_status)}">${escapeHtml(record.registrar_status)}</span>
+            </td>
+            <td class="px-4 py-3 text-center">
+              <div class="student-records-actions">
+                <button type="button" class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
+                <button type="button" class="btn btn-sm btn-outline-success me-1 btn-approve-record">Approve</button>
+                <button type="button" class="btn btn-sm btn-outline-danger btn-reject-record">Reject</button>
+              </div>
+            </td>
+          </tr>
+        `).join("");
+      }
+
+      function renderApprovedRecords(records) {
+        if (!approvedRecordsTbody) return;
+
+        if (!records.length) {
+          renderApprovedTableMessage("No approved applicants yet.");
+          return;
+        }
+
+        if (approvedRecordsSummary) {
+          approvedRecordsSummary.textContent = `Showing ${records.length} approved applicant(s).`;
+        }
+
+        approvedRecordsTbody.innerHTML = records.map((record) => `
+          <tr
+            data-enrollment-id="${escapeHtml(record.enrollment_id)}"
+            data-student-id="${escapeHtml(record.student_id)}"
+            data-section="approved"
+          >
+            <td class="px-4 py-3">${escapeHtml(record.student_id || "Not set")}</td>
+            <td class="px-4 py-3">${escapeHtml(record.full_name || "Not set")}</td>
+            <td class="px-4 py-3">${escapeHtml(getProgramYearLabel(record))}</td>
+            <td class="px-4 py-3">
+              <span class="badge ${getStatusBadgeClass(record.registrar_status)}">${escapeHtml(record.registrar_status)}</span>
+            </td>
+            <td class="px-4 py-3 text-center">
+              <div class="student-records-actions">
                 <button type="button" class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
                 <button type="button" class="btn btn-sm btn-outline-secondary btn-revert-pending">Revert to Pending</button>
-              `
-            : `
-                <button type="button" class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
-                <button type="button" class="btn btn-sm btn-outline-warning me-1 btn-edit">Edit</button>
-                <button type="button" class="btn btn-sm btn-outline-success me-1" ${isApproved ? "disabled" : ""}>${isApproved ? "Approved" : "Approve"}</button>
-                <button type="button" class="btn btn-sm btn-outline-info me-1 btn-save-draft">${hasDraft ? "Draft Saved" : "Save Draft"}</button>
-                <button type="button" class="btn btn-sm btn-outline-dark btn-drop-record">Drop</button>
-              `;
-
-          return `
-            <tr
-              data-enrollment-id="${escapeHtml(record.enrollment_id)}"
-              data-student-id="${escapeHtml(record.student_id)}"
-            >
-              <td class="px-4 py-3">${escapeHtml(record.student_id || "Not set")}</td>
-              <td class="px-4 py-3">${escapeHtml(record.full_name || "Not set")}</td>
-                <td class="px-4 py-3">${escapeHtml(getProgramYearLabel(record))}</td>
-              <td class="px-4 py-3">
-                <span class="badge ${getStatusBadgeClass(status)}">${escapeHtml(status)}</span>
-              </td>
-              <td class="px-4 py-3 text-center">
-                <div class="student-records-actions">
-                  ${primaryActionMarkup}
-                </div>
-              </td>
-            </tr>
-          `;
-        }).join("");
+              </div>
+            </td>
+          </tr>
+        `).join("");
       }
 
       function getFilteredRecords() {
@@ -1533,10 +1612,11 @@
             return false;
           }
           if (status) {
-            if (recordStatus !== status) {
+            const normalizedFilterStatus = status === "approved" ? "enrolled" : status;
+            if (recordStatus !== normalizedFilterStatus) {
               return false;
             }
-          } else if (recordStatus !== "pending") {
+          } else if (recordStatus !== "pending" && recordStatus !== "enrolled") {
             return false;
           }
 
@@ -1545,7 +1625,25 @@
       }
 
       function applyFilters() {
-        renderStudentRecords(getFilteredRecords());
+        const records = getFilteredRecords();
+        const selectedStatus = (filterStatusInput?.value || "").trim().toLowerCase();
+        const pendingRecords = records.filter((record) => String(record.registrar_status || "").toLowerCase() === "pending");
+        const approvedRecords = records.filter((record) => String(record.registrar_status || "").toLowerCase() === "enrolled");
+
+        if (selectedStatus === "pending") {
+          renderPendingRecords(pendingRecords);
+          renderApprovedTableMessage("Approved applicants are hidden by the current filter.");
+          return;
+        }
+
+        if (selectedStatus === "approved") {
+          renderPendingTableMessage("Pending student records are hidden by the current filter.");
+          renderApprovedRecords(approvedRecords);
+          return;
+        }
+
+        renderPendingRecords(pendingRecords);
+        renderApprovedRecords(approvedRecords);
       }
 
       function updateRecordCache(updatedRecord) {
@@ -1869,20 +1967,12 @@
 
       function bindStudentDetailsActions() {
         const detailApproveBtn = document.getElementById("detailApproveBtn");
-        const detailSaveDraftBtn = document.getElementById("detailSaveDraftBtn");
         const detailRevertBtn = document.getElementById("detailRevertBtn");
-        const detailHoldBtn = document.getElementById("detailHoldBtn");
-        const detailDropBtn = document.getElementById("detailDropBtn");
+        const detailRejectBtn = document.getElementById("detailRejectBtn");
 
         detailApproveBtn?.addEventListener("click", function () {
           if (!activeStudentRecord) return;
           openApproveEnrollmentConfirmation(activeStudentProfile || activeStudentRecord);
-        });
-
-        detailSaveDraftBtn?.addEventListener("click", async function () {
-          if (!activeStudentRecord) return;
-          await saveActiveRecordAsDraft(activeStudentProfile || activeStudentRecord);
-          openStudentDetails(activeStudentProfile || activeStudentRecord);
         });
 
         detailRevertBtn?.addEventListener("click", async function () {
@@ -1894,19 +1984,11 @@
           });
         });
 
-        detailHoldBtn?.addEventListener("click", function () {
+        detailRejectBtn?.addEventListener("click", function () {
           if (!activeStudentRecord) return;
-          handleRecordStatusChange(activeStudentRecord, "On Hold", {
+          handleRecordStatusChange(activeStudentRecord, "Rejected", {
             closeModal: true,
-            successMessage: "Student application has been placed on hold.",
-          });
-        });
-
-        detailDropBtn?.addEventListener("click", function () {
-          if (!activeStudentRecord) return;
-          handleRecordStatusChange(activeStudentRecord, "Dropped", {
-            closeModal: true,
-            successMessage: "Student application has been moved to dropped records.",
+            successMessage: "Student application has been rejected.",
           });
         });
       }
@@ -1921,18 +2003,13 @@
         const photo = normalizeUploadUrl(profile.photo) || "/assets/images/lancephoto.png";
         const normalizedRegistrarStatus = normalizeRegistrarStatus(profile);
         const isApproved = normalizedRegistrarStatus === "Enrolled";
-        const isDropped = normalizedRegistrarStatus === "Dropped";
-        const hasDraft = hasRegistrarApprovalDraft(profile);
-        const detailsActionMarkup = isDropped
+        const detailsActionMarkup = isApproved
           ? `
             <button type="button" class="btn btn-outline-secondary flex-fill" id="detailRevertBtn"><i class="fa-solid fa-rotate-left me-2"></i>Revert to Pending</button>
           `
           : `
             <button type="button" class="btn btn-success flex-fill" id="detailApproveBtn" ${isApproved ? "disabled" : ""}><i class="fa-solid fa-check me-2"></i>${isApproved ? "Approved" : "Approve Enrollment"}</button>
-            <button type="button" class="btn btn-info flex-fill" id="detailSaveDraftBtn"><i class="fa-regular fa-floppy-disk me-2"></i>${hasDraft ? "Update Draft" : "Save Draft"}</button>
-            <button type="button" class="btn btn-outline-secondary flex-fill" id="detailRevertBtn" ${!isApproved && !hasDraft ? "disabled" : ""}><i class="fa-solid fa-rotate-left me-2"></i>Revert to Pending</button>
-            <button type="button" class="btn btn-warning flex-fill" id="detailHoldBtn"><i class="fa-solid fa-pause me-2"></i>Hold</button>
-            <button type="button" class="btn btn-dark flex-fill" id="detailDropBtn"><i class="fa-solid fa-box-archive me-2"></i>Drop</button>
+            <button type="button" class="btn btn-danger flex-fill" id="detailRejectBtn"><i class="fa-solid fa-times me-2"></i>Reject</button>
           `;
 
         return `
@@ -2122,13 +2199,32 @@
         }
       }
 
-      async function loadRegistrarRecords() {
+      function isRegistrarModalOpen() {
+        const modalIds = [
+          "studentDetailsModal",
+          "scheduleAppointmentModal",
+          "approveEnrollmentConfirmModal",
+          "enrollmentPrintModal",
+        ];
+
+        return modalIds.some((modalId) => {
+          const element = document.getElementById(modalId);
+          return element?.classList.contains("show");
+        });
+      }
+
+      async function loadRegistrarRecords(options = {}) {
+        const { showLoading = false } = options;
+
         if (registrarRefreshInFlight) {
           return;
         }
 
         registrarRefreshInFlight = true;
-        renderTableMessage("Loading student records...");
+        if (showLoading) {
+          renderPendingTableMessage("Loading student records...");
+          renderApprovedTableMessage("Loading approved applicants...");
+        }
 
         try {
           const [, enrollmentsResponse] = await Promise.all([
@@ -2147,9 +2243,13 @@
           hideAppointmentEmailSuggestions();
           syncFilterOptions(registrarRecords);
           applyFilters();
+          hasLoadedRegistrarRecordsOnce = true;
         } catch (error) {
           console.error("Error loading registrar records:", error);
-          renderTableMessage("Unable to load student records right now.");
+          if (showLoading || !hasLoadedRegistrarRecordsOnce) {
+            renderPendingTableMessage("Unable to load student records right now.");
+            renderApprovedTableMessage("Unable to load approved applicants right now.");
+          }
         } finally {
           registrarRefreshInFlight = false;
         }
@@ -2160,7 +2260,11 @@
           return;
         }
 
-        loadRegistrarRecords();
+        if (isRegistrarModalOpen()) {
+          return;
+        }
+
+        loadRegistrarRecords({ showLoading: false });
       }
 
       function startRegistrarAutoRefresh() {
@@ -2177,42 +2281,39 @@
         }, 30000);
       }
 
-      studentRecordsTbody?.addEventListener("click", async function (event) {
+      function handleStudentRecordTableClick(event) {
         const row = event.target.closest("tr[data-enrollment-id]");
         if (!row) return;
 
         const record = registrarRecords.find((item) => String(item.enrollment_id) === String(row.dataset.enrollmentId));
         if (!record) return;
 
-        if (event.target.closest(".btn-view") || event.target.closest(".btn-edit")) {
+        if (event.target.closest(".btn-view")) {
           openStudentDetails(record);
           return;
         }
 
-        if (event.target.closest(".btn-outline-success")) {
+        if (event.target.closest(".btn-approve-record")) {
           openApproveEnrollmentConfirmation(record);
           return;
         }
 
-        if (event.target.closest(".btn-save-draft")) {
-          await saveActiveRecordAsDraft(record);
-          return;
-        }
-
         if (event.target.closest(".btn-revert-pending")) {
-          await removeRegistrarApprovalDraft(record, { silent: true });
-          await handleRecordStatusChange(record, "Pending", {
-            successMessage: "Dropped record has been moved back to pending.",
-          });
+          removeRegistrarApprovalDraft(record, { silent: true }).then(() => handleRecordStatusChange(record, "Pending", {
+            successMessage: "Approved applicant has been moved back to pending.",
+          }));
           return;
         }
 
-        if (event.target.closest(".btn-drop-record")) {
-          handleRecordStatusChange(record, "Dropped", {
-            successMessage: "Student application has been moved to dropped records.",
+        if (event.target.closest(".btn-reject-record")) {
+          handleRecordStatusChange(record, "Rejected", {
+            successMessage: "Student application has been rejected.",
           });
         }
-      });
+      }
+
+      studentRecordsTbody?.addEventListener("click", handleStudentRecordTableClick);
+      approvedRecordsTbody?.addEventListener("click", handleStudentRecordTableClick);
 
       filterSearchInput?.addEventListener("keyup", applyFilters);
       filterCourseInput?.addEventListener("change", applyFilters);
@@ -2227,7 +2328,7 @@
       });
 
       startRegistrarAutoRefresh();
-      loadRegistrarRecords();
+      loadRegistrarRecords({ showLoading: true });
 
       const appointmentEmailInput = document.getElementById("appointmentEmail");
       appointmentEmailInput?.addEventListener("input", syncScheduleStudentFromEmailInput);
