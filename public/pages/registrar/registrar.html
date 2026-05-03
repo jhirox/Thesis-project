@@ -266,9 +266,10 @@
                 <div class="col-12 col-sm-6 col-lg-3">
                   <label class="form-label fw-semibold mb-2">Status</label>
                   <select id="filter-status" class="form-select">
-                    <option value="">All Status</option>
-                    <option>Enrolled</option>
+                    <option value="">Pending Only</option>
                     <option>Pending</option>
+                    <option>Draft Approval</option>
+                    <option>Enrolled</option>
                     <option>On Hold</option>
                     <option>Rejected</option>
                     <option>Dropped</option>
@@ -1119,6 +1120,7 @@
       const filterCourseInput = document.getElementById("filter-course");
       const filterSemesterInput = document.getElementById("filter-year");
       const filterStatusInput = document.getElementById("filter-status");
+      const REGISTRAR_APPROVAL_DRAFTS_KEY = "registrarApprovalDrafts";
 
       let registrarRecords = [];
       let activeStudentRecord = null;
@@ -1254,6 +1256,9 @@
         if (status === "Pending") {
           return "bg-warning text-dark";
         }
+        if (status === "Draft Approval") {
+          return "bg-info text-dark";
+        }
         if (status === "On Hold") {
           return "bg-secondary";
         }
@@ -1282,14 +1287,79 @@
         return `${getProgramCode(record)} / ${getYearLevelValue(record)}`;
       }
 
+      function getRegistrarApprovalDrafts() {
+        try {
+          const raw = localStorage.getItem(REGISTRAR_APPROVAL_DRAFTS_KEY);
+          const parsed = raw ? JSON.parse(raw) : {};
+          return parsed && typeof parsed === "object" ? parsed : {};
+        } catch (error) {
+          console.error("Unable to read registrar approval drafts:", error);
+          return {};
+        }
+      }
+
+      function setRegistrarApprovalDrafts(drafts) {
+        localStorage.setItem(REGISTRAR_APPROVAL_DRAFTS_KEY, JSON.stringify(drafts || {}));
+      }
+
+      function getRegistrarApprovalDraft(record = {}) {
+        const enrollmentId = String(record.enrollment_id || "").trim();
+        if (!enrollmentId) return null;
+
+        const drafts = getRegistrarApprovalDrafts();
+        return drafts[enrollmentId] || null;
+      }
+
+      function hasRegistrarApprovalDraft(record = {}) {
+        return Boolean(getRegistrarApprovalDraft(record));
+      }
+
+      function saveRegistrarApprovalDraft(record = {}) {
+        const enrollmentId = String(record.enrollment_id || "").trim();
+        if (!enrollmentId) return;
+
+        const drafts = getRegistrarApprovalDrafts();
+        drafts[enrollmentId] = {
+          enrollment_id: record.enrollment_id,
+          student_id: record.student_id || "",
+          full_name: record.full_name || buildStudentName(record) || "",
+          email_address: record.email_address || "",
+          program_code: record.program_code || "",
+          program_name: record.program_name || "",
+          year_level: record.year_level || "",
+          application_status: record.application_status || "",
+          saved_at: new Date().toISOString(),
+        };
+        setRegistrarApprovalDrafts(drafts);
+      }
+
+      function removeRegistrarApprovalDraft(record = {}) {
+        const enrollmentId = String(record.enrollment_id || "").trim();
+        if (!enrollmentId) return;
+
+        const drafts = getRegistrarApprovalDrafts();
+        if (!(enrollmentId in drafts)) return;
+
+        delete drafts[enrollmentId];
+        setRegistrarApprovalDrafts(drafts);
+      }
+
       function toRegistrarRecord(record = {}) {
+        const normalizedStatus = normalizeRegistrarStatus(record);
+        const hasApprovalDraft =
+          hasRegistrarApprovalDraft(record) &&
+          normalizedStatus !== "Enrolled" &&
+          normalizedStatus !== "Rejected" &&
+          normalizedStatus !== "Dropped";
+
         return {
           ...record,
           full_name: record.full_name || buildStudentName(record) || "Not set",
-          registrar_status: normalizeRegistrarStatus(record),
+          registrar_status: hasApprovalDraft ? "Draft Approval" : normalizedStatus,
           program_label: getProgramCode(record),
           year_label: getYearLevelValue(record),
           semester_label: getSemesterValue(record),
+          has_approval_draft: hasApprovalDraft,
         };
       }
 
@@ -1338,6 +1408,7 @@
         studentRecordsTbody.innerHTML = records.map((record) => {
           const status = record.registrar_status;
           const isApproved = status === "Enrolled";
+          const hasDraft = status === "Draft Approval";
 
           return `
             <tr
@@ -1355,6 +1426,7 @@
                   <button type="button" class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
                   <button type="button" class="btn btn-sm btn-outline-warning me-1 btn-edit">Edit</button>
                   <button type="button" class="btn btn-sm btn-outline-success me-1" ${isApproved ? "disabled" : ""}>${isApproved ? "Approved" : "Approve"}</button>
+                  <button type="button" class="btn btn-sm btn-outline-info me-1 btn-save-draft">${hasDraft ? "Draft Saved" : "Save Draft"}</button>
                   <button type="button" class="btn btn-sm btn-outline-danger">Reject</button>
                 </div>
               </td>
@@ -1385,7 +1457,11 @@
           if (semester && recordSemester !== semester) {
             return false;
           }
-          if (status && recordStatus !== status) {
+          if (status) {
+            if (recordStatus !== status) {
+              return false;
+            }
+          } else if (recordStatus !== "pending") {
             return false;
           }
 
@@ -1409,6 +1485,17 @@
 
         activeStudentRecord = registrarRecords.find((record) => String(record.enrollment_id) === String(normalized.enrollment_id)) || normalized;
         applyFilters();
+      }
+
+      function saveActiveRecordAsDraft(record) {
+        if (!record?.enrollment_id) {
+          alert("No student record selected for draft saving.");
+          return;
+        }
+
+        saveRegistrarApprovalDraft(record);
+        updateRecordCache(record);
+        alert("Approval draft saved. You can review it later using the Draft Approval filter.");
       }
 
       function getActiveStudentProgramInfo() {
@@ -1597,6 +1684,10 @@
         const { closeModal = false, openSchedule = false, successMessage = "" } = options;
 
         try {
+          if (applicationStatus === "Enrolled" || applicationStatus === "Rejected" || applicationStatus === "Dropped") {
+            removeRegistrarApprovalDraft(record);
+          }
+
           const updatedProfile = await updateEnrollmentApplicationStatus(record, applicationStatus);
           activeStudentProfile = updatedProfile;
           activeStudentRecord = toRegistrarRecord(updatedProfile);
@@ -1626,6 +1717,8 @@
 
       function bindStudentDetailsActions() {
         const detailApproveBtn = document.getElementById("detailApproveBtn");
+        const detailSaveDraftBtn = document.getElementById("detailSaveDraftBtn");
+        const detailRevertBtn = document.getElementById("detailRevertBtn");
         const detailHoldBtn = document.getElementById("detailHoldBtn");
         const detailRejectBtn = document.getElementById("detailRejectBtn");
 
@@ -1633,6 +1726,21 @@
           if (!activeStudentRecord) return;
           handleRecordStatusChange(activeStudentRecord, "Enrolled", {
             openSchedule: true,
+          });
+        });
+
+        detailSaveDraftBtn?.addEventListener("click", function () {
+          if (!activeStudentRecord) return;
+          saveActiveRecordAsDraft(activeStudentProfile || activeStudentRecord);
+          openStudentDetails(activeStudentProfile || activeStudentRecord);
+        });
+
+        detailRevertBtn?.addEventListener("click", function () {
+          if (!activeStudentRecord) return;
+
+          removeRegistrarApprovalDraft(activeStudentProfile || activeStudentRecord);
+          handleRecordStatusChange(activeStudentRecord, "Pending", {
+            successMessage: "Student record has been moved back to pending.",
           });
         });
 
@@ -1662,6 +1770,7 @@
         const statusBadge = buildStudentStatusBadge(profile.enrollment_status);
         const photo = normalizeUploadUrl(profile.photo) || "/assets/images/lancephoto.png";
         const isApproved = normalizeRegistrarStatus(profile) === "Enrolled";
+        const hasDraft = hasRegistrarApprovalDraft(profile);
 
         return `
           <div class="text-center mb-4">
@@ -1804,8 +1913,10 @@
             </div>
           </div>
 
-          <div class="d-flex gap-2">
+          <div class="d-flex gap-2 flex-wrap">
             <button type="button" class="btn btn-success flex-fill" id="detailApproveBtn" ${isApproved ? "disabled" : ""}><i class="fa-solid fa-check me-2"></i>${isApproved ? "Approved" : "Approve Enrollment"}</button>
+            <button type="button" class="btn btn-info flex-fill" id="detailSaveDraftBtn"><i class="fa-regular fa-floppy-disk me-2"></i>${hasDraft ? "Update Draft" : "Save Draft"}</button>
+            <button type="button" class="btn btn-outline-secondary flex-fill" id="detailRevertBtn" ${!isApproved && !hasDraft ? "disabled" : ""}><i class="fa-solid fa-rotate-left me-2"></i>Revert to Pending</button>
             <button type="button" class="btn btn-warning flex-fill" id="detailHoldBtn"><i class="fa-solid fa-pause me-2"></i>Hold</button>
             <button type="button" class="btn btn-danger flex-fill" id="detailRejectBtn"><i class="fa-solid fa-times me-2"></i>Reject</button>
           </div>
@@ -1889,6 +2000,11 @@
           handleRecordStatusChange(record, "Enrolled", {
             openSchedule: true,
           });
+          return;
+        }
+
+        if (event.target.closest(".btn-save-draft")) {
+          saveActiveRecordAsDraft(record);
           return;
         }
 
