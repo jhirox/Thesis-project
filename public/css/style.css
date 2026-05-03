@@ -4175,12 +4175,12 @@ body.page-schedule-fees {
 /* Column widths */
 .cert-reg-table thead th:nth-child(1),
 .cert-reg-table tbody td:nth-child(1) {
-  width: 10%;
+  width: 11%;
 }
 
 .cert-reg-table thead th:nth-child(2),
 .cert-reg-table tbody td:nth-child(2) {
-  width: 40%;
+  width: 42%;
   text-align: left;
 }
 
@@ -4192,7 +4192,7 @@ body.page-schedule-fees {
 
 .cert-reg-table thead th:nth-child(4),
 .cert-reg-table tbody td:nth-child(4) {
-  width: 12%;
+  width: 8%;
   text-align: center;
 }
 
@@ -4208,7 +4208,7 @@ body.page-schedule-fees {
 
 .cert-reg-table thead th:nth-child(7),
 .cert-reg-table tbody td:nth-child(7) {
-  width: 10%;
+  width: 11%;
 }
 
 .cert-reg-table tbody td {
