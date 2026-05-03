@@ -1467,16 +1467,13 @@
           const email = String(record?.email_address || "").trim();
           if (!email) return;
 
-          const searchableText = [
-            email,
-            String(record?.full_name || buildStudentName(record) || "").trim(),
-            String(record?.student_id || "").trim(),
-            String(getProgramYearLabel(record) || "").trim(),
-          ]
-            .join(" ")
-            .toLowerCase();
+          const emailText = email.toLowerCase();
+          const nameText = String(record?.full_name || buildStudentName(record) || "").trim().toLowerCase();
+          const studentIdText = String(record?.student_id || "").trim().toLowerCase();
+          const programText = String(getProgramYearLabel(record) || "").trim().toLowerCase();
+          const searchableText = [emailText, nameText, studentIdText, programText].join(" ");
 
-          if (!normalizedQuery || searchableText.includes(normalizedQuery)) {
+          if (!normalizedQuery || emailText.includes(normalizedQuery) || searchableText.includes(normalizedQuery)) {
             uniqueMatches.set(email.toLowerCase(), record);
           }
         });
@@ -1489,8 +1486,7 @@
         return Array.from(uniqueMatches.values())
           .sort((left, right) =>
             String(left?.email_address || "").localeCompare(String(right?.email_address || ""))
-          )
-          .slice(0, 8);
+          );
       }
 
       function hideAppointmentEmailSuggestions() {
@@ -1521,7 +1517,7 @@
         if (!suggestionsContainer) return;
 
         const matches = getAppointmentEmailMatches(query, activeRecord);
-        if (!matches.length || !String(query || "").trim()) {
+        if (!matches.length) {
           hideAppointmentEmailSuggestions();
           return;
         }
