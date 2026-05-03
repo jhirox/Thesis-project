@@ -1585,6 +1585,54 @@ span .icon:hover {
   height: auto;
 }
 
+.appointment-email-suggestions {
+  position: absolute;
+  top: calc(100% - 0.5rem);
+  left: 0;
+  right: 0;
+  z-index: 1085;
+  display: flex;
+  flex-direction: column;
+  max-height: 15rem;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 0.9rem;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.14);
+}
+
+.appointment-email-suggestion {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  color: #1f2937;
+}
+
+.appointment-email-suggestion:last-child {
+  border-bottom: 0;
+}
+
+.appointment-email-suggestion:hover,
+.appointment-email-suggestion:focus {
+  background: rgba(13, 110, 253, 0.08);
+  outline: none;
+}
+
+.appointment-email-suggestion__email {
+  display: block;
+  font-weight: 600;
+}
+
+.appointment-email-suggestion__meta {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
 .d-nav {
   background-color: var(--qeci-navy);
 }

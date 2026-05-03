@@ -458,7 +458,7 @@
                   <div class="card rounded-4 border-0 bg-light mb-4">
                     <div class="card-body py-4 px-4">
                       <p class="mb-1 text-muted small">Student</p>
-                      <h5 class="fw-bold mb-1">Alexandra Smith</h5>
+                      <h5 class="fw-bold mb-1" id="scheduleStudentName">Alexandra Smith</h5>
                       <p class="mb-0 text-muted">APP-2024-089 • Computer Science</p>
                     </div>
                   </div>
@@ -472,10 +472,10 @@
                       <input type="time" class="form-control" id="appointmentTime" value="09:00" required />
                     </div>
                   </div>
-                  <div class="mb-3">
+                  <div class="mb-3 position-relative">
                     <label for="appointmentEmail" class="form-label fw-semibold">Student Email</label>
-                    <input type="email" class="form-control" id="appointmentEmail" value="a.smith@email.com" placeholder="Auto-filled but you can edit this email" list="appointmentEmailSuggestions" autocomplete="off" />
-                    <datalist id="appointmentEmailSuggestions"></datalist>
+                    <input type="email" class="form-control" id="appointmentEmail" value="a.smith@email.com" placeholder="Auto-filled but you can edit this email" autocomplete="off" />
+                    <div id="appointmentEmailSuggestions" class="appointment-email-suggestions d-none"></div>
                     <div class="form-text">Auto-filled from the student record, but you can edit it before sending the appointment notification.</div>
                   </div>
                   <div class="mb-3">
@@ -1412,7 +1412,15 @@
       }
 
       function getActiveStudentProgramInfo() {
-        return getProgramYearLabel(activeStudentProfile || activeStudentRecord || {});
+        const record = activeStudentProfile || activeStudentRecord || {};
+        const reference = record.application_number || record.application_no || record.student_id || record.enrollment_id || getProgramCode(record);
+        const program = record.program_name || getProgramCode(record);
+
+        if (reference && program) {
+          return `${reference} • ${program}`;
+        }
+
+        return getProgramYearLabel(record);
       }
 
       function normalizeUploadUrl(url) {
@@ -1431,8 +1439,8 @@
 
       function populateScheduleAppointmentFields() {
         const appointmentEmailInput = document.getElementById("appointmentEmail");
-        const scheduleStudentName = document.querySelector("#scheduleAppointmentModal .card-body h5");
-        const scheduleStudentProgram = document.querySelector("#scheduleAppointmentModal .card-body p.mb-0");
+        const scheduleStudentName = document.getElementById("scheduleStudentName") || document.querySelector("#scheduleAppointmentModal .card-body h5");
+        const scheduleStudentProgram = document.getElementById("scheduleStudentProgram") || document.querySelector("#scheduleAppointmentModal .card-body p.mb-0");
         const record = activeStudentProfile || activeStudentRecord;
 
         if (!record) return;
@@ -1447,33 +1455,99 @@
           scheduleStudentProgram.textContent = getActiveStudentProgramInfo();
         }
 
-        syncAppointmentEmailSuggestions(record);
+        renderAppointmentEmailSuggestions("", record);
       }
 
-      function syncAppointmentEmailSuggestions(activeRecord = null) {
-        const datalist = document.getElementById("appointmentEmailSuggestions");
-        if (!datalist) return;
+      function getAppointmentEmailMatches(query = "", activeRecord = null) {
+        const normalizedQuery = String(query || "").trim().toLowerCase();
+        const records = Array.isArray(registrarRecords) ? registrarRecords : [];
+        const uniqueMatches = new Map();
 
-        const suggestionSet = new Set();
+        records.forEach((record) => {
+          const email = String(record?.email_address || "").trim();
+          if (!email) return;
 
-        if (Array.isArray(registrarRecords)) {
-          registrarRecords.forEach((record) => {
-            const email = String(record?.email_address || "").trim();
-            if (email) {
-              suggestionSet.add(email);
-            }
-          });
-        }
+          const searchableText = [
+            email,
+            String(record?.full_name || buildStudentName(record) || "").trim(),
+            String(record?.student_id || "").trim(),
+            String(getProgramYearLabel(record) || "").trim(),
+          ]
+            .join(" ")
+            .toLowerCase();
+
+          if (!normalizedQuery || searchableText.includes(normalizedQuery)) {
+            uniqueMatches.set(email.toLowerCase(), record);
+          }
+        });
 
         const activeEmail = String(activeRecord?.email_address || "").trim();
-        if (activeEmail) {
-          suggestionSet.add(activeEmail);
+        if (activeEmail && (!normalizedQuery || activeEmail.toLowerCase().includes(normalizedQuery))) {
+          uniqueMatches.set(activeEmail.toLowerCase(), activeRecord);
         }
 
-        datalist.innerHTML = Array.from(suggestionSet)
-          .sort((left, right) => left.localeCompare(right))
-          .map((email) => `<option value="${escapeHtml(email)}"></option>`)
+        return Array.from(uniqueMatches.values())
+          .sort((left, right) =>
+            String(left?.email_address || "").localeCompare(String(right?.email_address || ""))
+          )
+          .slice(0, 8);
+      }
+
+      function hideAppointmentEmailSuggestions() {
+        const suggestionsContainer = document.getElementById("appointmentEmailSuggestions");
+        if (!suggestionsContainer) return;
+
+        suggestionsContainer.classList.add("d-none");
+        suggestionsContainer.innerHTML = "";
+      }
+
+      function selectAppointmentEmailRecord(record) {
+        const appointmentEmailInput = document.getElementById("appointmentEmail");
+        if (!appointmentEmailInput || !record) return;
+
+        const email = String(record.email_address || "").trim();
+        if (email) {
+          appointmentEmailInput.value = email;
+        }
+
+        activeStudentProfile = null;
+        activeStudentRecord = record;
+        hideAppointmentEmailSuggestions();
+        populateScheduleAppointmentFields();
+      }
+
+      function renderAppointmentEmailSuggestions(query = "", activeRecord = null) {
+        const suggestionsContainer = document.getElementById("appointmentEmailSuggestions");
+        if (!suggestionsContainer) return;
+
+        const matches = getAppointmentEmailMatches(query, activeRecord);
+        if (!matches.length || !String(query || "").trim()) {
+          hideAppointmentEmailSuggestions();
+          return;
+        }
+
+        suggestionsContainer.innerHTML = matches
+          .map((record) => {
+            const name = record.full_name || buildStudentName(record) || "Student";
+            const email = String(record.email_address || "").trim();
+            const reference = record.application_number || record.application_no || record.student_id || record.enrollment_id || getProgramCode(record);
+            const program = record.program_name || getProgramCode(record);
+            const programInfo = [reference, program].filter(Boolean).join(" • ") || getProgramYearLabel(record);
+
+            return `
+              <button
+                type="button"
+                class="appointment-email-suggestion"
+                data-email="${escapeHtml(email)}"
+              >
+                <span class="appointment-email-suggestion__email">${escapeHtml(email)}</span>
+                <span class="appointment-email-suggestion__meta">${escapeHtml(name)} - ${escapeHtml(programInfo)}</span>
+              </button>
+            `;
+          })
           .join("");
+
+        suggestionsContainer.classList.remove("d-none");
       }
 
       function findRegistrarRecordByEmail(emailValue) {
@@ -1491,7 +1565,10 @@
         const appointmentEmailInput = document.getElementById("appointmentEmail");
         if (!appointmentEmailInput) return;
 
-        const matchingRecord = findRegistrarRecordByEmail(appointmentEmailInput.value);
+        const emailValue = appointmentEmailInput.value;
+        renderAppointmentEmailSuggestions(emailValue, activeStudentProfile || activeStudentRecord);
+
+        const matchingRecord = findRegistrarRecordByEmail(emailValue);
         if (!matchingRecord) return;
 
         activeStudentProfile = null;
@@ -1791,7 +1868,7 @@
           }
 
           registrarRecords = Array.isArray(result.data) ? result.data.map(toRegistrarRecord) : [];
-          syncAppointmentEmailSuggestions();
+          hideAppointmentEmailSuggestions();
           syncFilterOptions(registrarRecords);
           applyFilters();
         } catch (error) {
@@ -1836,6 +1913,30 @@
       const appointmentEmailInput = document.getElementById("appointmentEmail");
       appointmentEmailInput?.addEventListener("input", syncScheduleStudentFromEmailInput);
       appointmentEmailInput?.addEventListener("change", syncScheduleStudentFromEmailInput);
+      appointmentEmailInput?.addEventListener("focus", syncScheduleStudentFromEmailInput);
+
+      document.getElementById("appointmentEmailSuggestions")?.addEventListener("click", function (event) {
+        const suggestionButton = event.target.closest(".appointment-email-suggestion");
+        if (!suggestionButton) return;
+
+        const matchingRecord = findRegistrarRecordByEmail(suggestionButton.dataset.email);
+        if (!matchingRecord) return;
+
+        selectAppointmentEmailRecord(matchingRecord);
+      });
+
+      document.addEventListener("click", function (event) {
+        const emailInput = document.getElementById("appointmentEmail");
+        const suggestionsContainer = document.getElementById("appointmentEmailSuggestions");
+
+        if (!emailInput || !suggestionsContainer) return;
+
+        if (emailInput.contains(event.target) || suggestionsContainer.contains(event.target)) {
+          return;
+        }
+
+        hideAppointmentEmailSuggestions();
+      });
 
       // Add Admin Function
       document
