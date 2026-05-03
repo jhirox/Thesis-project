@@ -1476,6 +1476,29 @@
           .join("");
       }
 
+      function findRegistrarRecordByEmail(emailValue) {
+        const normalizedEmail = String(emailValue || "").trim().toLowerCase();
+        if (!normalizedEmail || !Array.isArray(registrarRecords)) {
+          return null;
+        }
+
+        return registrarRecords.find((record) =>
+          String(record?.email_address || "").trim().toLowerCase() === normalizedEmail
+        ) || null;
+      }
+
+      function syncScheduleStudentFromEmailInput() {
+        const appointmentEmailInput = document.getElementById("appointmentEmail");
+        if (!appointmentEmailInput) return;
+
+        const matchingRecord = findRegistrarRecordByEmail(appointmentEmailInput.value);
+        if (!matchingRecord) return;
+
+        activeStudentProfile = null;
+        activeStudentRecord = matchingRecord;
+        populateScheduleAppointmentFields();
+      }
+
       async function updateEnrollmentApplicationStatus(record, applicationStatus) {
         const response = await fetch("/api/students/enrollments/status", {
           method: "PUT",
@@ -1809,6 +1832,11 @@
       filterStatusInput?.addEventListener("change", applyFilters);
 
       loadRegistrarRecords();
+
+      const appointmentEmailInput = document.getElementById("appointmentEmail");
+      appointmentEmailInput?.addEventListener("input", syncScheduleStudentFromEmailInput);
+      appointmentEmailInput?.addEventListener("change", syncScheduleStudentFromEmailInput);
+
       // Add Admin Function
       document
         .getElementById("addAdminForm")
