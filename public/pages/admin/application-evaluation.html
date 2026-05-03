@@ -597,22 +597,33 @@
 
         <!--end::App Content-->
 
-        <!-- Student Details Modal -->
-        <div class="modal fade" id="studentDetailsModal" tabindex="-1" aria-labelledby="studentDetailsModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-lg">
-            <div class="modal-content text-white" style="background-color: #12395b;">
-              <div class="modal-header border-bottom border-secondary-subtle">
-                <h5 class="modal-title fw-bold" id="studentDetailsModalLabel">
-                  <i class="fa-solid fa-user me-2"></i>Student Details
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <div id="modal-student-details"></div>
-              </div>
+      <!-- Student Details Modal -->
+      <div
+        class="modal fade student-details-modal"
+        id="studentDetailsModal"
+        tabindex="-1"
+        aria-labelledby="studentDetailsModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content text-white" style="background-color: #12395b;">
+            <div class="modal-header border-bottom border-secondary-subtle">
+              <h5 class="modal-title fw-bold" id="studentDetailsModalLabel">
+                <i class="fa-solid fa-user me-2"></i>Student Details
+              </h5>
+              <button
+                type="button"
+                class="btn-close btn-close-white"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div id="modal-student-details"></div>
             </div>
           </div>
         </div>
+      </div>
 
       </main>
       <!--end::App Main-->
