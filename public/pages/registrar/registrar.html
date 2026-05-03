@@ -2547,7 +2547,7 @@
         });
 
         syncSavedSoftCopyDraftIfNeeded();
-        setEnrollmentFormModalMode(scheduleModalOrigin === "general" ? "save" : "print");
+        setEnrollmentFormModalMode("save");
 
         const printModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('enrollmentPrintModal'));
         printModal.show();
