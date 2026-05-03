@@ -2,6 +2,7 @@ import { asyncHandler } from "../middlewares/asyncHandler.js";
 import * as studentService from "../services/studentService.js";
 import { buildStoredFileUrl } from "../config/uploadStorage.js";
 import {
+  registrarApprovalDraftSchema,
   submitEnrollmentSchema,
   updateEnrollmentStatusSchema,
   updateStudentProfileSchema,
@@ -136,5 +137,36 @@ export const updateEnrollmentStatus = asyncHandler(async (req, res) => {
     success: true,
     message: "Enrollment status updated successfully",
     data: enrollment,
+  });
+});
+
+export const getRegistrarApprovalDrafts = asyncHandler(async (_req, res) => {
+  const drafts = await studentService.findRegistrarApprovalDrafts();
+
+  res.status(200).json({
+    success: true,
+    data: drafts,
+  });
+});
+
+export const saveRegistrarApprovalDraft = asyncHandler(async (req, res) => {
+  const payload = registrarApprovalDraftSchema.parse(req.body);
+  const draft = await studentService.saveRegistrarApprovalDraft(payload);
+
+  res.status(200).json({
+    success: true,
+    message: "Registrar approval draft saved successfully",
+    data: draft,
+  });
+});
+
+export const deleteRegistrarApprovalDraft = asyncHandler(async (req, res) => {
+  const payload = registrarApprovalDraftSchema.parse(req.body);
+  const draft = await studentService.deleteRegistrarApprovalDraft(payload);
+
+  res.status(200).json({
+    success: true,
+    message: "Registrar approval draft removed successfully",
+    data: draft,
   });
 });

@@ -510,6 +510,38 @@
           </div>
         </div>
 
+        <div class="modal fade" id="approveEnrollmentConfirmModal" tabindex="-1" aria-labelledby="approveEnrollmentConfirmModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-white text-dark rounded-4 overflow-hidden shadow-sm">
+              <div class="modal-header border-0 px-4 pt-4">
+                <h5 class="modal-title fw-bold" id="approveEnrollmentConfirmModalLabel">
+                  <i class="fa-solid fa-circle-check me-2"></i>Confirm Approval
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body px-4 pb-3">
+                <p class="text-muted mb-3">Please review the student below before finalizing the enrollment approval.</p>
+                <div class="card border-0 bg-light rounded-4">
+                  <div class="card-body">
+                    <p class="mb-1 text-muted small">Student</p>
+                    <h5 class="fw-bold mb-1" id="approveConfirmStudentName">Student Name</h5>
+                    <p class="mb-0 text-muted" id="approveConfirmStudentProgram">Program information</p>
+                  </div>
+                </div>
+                <div class="alert alert-warning small mt-3 mb-0">
+                  This will move the student out of the default pending table and continue to appointment scheduling.
+                </div>
+              </div>
+              <div class="modal-footer border-0 px-4 pb-4">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-success" id="confirmApproveEnrollmentBtn">
+                  <i class="fa-solid fa-check me-2"></i>Confirm & Continue
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Enrollment Confirmation Modal -->
         <div class="modal fade" id="enrollmentPrintModal" tabindex="-1" aria-labelledby="enrollmentPrintModalLabel" aria-hidden="true">
           <div class="modal-dialog modal-xl modal-dialog-centered modal-fullscreen-sm-down">
@@ -1120,11 +1152,12 @@
       const filterCourseInput = document.getElementById("filter-course");
       const filterSemesterInput = document.getElementById("filter-year");
       const filterStatusInput = document.getElementById("filter-status");
-      const REGISTRAR_APPROVAL_DRAFTS_KEY = "registrarApprovalDrafts";
 
       let registrarRecords = [];
       let activeStudentRecord = null;
       let activeStudentProfile = null;
+      let registrarApprovalDrafts = {};
+      let pendingApprovalRecord = null;
 
       function escapeHtml(value) {
         return String(value ?? "")
@@ -1287,61 +1320,85 @@
         return `${getProgramCode(record)} / ${getYearLevelValue(record)}`;
       }
 
-      function getRegistrarApprovalDrafts() {
-        try {
-          const raw = localStorage.getItem(REGISTRAR_APPROVAL_DRAFTS_KEY);
-          const parsed = raw ? JSON.parse(raw) : {};
-          return parsed && typeof parsed === "object" ? parsed : {};
-        } catch (error) {
-          console.error("Unable to read registrar approval drafts:", error);
-          return {};
-        }
-      }
+      async function loadRegistrarApprovalDrafts() {
+        const response = await fetch("/api/students/enrollments/approval-drafts");
+        const result = await response.json();
 
-      function setRegistrarApprovalDrafts(drafts) {
-        localStorage.setItem(REGISTRAR_APPROVAL_DRAFTS_KEY, JSON.stringify(drafts || {}));
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || "Unable to load registrar approval drafts.");
+        }
+
+        const drafts = Array.isArray(result.data) ? result.data : [];
+        registrarApprovalDrafts = drafts.reduce((accumulator, draft) => {
+          const enrollmentId = String(draft?.enrollment_id || "").trim();
+          if (enrollmentId) {
+            accumulator[enrollmentId] = draft;
+          }
+          return accumulator;
+        }, {});
+
+        return registrarApprovalDrafts;
       }
 
       function getRegistrarApprovalDraft(record = {}) {
         const enrollmentId = String(record.enrollment_id || "").trim();
         if (!enrollmentId) return null;
 
-        const drafts = getRegistrarApprovalDrafts();
-        return drafts[enrollmentId] || null;
+        return registrarApprovalDrafts[enrollmentId] || null;
       }
 
       function hasRegistrarApprovalDraft(record = {}) {
         return Boolean(getRegistrarApprovalDraft(record));
       }
 
-      function saveRegistrarApprovalDraft(record = {}) {
+      async function saveRegistrarApprovalDraft(record = {}) {
         const enrollmentId = String(record.enrollment_id || "").trim();
         if (!enrollmentId) return;
 
-        const drafts = getRegistrarApprovalDrafts();
-        drafts[enrollmentId] = {
+        const response = await fetch("/api/students/enrollments/approval-drafts", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            enrollmentId: record.enrollment_id,
+            studentId: record.student_id,
+          }),
+        });
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || "Unable to save registrar approval draft.");
+        }
+
+        registrarApprovalDrafts[enrollmentId] = result.data || {
           enrollment_id: record.enrollment_id,
-          student_id: record.student_id || "",
-          full_name: record.full_name || buildStudentName(record) || "",
-          email_address: record.email_address || "",
-          program_code: record.program_code || "",
-          program_name: record.program_name || "",
-          year_level: record.year_level || "",
-          application_status: record.application_status || "",
-          saved_at: new Date().toISOString(),
+          student_id: record.student_id || null,
         };
-        setRegistrarApprovalDrafts(drafts);
       }
 
-      function removeRegistrarApprovalDraft(record = {}) {
+      async function removeRegistrarApprovalDraft(record = {}, options = {}) {
+        const { silent = false } = options;
         const enrollmentId = String(record.enrollment_id || "").trim();
         if (!enrollmentId) return;
+        if (!(enrollmentId in registrarApprovalDrafts) && silent) return;
 
-        const drafts = getRegistrarApprovalDrafts();
-        if (!(enrollmentId in drafts)) return;
+        const response = await fetch("/api/students/enrollments/approval-drafts", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            enrollmentId: record.enrollment_id,
+          }),
+        });
+        const result = await response.json();
 
-        delete drafts[enrollmentId];
-        setRegistrarApprovalDrafts(drafts);
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || "Unable to remove registrar approval draft.");
+        }
+
+        delete registrarApprovalDrafts[enrollmentId];
       }
 
       function toRegistrarRecord(record = {}) {
@@ -1487,13 +1544,13 @@
         applyFilters();
       }
 
-      function saveActiveRecordAsDraft(record) {
+      async function saveActiveRecordAsDraft(record) {
         if (!record?.enrollment_id) {
           alert("No student record selected for draft saving.");
           return;
         }
 
-        saveRegistrarApprovalDraft(record);
+        await saveRegistrarApprovalDraft(record);
         updateRecordCache(record);
         alert("Approval draft saved. You can review it later using the Draft Approval filter.");
       }
@@ -1685,7 +1742,7 @@
 
         try {
           if (applicationStatus === "Enrolled" || applicationStatus === "Rejected" || applicationStatus === "Dropped") {
-            removeRegistrarApprovalDraft(record);
+            await removeRegistrarApprovalDraft(record, { silent: true });
           }
 
           const updatedProfile = await updateEnrollmentApplicationStatus(record, applicationStatus);
@@ -1715,6 +1772,28 @@
         }
       }
 
+      function openApproveEnrollmentConfirmation(record) {
+        if (!record) return;
+
+        pendingApprovalRecord = record;
+
+        const nameElement = document.getElementById("approveConfirmStudentName");
+        const programElement = document.getElementById("approveConfirmStudentProgram");
+
+        if (nameElement) {
+          nameElement.textContent = record.full_name || buildStudentName(record) || "Student";
+        }
+
+        if (programElement) {
+          const reference = record.application_number || record.application_no || record.student_id || record.enrollment_id || getProgramCode(record);
+          const program = record.program_name || getProgramCode(record);
+          programElement.textContent = [reference, program].filter(Boolean).join(" • ") || getProgramYearLabel(record);
+        }
+
+        const confirmModal = bootstrap.Modal.getOrCreateInstance(document.getElementById("approveEnrollmentConfirmModal"));
+        confirmModal.show();
+      }
+
       function bindStudentDetailsActions() {
         const detailApproveBtn = document.getElementById("detailApproveBtn");
         const detailSaveDraftBtn = document.getElementById("detailSaveDraftBtn");
@@ -1724,22 +1803,20 @@
 
         detailApproveBtn?.addEventListener("click", function () {
           if (!activeStudentRecord) return;
-          handleRecordStatusChange(activeStudentRecord, "Enrolled", {
-            openSchedule: true,
-          });
+          openApproveEnrollmentConfirmation(activeStudentProfile || activeStudentRecord);
         });
 
-        detailSaveDraftBtn?.addEventListener("click", function () {
+        detailSaveDraftBtn?.addEventListener("click", async function () {
           if (!activeStudentRecord) return;
-          saveActiveRecordAsDraft(activeStudentProfile || activeStudentRecord);
+          await saveActiveRecordAsDraft(activeStudentProfile || activeStudentRecord);
           openStudentDetails(activeStudentProfile || activeStudentRecord);
         });
 
-        detailRevertBtn?.addEventListener("click", function () {
+        detailRevertBtn?.addEventListener("click", async function () {
           if (!activeStudentRecord) return;
 
-          removeRegistrarApprovalDraft(activeStudentProfile || activeStudentRecord);
-          handleRecordStatusChange(activeStudentRecord, "Pending", {
+          await removeRegistrarApprovalDraft(activeStudentProfile || activeStudentRecord, { silent: true });
+          await handleRecordStatusChange(activeStudentRecord, "Pending", {
             successMessage: "Student record has been moved back to pending.",
           });
         });
@@ -1967,10 +2044,13 @@
         renderTableMessage("Loading student records...");
 
         try {
-          const response = await fetch("/api/students/enrollments/all?limit=500");
-          const result = await response.json();
+          const [, enrollmentsResponse] = await Promise.all([
+            loadRegistrarApprovalDrafts(),
+            fetch("/api/students/enrollments/all?limit=500"),
+          ]);
+          const result = await enrollmentsResponse.json();
 
-          if (!response.ok || !result.success) {
+          if (!enrollmentsResponse.ok || !result.success) {
             throw new Error(result.message || "Unable to load student records.");
           }
 
@@ -1984,7 +2064,7 @@
         }
       }
 
-      studentRecordsTbody?.addEventListener("click", function (event) {
+      studentRecordsTbody?.addEventListener("click", async function (event) {
         const row = event.target.closest("tr[data-enrollment-id]");
         if (!row) return;
 
@@ -1997,14 +2077,12 @@
         }
 
         if (event.target.closest(".btn-outline-success")) {
-          handleRecordStatusChange(record, "Enrolled", {
-            openSchedule: true,
-          });
+          openApproveEnrollmentConfirmation(record);
           return;
         }
 
         if (event.target.closest(".btn-save-draft")) {
-          saveActiveRecordAsDraft(record);
+          await saveActiveRecordAsDraft(record);
           return;
         }
 
@@ -2026,6 +2104,25 @@
       appointmentEmailInput?.addEventListener("input", syncScheduleStudentFromEmailInput);
       appointmentEmailInput?.addEventListener("change", syncScheduleStudentFromEmailInput);
       appointmentEmailInput?.addEventListener("focus", syncScheduleStudentFromEmailInput);
+
+      document.getElementById("confirmApproveEnrollmentBtn")?.addEventListener("click", async function () {
+        if (!pendingApprovalRecord) return;
+
+        const confirmModalEl = document.getElementById("approveEnrollmentConfirmModal");
+        const confirmModal = bootstrap.Modal.getInstance(confirmModalEl) || bootstrap.Modal.getOrCreateInstance(confirmModalEl);
+
+        if (confirmModal) {
+          if (document.activeElement) {
+            document.activeElement.blur();
+          }
+          confirmModal.hide();
+        }
+
+        await handleRecordStatusChange(pendingApprovalRecord, "Enrolled", {
+          openSchedule: true,
+        });
+        pendingApprovalRecord = null;
+      });
 
       document.getElementById("appointmentEmailSuggestions")?.addEventListener("click", function (event) {
         const suggestionButton = event.target.closest(".appointment-email-suggestion");

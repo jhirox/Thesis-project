@@ -10,6 +10,44 @@ import {
   studentStatusSql,
 } from "../utils/sqlBuilders.js";
 
+const registrarApprovalDraftColumnDefinitions = {
+  draft_id: "INT AUTO_INCREMENT PRIMARY KEY",
+  enrollment_id: "INT NOT NULL",
+  student_id: "INT NULL",
+  created_at: "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
+  updated_at: "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+};
+
+let registrarApprovalDraftSchemaReady = false;
+
+async function ensureRegistrarApprovalDraftsTableShape() {
+  if (registrarApprovalDraftSchemaReady) {
+    return;
+  }
+
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS registrar_approval_drafts (
+      draft_id INT AUTO_INCREMENT PRIMARY KEY,
+      enrollment_id INT NOT NULL,
+      student_id INT NULL,
+      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      UNIQUE KEY unique_registrar_approval_draft_enrollment (enrollment_id)
+    )
+  `);
+
+  const [existingColumns] = await db.query("SHOW COLUMNS FROM registrar_approval_drafts");
+  const existingColumnNames = new Set(existingColumns.map((column) => column.Field));
+
+  for (const [columnName, definition] of Object.entries(registrarApprovalDraftColumnDefinitions)) {
+    if (!existingColumnNames.has(columnName)) {
+      await db.query(`ALTER TABLE registrar_approval_drafts ADD COLUMN ${columnName} ${definition}`);
+    }
+  }
+
+  registrarApprovalDraftSchemaReady = true;
+}
+
 export async function submitEnrollment(payload) {
   const connection = await db.getConnection();
   try {
@@ -471,4 +509,74 @@ export async function updateEnrollmentStatus(payload) {
   }
 
   return findEnrollmentApplicantDetails(enrollmentId);
+}
+
+export async function findRegistrarApprovalDrafts() {
+  await ensureRegistrarApprovalDraftsTableShape();
+
+  const [rows] = await db.query(`
+    SELECT
+      draft_id,
+      enrollment_id,
+      student_id,
+      created_at,
+      updated_at
+    FROM registrar_approval_drafts
+    ORDER BY updated_at DESC
+  `);
+
+  return rows;
+}
+
+export async function saveRegistrarApprovalDraft(payload) {
+  await ensureRegistrarApprovalDraftsTableShape();
+
+  const enrollmentId = Number.parseInt(payload.enrollmentId, 10);
+  const studentId = payload.studentId ? Number.parseInt(payload.studentId, 10) : null;
+
+  if (!Number.isInteger(enrollmentId) || enrollmentId <= 0) {
+    throw new Error("A valid enrollment id is required to save a registrar approval draft.");
+  }
+
+  await db.query(
+    `INSERT INTO registrar_approval_drafts (enrollment_id, student_id)
+     VALUES (?, ?)
+     ON DUPLICATE KEY UPDATE
+       student_id = VALUES(student_id),
+       updated_at = CURRENT_TIMESTAMP`,
+    [enrollmentId, Number.isInteger(studentId) && studentId > 0 ? studentId : null]
+  );
+
+  const [rows] = await db.query(
+    `SELECT
+      draft_id,
+      enrollment_id,
+      student_id,
+      created_at,
+      updated_at
+    FROM registrar_approval_drafts
+    WHERE enrollment_id = ?
+    LIMIT 1`,
+    [enrollmentId]
+  );
+
+  return rows[0] || { enrollment_id: enrollmentId, student_id: studentId };
+}
+
+export async function deleteRegistrarApprovalDraft(payload) {
+  await ensureRegistrarApprovalDraftsTableShape();
+
+  const enrollmentId = Number.parseInt(payload.enrollmentId, 10);
+
+  if (!Number.isInteger(enrollmentId) || enrollmentId <= 0) {
+    throw new Error("A valid enrollment id is required to delete a registrar approval draft.");
+  }
+
+  await db.query(
+    `DELETE FROM registrar_approval_drafts
+     WHERE enrollment_id = ?`,
+    [enrollmentId]
+  );
+
+  return { enrollment_id: enrollmentId };
 }

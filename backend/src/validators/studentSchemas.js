@@ -93,3 +93,8 @@ export const updateEnrollmentStatusSchema = z.object({
     "Dropped",
   ]),
 });
+
+export const registrarApprovalDraftSchema = z.object({
+  enrollmentId: z.union([z.string().trim(), z.number()]),
+  studentId: z.union([z.string().trim(), z.number()]).optional(),
+});
