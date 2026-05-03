@@ -474,7 +474,8 @@
                   </div>
                   <div class="mb-3">
                     <label for="appointmentEmail" class="form-label fw-semibold">Student Email</label>
-                    <input type="email" class="form-control" id="appointmentEmail" value="a.smith@email.com" placeholder="Auto-filled but you can edit this email" />
+                    <input type="email" class="form-control" id="appointmentEmail" value="a.smith@email.com" placeholder="Auto-filled but you can edit this email" list="appointmentEmailSuggestions" autocomplete="off" />
+                    <datalist id="appointmentEmailSuggestions"></datalist>
                     <div class="form-text">Auto-filled from the student record, but you can edit it before sending the appointment notification.</div>
                   </div>
                   <div class="mb-3">
@@ -1445,6 +1446,34 @@
         if (scheduleStudentProgram) {
           scheduleStudentProgram.textContent = getActiveStudentProgramInfo();
         }
+
+        syncAppointmentEmailSuggestions(record);
+      }
+
+      function syncAppointmentEmailSuggestions(activeRecord = null) {
+        const datalist = document.getElementById("appointmentEmailSuggestions");
+        if (!datalist) return;
+
+        const suggestionSet = new Set();
+
+        if (Array.isArray(registrarRecords)) {
+          registrarRecords.forEach((record) => {
+            const email = String(record?.email_address || "").trim();
+            if (email) {
+              suggestionSet.add(email);
+            }
+          });
+        }
+
+        const activeEmail = String(activeRecord?.email_address || "").trim();
+        if (activeEmail) {
+          suggestionSet.add(activeEmail);
+        }
+
+        datalist.innerHTML = Array.from(suggestionSet)
+          .sort((left, right) => left.localeCompare(right))
+          .map((email) => `<option value="${escapeHtml(email)}"></option>`)
+          .join("");
       }
 
       async function updateEnrollmentApplicationStatus(record, applicationStatus) {
@@ -1739,6 +1768,7 @@
           }
 
           registrarRecords = Array.isArray(result.data) ? result.data.map(toRegistrarRecord) : [];
+          syncAppointmentEmailSuggestions();
           syncFilterOptions(registrarRecords);
           applyFilters();
         } catch (error) {
