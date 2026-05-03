@@ -238,7 +238,6 @@ export async function findEnrollmentApplicantDetails(id) {
       p.program_code,
       st.type_name AS student_type,
       lm.modality_name AS modality_name,
-      e.enrollment_id,
       e.year_level,
       e.semester_types,
       ${studentStatusSql("s")} AS enrollment_status

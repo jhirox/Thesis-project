@@ -585,70 +585,25 @@
                 </div>
                 <div class="card-body">
                   <div class="row g-3">
-	                      <div class="col-md-6">
-	                        <label class="form-label text-muted small">Mother's Maiden Name</label>
-	                      <input
-	                        type="text"
-	                        id="motherMaidenInfo"
-	                        class="form-control form-control-sm"
-	                        value=""
-	                        placeholder="Not set"
-	                        disabled
-	                      />
-	                    </div>
-	                    <div class="col-md-6">
-	                      <label class="form-label text-muted small">Father's Name</label>
-	                      <input
-	                        type="text"
-	                        id="fatherNameInfo"
-	                        class="form-control form-control-sm"
-	                        value=""
-	                        placeholder="Not set"
-	                        disabled
-	                      />
-	                    </div>
-	                    <div class="col-md-6">
-	                      <label class="form-label text-muted small">Guardian Name</label>
-	                      <input
-	                        type="text"
-	                        id="guardianNameInfo"
-	                        class="form-control form-control-sm"
-	                        value=""
-	                        placeholder="Not set"
-	                        disabled
-	                      />
-	                    </div>
-	                    <div class="col-md-6">
-	                      <label class="form-label text-muted small">Guardian Contact</label>
-	                      <input
-	                        type="text"
-	                        id="guardianContactInfo"
-	                        class="form-control form-control-sm"
-	                        value=""
-	                        placeholder="Not set"
-	                        disabled
-	                      />
-	                    </div>
-	                  </div>
-	                  <div class="d-flex flex-wrap gap-2 mt-4">
-	                    <button type="button" class="btn btn-primary" id="editProfileBtn">
-	                      <i class="bi bi-pencil-square me-2"></i>Edit Profile
-	                    </button>
-	                    <button type="button" class="btn btn-outline-secondary d-none" id="cancelProfileEditBtn">
-	                      Cancel
-	                    </button>
-	                    <button type="button" class="btn btn-success d-none" id="saveProfileBtn">
-	                      <i class="bi bi-floppy me-2"></i>Save Changes
-	                    </button>
-	                    <button type="button" class="btn btn-warning d-none" id="saveResubmitProfileBtn">
-	                      <i class="bi bi-arrow-repeat me-2"></i>Save & Resubmit
-	                    </button>
-	                  </div>
-	                  <p class="text-muted small mt-3 mb-0">
-	                    Update your personal details here if the registrar finds incorrect information.
-	                  </p>
-	                </div>
-	              </div>
+                    <div class="col-md-6">
+                      <label class="form-label text-muted small">Mother's Maiden Name</label>
+                      <p id="motherMaidenInfo" class="fw-semibold mb-0">Not set</p>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label text-muted small">Father's Name</label>
+                      <p id="fatherNameInfo" class="fw-semibold mb-0">Not set</p>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label text-muted small">Guardian Name</label>
+                      <p id="guardianNameInfo" class="fw-semibold mb-0">Not set</p>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label text-muted small">Guardian Contact</label>
+                      <p id="guardianContactInfo" class="fw-semibold mb-0">Not set</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               <!-- Enrollment Status -->
               <div class="card shadow-sm mt-4 border-primary">
@@ -830,17 +785,13 @@
         const lastSchoolInfo = document.querySelector('#lastSchoolInfo');
         const lastSchoolYearInfo = document.querySelector('#lastSchoolYearInfo');
         const workingStatusInfo = document.querySelector('#workingStatusInfo');
-	        const motherMaidenInfo = document.querySelector('#motherMaidenInfo');
-	        const fatherNameInfo = document.querySelector('#fatherNameInfo');
-	        const guardianNameInfo = document.querySelector('#guardianNameInfo');
-	        const guardianContactInfo = document.querySelector('#guardianContactInfo');
-	        const editProfileBtn = document.querySelector('#editProfileBtn');
-	        const cancelProfileEditBtn = document.querySelector('#cancelProfileEditBtn');
-	        const saveProfileBtn = document.querySelector('#saveProfileBtn');
-	        const saveResubmitProfileBtn = document.querySelector('#saveResubmitProfileBtn');
-	        const queueNumber = document.querySelector('#queueNumber');
-	        const applicationStatus = document.querySelector('#applicationStatus');
-	        const specialRemarks = document.querySelector('#specialRemarks');
+        const motherMaidenInfo = document.querySelector('#motherMaidenInfo');
+        const fatherNameInfo = document.querySelector('#fatherNameInfo');
+        const guardianNameInfo = document.querySelector('#guardianNameInfo');
+        const guardianContactInfo = document.querySelector('#guardianContactInfo');
+        const queueNumber = document.querySelector('#queueNumber');
+        const applicationStatus = document.querySelector('#applicationStatus');
+        const specialRemarks = document.querySelector('#specialRemarks');
         const orNumberInput = document.querySelector('#orNumberInput');
         const orFileInput = document.querySelector('#orFileInput');
         const orFileName = document.querySelector('#orFileName');
@@ -854,83 +805,8 @@
         const timeout = localStorage.getItem('sessionTimeout');
         const guestMode = localStorage.getItem('guestMode') === 'true';
 
-	        let currentProfile = null;
-	        let receiptTextSaveTimeout = null;
-	        let profileEditSnapshot = null;
-	        let isProfileEditing = false;
-
-	        const editableProfileFields = [
-	          contactNo,
-	          dob,
-	          address,
-	          birthPlace,
-	          sex,
-	          civilStatus,
-	          nationality,
-	          religion,
-	          motherMaidenInfo,
-	          fatherNameInfo,
-	          guardianNameInfo,
-	          guardianContactInfo,
-	        ].filter(Boolean);
-
-	        const getProfileFieldSnapshot = () => ({
-	          contactNo: contactNo?.value || '',
-	          dob: dob?.value || '',
-	          address: address?.value || '',
-	          birthPlace: birthPlace?.value || '',
-	          sex: sex?.value || '',
-	          civilStatus: civilStatus?.value || '',
-	          nationality: nationality?.value || '',
-	          religion: religion?.value || '',
-	          motherMaidenInfo: motherMaidenInfo?.value || '',
-	          fatherNameInfo: fatherNameInfo?.value || '',
-	          guardianNameInfo: guardianNameInfo?.value || '',
-	          guardianContactInfo: guardianContactInfo?.value || '',
-	        });
-
-	        const applyProfileFieldSnapshot = (snapshot = {}) => {
-	          if (contactNo) contactNo.value = snapshot.contactNo || '';
-	          if (dob) dob.value = snapshot.dob || '';
-	          if (address) address.value = snapshot.address || '';
-	          if (birthPlace) birthPlace.value = snapshot.birthPlace || '';
-	          if (sex) sex.value = snapshot.sex || '';
-	          if (civilStatus) civilStatus.value = snapshot.civilStatus || '';
-	          if (nationality) nationality.value = snapshot.nationality || '';
-	          if (religion) religion.value = snapshot.religion || '';
-	          if (motherMaidenInfo) motherMaidenInfo.value = snapshot.motherMaidenInfo || '';
-	          if (fatherNameInfo) fatherNameInfo.value = snapshot.fatherNameInfo || '';
-	          if (guardianNameInfo) guardianNameInfo.value = snapshot.guardianNameInfo || '';
-	          if (guardianContactInfo) guardianContactInfo.value = snapshot.guardianContactInfo || '';
-	        };
-
-	        const getNormalizedApplicationStatus = () => String(currentProfile?.application_status || '').trim().toLowerCase();
-
-	        const setProfileEditMode = (isEditing) => {
-	          isProfileEditing = isEditing;
-	          editableProfileFields.forEach((field) => {
-	            field.disabled = !isEditing;
-	          });
-
-	          editProfileBtn?.classList.toggle('d-none', isEditing);
-	          cancelProfileEditBtn?.classList.toggle('d-none', !isEditing);
-	          saveProfileBtn?.classList.toggle('d-none', !isEditing);
-
-	          const showResubmit = isEditing && getNormalizedApplicationStatus() === 'rejected';
-	          saveResubmitProfileBtn?.classList.toggle('d-none', !showResubmit);
-	        };
-
-	        const setProfileActionButtonsDisabled = (disabled, label = null, targetButton = null) => {
-	          [editProfileBtn, cancelProfileEditBtn, saveProfileBtn, saveResubmitProfileBtn].forEach((button) => {
-	            if (button) {
-	              button.disabled = disabled;
-	            }
-	          });
-
-	          if (targetButton && label) {
-	            targetButton.innerHTML = label;
-	          }
-	        };
+        let currentProfile = null;
+        let receiptTextSaveTimeout = null;
 
         const logout = () => {
           try {
@@ -1086,8 +962,8 @@
           return result.data;
         };
 
-	        const renderProfile = (profile) => {
-	          currentProfile = profile;
+        const renderProfile = (profile) => {
+          currentProfile = profile;
 
           const fullNameText = buildFullName(profile);
           fullName.textContent = fullNameText;
@@ -1113,122 +989,25 @@
           if (lastSchoolInfo) lastSchoolInfo.textContent = profile.last_school_attended || 'Not set';
           if (lastSchoolYearInfo) lastSchoolYearInfo.textContent = profile.last_school_year || 'Not set';
           if (workingStatusInfo) workingStatusInfo.textContent = profile.is_working === 1 ? 'Working student' : (profile.is_working === 0 ? 'Non-working' : 'Not set');
-	          if (motherMaidenInfo) motherMaidenInfo.value = profile.mother_maiden_name || '';
-	          if (fatherNameInfo) fatherNameInfo.value = profile.father_name || '';
-	          if (guardianNameInfo) guardianNameInfo.value = profile.guardian_name || '';
-	          if (guardianContactInfo) guardianContactInfo.value = profile.guardian_contact || '';
-	          queueNumber.textContent = profile.queue_number || 'Not available';
-	          applicationStatus.textContent = profile.application_status || 'Not submitted';
+          if (motherMaidenInfo) motherMaidenInfo.textContent = profile.mother_maiden_name || 'Not set';
+          if (fatherNameInfo) fatherNameInfo.textContent = profile.father_name || 'Not set';
+          if (guardianNameInfo) guardianNameInfo.textContent = profile.guardian_name || 'Not set';
+          if (guardianContactInfo) guardianContactInfo.textContent = profile.guardian_contact || 'Not set';
+          queueNumber.textContent = profile.queue_number || 'Not available';
+          applicationStatus.textContent = profile.application_status || 'Not submitted';
           if (specialRemarks) specialRemarks.textContent = profile.special_remarks || 'None';
 
           if (profileBody) {
             profileBody.classList.add('authenticated');
           }
 
-	          renderReceiptPreview({
-	            fileUrl: profile.official_receipt_file_url,
-	            fileName: profile.official_receipt_file_name,
-	            fileType: profile.official_receipt_file_type,
-	            receiptNumber: profile.official_receipt_number,
-	          });
-
-	          profileEditSnapshot = getProfileFieldSnapshot();
-	          setProfileEditMode(false);
-	        };
-
-	        const saveProfileUpdates = async ({ resubmit = false } = {}) => {
-	          if (!currentProfile?.student_id && !storedStudentProfileId && !userEmail) {
-	            throw new Error('Unable to identify the current student profile.');
-	          }
-
-	          const targetButton = resubmit ? saveResubmitProfileBtn : saveProfileBtn;
-	          const originalLabel = targetButton?.innerHTML || '';
-	          const loadingLabel = resubmit
-	            ? '<i class="bi bi-arrow-repeat me-2"></i>Saving & Resubmitting...'
-	            : '<i class="bi bi-floppy me-2"></i>Saving...';
-
-	          try {
-	            setProfileActionButtonsDisabled(true, loadingLabel, targetButton);
-
-	            const payload = {
-	              contactNumber: contactNo?.value.trim() || '',
-	              birthDate: dob?.value || '',
-	              completeAddress: address?.value.trim() || '',
-	              birthPlace: birthPlace?.value.trim() || '',
-	              sex: sex?.value || '',
-	              civilStatus: civilStatus?.value.trim() || '',
-	              nationality: nationality?.value.trim() || '',
-	              religion: religion?.value.trim() || '',
-	              motherMaidenName: motherMaidenInfo?.value.trim() || '',
-	              fatherName: fatherNameInfo?.value.trim() || '',
-	              guardianName: guardianNameInfo?.value.trim() || '',
-	              guardianContact: guardianContactInfo?.value.trim() || '',
-	            };
-
-	            if (currentProfile?.student_id) {
-	              payload.studentId = currentProfile.student_id;
-	            } else if (storedStudentProfileId) {
-	              payload.studentId = storedStudentProfileId;
-	            } else if (userEmail) {
-	              payload.email = userEmail;
-	            }
-
-	            const response = await fetch('/api/students/profile', {
-	              method: 'PUT',
-	              headers: {
-	                'Content-Type': 'application/json',
-	                Authorization: authToken ? `Bearer ${authToken}` : '',
-	              },
-	              body: JSON.stringify(payload),
-	            });
-
-	            const result = await response.json();
-	            if (!response.ok || !result.success || !result.data) {
-	              throw new Error(result.message || 'Unable to save profile changes.');
-	            }
-
-	            let latestProfile = result.data;
-
-	            if (resubmit) {
-	              if (!latestProfile.enrollment_id) {
-	                throw new Error('No enrollment record found to resubmit.');
-	              }
-
-	              const resubmitResponse = await fetch('/api/students/enrollments/status', {
-	                method: 'PUT',
-	                headers: {
-	                  'Content-Type': 'application/json',
-	                  Authorization: authToken ? `Bearer ${authToken}` : '',
-	                },
-	                body: JSON.stringify({
-	                  enrollmentId: latestProfile.enrollment_id,
-	                  applicationStatus: 'Submitted',
-	                }),
-	              });
-
-	              const resubmitResult = await resubmitResponse.json();
-	              if (!resubmitResponse.ok || !resubmitResult.success) {
-	                throw new Error(resubmitResult.message || 'Unable to resubmit profile for review.');
-	              }
-
-	              await loadProfile();
-	            } else {
-	              renderProfile(latestProfile);
-	            }
-
-	            Swal.fire({
-	              icon: 'success',
-	              title: resubmit ? 'Saved and resubmitted' : 'Profile updated',
-	              text: resubmit
-	                ? 'Your corrected profile has been submitted back for review.'
-	                : 'Your profile changes have been saved successfully.',
-	              timer: 2200,
-	              showConfirmButton: false,
-	            });
-	          } finally {
-	            setProfileActionButtonsDisabled(false, originalLabel, targetButton);
-	          }
-	        };
+          renderReceiptPreview({
+            fileUrl: profile.official_receipt_file_url,
+            fileName: profile.official_receipt_file_name,
+            fileType: profile.official_receipt_file_type,
+            receiptNumber: profile.official_receipt_number,
+          });
+        };
 
         const loadProfile = async () => {
           try {
@@ -1324,7 +1103,7 @@
           });
         }
 
-	        if (profilePhotoInput) {
+        if (profilePhotoInput) {
           profilePhotoInput.addEventListener('change', async (event) => {
             const [file] = event.target.files || [];
             if (!file || !file.type.startsWith('image/')) {
@@ -1391,50 +1170,14 @@
           });
         }
 
-	        ['mousemove', 'keydown', 'click'].forEach((event) => {
-	          document.addEventListener(event, () => {
-	            checkSession();
-	          });
-	        });
+        ['mousemove', 'keydown', 'click'].forEach((event) => {
+          document.addEventListener(event, () => {
+            checkSession();
+          });
+        });
 
-	        editProfileBtn?.addEventListener('click', () => {
-	          profileEditSnapshot = getProfileFieldSnapshot();
-	          setProfileEditMode(true);
-	        });
-
-	        cancelProfileEditBtn?.addEventListener('click', () => {
-	          applyProfileFieldSnapshot(profileEditSnapshot || {});
-	          setProfileEditMode(false);
-	        });
-
-	        saveProfileBtn?.addEventListener('click', async () => {
-	          try {
-	            await saveProfileUpdates({ resubmit: false });
-	          } catch (error) {
-	            console.error('Profile save failed:', error);
-	            Swal.fire({
-	              icon: 'error',
-	              title: 'Save failed',
-	              text: error.message || 'Unable to save profile changes.',
-	            });
-	          }
-	        });
-
-	        saveResubmitProfileBtn?.addEventListener('click', async () => {
-	          try {
-	            await saveProfileUpdates({ resubmit: true });
-	          } catch (error) {
-	            console.error('Profile resubmit failed:', error);
-	            Swal.fire({
-	              icon: 'error',
-	              title: 'Resubmit failed',
-	              text: error.message || 'Unable to save and resubmit your profile.',
-	            });
-	          }
-	        });
-
-	        loadProfile();
-	      });
+        loadProfile();
+      });
     </script>
     <script src="/js/user-notification-badge.js"></script>
     <script src="/js/auth.js"></script>
