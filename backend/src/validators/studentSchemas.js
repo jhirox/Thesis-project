@@ -94,6 +94,32 @@ export const updateEnrollmentStatusSchema = z.object({
   ]),
 });
 
+export const updateStudentStatusSchema = z
+  .object({
+    studentId: z.union([z.string().trim(), z.number()]).optional(),
+    email: optionalTrimmedString,
+    status: z.enum(["Active", "Inactive"]),
+  })
+  .refine((payload) => payload.studentId || payload.email, {
+    message: "Student id or email is required to update account status",
+    path: ["studentId"],
+  });
+
+export const updateStudentAccountSchema = z
+  .object({
+    studentId: z.union([z.string().trim(), z.number()]).optional(),
+    email: trimmedString.email("A valid email is required"),
+    originalEmail: optionalTrimmedString,
+    fullName: trimmedString.min(1, "fullName is required"),
+    course: optionalTrimmedString,
+    studentType: optionalTrimmedString,
+    status: z.enum(["Active", "Inactive"]),
+  })
+  .refine((payload) => payload.studentId || payload.originalEmail || payload.email, {
+    message: "Student id or email is required to update account",
+    path: ["studentId"],
+  });
+
 export const registrarApprovalDraftSchema = z.object({
   enrollmentId: z.union([z.string().trim(), z.number()]),
   studentId: z.union([z.string().trim(), z.number()]).optional(),

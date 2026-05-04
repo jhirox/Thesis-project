@@ -5,6 +5,8 @@ import {
   registrarApprovalDraftSchema,
   submitEnrollmentSchema,
   updateEnrollmentStatusSchema,
+  updateStudentAccountSchema,
+  updateStudentStatusSchema,
   updateStudentProfileSchema,
   updateStudentReceiptSchema,
 } from "../validators/studentSchemas.js";
@@ -137,6 +139,28 @@ export const updateEnrollmentStatus = asyncHandler(async (req, res) => {
     success: true,
     message: "Enrollment status updated successfully",
     data: enrollment,
+  });
+});
+
+export const updateStudentStatus = asyncHandler(async (req, res) => {
+  const payload = updateStudentStatusSchema.parse(req.body);
+  const student = await studentService.updateStudentStatus(payload);
+
+  res.status(200).json({
+    success: true,
+    message: "Student account status updated successfully",
+    data: student,
+  });
+});
+
+export const updateStudentAccount = asyncHandler(async (req, res) => {
+  const payload = updateStudentAccountSchema.parse(req.body);
+  const student = await studentService.updateStudentAccount(payload);
+
+  res.status(200).json({
+    success: true,
+    message: "Student account updated successfully",
+    data: student,
   });
 });
 

@@ -1064,7 +1064,7 @@
                 </div>
                 <div class="col-md-6">
                   <label for="accountEditLastLogin" class="form-label">Last Login</label>
-                  <input type="date" class="form-control bg-primary-subtle text-white border-secondary-subtle" id="accountEditLastLogin" required />
+                  <input type="date" class="form-control bg-primary-subtle text-white border-secondary-subtle" id="accountEditLastLogin" readonly />
                 </div>
                 <div class="col-md-6">
                   <label for="accountEditStatus" class="form-label">Status</label>
@@ -1098,6 +1098,7 @@
 
     <script>
       let selectedAccountEmail = "";
+      let accountData = [];
 
       function initializeAccountActions() {
         document.querySelector(".app-content")?.addEventListener("click", (event) => {
@@ -1133,13 +1134,13 @@
           openAccountEdit(row);
         });
 
-        document.getElementById("accountDetailsStatusButton")?.addEventListener("click", () => {
+        document.getElementById("accountDetailsStatusButton")?.addEventListener("click", async () => {
           const row = findAccountRowsByEmail(selectedAccountEmail)[0];
           if (!row) {
             return;
           }
 
-          toggleAccountStatus(row);
+          await toggleAccountStatus(row);
           const updatedRow = findAccountRowsByEmail(selectedAccountEmail)[0];
           if (updatedRow) {
             fillAccountDetails(getAccountDataFromRow(updatedRow));
@@ -1159,6 +1160,7 @@
 
         return {
           row,
+          studentId: row.dataset.studentId || "",
           photoSrc: photo?.getAttribute("src") || "/assets/images/johnpic.jpg",
           photoAlt: photo?.getAttribute("alt") || "Student photo",
           name: row.querySelector(".fw-semibold")?.textContent?.trim() || "",
@@ -1204,7 +1206,7 @@
         new bootstrap.Modal(document.getElementById("accountEditModal")).show();
       }
 
-      function saveAccountEdit() {
+      async function saveAccountEdit() {
         const originalEmail = document.getElementById("accountEditOriginalEmail").value.trim().toLowerCase();
         const updatedAccount = {
           name: document.getElementById("accountEditName").value.trim(),
@@ -1215,16 +1217,37 @@
           status: document.getElementById("accountEditStatus").value,
         };
 
-        findAccountRowsByEmail(originalEmail).forEach((row) => {
-          updateAccountRow(row, updatedAccount);
-        });
+        try {
+          const currentAccount = accountData.find((account) => account.email.toLowerCase() === originalEmail);
+          const response = await fetch("/api/students/account", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              studentId: currentAccount?.studentId || "",
+              originalEmail,
+              fullName: updatedAccount.name,
+              email: updatedAccount.email,
+              course: updatedAccount.course,
+              studentType: updatedAccount.studentType,
+              status: updatedAccount.status,
+            }),
+          });
 
-        selectedAccountEmail = updatedAccount.email;
-        bootstrap.Modal.getInstance(document.getElementById("accountEditModal"))?.hide();
-        loadAccountCards();
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok || result.success === false) {
+            throw new Error(result.message || "Unable to update account.");
+          }
+
+          selectedAccountEmail = updatedAccount.email;
+          bootstrap.Modal.getInstance(document.getElementById("accountEditModal"))?.hide();
+          await loadAccountsFromApi();
+        } catch (error) {
+          console.error("Account update failed:", error);
+          alert(error.message || "Unable to update account.");
+        }
       }
 
-      function toggleAccountStatus(row) {
+      async function toggleAccountStatus(row) {
         const account = getAccountDataFromRow(row);
         const nextStatus = account.status.toLowerCase() === "inactive" ? "Active" : "Inactive";
         const actionLabel = nextStatus === "Inactive" ? "deactivate" : "reactivate";
@@ -1233,9 +1256,32 @@
           return;
         }
 
-        findAccountRowsByEmail(account.email).forEach((matchingRow) => {
-          updateAccountRow(matchingRow, { status: nextStatus });
-        });
+        try {
+          const response = await fetch("/api/students/status", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              studentId: account.studentId,
+              email: account.email,
+              status: nextStatus,
+            }),
+          });
+
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok || result.success === false) {
+            throw new Error(result.message || "Unable to update account status.");
+          }
+
+          accountData = accountData.map((storedAccount) =>
+            storedAccount.email.toLowerCase() === account.email.toLowerCase()
+              ? { ...storedAccount, status: nextStatus }
+              : storedAccount
+          );
+          renderAccountTables(accountData);
+        } catch (error) {
+          console.error("Account status update failed:", error);
+          alert(error.message || "Unable to update account status.");
+        }
 
         loadAccountCards();
       }
@@ -1302,6 +1348,159 @@
           const rowEmail = row.querySelector("small.text-muted")?.textContent?.trim().toLowerCase();
           return rowEmail === normalizedEmail;
         });
+      }
+
+      async function loadAccountsFromApi() {
+        setAccountTablesLoading();
+
+        try {
+          const response = await fetch("/api/students?limit=100");
+          const result = await response.json();
+
+          if (!response.ok || result.success === false) {
+            throw new Error(result.message || "Unable to load student accounts.");
+          }
+
+          accountData = (result.data || []).map(normalizeStudentAccount);
+          renderAccountTables(accountData);
+        } catch (error) {
+          console.error("Unable to load accounts:", error);
+          accountData = [];
+          renderAccountTableError(error.message || "Unable to load student accounts.");
+        }
+      }
+
+      function normalizeStudentAccount(student) {
+        const status = student.enrollment_status || student.status || "Active";
+        const fullName = student.full_name || [student.first_name, student.middle_name, student.last_name, student.suffix]
+          .filter(Boolean)
+          .join(" ");
+
+        return {
+          studentId: student.student_id || "",
+          name: fullName || "Unnamed Student",
+          email: student.email_address || "",
+          course: student.program_code || student.program_name || "Not assigned",
+          studentType: student.student_type || student.year_level || "Not set",
+          lastLogin: formatAccountDate(student.updated_at || student.created_date),
+          status,
+          photoSrc: student.photo || "/assets/images/johnpic.jpg",
+          photoAlt: `${fullName || "Student"} photo`,
+        };
+      }
+
+      function renderAccountTables(accounts) {
+        renderAccountTable(document.querySelector("#overview tbody"), accounts);
+        renderAccountTable(
+          document.querySelector("#active tbody"),
+          accounts.filter((account) => account.status.toLowerCase() === "active")
+        );
+        renderAccountTable(
+          document.querySelector("#inactive tbody"),
+          accounts.filter((account) => account.status.toLowerCase() === "inactive")
+        );
+        loadAccountCards();
+      }
+
+      function renderAccountTable(tbody, accounts) {
+        if (!tbody) {
+          return;
+        }
+
+        if (!accounts.length) {
+          tbody.innerHTML = `
+            <tr>
+              <td class="px-4 py-4 text-center text-muted" colspan="6">No student accounts found.</td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = accounts.map((account, index) => buildAccountRow(account, index)).join("");
+      }
+
+      function buildAccountRow(account, index) {
+        const borderClass = index === accountData.length - 1 ? "" : "border-bottom border-secondary-subtle";
+
+        return `
+          <tr class="${borderClass}" data-student-id="${escapeHtml(account.studentId)}">
+            <td class="px-4 py-3">
+              <div class="d-flex align-items-center">
+                <img
+                  src="${escapeHtml(account.photoSrc)}"
+                  alt="${escapeHtml(account.photoAlt)}"
+                  class="profile-img me-3"
+                />
+                <div>
+                  <div class="fw-semibold">${escapeHtml(account.name)}</div>
+                  <small class="text-muted">${escapeHtml(account.email)}</small>
+                </div>
+              </div>
+            </td>
+            <td class="px-4 py-3 fw-semibold">${escapeHtml(account.course)}</td>
+            <td class="px-4 py-3 fw-semibold">${escapeHtml(account.studentType)}</td>
+            <td class="px-4 py-3 fw-semibold">${escapeHtml(account.lastLogin)}</td>
+            <td class="px-4 py-3">${buildStatusBadge(account.status)}</td>
+            <td class="px-4 py-3 text-end account-action-cell">
+              <div class="account-actions account-actions--buttons justify-content-end">
+                <button class="btn btn-outline-light btn-sm btn-view-account" type="button">View</button>
+                <button class="btn btn-outline-info btn-sm btn-edit-account" type="button">Edit</button>
+                ${buildStatusActionButton(account.status)}
+              </div>
+            </td>
+          </tr>
+        `;
+      }
+
+      function buildStatusActionButton(status) {
+        const isInactive = status.toLowerCase() === "inactive";
+        const buttonClass = isInactive ? "btn-outline-success" : "btn-outline-warning";
+        const label = isInactive ? "Reactivate" : "Deactivate";
+
+        return `<button class="btn ${buttonClass} btn-sm btn-toggle-account-status" type="button">${label}</button>`;
+      }
+
+      function setAccountTablesLoading() {
+        document.querySelectorAll("#overview tbody, #active tbody, #inactive tbody").forEach((tbody) => {
+          tbody.innerHTML = `
+            <tr>
+              <td class="px-4 py-4 text-center text-muted" colspan="6">Loading student accounts...</td>
+            </tr>
+          `;
+        });
+      }
+
+      function renderAccountTableError(message) {
+        document.querySelectorAll("#overview tbody, #active tbody, #inactive tbody").forEach((tbody) => {
+          tbody.innerHTML = `
+            <tr>
+              <td class="px-4 py-4 text-center text-danger" colspan="6">${escapeHtml(message)}</td>
+            </tr>
+          `;
+        });
+        loadAccountCards();
+      }
+
+      function formatAccountDate(dateValue) {
+        if (!dateValue) {
+          return "No activity";
+        }
+
+        const date = new Date(dateValue);
+        if (Number.isNaN(date.getTime())) {
+          return String(dateValue).slice(0, 10) || "No activity";
+        }
+
+        return date.toISOString().split("T")[0];
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
       }
 
       function loadAccountCards() {
@@ -1451,7 +1650,7 @@
 
       document.addEventListener("DOMContentLoaded", () => {
         initializeAccountActions();
-        loadAccountCards();
+        loadAccountsFromApi();
 
         setTimeout(() => {
           const skeleton = document.getElementById("page-skeleton");

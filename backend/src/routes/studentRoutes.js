@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
-import { getStudents, getStudentByID, submitEnrollment, getEnrollments, getRecentEnrollments, getEnrollmentApplicantDetails, getStudentProfile, updateStudentProfile, updateStudentReceipt, updateEnrollmentStatus, getRegistrarApprovalDrafts, saveRegistrarApprovalDraft, deleteRegistrarApprovalDraft, searchStudents } from '../controllers/studentController.js';
+import { getStudents, getStudentByID, submitEnrollment, getEnrollments, getRecentEnrollments, getEnrollmentApplicantDetails, getStudentProfile, updateStudentProfile, updateStudentReceipt, updateEnrollmentStatus, updateStudentStatus, updateStudentAccount, getRegistrarApprovalDrafts, saveRegistrarApprovalDraft, deleteRegistrarApprovalDraft, searchStudents } from '../controllers/studentController.js';
 import { ensureUploadsDir, uploadsDir } from '../config/uploadStorage.js';
 
 ensureUploadsDir();
@@ -40,6 +40,12 @@ router.get('/enrollments/details/:id', getEnrollmentApplicantDetails);
 
 // UPDATE enrollment application status
 router.put('/enrollments/status', updateEnrollmentStatus);
+
+// UPDATE student account status
+router.put('/status', updateStudentStatus);
+
+// UPDATE student account summary fields
+router.put('/account', updateStudentAccount);
 
 // Registrar approval drafts
 router.get('/enrollments/approval-drafts', getRegistrarApprovalDrafts);

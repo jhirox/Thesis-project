@@ -299,11 +299,15 @@ export async function findStudents(query) {
       e.year_level,
       e.application_status,
       e.official_receipt_file_url,
+      st.type_name AS student_type,
       p.program_name,
-      p.program_code
+      p.program_code,
+      s.created_date,
+      s.updated_at
     FROM students s
     ${latestEnrollmentJoinSql("e", "le")}
     LEFT JOIN programs p ON e.program_id = p.program_id
+    LEFT JOIN student_types st ON e.student_type_id = st.type_id
     ${whereClause}
     ORDER BY s.created_date DESC
     LIMIT ? OFFSET ?`,
@@ -314,6 +318,7 @@ export async function findStudents(query) {
     FROM students s
     ${latestEnrollmentJoinSql("e", "le")}
     LEFT JOIN programs p ON e.program_id = p.program_id
+    LEFT JOIN student_types st ON e.student_type_id = st.type_id
     ${whereClause}`,
     values
   );
@@ -442,6 +447,141 @@ export async function updateStudentProfile(payload) {
   }
 
   return findStudentProfile({ studentId: payload.studentId, email: payload.email });
+}
+
+export async function updateStudentStatus(payload) {
+  const isActive = payload.status === "Active" ? 1 : 0;
+  const whereClause = payload.studentId ? "student_id = ?" : "email_address = ?";
+  const whereValue = payload.studentId || payload.email;
+
+  const [result] = await db.query(
+    `UPDATE students SET is_active = ?, updated_at = NOW() WHERE ${whereClause}`,
+    [isActive, whereValue]
+  );
+
+  if (result.affectedRows === 0) {
+    throw new Error("Student account not found.");
+  }
+
+  return findStudentProfile({ studentId: payload.studentId, email: payload.email });
+}
+
+export async function updateStudentAccount(payload) {
+  const connection = await db.getConnection();
+
+  try {
+    await connection.beginTransaction();
+
+    const target = await resolveStudentAccountTarget(connection, payload);
+    if (!target?.student_id) {
+      throw new Error("Student account not found.");
+    }
+
+    const nameParts = splitFullName(payload.fullName);
+    await connection.query(
+      `UPDATE students
+      SET first_name = ?,
+          middle_name = ?,
+          last_name = ?,
+          suffix = ?,
+          email_address = ?,
+          is_active = ?,
+          updated_at = NOW()
+      WHERE student_id = ?`,
+      [
+        nameParts.firstName,
+        nameParts.middleName,
+        nameParts.lastName,
+        nameParts.suffix,
+        payload.email,
+        payload.status === "Active" ? 1 : 0,
+        target.student_id,
+      ]
+    );
+
+    const enrollment = await findLatestEnrollmentForStudent(connection, target.student_id);
+    if (enrollment?.enrollment_id) {
+      const enrollmentUpdates = [];
+      const enrollmentValues = [];
+
+      if (payload.course) {
+        const programId = await Lookup.resolveProgramId(connection, payload.course);
+        if (programId) {
+          enrollmentUpdates.push("program_id = ?");
+          enrollmentValues.push(programId);
+        }
+      }
+
+      if (payload.studentType) {
+        const studentTypeId = await Lookup.resolveStudentTypeId(connection, payload.studentType);
+        if (studentTypeId) {
+          enrollmentUpdates.push("student_type_id = ?");
+          enrollmentValues.push(studentTypeId);
+        }
+      }
+
+      if (enrollmentUpdates.length) {
+        enrollmentUpdates.push("updated_at = NOW()");
+        await connection.query(
+          `UPDATE enrollments SET ${enrollmentUpdates.join(", ")} WHERE enrollment_id = ?`,
+          [...enrollmentValues, enrollment.enrollment_id]
+        );
+      }
+    }
+
+    await connection.commit();
+    return findStudentProfile({ studentId: target.student_id, email: payload.email });
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
+}
+
+async function resolveStudentAccountTarget(connection, payload) {
+  const [rows] = await connection.query(
+    `SELECT student_id
+    FROM students
+    WHERE student_id = ? OR email_address = ? OR email_address = ?
+    LIMIT 1`,
+    [payload.studentId || null, payload.originalEmail || null, payload.email || null]
+  );
+
+  return rows[0] || null;
+}
+
+async function findLatestEnrollmentForStudent(connection, studentId) {
+  const [rows] = await connection.query(
+    `SELECT enrollment_id
+    FROM enrollments
+    WHERE student_id = ?
+    ORDER BY enrollment_id DESC
+    LIMIT 1`,
+    [studentId]
+  );
+
+  return rows[0] || null;
+}
+
+function splitFullName(fullName) {
+  const parts = String(fullName || "").trim().split(/\s+/).filter(Boolean);
+
+  if (parts.length <= 1) {
+    return {
+      firstName: parts[0] || "Student",
+      middleName: null,
+      lastName: "",
+      suffix: null,
+    };
+  }
+
+  return {
+    firstName: parts[0],
+    middleName: parts.length > 2 ? parts.slice(1, -1).join(" ") : null,
+    lastName: parts.at(-1),
+    suffix: null,
+  };
 }
 
 export async function updateStudentReceipt(payload) {
