@@ -915,7 +915,7 @@
 
       const saveDraftBtn = document.querySelector(".btn-light.custom-btn");
       const sendNowBtn = document.querySelector(".btn-dark.custom-btn");
-      const draftTableBody = document.querySelector(".card-body table tbody");
+      const draftTableBody = document.querySelector("#sendNotification table tbody");
 
       let editingRow = null;
 
@@ -926,6 +926,59 @@
         }
 
         return window.confirm(`Send this notification to ${recipientName}?`);
+      }
+
+      function bindDraftTableActions() {
+        if (!draftTableBody) {
+          return;
+        }
+
+        draftTableBody.addEventListener("click", (event) => {
+          const button = event.target.closest("button");
+          const row = button?.closest("tr");
+
+          if (!button || !row || !draftTableBody.contains(row)) {
+            return;
+          }
+
+          if (button.classList.contains("btn-primary")) {
+            editDraft(row);
+            return;
+          }
+
+          if (button.classList.contains("btn-danger")) {
+            deleteDraft(row);
+            return;
+          }
+
+          if (button.classList.contains("btn-success")) {
+            sendDraft(row);
+          }
+        });
+      }
+
+      function deleteDraft(row) {
+        if (!window.confirm("Delete this draft notification?")) {
+          return;
+        }
+
+        if (editingRow === row) {
+          editingRow = null;
+          if (window.getNotificationSettings().clearFormAfterAction) {
+            window.clearNotificationForm();
+          }
+        }
+
+        row.remove();
+        updateNotificationCards();
+      }
+
+      function setDraftButtonMode(isEditing) {
+        if (!saveDraftBtn) {
+          return;
+        }
+
+        saveDraftBtn.textContent = isEditing ? "Update Draft" : "Save as Draft";
       }
 
       // Add new draft row
@@ -944,13 +997,6 @@
           </td>
         `;
 
-        // Attach events
-        row.querySelector(".btn-primary").addEventListener("click", () => editDraft(row));
-        row.querySelector(".btn-danger").addEventListener("click", () => {
-          row.remove();
-          updateNotificationCards();
-        });
-        row.querySelector(".btn-success").addEventListener("click", () => sendDraft(row));
         updateNotificationCards();
       }
 
@@ -962,6 +1008,7 @@
         typeField.value = cells[2].innerText;
         messageField.value = cells[3].innerText;
         editingRow = row;
+        setDraftButtonMode(true);
 
         // Scroll back up to the Send New Notifications section
         document.getElementById("sendNotification").scrollIntoView({
@@ -997,6 +1044,7 @@
           editingRow.cells[2].innerText = type;
           editingRow.cells[3].innerText = message;
           editingRow = null;
+          setDraftButtonMode(false);
         } else {
           // Add new draft
           addDraftRow(title, student, type, message);
@@ -1053,8 +1101,15 @@
           addHistoryCard(title, student, type, message);
         }
         row.remove(); // remove draft after sending
+        if (editingRow === row) {
+          editingRow = null;
+          setDraftButtonMode(false);
+        }
         updateNotificationCards();
       }
+
+      bindDraftTableActions();
+      setDraftButtonMode(false);
     </script>
 
 
