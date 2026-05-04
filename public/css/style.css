@@ -2627,16 +2627,16 @@ span .icon:hover {
 
 /* ===== ACCOUNTS PAGE STYLES ===== */
 .account-action-cell {
-  width: 12.5rem;
-  min-width: 12.5rem;
+  width: 1%;
+  min-width: 18rem;
   white-space: nowrap;
   vertical-align: middle;
 }
 
 .account-actions {
-  display: grid;
+  display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 0.5rem;
 }
 
@@ -2647,9 +2647,8 @@ span .icon:hover {
 }
 
 .account-actions--buttons {
-  grid-template-columns: repeat(2, minmax(4.25rem, 1fr));
-  width: 9.25rem;
-  margin-left: auto;
+  flex-wrap: nowrap;
+  margin-inline: auto;
 }
 
 .account-actions .btn {
@@ -2662,8 +2661,7 @@ span .icon:hover {
 }
 
 .account-actions--buttons .btn-toggle-account-status {
-  grid-column: 1 / -1;
-  width: 100%;
+  width: auto;
 }
 
 .account-action-icon {
@@ -2696,13 +2694,13 @@ span .icon:hover {
 
 @media (max-width: 991.98px) {
   .account-action-cell {
-    min-width: 11.75rem;
+    min-width: 17rem;
   }
 }
 
 @media (max-width: 767.98px) {
   .account-action-cell {
-    min-width: 11.5rem;
+    min-width: 16rem;
     text-align: center !important;
   }
 
@@ -2719,7 +2717,7 @@ span .icon:hover {
 
 @media (max-width: 575.98px) {
   .account-action-cell {
-    min-width: 9rem;
+    min-width: 16rem;
   }
 
   .account-actions--icons {
@@ -2733,13 +2731,12 @@ span .icon:hover {
   }
 
   .account-actions--buttons {
-    grid-template-columns: 1fr;
-    width: min(100%, 9.5rem);
+    flex-wrap: nowrap;
+    width: auto;
   }
 
   .account-actions--buttons .btn {
-    grid-column: 1 / -1;
-    width: 100%;
+    width: auto;
   }
 }
 
