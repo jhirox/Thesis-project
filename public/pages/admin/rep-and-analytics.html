@@ -1808,7 +1808,31 @@
         try {
           const rawValue = localStorage.getItem(REPORT_STORAGE_KEY);
           const parsedValue = rawValue ? JSON.parse(rawValue) : [];
-          return Array.isArray(parsedValue) ? parsedValue : [];
+          return Array.isArray(parsedValue)
+            ? parsedValue
+                .filter((entry) => entry && typeof entry === "object")
+                .map((entry, index) => ({
+                  id: String(entry.id || `legacy-report-${index}`),
+                  title: entry.title || "Registration Report",
+                  type: entry.type || entry.config?.reportType || "applications",
+                  format: normalizeReportFormat(entry.format),
+                  createdAt: entry.createdAt || new Date().toISOString(),
+                  config: entry.config && typeof entry.config === "object"
+                    ? entry.config
+                    : {
+                        reportType: entry.type || "applications",
+                        exportFormat: normalizeReportFormat(entry.format),
+                        startDate: "",
+                        endDate: "",
+                        courseFilter: ["all"],
+                        statusFilter: ["all"],
+                        metrics: ["applications", "status-summary"],
+                        groupBy: "none",
+                        sortBy: "date",
+                        description: "",
+                      },
+                }))
+            : [];
         } catch (error) {
           console.error("Failed to load recent reports:", error);
           return [];
@@ -1844,10 +1868,10 @@
             <td class="px-4 py-3">${escapeHtml(String(report.format || "pdf").toUpperCase())}</td>
             <td class="px-4 py-3">${escapeHtml(formatTimeAgo(report.createdAt))}</td>
             <td class="px-4 py-3 text-end">
-              <button class="btn btn-sm btn-outline-primary me-2" data-action="download-report" data-report-id="${escapeHtml(report.id)}" type="button">
+              <button class="btn btn-sm btn-outline-primary me-2" onclick="downloadRecentReport('${escapeHtml(report.id)}')" type="button">
                 <i class="fa-solid fa-download"></i>
               </button>
-              <button class="btn btn-sm btn-outline-danger" data-action="delete-report" data-report-id="${escapeHtml(report.id)}" type="button">
+              <button class="btn btn-sm btn-outline-danger" onclick="deleteRecentReport('${escapeHtml(report.id)}')" type="button">
                 <i class="fa-solid fa-trash"></i>
               </button>
             </td>
@@ -1871,39 +1895,47 @@
         }
       }
 
-      async function handleRecentReportAction(event) {
-        const trigger = event.target.closest("[data-action]");
-        if (!trigger) {
-          return;
-        }
+      function normalizeReportFormat(format) {
+        return format === "excel" || format === "word" || format === "pdf"
+          ? format
+          : "pdf";
+      }
 
-        const reportId = trigger.getAttribute("data-report-id");
-        const action = trigger.getAttribute("data-action");
-        const report = reportsState.recentReports.find((entry) => entry.id === reportId);
+      function findRecentReportById(reportId) {
+        return reportsState.recentReports.find((entry) => entry.id === reportId) || null;
+      }
+
+      function deleteRecentReport(reportId) {
+        const report = findRecentReportById(reportId);
         if (!report) {
+          setReportPreview("The selected report could not be found.");
           return;
         }
 
-        if (action === "delete-report") {
-          reportsState.recentReports = reportsState.recentReports.filter((entry) => entry.id !== reportId);
-          storeRecentReports();
-          renderRecentReports();
-          setReportPreview(`${report.title} removed from recent reports.`);
+        reportsState.recentReports = reportsState.recentReports.filter((entry) => entry.id !== reportId);
+        storeRecentReports();
+        renderRecentReports();
+        setReportPreview(`${report.title} removed from recent reports.`);
+      }
+
+      async function downloadRecentReport(reportId) {
+        const report = findRecentReportById(reportId);
+        if (!report) {
+          setReportPreview("The selected report could not be found.");
           return;
         }
 
-        if (action === "download-report") {
-          const definition = buildReportDefinition(
-            {
-              ...report.config,
-              title: report.title,
-              exportFormat: report.format,
-            },
-            reportsState.allEnrollments
-          );
-          await exportReport(definition, report.format);
-          setReportPreview(`${report.title} downloaded again as ${String(report.format).toUpperCase()}.`);
-        }
+        const definition = buildReportDefinition(
+          {
+            ...report.config,
+            reportType: report.config?.reportType || report.type || "applications",
+            title: report.title,
+            exportFormat: normalizeReportFormat(report.format),
+          },
+          reportsState.allEnrollments
+        );
+        await exportReport(definition, normalizeReportFormat(report.format));
+        setReportPreview(`${report.title} downloaded again as ${String(normalizeReportFormat(report.format)).toUpperCase()}.`);
       }
 
       function formatDisplayDate(dateValue) {
@@ -1999,10 +2031,6 @@
             event.preventDefault();
             generateCustomReport();
           });
-        }
-        const recentReportsBody = document.getElementById("recent-reports-body");
-        if (recentReportsBody) {
-          recentReportsBody.addEventListener("click", handleRecentReportAction);
         }
 
         setTimeout(() => {
