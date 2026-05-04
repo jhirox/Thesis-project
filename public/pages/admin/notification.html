@@ -685,59 +685,56 @@
           <div id="settings" class="content-page d-none px-4 py-2">
             <div class="section-card mb-4">
               <h4 class="fw-bold mb-3">Notification Settings</h4>
-              <p class="mb-4">Configure notification preferences and delivery settings</p>
+              <p class="mb-4">Configure the notification workflow used on this page</p>
 
               <div class="rounded p-4 mb-4">
-                <!-- Email Settings -->
-                <h5 class="fw-semibold mb-3">Email Settings</h5>
+                <h5 class="fw-semibold mb-3">Workflow Preferences</h5>
                 <div class="setting-item d-flex justify-content-between align-items-center mb-3">
                   <div>
-                    <label class="fw-semibold">Enable Email Notifications</label>
-                    <p class="text-muted small">Send notifications via email</p>
+                    <label class="fw-semibold">Save Sent Notifications to History</label>
+                    <p class="text-muted small">Keep a record of sent notifications in the history tab</p>
                   </div>
                   <label class="switch">
-                    <input type="checkbox">
+                    <input type="checkbox" id="setting-save-history">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+
+                <div class="setting-item d-flex justify-content-between align-items-center mb-3">
+                  <div>
+                    <label class="fw-semibold">Require Confirmation Before Sending</label>
+                    <p class="text-muted small">Ask for confirmation before sending a notification</p>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="setting-require-confirmation">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+
+                <div class="setting-item d-flex justify-content-between align-items-center mb-3">
+                  <div>
+                    <label class="fw-semibold">Clear Form After Save or Send</label>
+                    <p class="text-muted small">Automatically clear the notification form after each action</p>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="setting-clear-form">
                     <span class="slider"></span>
                   </label>
                 </div>
 
                 <div class="setting-item d-flex justify-content-between align-items-center mb-4">
                   <div>
-                    <label class="fw-semibold">Email Delivery Reports</label>
-                    <p class="text-muted small">Receive delivery and open rate reports</p>
+                    <label class="fw-semibold">Auto-Fill Student Email</label>
+                    <p class="text-muted small">Fill in the student email automatically when a student is selected</p>
                   </div>
                   <label class="switch">
-                    <input type="checkbox">
-                    <span class="slider"></span>
-                  </label>
-                </div>
-
-                <!-- Delivery Settings -->
-                <h5 class="fw-semibold mb-3">Delivery Settings</h5>
-                <div class="setting-item d-flex justify-content-between align-items-center mb-3">
-                  <div>
-                    <label class="fw-semibold">Auto Retry Failed Deliveries</label>
-                    <p class="text-muted small">Automatically retry failed notifications</p>
-                  </div>
-                  <label class="switch">
-                    <input type="checkbox">
-                    <span class="slider"></span>
-                  </label>
-                </div>
-
-                <div class="setting-item d-flex justify-content-between align-items-center mb-4">
-                  <div>
-                    <label class="fw-semibold">Batch Processing</label>
-                    <p class="text-muted small">Process notifications in batches</p>
-                  </div>
-                  <label class="switch">
-                    <input type="checkbox">
+                    <input type="checkbox" id="setting-autofill-email">
                     <span class="slider"></span>
                   </label>
                 </div>
 
                 <div class="d-flex justify-content-end mt-4">
-                  <button class="btn btn-dark custom-btn">Save Settings</button>
+                  <button class="btn btn-dark custom-btn" type="button" id="save-notification-settings">Save Settings</button>
                 </div>
               </div>
             </div>
@@ -770,6 +767,90 @@
       const input = document.getElementById("studentSearch");
       const suggestions = document.getElementById("studentSuggestions");
       const emailField = document.getElementById("studentEmail");
+      const NOTIFICATION_SETTINGS_KEY = "notificationPageSettings";
+      const defaultNotificationSettings = {
+        saveHistory: true,
+        requireConfirmation: true,
+        clearFormAfterAction: true,
+        autoFillEmail: true,
+      };
+
+      function getNotificationSettings() {
+        try {
+          const savedSettings = JSON.parse(localStorage.getItem(NOTIFICATION_SETTINGS_KEY) || "{}");
+          return {
+            ...defaultNotificationSettings,
+            ...savedSettings,
+          };
+        } catch (error) {
+          console.error("Error loading notification settings:", error);
+          return { ...defaultNotificationSettings };
+        }
+      }
+
+      function applyNotificationSettingsToInputs() {
+        const settings = getNotificationSettings();
+        const saveHistoryInput = document.getElementById("setting-save-history");
+        const confirmationInput = document.getElementById("setting-require-confirmation");
+        const clearFormInput = document.getElementById("setting-clear-form");
+        const autoFillEmailInput = document.getElementById("setting-autofill-email");
+
+        if (saveHistoryInput) {
+          saveHistoryInput.checked = settings.saveHistory;
+        }
+        if (confirmationInput) {
+          confirmationInput.checked = settings.requireConfirmation;
+        }
+        if (clearFormInput) {
+          clearFormInput.checked = settings.clearFormAfterAction;
+        }
+        if (autoFillEmailInput) {
+          autoFillEmailInput.checked = settings.autoFillEmail;
+        }
+
+        if (emailField) {
+          emailField.value = settings.autoFillEmail ? emailField.value : "";
+          emailField.placeholder = settings.autoFillEmail
+            ? "Student email will appear here"
+            : "Auto-fill disabled in settings";
+        }
+      }
+
+      function saveNotificationSettings() {
+        const settings = {
+          saveHistory: Boolean(document.getElementById("setting-save-history")?.checked),
+          requireConfirmation: Boolean(document.getElementById("setting-require-confirmation")?.checked),
+          clearFormAfterAction: Boolean(document.getElementById("setting-clear-form")?.checked),
+          autoFillEmail: Boolean(document.getElementById("setting-autofill-email")?.checked),
+        };
+
+        localStorage.setItem(NOTIFICATION_SETTINGS_KEY, JSON.stringify(settings));
+        applyNotificationSettingsToInputs();
+        alert("Notification settings saved.");
+      }
+
+      function clearNotificationForm() {
+        const titleInput = document.getElementById("notificationTitle");
+        const studentInput = document.getElementById("studentSearch");
+        const typeInput = document.getElementById("notificationType");
+        const messageInput = document.querySelector("textarea");
+
+        if (titleInput) {
+          titleInput.value = "";
+        }
+        if (studentInput) {
+          studentInput.value = "";
+        }
+        if (typeInput) {
+          typeInput.selectedIndex = 0;
+        }
+        if (messageInput) {
+          messageInput.value = "";
+        }
+        if (emailField) {
+          emailField.value = "";
+        }
+      }
 
       input.addEventListener("input", async () => {
         const query = input.value.trim();
@@ -791,8 +872,9 @@
                 li.classList.add("list-group-item", "list-group-item-action");
                 li.textContent = student.full_name;
                 li.onclick = () => {
+                  const settings = getNotificationSettings();
                   input.value = student.full_name;
-                  emailField.value = student.email_address || "";
+                  emailField.value = settings.autoFillEmail ? (student.email_address || "") : "";
                   suggestions.innerHTML = "";
                 };
                 suggestions.appendChild(li);
@@ -813,6 +895,14 @@
           suggestions.innerHTML = "";
         }
       });
+
+      window.getNotificationSettings = getNotificationSettings;
+      window.applyNotificationSettingsToInputs = applyNotificationSettingsToInputs;
+      window.saveNotificationSettings = saveNotificationSettings;
+      window.clearNotificationForm = clearNotificationForm;
+
+      document.getElementById("save-notification-settings")?.addEventListener("click", saveNotificationSettings);
+      applyNotificationSettingsToInputs();
     </script>
     
 
@@ -828,6 +918,15 @@
       const draftTableBody = document.querySelector(".card-body table tbody");
 
       let editingRow = null;
+
+      function shouldProceedWithSend(recipientName) {
+        const settings = window.getNotificationSettings();
+        if (!settings.requireConfirmation) {
+          return true;
+        }
+
+        return window.confirm(`Send this notification to ${recipientName}?`);
+      }
 
       // Add new draft row
       function addDraftRow(title, student, type, message) {
@@ -903,11 +1002,9 @@
           addDraftRow(title, student, type, message);
         }
 
-        // Clear form
-        titleField.value = "";
-        studentField.value = "";
-        typeField.selectedIndex = 0;
-        messageField.value = "";
+        if (window.getNotificationSettings().clearFormAfterAction) {
+          window.clearNotificationForm();
+        }
         updateNotificationCards();
       });
 
@@ -924,16 +1021,19 @@
           return;
         }
 
+        if (!shouldProceedWithSend(student)) {
+          return;
+        }
+
         alert(`Notification sent to ${student}: "${message}"`);
 
-        // add to history
-        addHistoryCard(title, student, type, message);
+        if (window.getNotificationSettings().saveHistory) {
+          addHistoryCard(title, student, type, message);
+        }
 
-        // Clear form
-        titleField.value = "";
-        studentField.value = "";
-        typeField.selectedIndex = 0;
-        messageField.value = "";
+        if (window.getNotificationSettings().clearFormAfterAction) {
+          window.clearNotificationForm();
+        }
         updateNotificationCards();
       });
 
@@ -943,8 +1043,15 @@
         const student = row.cells[1].innerText;
         const type = row.cells[2].innerText;
         const message = row.cells[3].innerText;
+
+        if (!shouldProceedWithSend(student)) {
+          return;
+        }
+
         alert(`Notification sent to ${student}: "${message}"`);
-        addHistoryCard(title, student, type, message);
+        if (window.getNotificationSettings().saveHistory) {
+          addHistoryCard(title, student, type, message);
+        }
         row.remove(); // remove draft after sending
         updateNotificationCards();
       }
