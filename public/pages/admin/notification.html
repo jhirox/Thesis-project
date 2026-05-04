@@ -590,6 +590,7 @@
                     <div class="d-flex flex-wrap gap-2 ms-0 ms-sm-3 mt-3 mt-sm-0">
                       <button class="btn btn-outline-light btn-sm btn-view-details">View Details</button>
                       <button class="btn btn-outline-light btn-sm btn-duplicate-history">Duplicate</button>
+                      <button class="btn btn-outline-danger btn-sm btn-delete-history">Delete</button>
                     </div>
                   </div>
                 </div>
@@ -619,6 +620,7 @@
                     <div class="d-flex flex-wrap gap-2 ms-0 ms-sm-3 mt-3 mt-sm-0">
                       <button class="btn btn-outline-light btn-sm btn-view-details">View Details</button>
                       <button class="btn btn-outline-light btn-sm btn-duplicate-history">Duplicate</button>
+                      <button class="btn btn-outline-danger btn-sm btn-delete-history">Delete</button>
                     </div>
                   </div>
                 </div>
@@ -650,6 +652,7 @@
                     <div class="d-flex flex-wrap gap-2 ms-0 ms-sm-3 mt-3 mt-sm-0">
                       <button class="btn btn-outline-light btn-sm btn-view-details">View Details</button>
                       <button class="btn btn-outline-light btn-sm btn-duplicate-history">Duplicate</button>
+                      <button class="btn btn-outline-danger btn-sm btn-delete-history">Delete</button>
                     </div>
                   </div>
                 </div>
@@ -1163,6 +1166,7 @@
               <div class="d-flex flex-wrap gap-2 ms-0 ms-sm-3 mt-3 mt-sm-0">
                 <button class="btn btn-outline-light btn-sm btn-view-details">View Details</button>
                 <button class="btn btn-outline-light btn-sm btn-duplicate-history">Duplicate</button>
+                <button class="btn btn-outline-danger btn-sm btn-delete-history">Delete</button>
               </div>
             </div>
           </div>`;
@@ -1196,6 +1200,11 @@
 
           if (button.classList.contains("btn-duplicate-history")) {
             duplicateHistoryNotification(card);
+            return;
+          }
+
+          if (button.classList.contains("btn-delete-history")) {
+            deleteHistoryNotification(card);
           }
         });
       }
@@ -1237,6 +1246,15 @@
           behavior: "smooth",
           block: "start"
         });
+      }
+
+      function deleteHistoryNotification(card) {
+        if (!window.confirm("Delete this notification from history?")) {
+          return;
+        }
+
+        card.remove();
+        updateNotificationCards();
       }
 
       function openSendNotificationTab() {
