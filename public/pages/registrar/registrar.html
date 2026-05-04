@@ -2668,7 +2668,7 @@
         }
       }
 
-      function exportApplications() {
+      async function exportApplications() {
         const selectedFormat = document.querySelector('input[name="exportFormat"]:checked')?.value || 'pdf';
         const selectedApplicants = getSelectedExportApplicants();
 
@@ -2690,8 +2690,20 @@
         };
         savedSoftCopyDraft = null;
 
-        // Map export applicant data to student object structure for form population
-        const exportStudentObject = {
+        // Fetch full student profile for complete data
+        let fullStudentProfile = null;
+        try {
+          const profileResponse = await fetch(`/api/students/enrollments/details/${encodeURIComponent(primaryApplicant.enrollmentId)}`);
+          const profileResult = await profileResponse.json();
+          if (profileResponse.ok && profileResult.success && profileResult.data) {
+            fullStudentProfile = profileResult.data;
+          }
+        } catch (error) {
+          console.warn('Unable to fetch full student profile for export, using available data:', error);
+        }
+
+        // Use full profile if available, otherwise create a basic object
+        const studentForForm = fullStudentProfile || {
           student_id: primaryApplicant.enrollmentId,
           first_name: primaryApplicant.studentName ? primaryApplicant.studentName.split(' ')[0] : '',
           last_name: primaryApplicant.studentName && primaryApplicant.studentName.split(' ').length > 1 ? primaryApplicant.studentName.split(' ')[primaryApplicant.studentName.split(' ').length - 1] : '',
@@ -2699,12 +2711,9 @@
           full_name: primaryApplicant.studentName,
           program_name: primaryApplicant.program || 'Program not set',
           email_address: primaryApplicant.emailAddress || `${primaryApplicant.enrollmentId.toLowerCase()}@qeci.edu.ph`,
-          year_level: '',
-          semester: '',
-          modality_name: 'Face-to-face',
         };
 
-        populateEnrollmentForm(exportStudentObject, {
+        populateEnrollmentForm(studentForForm, {
           processDate: today,
           remarks: `Prepared for ${selectedFormat.toUpperCase()} export`,
         });
@@ -2881,11 +2890,29 @@
         }
       }
 
-      function openEnrollmentSoftCopyPreview() {
+      async function openEnrollmentSoftCopyPreview() {
         const appointmentDate = document.getElementById('appointmentDate')?.value || '';
+        const activeRecord = activeStudentProfile || activeStudentRecord;
         
-        // Use activeStudentProfile if available, otherwise use activeStudentRecord as fallback
-        const studentProfileForForm = activeStudentProfile || activeStudentRecord || {};
+        // Ensure we have the full student profile with all detail fields
+        let studentProfileForForm = activeStudentProfile;
+        if (!studentProfileForForm && activeRecord?.enrollment_id) {
+          try {
+            const profileResponse = await fetch(`/api/students/enrollments/details/${encodeURIComponent(activeRecord.enrollment_id)}`);
+            const profileResult = await profileResponse.json();
+            if (profileResponse.ok && profileResult.success && profileResult.data) {
+              studentProfileForForm = profileResult.data;
+              activeStudentProfile = studentProfileForForm;
+            }
+          } catch (error) {
+            console.warn('Unable to fetch full student profile, using available data:', error);
+            studentProfileForForm = activeStudentProfile || activeStudentRecord || {};
+          }
+        }
+        
+        if (!studentProfileForForm) {
+          studentProfileForForm = activeStudentRecord || {};
+        }
 
         populateEnrollmentForm(studentProfileForForm, {
           processDate: appointmentDate,
@@ -3077,8 +3104,26 @@
         const toast = new bootstrap.Toast(toastElement);
         toast.show();
 
-        // Use activeStudentProfile if available, otherwise use activeStudentRecord as fallback
-        const studentProfileForForm = activeStudentProfile || activeStudentRecord || {};
+        // Ensure we have the full student profile with all detail fields
+        let studentProfileForForm = activeStudentProfile;
+        if (!studentProfileForForm && activeRecord?.enrollment_id) {
+          try {
+            const profileResponse = await fetch(`/api/students/enrollments/details/${encodeURIComponent(activeRecord.enrollment_id)}`);
+            const profileResult = await profileResponse.json();
+            if (profileResponse.ok && profileResult.success && profileResult.data) {
+              studentProfileForForm = profileResult.data;
+              activeStudentProfile = studentProfileForForm;
+            }
+          } catch (error) {
+            console.warn('Unable to fetch full student profile, using available data:', error);
+            studentProfileForForm = activeStudentProfile || activeStudentRecord || {};
+          }
+        }
+        
+        if (!studentProfileForForm) {
+          studentProfileForForm = activeStudentRecord || {};
+        }
+        
         populateEnrollmentForm(studentProfileForForm, {
           processDate: appointmentDate,
         });
