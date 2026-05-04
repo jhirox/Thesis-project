@@ -2690,12 +2690,23 @@
         };
         savedSoftCopyDraft = null;
 
-        populateEnrollmentForm({
-          studentName: primaryApplicant.studentName,
-          studentProgramInfo: `${primaryApplicant.enrollmentId} / ${primaryApplicant.program || 'Program not set'}`,
-          appointmentDate: today,
-          appointmentTime: '',
-          appointmentEmail: primaryApplicant.emailAddress || `${primaryApplicant.enrollmentId.toLowerCase()}@qeci.edu.ph`,
+        // Map export applicant data to student object structure for form population
+        const exportStudentObject = {
+          student_id: primaryApplicant.enrollmentId,
+          first_name: primaryApplicant.studentName ? primaryApplicant.studentName.split(' ')[0] : '',
+          last_name: primaryApplicant.studentName && primaryApplicant.studentName.split(' ').length > 1 ? primaryApplicant.studentName.split(' ')[primaryApplicant.studentName.split(' ').length - 1] : '',
+          middle_name: primaryApplicant.studentName && primaryApplicant.studentName.split(' ').length > 2 ? primaryApplicant.studentName.split(' ').slice(1, -1).join(' ') : '',
+          full_name: primaryApplicant.studentName,
+          program_name: primaryApplicant.program || 'Program not set',
+          email_address: primaryApplicant.emailAddress || `${primaryApplicant.enrollmentId.toLowerCase()}@qeci.edu.ph`,
+          year_level: '',
+          semester: '',
+          modality_name: 'Face-to-face',
+        };
+
+        populateEnrollmentForm(exportStudentObject, {
+          processDate: today,
+          remarks: `Prepared for ${selectedFormat.toUpperCase()} export`,
         });
 
         document.getElementById('certRemarks').value = `Prepared for ${selectedFormat.toUpperCase()} export`;
@@ -2872,17 +2883,12 @@
 
       function openEnrollmentSoftCopyPreview() {
         const appointmentDate = document.getElementById('appointmentDate')?.value || '';
-        const appointmentTime = document.getElementById('appointmentTime')?.value || '';
-        const appointmentEmail = document.getElementById('appointmentEmail')?.value || '';
-        const studentName = document.querySelector('#scheduleAppointmentModal .card-body h5')?.textContent || 'Student';
-        const studentProgramInfo = document.querySelector('#scheduleAppointmentModal .card-body p.mb-0')?.textContent || 'Program information';
+        
+        // Use activeStudentProfile if available, otherwise use activeStudentRecord as fallback
+        const studentProfileForForm = activeStudentProfile || activeStudentRecord || {};
 
-        populateEnrollmentForm({
-          studentName,
-          studentProgramInfo,
-          appointmentDate,
-          appointmentTime,
-          appointmentEmail,
+        populateEnrollmentForm(studentProfileForForm, {
+          processDate: appointmentDate,
         });
 
         syncSavedSoftCopyDraftIfNeeded();
@@ -3071,12 +3077,10 @@
         const toast = new bootstrap.Toast(toastElement);
         toast.show();
 
-        populateEnrollmentForm({
-          studentName,
-          studentProgramInfo,
-          appointmentDate,
-          appointmentTime,
-          appointmentEmail,
+        // Use activeStudentProfile if available, otherwise use activeStudentRecord as fallback
+        const studentProfileForForm = activeStudentProfile || activeStudentRecord || {};
+        populateEnrollmentForm(studentProfileForForm, {
+          processDate: appointmentDate,
         });
         syncSavedSoftCopyDraftIfNeeded();
         setEnrollmentFormModalMode("print");
@@ -3110,31 +3114,46 @@
         }
       });
 
-      function populateEnrollmentForm({ studentName, studentProgramInfo, appointmentDate, appointmentTime, appointmentEmail }) {
-        const nameParts = studentName.split(' ');
-        const normalizedProgramInfo = String(studentProgramInfo || '');
-        const programInfoParts = normalizedProgramInfo.includes('/')
-          ? normalizedProgramInfo.split('/')
-          : normalizedProgramInfo.split('•');
-        document.getElementById('certFirstName').value = nameParts[0] || '';
-        document.getElementById('certLastName').value = nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
-        document.getElementById('certMiddleName').value = nameParts.length > 2 ? nameParts.slice(1, -1).join(' ') : '';
-        document.getElementById('certStudNo').value = appointmentEmail ? appointmentEmail.split('@')[0].toUpperCase() : '';
-        document.getElementById('certCourse').value = programInfoParts[1]?.trim() || '';
-        document.getElementById('certYearSection').value = programInfoParts[0]?.trim() || '';
-        document.getElementById('certSchoolYear').value = 'SY 2025-2026';
-        document.getElementById('certSemester').value = '2nd Sem';
-        document.getElementById('certContactNo').value = 'N/A';
-        document.getElementById('certAddress').value = '';
-        document.getElementById('certBirthday').value = '';
-        document.getElementById('certBirthplace').value = '';
-        document.getElementById('certUnitsEarned').value = '18';
-        document.getElementById('certRemarks').value = 'Approved';
-        document.getElementById('certModality').value = 'Face-to-face';
-        document.getElementById('certStudentSignature').value = studentName;
-        document.getElementById('certAdmissionOfficer').value = '';
-        document.getElementById('certSignature').value = '';
-        document.getElementById('certProcessDate').value = appointmentDate;
+      function populateEnrollmentForm(student = {}, options = {}) {
+        // Extract student properties with fallback values
+        const firstName = getDisplayValue(student.first_name, '');
+        const lastName = getDisplayValue(student.last_name, '');
+        const middleName = getDisplayValue(student.middle_name, '');
+        const studNo = getDisplayValue(student.student_id, '');
+        const email = getDisplayValue(student.email_address, '');
+        const contactNumber = getDisplayValue(student.contact_number, '');
+        const birthDate = getDateInputValue(student.birth_date);
+        const birthPlace = getDisplayValue(student.birth_place, '');
+        const address = getDisplayValue(student.complete_address, '');
+        const sex = getDisplayValue(student.sex, '');
+        const programName = getDisplayValue(student.program_name || student.program_code, '');
+        const yearLevel = getDisplayValue(student.year_level, '');
+        const semester = getDisplayValue(student.semester || student.semester_types, '');
+        const modality = getDisplayValue(student.modality_name, '');
+        const fullName = getDisplayValue(student.full_name || `${firstName} ${middleName} ${lastName}`.trim(), '');
+
+        // Map student properties directly to form fields
+        document.getElementById('certFirstName').value = firstName;
+        document.getElementById('certLastName').value = lastName;
+        document.getElementById('certMiddleName').value = middleName;
+        document.getElementById('certStudNo').value = studNo;
+        document.getElementById('certEmail').value = email;
+        document.getElementById('certContactNo').value = contactNumber;
+        document.getElementById('certBirthday').value = birthDate;
+        document.getElementById('certBirthplace').value = birthPlace;
+        document.getElementById('certAddress').value = address;
+        document.getElementById('certSex').value = sex;
+        document.getElementById('certCourse').value = programName;
+        document.getElementById('certYearSection').value = yearLevel;
+        document.getElementById('certSchoolYear').value = options.schoolYear || 'SY 2025-2026';
+        document.getElementById('certSemester').value = semester || options.semester || '2nd Sem';
+        document.getElementById('certModality').value = modality || options.modality || 'Face-to-face';
+        document.getElementById('certUnitsEarned').value = options.unitsEarned || '18';
+        document.getElementById('certRemarks').value = options.remarks || 'Approved';
+        document.getElementById('certStudentSignature').value = fullName;
+        document.getElementById('certAdmissionOfficer').value = options.admissionOfficer || '';
+        document.getElementById('certSignature').value = options.signature || '';
+        document.getElementById('certProcessDate').value = options.processDate || '';
       }
 
       function printEnrollmentForm() {
