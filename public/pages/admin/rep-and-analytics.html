@@ -310,7 +310,7 @@
                   >
                 </div>
                 <h3 id="reports-total-applications">0</h3>
-                <small>Current total registration applications</small>
+                <small id="reports-total-trend">0.0% from last week</small>
               </div>
             </div>
 
@@ -325,8 +325,8 @@
                     >trending_up</span
                   >
                 </div>
-                <h3>68.5%</h3>
-                <small>Approved and enrolled applications</small>
+                <h3 id="reports-approval-rate">0.0%</h3>
+                <small id="reports-approval-trend">0.0% from last week</small>
               </div>
             </div>
 
@@ -342,7 +342,7 @@
                   >
                 </div>
                 <h3 id="reports-pending-review">0</h3>
-                <small>Submitted and under review applications</small>
+                <small id="reports-pending-trend">0.0% from last week</small>
               </div>
             </div>
           </div>
@@ -761,7 +761,10 @@
       async function loadReportsData() {
         const totalApplicationsElement = document.getElementById("reports-total-applications");
         const pendingReviewElement = document.getElementById("reports-pending-review");
-        const approvalRateElement = document.querySelector(".card-approved h3");
+        const approvalRateElement = document.getElementById("reports-approval-rate");
+        const totalTrendElement = document.getElementById("reports-total-trend");
+        const approvalTrendElement = document.getElementById("reports-approval-trend");
+        const pendingTrendElement = document.getElementById("reports-pending-trend");
         if (!totalApplicationsElement) {
           return;
         }
@@ -793,6 +796,12 @@
           if (approvalRateElement) {
             approvalRateElement.textContent = `${approvalRate}%`;
           }
+          updateWeeklyTrendCards(
+            applications,
+            totalTrendElement,
+            approvalTrendElement,
+            pendingTrendElement
+          );
 
           initializeReportWorkspace(applications);
           updateStatusBreakdown(statusSummary, totalApplications);
@@ -807,6 +816,12 @@
           if (approvalRateElement) {
             approvalRateElement.textContent = "0.0%";
           }
+          updateWeeklyTrendCards(
+            [],
+            totalTrendElement,
+            approvalTrendElement,
+            pendingTrendElement
+          );
           initializeReportWorkspace([]);
           updateStatusBreakdown(getApplicationStatusSummary([]), 0);
           renderReportCharts([]);
@@ -842,6 +857,97 @@
             rejected: 0,
           }
         );
+      }
+
+      function updateWeeklyTrendCards(
+        applications,
+        totalTrendElement,
+        approvalTrendElement,
+        pendingTrendElement
+      ) {
+        const currentWeekApplications = applications.filter((application) =>
+          isWithinLastDays(application.created_at || application.enrollment_date, 7, 0)
+        );
+        const previousWeekApplications = applications.filter((application) =>
+          isWithinLastDays(application.created_at || application.enrollment_date, 14, 7)
+        );
+
+        const currentTotal = currentWeekApplications.length;
+        const previousTotal = previousWeekApplications.length;
+
+        const currentApprovalRate = currentTotal
+          ? (getApplicationStatusSummary(currentWeekApplications).approved / currentTotal) * 100
+          : 0;
+        const previousApprovalRate = previousTotal
+          ? (getApplicationStatusSummary(previousWeekApplications).approved / previousTotal) * 100
+          : 0;
+
+        const currentPending = currentWeekApplications.filter((application) =>
+          isPendingReviewStatus(application.application_status)
+        ).length;
+        const previousPending = previousWeekApplications.filter((application) =>
+          isPendingReviewStatus(application.application_status)
+        ).length;
+
+        if (totalTrendElement) {
+          totalTrendElement.innerHTML = buildTrendMarkup(currentTotal, previousTotal);
+        }
+        if (approvalTrendElement) {
+          approvalTrendElement.innerHTML = buildTrendMarkup(currentApprovalRate, previousApprovalRate, true);
+        }
+        if (pendingTrendElement) {
+          pendingTrendElement.innerHTML = buildTrendMarkup(currentPending, previousPending);
+        }
+      }
+
+      function isWithinLastDays(dateValue, startDaysAgo, endDaysAgo) {
+        if (!dateValue) {
+          return false;
+        }
+
+        const targetDate = new Date(dateValue);
+        if (Number.isNaN(targetDate.getTime())) {
+          return false;
+        }
+
+        const now = new Date();
+        const startBoundary = new Date(now);
+        startBoundary.setHours(0, 0, 0, 0);
+        startBoundary.setDate(startBoundary.getDate() - startDaysAgo);
+
+        const endBoundary = endDaysAgo === 0
+          ? now
+          : (() => {
+              const boundary = new Date(now);
+              boundary.setHours(0, 0, 0, 0);
+              boundary.setDate(boundary.getDate() - endDaysAgo);
+              return boundary;
+            })();
+
+        return targetDate >= startBoundary && targetDate < endBoundary;
+      }
+
+      function buildTrendMarkup(currentValue, previousValue, isPercentMetric = false) {
+        const trend = calculateTrendPercentage(currentValue, previousValue);
+        const prefix = trend > 0 ? "+" : "";
+        const trendClass = trend > 0
+          ? "text-success"
+          : trend < 0
+            ? "text-danger"
+            : "text-secondary";
+
+        return `<span class="${trendClass} fw-semibold">${prefix}${trend.toFixed(1)}%</span> from last week`;
+      }
+
+      function calculateTrendPercentage(currentValue, previousValue) {
+        if (!previousValue && !currentValue) {
+          return 0;
+        }
+        if (!previousValue) {
+          return 100;
+        }
+
+        return ((currentValue - previousValue) / previousValue) * 100;
       }
 
       function updateStatusBreakdown(statusSummary, totalApplications) {

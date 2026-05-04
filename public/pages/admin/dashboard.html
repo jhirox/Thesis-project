@@ -432,7 +432,8 @@
                   </div>
                   <h3>0</h3>
                   <small
-                    ><span class="text-primary">+12%</span> from last week</small
+                    id="dashboard-total-trend"
+                    ><span class="text-secondary">0.0%</span> from last week</small
                   >
                 </div>
               </div>
@@ -450,7 +451,8 @@
                   </div>
                   <h3>0</h3>
                   <small
-                    ><span class="text-warning">+12%</span> from last week</small
+                    id="dashboard-pending-trend"
+                    ><span class="text-secondary">0.0%</span> from last week</small
                   >
                 </div>
               </div>
@@ -468,7 +470,8 @@
                   </div>
                   <h3>0</h3>
                   <small
-                    ><span class="text-success">+12%</span> from last week</small
+                    id="dashboard-approved-trend"
+                    ><span class="text-secondary">0.0%</span> from last week</small
                   >
                 </div>
               </div>
@@ -486,7 +489,8 @@
                   </div>
                   <h3>0</h3>
                   <small
-                    ><span class="text-danger">+5%</span> from last week</small
+                    id="dashboard-rejected-trend"
+                    ><span class="text-secondary">0.0%</span> from last week</small
                   >
                 </div>
               </div>
@@ -712,6 +716,58 @@
           document.querySelector(".card-pending h3").textContent = pendingReview.toLocaleString();
           document.querySelector(".card-approved h3").textContent = approvedToday.toLocaleString();
           document.querySelector(".card-rejected h3").textContent = rejectedToday.toLocaleString();
+
+          updateDashboardTrendCards(enrollments);
+        }
+
+        function updateDashboardTrendCards(enrollments) {
+          const totalTrendElement = document.getElementById("dashboard-total-trend");
+          const pendingTrendElement = document.getElementById("dashboard-pending-trend");
+          const approvedTrendElement = document.getElementById("dashboard-approved-trend");
+          const rejectedTrendElement = document.getElementById("dashboard-rejected-trend");
+
+          const currentWeekApplications = enrollments.filter((enrollment) =>
+            isWithinLastDays(enrollment.created_at || enrollment.enrollment_date, 7, 0)
+          );
+          const previousWeekApplications = enrollments.filter((enrollment) =>
+            isWithinLastDays(enrollment.created_at || enrollment.enrollment_date, 14, 7)
+          );
+
+          const currentWeekPending = currentWeekApplications.filter((enrollment) =>
+            enrollment.application_status === "Submitted" || enrollment.application_status === "Under Review"
+          ).length;
+          const previousWeekPending = previousWeekApplications.filter((enrollment) =>
+            enrollment.application_status === "Submitted" || enrollment.application_status === "Under Review"
+          ).length;
+
+          const currentApprovedToday = enrollments.filter((enrollment) =>
+            (enrollment.application_status === "Approved" || enrollment.application_status === "Enrolled") &&
+            isToday(enrollment.updated_at)
+          ).length;
+          const previousApprovedSameDay = enrollments.filter((enrollment) =>
+            (enrollment.application_status === "Approved" || enrollment.application_status === "Enrolled") &&
+            isDaysAgo(enrollment.updated_at, 7)
+          ).length;
+
+          const currentRejectedToday = enrollments.filter((enrollment) =>
+            enrollment.application_status === "Rejected" && isToday(enrollment.updated_at)
+          ).length;
+          const previousRejectedSameDay = enrollments.filter((enrollment) =>
+            enrollment.application_status === "Rejected" && isDaysAgo(enrollment.updated_at, 7)
+          ).length;
+
+          if (totalTrendElement) {
+            totalTrendElement.innerHTML = buildTrendMarkup(currentWeekApplications.length, previousWeekApplications.length);
+          }
+          if (pendingTrendElement) {
+            pendingTrendElement.innerHTML = buildTrendMarkup(currentWeekPending, previousWeekPending);
+          }
+          if (approvedTrendElement) {
+            approvedTrendElement.innerHTML = buildTrendMarkup(currentApprovedToday, previousApprovedSameDay);
+          }
+          if (rejectedTrendElement) {
+            rejectedTrendElement.innerHTML = buildTrendMarkup(currentRejectedToday, previousRejectedSameDay);
+          }
         }
 
         function renderDashboardCharts(enrollments) {
@@ -978,6 +1034,71 @@
 
           const today = new Date();
           return date.toDateString() === today.toDateString();
+        }
+
+        function isDaysAgo(dateString, daysAgo) {
+          if (!dateString) {
+            return false;
+          }
+
+          const date = new Date(dateString);
+          if (Number.isNaN(date.getTime())) {
+            return false;
+          }
+
+          const comparisonDate = new Date();
+          comparisonDate.setDate(comparisonDate.getDate() - daysAgo);
+          return date.toDateString() === comparisonDate.toDateString();
+        }
+
+        function isWithinLastDays(dateValue, startDaysAgo, endDaysAgo) {
+          if (!dateValue) {
+            return false;
+          }
+
+          const targetDate = new Date(dateValue);
+          if (Number.isNaN(targetDate.getTime())) {
+            return false;
+          }
+
+          const now = new Date();
+          const startBoundary = new Date(now);
+          startBoundary.setHours(0, 0, 0, 0);
+          startBoundary.setDate(startBoundary.getDate() - startDaysAgo);
+
+          const endBoundary = endDaysAgo === 0
+            ? now
+            : (() => {
+                const boundary = new Date(now);
+                boundary.setHours(0, 0, 0, 0);
+                boundary.setDate(boundary.getDate() - endDaysAgo);
+                return boundary;
+              })();
+
+          return targetDate >= startBoundary && targetDate < endBoundary;
+        }
+
+        function buildTrendMarkup(currentValue, previousValue) {
+          const trend = calculateTrendPercentage(currentValue, previousValue);
+          const prefix = trend > 0 ? "+" : "";
+          const trendClass = trend > 0
+            ? "text-success"
+            : trend < 0
+              ? "text-danger"
+              : "text-secondary";
+
+          return `<span class="${trendClass}">${prefix}${trend.toFixed(1)}%</span> from last week`;
+        }
+
+        function calculateTrendPercentage(currentValue, previousValue) {
+          if (!previousValue && !currentValue) {
+            return 0;
+          }
+          if (!previousValue) {
+            return 100;
+          }
+
+          return ((currentValue - previousValue) / previousValue) * 100;
         }
 
         function formatTimeAgo(dateString) {
