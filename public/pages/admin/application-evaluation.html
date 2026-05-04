@@ -228,11 +228,6 @@
                   <i class="nav-icon fa-solid fa-house"></i>
                   <p>Dashboard</p>
                 </a>
-              </li>              <li class="nav-item">
-                <a href="/registrar" class="nav-link">
-                  <i class="nav-icon fa-solid fa-user-graduate"></i>
-                  <p>Registrar</p>
-                </a>
               </li>              <li class="nav-item active">
                 <a href="/application-queue" class="nav-link">
                   <i class="nav-icon fa-solid fa-list"></i>
@@ -243,6 +238,12 @@
                 <a href="/application-evaluation" class="nav-link active">
                   <i class="nav-icon fa-solid fa-file-circle-check"></i>
                   <p>Evaluation</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/registrar" class="nav-link">
+                  <i class="nav-icon fa-solid fa-user-graduate"></i>
+                  <p>Registrar</p>
                 </a>
               </li>
               <h5 class="text-white pt-4">Management</h5>
@@ -1269,6 +1270,55 @@
         `;
       }
 
+      function getEvaluationReviewActionMarkup(profile = {}) {
+        const status = profile.application_status || 'Submitted';
+        const enrollmentId = profile.enrollment_id || '';
+
+        let actionLabel = 'Sent to Registrar';
+        let nextStatus = '';
+        let actionClass = 'btn-secondary';
+        let disabled = true;
+        let icon = 'fa-check';
+
+        if (status === 'Submitted') {
+          actionLabel = 'Mark as Under Review';
+          nextStatus = 'Under Review';
+          actionClass = 'btn-primary';
+          disabled = false;
+          icon = 'fa-clipboard-check';
+        } else if (status === 'Under Review') {
+          actionLabel = 'Send to Registrar';
+          nextStatus = 'Approved';
+          actionClass = 'btn-success';
+          disabled = false;
+          icon = 'fa-paper-plane';
+        } else if (status === 'Approved' || status === 'Enrolled') {
+          actionLabel = 'Sent to Registrar';
+          actionClass = 'btn-success';
+        } else if (status === 'Rejected') {
+          actionLabel = 'Closed as Rejected';
+          actionClass = 'btn-danger';
+          icon = 'fa-ban';
+        }
+
+        return `
+          <div class="d-flex flex-column flex-sm-row gap-2">
+            <button type="button" class="btn btn-outline-light flex-fill" data-bs-dismiss="modal">
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn ${actionClass} flex-fill evaluation-status-action"
+              data-enrollment-id="${escapeHtml(enrollmentId)}"
+              data-next-status="${escapeHtml(nextStatus)}"
+              ${disabled || !enrollmentId ? 'disabled' : ''}
+            >
+              <i class="fa-solid ${icon} me-2"></i>${actionLabel}
+            </button>
+          </div>
+        `;
+      }
+
       function getStudentDetailsMarkup(profile = {}) {
         const name = profile.full_name || buildStudentName(profile) || 'Not set';
         const id = profile.student_id || 'Not set';
@@ -1435,12 +1485,66 @@
             </div>
           </div>
 
-          <div class="d-flex gap-2">
-            <button type="button" class="btn btn-success flex-fill"><i class="fa-solid fa-check me-2"></i>Approve Enrollment</button>
-            <button class="btn btn-warning flex-fill"><i class="fa-solid fa-pause me-2"></i>Hold</button>
-            <button class="btn btn-danger flex-fill"><i class="fa-solid fa-times me-2"></i>Reject</button>
-          </div>
+          ${getEvaluationReviewActionMarkup(profile)}
         `;
+      }
+
+      async function updateEvaluationApplicationStatus(button) {
+        const enrollmentId = button.dataset.enrollmentId;
+        const nextStatus = button.dataset.nextStatus;
+
+        if (!enrollmentId || !nextStatus) {
+          return;
+        }
+
+        const confirmMessage =
+          nextStatus === 'Under Review'
+            ? 'Mark this application as under review?'
+            : 'Send this application to registrar processing?';
+
+        if (!window.confirm(confirmMessage)) {
+          return;
+        }
+
+        const originalLabel = button.innerHTML;
+        button.disabled = true;
+        button.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Saving...';
+
+        try {
+          const response = await fetch('/api/students/enrollments/status', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              enrollmentId,
+              applicationStatus: nextStatus,
+            }),
+          });
+          const result = await response.json();
+
+          if (!response.ok || !result.success) {
+            throw new Error(result.message || 'Unable to update application status.');
+          }
+
+          allApplications = allApplications.map((application) =>
+            String(application.enrollment_id) === String(enrollmentId)
+              ? { ...application, application_status: nextStatus, updated_at: new Date().toISOString() }
+              : application
+          );
+
+          updateApplicationStats(allApplications);
+          renderAllApplications(allApplications);
+          renderStudentTable(getFilteredApplications());
+          renderApplicationStatusTables(allApplications);
+
+          bootstrap.Modal.getInstance(studentDetailsModalEl)?.hide();
+        } catch (error) {
+          console.error('Error updating application status:', error);
+          alert(error.message || 'Unable to update application status.');
+          button.disabled = false;
+          button.innerHTML = originalLabel;
+        }
       }
 
       async function openStudentDetails({ studentId = '', enrollmentId = '', fallbackProfile = null } = {}) {
@@ -1501,6 +1605,12 @@
               application_status: row.children[3]?.textContent?.trim() || '',
             } : null,
           });
+          return;
+        }
+
+        const evaluationStatusButton = e.target.closest('.evaluation-status-action');
+        if (evaluationStatusButton) {
+          updateEvaluationApplicationStatus(evaluationStatusButton);
           return;
         }
 
