@@ -588,8 +588,8 @@
                     </div>
 
                     <div class="d-flex flex-wrap gap-2 ms-0 ms-sm-3 mt-3 mt-sm-0">
-                      <button class="btn btn-outline-light btn-sm">View Details</button>
-                      <button class="btn btn-outline-light btn-sm">Duplicate</button>
+                      <button class="btn btn-outline-light btn-sm btn-view-details">View Details</button>
+                      <button class="btn btn-outline-light btn-sm btn-duplicate-history">Duplicate</button>
                     </div>
                   </div>
                 </div>
@@ -618,7 +618,7 @@
 
                     <div class="d-flex flex-wrap gap-2 ms-0 ms-sm-3 mt-3 mt-sm-0">
                       <button class="btn btn-outline-light btn-sm btn-view-details">View Details</button>
-                      <button class="btn btn-outline-light btn-sm">Duplicate</button>
+                      <button class="btn btn-outline-light btn-sm btn-duplicate-history">Duplicate</button>
                     </div>
                   </div>
                 </div>
@@ -649,7 +649,7 @@
 
                     <div class="d-flex flex-wrap gap-2 ms-0 ms-sm-3 mt-3 mt-sm-0">
                       <button class="btn btn-outline-light btn-sm btn-view-details">View Details</button>
-                      <button class="btn btn-outline-light btn-sm">Duplicate</button>
+                      <button class="btn btn-outline-light btn-sm btn-duplicate-history">Duplicate</button>
                     </div>
                   </div>
                 </div>
@@ -981,6 +981,11 @@
         saveDraftBtn.textContent = isEditing ? "Update Draft" : "Save as Draft";
       }
 
+      function cancelDraftEditing() {
+        editingRow = null;
+        setDraftButtonMode(false);
+      }
+
       // Add new draft row
       function addDraftRow(title, student, type, message) {
         const row = draftTableBody.insertRow();
@@ -1110,6 +1115,7 @@
 
       bindDraftTableActions();
       setDraftButtonMode(false);
+      window.cancelDraftEditing = cancelDraftEditing;
     </script>
 
 
@@ -1156,50 +1162,93 @@
 
               <div class="d-flex flex-wrap gap-2 ms-0 ms-sm-3 mt-3 mt-sm-0">
                 <button class="btn btn-outline-light btn-sm btn-view-details">View Details</button>
-                <button class="btn btn-outline-light btn-sm">Duplicate</button>
+                <button class="btn btn-outline-light btn-sm btn-duplicate-history">Duplicate</button>
               </div>
             </div>
           </div>`;
 
-        // attach listeners (keep the data so modal shows correct info)
-        attachCardListeners(card, { title, student, type, message, date: sentDate });
-
         // add new notifications to the top of the history list
+        card.dataset.notificationType = type;
+        card.dataset.notificationDate = sentDate;
         container.prepend(card);
         updateNotificationCards();
       }
 
       // MODAL FOR VIEW DETAILS
-      // helper that binds the view-details button within a card to open the modal
-      function attachCardListeners(card, data) {
-        const btn = card.querySelector('.btn-view-details');
-        if (!btn) return;
-        btn.addEventListener('click', () => {
-          // if data passed in use it, otherwise extract from DOM
-          if (data) {
-            showHistoryDetails(data);
-          } else {
-            // fallback: read values from card element
-            const titleEl = card.querySelector('h5');
-            const title = titleEl ? titleEl.innerText : '';
-            const messageEl = card.querySelector('p.text-muted.mb-3');
-            const message = messageEl ? messageEl.innerText : '';
-            const recipientIcon = card.querySelector('i.fa-user');
-            const recipient = recipientIcon && recipientIcon.parentElement ? recipientIcon.parentElement.textContent.trim() : '';
-            const dateIcon = card.querySelector('i.fa-calendar');
-            const date = dateIcon && dateIcon.parentElement ? dateIcon.parentElement.textContent.trim() : '';
+      function bindHistoryActions() {
+        const historySection = document.getElementById("notificationsHistory");
+        if (!historySection) {
+          return;
+        }
 
-            // determine type from icon
-            const iconEl = card.querySelector('.icon');
-            const icon = iconEl ? iconEl.textContent.trim() : '';
-            let type = '';
-            if (icon === '🔔') type = 'Reminder';
-            else if (icon === '✔️') type = 'Announcement';
-            else if (icon === '📢') type = 'General';
+        historySection.addEventListener("click", (event) => {
+          const button = event.target.closest("button");
+          const card = button?.closest(".card");
 
-            showHistoryDetails({ title, student: recipient, type, message, date });
+          if (!button || !card || !historySection.contains(card)) {
+            return;
+          }
+
+          if (button.classList.contains("btn-view-details")) {
+            showHistoryDetails(getHistoryCardData(card));
+            return;
+          }
+
+          if (button.classList.contains("btn-duplicate-history")) {
+            duplicateHistoryNotification(card);
           }
         });
+      }
+
+      function getHistoryCardData(card) {
+        const title = card.querySelector("h5")?.innerText.trim() || "";
+        const message = card.querySelector("p.text-muted.mb-3")?.innerText.trim() || "";
+        const recipient = card.querySelector("i.fa-user, i.fa-users")?.parentElement?.textContent.trim() || "";
+        const date = card.dataset.notificationDate || card.querySelector("i.fa-calendar")?.parentElement?.textContent.trim() || "";
+        const type = card.dataset.notificationType || getHistoryTypeFromIcon(card);
+
+        return { title, student: recipient, type, message, date };
+      }
+
+      function getHistoryTypeFromIcon(card) {
+        const iconEl = card.querySelector(".icon");
+        const icon = iconEl?.textContent.trim() || "";
+
+        if (icon === "🔔" || iconEl?.classList.contains("orange")) {
+          return "Reminder";
+        }
+        if (icon === "✔️" || iconEl?.classList.contains("green")) {
+          return "Announcement";
+        }
+        return "General";
+      }
+
+      function duplicateHistoryNotification(card) {
+        const { title, student, type, message } = getHistoryCardData(card);
+
+        window.cancelDraftEditing?.();
+        titleField.value = title;
+        studentField.value = student;
+        typeField.value = type || "General";
+        messageField.value = message;
+        openSendNotificationTab();
+
+        document.getElementById("sendNotification").scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      }
+
+      function openSendNotificationTab() {
+        document.querySelectorAll(".content-page").forEach((page) => {
+          page.classList.add("d-none");
+        });
+        document.getElementById("sendNotification")?.classList.remove("d-none");
+
+        document.querySelectorAll(".tab-btn").forEach((button) => {
+          button.classList.remove("active");
+        });
+        document.querySelector(".tab-btn[onclick=\"showPage('sendNotification')\"]")?.classList.add("active");
       }
 
       // function to display the details modal
@@ -1218,10 +1267,7 @@
 
       // initialize existing view buttons on load
       function initializeViewDetails() {
-        document.querySelectorAll('.btn-view-details').forEach(btn => {
-          const card = btn.closest('.card');
-          if (card) attachCardListeners(card);
-        });
+        bindHistoryActions();
       }
 
       function initializeNotificationDates() {
