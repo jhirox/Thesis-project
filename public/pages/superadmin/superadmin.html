@@ -310,7 +310,8 @@
                   verified_user
                  </span>
                 </div>
-                <h3>1</h3>
+                <h3 id="superadmin-super-count">0</h3>
+                <small class="text-muted">Current super admin accounts</small>
               </div>
             </div>
 
@@ -325,7 +326,8 @@
                   admin_panel_settings
                 </span>
                 </div>
-                <h3>1</h3>
+                <h3 id="superadmin-admin-count">0</h3>
+                <small class="text-muted">Current admin accounts</small>
               </div>
             </div>
 
@@ -340,7 +342,8 @@
                   policy
                  </span>
                 </div>
-                <h3>1</h3>
+                <h3 id="superadmin-registrar-count">0</h3>
+                <small class="text-muted">Current registrar accounts</small>
               </div>
             </div>
           </div>
@@ -486,7 +489,7 @@
             logout();
             return;
           }
-          loadDashboardData();
+          loadSuperAdminData();
         } else {
           window.location.href = "/login";
           return;
@@ -505,19 +508,8 @@
           });
         });
 
-        async function loadDashboardData() {
-          try {
-            const enrollmentsResponse = await fetch('/api/students/enrollments/all');
-            const enrollmentsResult = await enrollmentsResponse.json();
-
-            if (enrollmentsResult.success) {
-              updateDashboardStats(enrollmentsResult.data);
-              updateRecentApplications(enrollmentsResult.data);
-            }
-          } catch (error) {
-            console.error('Error loading dashboard data:', error);
-          }
-
+        function loadSuperAdminData() {
+          updateStaffRoleCards();
           showActualContent();
         }
 
@@ -534,16 +526,33 @@
           }
         }
 
-        function updateDashboardStats(enrollments) {
-          const totalApplications = enrollments.length;
-          const pendingReview = enrollments.filter(e => e.application_status === 'Submitted' || e.application_status === 'Under Review').length;
-          const approvedToday = enrollments.filter(e => e.application_status === 'Approved' && isToday(e.updated_at)).length;
-          const rejectedToday = enrollments.filter(e => e.application_status === 'Rejected' && isToday(e.updated_at)).length;
+        function updateStaffRoleCards() {
+          const roleCounts = {
+            "super admin": 0,
+            admin: 0,
+            registrar: 0,
+          };
 
-          document.querySelector('.card-total h3').textContent = totalApplications.toLocaleString();
-          document.querySelector('.card-pending h3').textContent = pendingReview.toLocaleString();
-          document.querySelector('.card-approved h3').textContent = approvedToday.toLocaleString();
-          document.querySelector('.card-rejected h3').textContent = rejectedToday.toLocaleString();
+          document.querySelectorAll(".superadmin-role-badge").forEach((badge) => {
+            const role = badge.textContent.trim().toLowerCase();
+            if (roleCounts[role] !== undefined) {
+              roleCounts[role] += 1;
+            }
+          });
+
+          const superAdminCount = document.getElementById("superadmin-super-count");
+          const adminCount = document.getElementById("superadmin-admin-count");
+          const registrarCount = document.getElementById("superadmin-registrar-count");
+
+          if (superAdminCount) {
+            superAdminCount.textContent = roleCounts["super admin"].toLocaleString();
+          }
+          if (adminCount) {
+            adminCount.textContent = roleCounts.admin.toLocaleString();
+          }
+          if (registrarCount) {
+            registrarCount.textContent = roleCounts.registrar.toLocaleString();
+          }
         }
 
         function updateRecentApplications(enrollments) {

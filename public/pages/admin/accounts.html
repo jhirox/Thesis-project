@@ -325,9 +325,10 @@
                     >group</span
                   >
                 </div>
-                <h3 id="accounts-total-applications">0</h3>
+                <h3 id="accounts-total-count">0</h3>
                 <small
-                  ><span class="text-primary">+12%</span> from last week</small
+                  id="accounts-total-trend"
+                  ><span class="text-primary">0.0%</span> from last week</small
                 >
               </div>
             </div>
@@ -343,9 +344,10 @@
                     >schedule</span
                   >
                 </div>
-                <h3>39</h3>
+                <h3 id="accounts-active-count">0</h3>
                 <small
-                  ><span class="text-warning">+5%</span> from last week</small
+                  id="accounts-active-trend"
+                  ><span class="text-warning">0.0%</span> from last week</small
                 >
               </div>
             </div>
@@ -361,9 +363,10 @@
                     >person_off</span
                   >
                 </div>
-                <h3>12</h3>
+                <h3 id="accounts-inactive-count">0</h3>
                 <small
-                  ><span class="text-secondary">+2%</span> from last week</small
+                  id="accounts-inactive-trend"
+                  ><span class="text-secondary">0.0%</span> from last week</small
                 >
               </div>
             </div>
@@ -374,14 +377,15 @@
                 data-bs-theme="dark"
               >
                 <div class="d-flex justify-content-between align-items-center">
-                  <h6>New this Month</h6>
+                  <h6>Active This Week</h6>
                   <span class="material-symbols-outlined text-success"
                     >warning</span
                   >
                 </div>
-                <h3>7</h3>
+                <h3 id="accounts-recent-week-count">0</h3>
                 <small
-                  ><span class="text-success">+5%</span> from last week</small
+                  id="accounts-recent-week-trend"
+                  ><span class="text-success">0.0%</span> from last week</small
                 >
               </div>
             </div>
@@ -998,28 +1002,68 @@
     <script src="/js/filters/dashboard.js"></script>
 
     <script>
-      async function loadAccountsApplicationTotal() {
-        const totalApplicationsElement = document.getElementById("accounts-total-applications");
-        if (!totalApplicationsElement) {
+      function loadAccountCards() {
+        const totalAccountsElement = document.getElementById("accounts-total-count");
+        const activeAccountsElement = document.getElementById("accounts-active-count");
+        const inactiveAccountsElement = document.getElementById("accounts-inactive-count");
+        const recentWeekElement = document.getElementById("accounts-recent-week-count");
+        const totalTrendElement = document.getElementById("accounts-total-trend");
+        const activeTrendElement = document.getElementById("accounts-active-trend");
+        const inactiveTrendElement = document.getElementById("accounts-inactive-trend");
+        const recentWeekTrendElement = document.getElementById("accounts-recent-week-trend");
+
+        if (!totalAccountsElement) {
           return;
         }
 
-        try {
-          const response = await fetch("/api/students/enrollments/all");
-          const result = await response.json();
+        const accounts = getAccountRows();
+        const activeAccounts = accounts.filter((account) => account.status === "active");
+        const inactiveAccounts = accounts.filter((account) => account.status === "inactive");
+        const activeThisWeek = accounts.filter((account) =>
+          isWithinLastDays(account.lastLogin, 7, 0)
+        );
 
-          if (!response.ok || !result.success) {
-            throw new Error(result.message || "Failed to load total applications");
-          }
+        totalAccountsElement.textContent = formatCount(accounts.length);
+        if (activeAccountsElement) {
+          activeAccountsElement.textContent = formatCount(activeAccounts.length);
+        }
+        if (inactiveAccountsElement) {
+          inactiveAccountsElement.textContent = formatCount(inactiveAccounts.length);
+        }
+        if (recentWeekElement) {
+          recentWeekElement.textContent = formatCount(activeThisWeek.length);
+        }
 
-          const totalApplications = Array.isArray(result.data)
-            ? result.data.length
-            : Number(result.totalEnrollments) || 0;
+        const currentWeekAccounts = accounts.filter((account) =>
+          isWithinLastDays(account.lastLogin, 7, 0)
+        );
+        const previousWeekAccounts = accounts.filter((account) =>
+          isWithinLastDays(account.lastLogin, 14, 7)
+        );
 
-          totalApplicationsElement.textContent = formatCount(totalApplications);
-        } catch (error) {
-          console.error("Error loading total applications:", error);
-          totalApplicationsElement.textContent = "0";
+        if (totalTrendElement) {
+          totalTrendElement.innerHTML = buildTrendMarkup(
+            currentWeekAccounts.length,
+            previousWeekAccounts.length
+          );
+        }
+        if (activeTrendElement) {
+          activeTrendElement.innerHTML = buildTrendMarkup(
+            currentWeekAccounts.filter((account) => account.status === "active").length,
+            previousWeekAccounts.filter((account) => account.status === "active").length
+          );
+        }
+        if (inactiveTrendElement) {
+          inactiveTrendElement.innerHTML = buildTrendMarkup(
+            currentWeekAccounts.filter((account) => account.status === "inactive").length,
+            previousWeekAccounts.filter((account) => account.status === "inactive").length
+          );
+        }
+        if (recentWeekTrendElement) {
+          recentWeekTrendElement.innerHTML = buildTrendMarkup(
+            activeThisWeek.length,
+            previousWeekAccounts.length
+          );
         }
       }
 
@@ -1027,8 +1071,84 @@
         return new Intl.NumberFormat().format(Number(value) || 0);
       }
 
+      function getAccountRows() {
+        const rows = [
+          ...document.querySelectorAll("#active tbody tr"),
+          ...document.querySelectorAll("#inactive tbody tr"),
+        ];
+        const uniqueAccounts = new Map();
+
+        rows.forEach((row) => {
+          const cells = row.querySelectorAll("td");
+          if (cells.length < 5) {
+            return;
+          }
+
+          const email = row.querySelector("small.text-muted")?.textContent?.trim().toLowerCase();
+          if (!email || uniqueAccounts.has(email)) {
+            return;
+          }
+
+          const statusText = cells[4]?.textContent?.trim().toLowerCase() || "";
+          uniqueAccounts.set(email, {
+            email,
+            status: statusText.includes("inactive") ? "inactive" : "active",
+            lastLogin: cells[3]?.textContent?.trim() || "",
+          });
+        });
+
+        return Array.from(uniqueAccounts.values());
+      }
+
+      function isWithinLastDays(dateValue, startDaysAgo, endDaysAgo) {
+        if (!dateValue) {
+          return false;
+        }
+
+        const date = new Date(dateValue);
+        if (Number.isNaN(date.getTime())) {
+          return false;
+        }
+
+        const now = new Date();
+        const startBoundary = new Date(now);
+        startBoundary.setHours(23, 59, 59, 999);
+        startBoundary.setDate(startBoundary.getDate() - startDaysAgo);
+
+        const endBoundary = new Date(now);
+        endBoundary.setHours(0, 0, 0, 0);
+        endBoundary.setDate(endBoundary.getDate() - endDaysAgo);
+
+        return date <= endBoundary && date > startBoundary;
+      }
+
+      function buildTrendMarkup(currentValue, previousValue) {
+        const percentage = calculateTrendPercentage(currentValue, previousValue);
+        const numericPercentage = Number(percentage);
+        const sign = numericPercentage > 0 ? "+" : "";
+        const trendClass =
+          numericPercentage > 0
+            ? "text-success fw-semibold"
+            : numericPercentage < 0
+              ? "text-danger fw-semibold"
+              : "text-secondary fw-semibold";
+
+        return `<span class="${trendClass}">${sign}${percentage}%</span> from last week`;
+      }
+
+      function calculateTrendPercentage(currentValue, previousValue) {
+        const current = Number(currentValue) || 0;
+        const previous = Number(previousValue) || 0;
+
+        if (previous === 0) {
+          return current === 0 ? "0.0" : "100.0";
+        }
+
+        return (((current - previous) / previous) * 100).toFixed(1);
+      }
+
       document.addEventListener("DOMContentLoaded", () => {
-        loadAccountsApplicationTotal();
+        loadAccountCards();
 
         setTimeout(() => {
           const skeleton = document.getElementById("page-skeleton");

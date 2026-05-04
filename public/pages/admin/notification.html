@@ -318,9 +318,10 @@
                     >group</span
                   >
                 </div>
-                <h3>369</h3>
+                <h3 id="notifications-total-sent">0</h3>
                 <small
-                  ><span class="text-success"></span>this Month</small
+                  id="notifications-total-trend"
+                  ><span class="text-secondary fw-semibold">0.0%</span> from last week</small
                 >
               </div>
             </div>
@@ -331,14 +332,15 @@
                 data-bs-theme="dark"
               >
                 <div class="d-flex justify-content-between align-items-center">
-                  <h6>Open Rate</h6>
+                  <h6>Recent Activity</h6>
                   <span class="material-symbols-outlined text-secondary"
                     >schedule</span
                   >
                 </div>
-                <h3>68.5</h3>
+                <h3 id="notifications-recent-activity">0</h3>
                 <small
-                  ><span class="text-warning">+5.2%</span> from this month</small
+                  id="notifications-recent-trend"
+                  ><span class="text-secondary fw-semibold">0.0%</span> from last week</small
                 >
               </div>
             </div>
@@ -354,9 +356,10 @@
                     >check_circle</span
                   >
                 </div>
-                <h3>12</h3>
+                <h3 id="notifications-scheduled-count">0</h3>
                 <small
-                  ><span class="text-success"></span>Pending delivery</small
+                  id="notifications-scheduled-trend"
+                  ><span class="text-secondary fw-semibold">0.0%</span> from last week</small
                 >
               </div>
             </div>
@@ -372,9 +375,10 @@
                     >warning</span
                   >
                 </div>
-                <h3>47</h3>
+                <h3 id="notifications-draft-count">0</h3>
                 <small
-                  ><span class="text-danger"></span> Ready to send</small
+                  id="notifications-draft-trend"
+                  ><span class="text-secondary fw-semibold">0.0%</span> from last week</small
                 >
               </div>
             </div>
@@ -828,6 +832,7 @@
       // Add new draft row
       function addDraftRow(title, student, type, message) {
         const row = draftTableBody.insertRow();
+        row.dataset.createdAt = new Date().toISOString();
         row.innerHTML = `
           <td>${title}</td>
           <td>${student}</td>
@@ -842,8 +847,12 @@
 
         // Attach events
         row.querySelector(".btn-primary").addEventListener("click", () => editDraft(row));
-        row.querySelector(".btn-danger").addEventListener("click", () => row.remove());
+        row.querySelector(".btn-danger").addEventListener("click", () => {
+          row.remove();
+          updateNotificationCards();
+        });
         row.querySelector(".btn-success").addEventListener("click", () => sendDraft(row));
+        updateNotificationCards();
       }
 
       // Edit draft
@@ -899,6 +908,7 @@
         studentField.value = "";
         typeField.selectedIndex = 0;
         messageField.value = "";
+        updateNotificationCards();
       });
 
       // Send Now (from form directly)
@@ -924,6 +934,7 @@
         studentField.value = "";
         typeField.selectedIndex = 0;
         messageField.value = "";
+        updateNotificationCards();
       });
 
       // Send Now (from drafts table)
@@ -935,6 +946,7 @@
         alert(`Notification sent to ${student}: "${message}"`);
         addHistoryCard(title, student, type, message);
         row.remove(); // remove draft after sending
+        updateNotificationCards();
       }
     </script>
 
@@ -992,6 +1004,7 @@
 
         // add new notifications to the top of the history list
         container.prepend(card);
+        updateNotificationCards();
       }
 
       // MODAL FOR VIEW DETAILS
@@ -1049,7 +1062,157 @@
         });
       }
 
+      function initializeNotificationDates() {
+        document.querySelectorAll("#notificationsHistory .section-card .card").forEach((card) => {
+          const dateLabel = card.querySelector("i.fa-calendar")?.parentElement?.textContent?.trim() || "";
+          if (dateLabel) {
+            card.dataset.notificationDate = dateLabel;
+          }
+        });
+
+        draftTableBody?.querySelectorAll("tr").forEach((row) => {
+          if (!row.dataset.createdAt) {
+            row.dataset.createdAt = new Date().toISOString();
+          }
+        });
+      }
+
+      function getNotificationHistoryDates() {
+        return Array.from(
+          document.querySelectorAll("#notificationsHistory .section-card .card")
+        )
+          .map((card) => card.dataset.notificationDate || card.querySelector("i.fa-calendar")?.parentElement?.textContent?.trim() || "")
+          .filter(Boolean);
+      }
+
+      function updateNotificationCards() {
+        const totalSentElement = document.getElementById("notifications-total-sent");
+        const recentActivityElement = document.getElementById("notifications-recent-activity");
+        const scheduledCountElement = document.getElementById("notifications-scheduled-count");
+        const draftCountElement = document.getElementById("notifications-draft-count");
+
+        const notificationDates = getNotificationHistoryDates();
+        const now = new Date();
+        const sentDates = notificationDates.filter((dateValue) => {
+          const parsedDate = new Date(dateValue);
+          return !Number.isNaN(parsedDate.getTime()) && parsedDate <= now;
+        });
+        const scheduledDates = notificationDates.filter((dateValue) => {
+          const parsedDate = new Date(dateValue);
+          return !Number.isNaN(parsedDate.getTime()) && parsedDate > now;
+        });
+        const currentWeekSent = sentDates.filter((dateValue) => isWithinLastDays(dateValue, 7, 0));
+        const previousWeekSent = sentDates.filter((dateValue) => isWithinLastDays(dateValue, 14, 7));
+        const nextWeekScheduled = scheduledDates.filter((dateValue) => isWithinNextDays(dateValue, 0, 7));
+        const followingWeekScheduled = scheduledDates.filter((dateValue) => isWithinNextDays(dateValue, 7, 14));
+        const draftRows = Array.from(draftTableBody?.querySelectorAll("tr") || []);
+        const currentWeekDrafts = draftRows.filter((row) => isWithinLastDays(row.dataset.createdAt, 7, 0));
+        const previousWeekDrafts = draftRows.filter((row) => isWithinLastDays(row.dataset.createdAt, 14, 7));
+
+        if (totalSentElement) {
+          totalSentElement.textContent = formatCount(sentDates.length);
+        }
+        if (recentActivityElement) {
+          recentActivityElement.textContent = formatCount(currentWeekSent.length);
+        }
+        if (scheduledCountElement) {
+          scheduledCountElement.textContent = formatCount(scheduledDates.length);
+        }
+        if (draftCountElement) {
+          draftCountElement.textContent = formatCount(draftRows.length);
+        }
+
+        setTrendMarkup("notifications-total-trend", currentWeekSent.length, previousWeekSent.length);
+        setTrendMarkup("notifications-recent-trend", currentWeekSent.length, previousWeekSent.length);
+        setTrendMarkup("notifications-scheduled-trend", nextWeekScheduled.length, followingWeekScheduled.length);
+        setTrendMarkup("notifications-draft-trend", currentWeekDrafts.length, previousWeekDrafts.length);
+      }
+
+      function setTrendMarkup(elementId, currentValue, previousValue) {
+        const element = document.getElementById(elementId);
+        if (!element) {
+          return;
+        }
+
+        element.innerHTML = buildTrendMarkup(currentValue, previousValue);
+      }
+
+      function formatCount(value) {
+        return new Intl.NumberFormat().format(Number(value) || 0);
+      }
+
+      function isWithinLastDays(dateValue, startDaysAgo, endDaysAgo) {
+        if (!dateValue) {
+          return false;
+        }
+
+        const date = new Date(dateValue);
+        if (Number.isNaN(date.getTime())) {
+          return false;
+        }
+
+        const now = new Date();
+        const startBoundary = new Date(now);
+        startBoundary.setHours(23, 59, 59, 999);
+        startBoundary.setDate(startBoundary.getDate() - startDaysAgo);
+
+        const endBoundary = new Date(now);
+        endBoundary.setHours(0, 0, 0, 0);
+        endBoundary.setDate(endBoundary.getDate() - endDaysAgo);
+
+        return date <= endBoundary && date > startBoundary;
+      }
+
+      function isWithinNextDays(dateValue, startDaysAhead, endDaysAhead) {
+        if (!dateValue) {
+          return false;
+        }
+
+        const date = new Date(dateValue);
+        if (Number.isNaN(date.getTime())) {
+          return false;
+        }
+
+        const now = new Date();
+        const startBoundary = new Date(now);
+        startBoundary.setHours(0, 0, 0, 0);
+        startBoundary.setDate(startBoundary.getDate() + startDaysAhead);
+
+        const endBoundary = new Date(now);
+        endBoundary.setHours(23, 59, 59, 999);
+        endBoundary.setDate(endBoundary.getDate() + endDaysAhead);
+
+        return date >= startBoundary && date <= endBoundary;
+      }
+
+      function buildTrendMarkup(currentValue, previousValue) {
+        const percentage = calculateTrendPercentage(currentValue, previousValue);
+        const numericPercentage = Number(percentage);
+        const sign = numericPercentage > 0 ? "+" : "";
+        const trendClass =
+          numericPercentage > 0
+            ? "text-success fw-semibold"
+            : numericPercentage < 0
+              ? "text-danger fw-semibold"
+              : "text-secondary fw-semibold";
+
+        return `<span class="${trendClass}">${sign}${percentage}%</span> from last week`;
+      }
+
+      function calculateTrendPercentage(currentValue, previousValue) {
+        const current = Number(currentValue) || 0;
+        const previous = Number(previousValue) || 0;
+
+        if (previous === 0) {
+          return current === 0 ? "0.0" : "100.0";
+        }
+
+        return (((current - previous) / previous) * 100).toFixed(1);
+      }
+
       initializeViewDetails();
+      initializeNotificationDates();
+      updateNotificationCards();
     </script>
 
     <script

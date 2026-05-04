@@ -332,7 +332,8 @@
                 </div>
                 <h3 id="queue-total-count">0</h3>
                 <small
-                  ><span class="text-primary">+12%</span> from last week</small
+                  id="queue-total-trend"
+                  ><span class="text-secondary">0.0%</span> from last week</small
                 >
               </div>
             </div>
@@ -350,7 +351,8 @@
                 </div>
                 <h3 id="queue-pending-review">0</h3>
                 <small
-                  ><span class="text-warning">+5%</span> from last week</small
+                  id="queue-under-review-trend"
+                  ><span class="text-secondary">0.0%</span> from last week</small
                 >
               </div>
             </div>
@@ -368,7 +370,8 @@
                 </div>
                 <h3 id="queue-average-wait">0d</h3>
                 <small
-                  ><span class="text-danger">+5%</span> from last week</small
+                  id="queue-average-wait-trend"
+                  ><span class="text-secondary">0.0%</span> from last week</small
                 >
               </div>
             </div>
@@ -386,7 +389,8 @@
                 </div>
                 <h3 id="queue-processing-rate">0%</h3>
                 <small
-                  ><span class="text-success">+12%</span> from last week</small
+                  id="queue-processing-rate-trend"
+                  ><span class="text-secondary">0.0%</span> from last week</small
                 >
               </div>
             </div>
@@ -664,6 +668,10 @@
         const pendingReviewElement = document.getElementById("queue-pending-review");
         const averageWaitElement = document.getElementById("queue-average-wait");
         const processingRateElement = document.getElementById("queue-processing-rate");
+        const totalTrendElement = document.getElementById("queue-total-trend");
+        const underReviewTrendElement = document.getElementById("queue-under-review-trend");
+        const averageWaitTrendElement = document.getElementById("queue-average-wait-trend");
+        const processingRateTrendElement = document.getElementById("queue-processing-rate-trend");
 
         if (totalQueueElement) {
           totalQueueElement.textContent = formatCount(queueItems.length);
@@ -680,6 +688,74 @@
         if (processingRateElement) {
           const processingRate = applications.length ? Math.round((processedCount / applications.length) * 100) : 0;
           processingRateElement.textContent = `${processingRate}%`;
+        }
+
+        updateQueueTrendCards(
+          applications,
+          totalTrendElement,
+          underReviewTrendElement,
+          averageWaitTrendElement,
+          processingRateTrendElement
+        );
+      }
+
+      function updateQueueTrendCards(
+        applications,
+        totalTrendElement,
+        underReviewTrendElement,
+        averageWaitTrendElement,
+        processingRateTrendElement
+      ) {
+        const currentWeekApplications = applications.filter((application) =>
+          isWithinLastDays(application.created_at || application.enrollment_date, 7, 0)
+        );
+        const previousWeekApplications = applications.filter((application) =>
+          isWithinLastDays(application.created_at || application.enrollment_date, 14, 7)
+        );
+
+        const currentQueueItems = currentWeekApplications.filter((application) =>
+          isPendingReviewStatus(application.application_status)
+        );
+        const previousQueueItems = previousWeekApplications.filter((application) =>
+          isPendingReviewStatus(application.application_status)
+        );
+
+        const currentUnderReview = currentWeekApplications.filter((application) =>
+          application.application_status === "Under Review"
+        ).length;
+        const previousUnderReview = previousWeekApplications.filter((application) =>
+          application.application_status === "Under Review"
+        ).length;
+
+        const currentProcessedRate = currentWeekApplications.length
+          ? (currentWeekApplications.filter((application) =>
+              application.application_status === "Approved" ||
+              application.application_status === "Rejected" ||
+              application.application_status === "Enrolled"
+            ).length / currentWeekApplications.length) * 100
+          : 0;
+        const previousProcessedRate = previousWeekApplications.length
+          ? (previousWeekApplications.filter((application) =>
+              application.application_status === "Approved" ||
+              application.application_status === "Rejected" ||
+              application.application_status === "Enrolled"
+            ).length / previousWeekApplications.length) * 100
+          : 0;
+
+        if (totalTrendElement) {
+          totalTrendElement.innerHTML = buildTrendMarkup(currentQueueItems.length, previousQueueItems.length);
+        }
+        if (underReviewTrendElement) {
+          underReviewTrendElement.innerHTML = buildTrendMarkup(currentUnderReview, previousUnderReview);
+        }
+        if (averageWaitTrendElement) {
+          averageWaitTrendElement.innerHTML = buildTrendMarkup(
+            calculateAverageWaitDays(currentQueueItems),
+            calculateAverageWaitDays(previousQueueItems)
+          );
+        }
+        if (processingRateTrendElement) {
+          processingRateTrendElement.innerHTML = buildTrendMarkup(currentProcessedRate, previousProcessedRate);
         }
       }
 
@@ -780,6 +856,68 @@
 
             queueCardsList.appendChild(card);
           });
+      }
+
+      function calculateAverageWaitDays(applications) {
+        if (!applications.length) {
+          return 0;
+        }
+
+        const totalWaitDays = applications.reduce((sum, application) => {
+          return sum + calculateWaitDays(application.created_at || application.enrollment_date);
+        }, 0);
+
+        return totalWaitDays / applications.length;
+      }
+
+      function isWithinLastDays(dateValue, startDaysAgo, endDaysAgo) {
+        if (!dateValue) {
+          return false;
+        }
+
+        const targetDate = new Date(dateValue);
+        if (Number.isNaN(targetDate.getTime())) {
+          return false;
+        }
+
+        const now = new Date();
+        const startBoundary = new Date(now);
+        startBoundary.setHours(0, 0, 0, 0);
+        startBoundary.setDate(startBoundary.getDate() - startDaysAgo);
+
+        const endBoundary = endDaysAgo === 0
+          ? now
+          : (() => {
+              const boundary = new Date(now);
+              boundary.setHours(0, 0, 0, 0);
+              boundary.setDate(boundary.getDate() - endDaysAgo);
+              return boundary;
+            })();
+
+        return targetDate >= startBoundary && targetDate < endBoundary;
+      }
+
+      function buildTrendMarkup(currentValue, previousValue) {
+        const trend = calculateTrendPercentage(currentValue, previousValue);
+        const prefix = trend > 0 ? "+" : "";
+        const trendClass = trend > 0
+          ? "text-success"
+          : trend < 0
+            ? "text-danger"
+            : "text-secondary";
+
+        return `<span class="${trendClass}">${prefix}${trend.toFixed(1)}%</span> from last week`;
+      }
+
+      function calculateTrendPercentage(currentValue, previousValue) {
+        if (!previousValue && !currentValue) {
+          return 0;
+        }
+        if (!previousValue) {
+          return 100;
+        }
+
+        return ((currentValue - previousValue) / previousValue) * 100;
       }
 
       function isPendingReviewStatus(status) {

@@ -320,7 +320,8 @@
                 </div>
                 <h3 id="evaluation-total-applications">0</h3>
                 <small
-                  ><span class="text-primary fw-semibold">+12%</span> from last
+                  id="evaluation-total-trend"
+                  ><span class="text-primary fw-semibold">0.0%</span> from last
                   week</small
                 >
               </div>
@@ -339,7 +340,8 @@
                 </div>
                 <h3 id="evaluation-approved-count">0</h3>
                 <small
-                  ><span class="text-success fw-semibold">+12%</span> from last
+                  id="evaluation-approved-trend"
+                  ><span class="text-success fw-semibold">0.0%</span> from last
                   week</small
                 >
               </div>
@@ -358,7 +360,8 @@
                 </div>
                 <h3 id="evaluation-pending-review">0</h3>
                 <small
-                  ><span class="text-warning fw-semibold">+5%</span> from last
+                  id="evaluation-pending-trend"
+                  ><span class="text-warning fw-semibold">0.0%</span> from last
                   week</small
                 >
               </div>
@@ -377,7 +380,8 @@
                 </div>
                 <h3 id="evaluation-rejected-count">0</h3>
                 <small
-                  ><span class="text-danger fw-semibold">+5%</span> from last
+                  id="evaluation-rejected-trend"
+                  ><span class="text-danger fw-semibold">0.0%</span> from last
                   week</small
                 >
               </div>
@@ -858,6 +862,10 @@
         const pendingReviewElement = document.getElementById('evaluation-pending-review');
         const approvedCountElement = document.getElementById('evaluation-approved-count');
         const rejectedCountElement = document.getElementById('evaluation-rejected-count');
+        const totalTrendElement = document.getElementById('evaluation-total-trend');
+        const approvedTrendElement = document.getElementById('evaluation-approved-trend');
+        const pendingTrendElement = document.getElementById('evaluation-pending-trend');
+        const rejectedTrendElement = document.getElementById('evaluation-rejected-trend');
         if (!totalApplicationsElement) {
           return;
         }
@@ -883,6 +891,69 @@
             isRejectedStatus(application.application_status)
           ).length;
           rejectedCountElement.textContent = formatCount(rejectedCount);
+        }
+
+        updateEvaluationTrendCards(
+          applications,
+          totalTrendElement,
+          approvedTrendElement,
+          pendingTrendElement,
+          rejectedTrendElement
+        );
+      }
+
+      function updateEvaluationTrendCards(
+        applications,
+        totalTrendElement,
+        approvedTrendElement,
+        pendingTrendElement,
+        rejectedTrendElement
+      ) {
+        const currentWeekApplications = applications.filter((application) =>
+          isWithinLastDays(application.created_at || application.enrollment_date, 7, 0)
+        );
+        const previousWeekApplications = applications.filter((application) =>
+          isWithinLastDays(application.created_at || application.enrollment_date, 14, 7)
+        );
+
+        const currentApproved = currentWeekApplications.filter((application) =>
+          isApprovedStatus(application.application_status)
+        ).length;
+        const previousApproved = previousWeekApplications.filter((application) =>
+          isApprovedStatus(application.application_status)
+        ).length;
+
+        const currentPending = currentWeekApplications.filter((application) =>
+          isPendingReviewStatus(application.application_status)
+        ).length;
+        const previousPending = previousWeekApplications.filter((application) =>
+          isPendingReviewStatus(application.application_status)
+        ).length;
+
+        const currentRejected = currentWeekApplications.filter((application) =>
+          isRejectedStatus(application.application_status)
+        ).length;
+        const previousRejected = previousWeekApplications.filter((application) =>
+          isRejectedStatus(application.application_status)
+        ).length;
+
+        if (totalTrendElement) {
+          totalTrendElement.innerHTML = buildTrendMarkup(
+            currentWeekApplications.length,
+            previousWeekApplications.length
+          );
+        }
+
+        if (approvedTrendElement) {
+          approvedTrendElement.innerHTML = buildTrendMarkup(currentApproved, previousApproved);
+        }
+
+        if (pendingTrendElement) {
+          pendingTrendElement.innerHTML = buildTrendMarkup(currentPending, previousPending);
+        }
+
+        if (rejectedTrendElement) {
+          rejectedTrendElement.innerHTML = buildTrendMarkup(currentRejected, previousRejected);
         }
       }
 
@@ -1033,6 +1104,53 @@
 
       function formatCount(value) {
         return new Intl.NumberFormat().format(Number(value) || 0);
+      }
+
+      function isWithinLastDays(dateValue, startDaysAgo, endDaysAgo) {
+        if (!dateValue) {
+          return false;
+        }
+
+        const date = new Date(dateValue);
+        if (Number.isNaN(date.getTime())) {
+          return false;
+        }
+
+        const now = new Date();
+        const startBoundary = new Date(now);
+        startBoundary.setHours(23, 59, 59, 999);
+        startBoundary.setDate(startBoundary.getDate() - startDaysAgo);
+
+        const endBoundary = new Date(now);
+        endBoundary.setHours(0, 0, 0, 0);
+        endBoundary.setDate(endBoundary.getDate() - endDaysAgo);
+
+        return date <= endBoundary && date > startBoundary;
+      }
+
+      function buildTrendMarkup(currentValue, previousValue) {
+        const percentage = calculateTrendPercentage(currentValue, previousValue);
+        const numericPercentage = Number(percentage);
+        const sign = numericPercentage > 0 ? '+' : '';
+        const trendClass =
+          numericPercentage > 0
+            ? 'text-success fw-semibold'
+            : numericPercentage < 0
+              ? 'text-danger fw-semibold'
+              : 'text-secondary fw-semibold';
+
+        return `<span class="${trendClass}">${sign}${percentage}%</span> from last week`;
+      }
+
+      function calculateTrendPercentage(currentValue, previousValue) {
+        const current = Number(currentValue) || 0;
+        const previous = Number(previousValue) || 0;
+
+        if (previous === 0) {
+          return current === 0 ? '0.0' : '100.0';
+        }
+
+        return (((current - previous) / previous) * 100).toFixed(1);
       }
 
       function isPendingReviewStatus(status) {
