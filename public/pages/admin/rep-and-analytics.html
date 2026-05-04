@@ -247,7 +247,7 @@
                 </a>
               </li>
               <li class="nav-item active">
-                <a href="/reports-and-analytics" class="nav-link active">
+                <a href="/rep-and-analytics" class="nav-link active">
                   <i class="nav-icon fa-solid fa-chart-pie"></i>
                   <p>Reports</p>
                 </a>
@@ -310,9 +310,7 @@
                   >
                 </div>
                 <h3 id="reports-total-applications">0</h3>
-                <small
-                  ><span class="text-primary fw-semibold">+12%</span> from last month</small
-                >
+                <small>Current total registration applications</small>
               </div>
             </div>
 
@@ -328,9 +326,7 @@
                   >
                 </div>
                 <h3>68.5%</h3>
-                <small
-                  ><span class="text-success fw-semibold">+5.2%</span> from last month</small
-                >
+                <small>Approved and enrolled applications</small>
               </div>
             </div>
 
@@ -346,9 +342,7 @@
                   >
                 </div>
                 <h3 id="reports-pending-review">0</h3>
-                <small
-                  ><span class="text-warning fw-semibold">+5%</span> from last week</small
-                >
+                <small>Submitted and under review applications</small>
               </div>
             </div>
           </div>
@@ -365,23 +359,9 @@
           <button
             class="tab-btn"
             type="button"
-            onclick="showPage('student-analytics')"
-          >
-            Student Analytics
-          </button>
-          <button
-            class="tab-btn"
-            type="button"
-            onclick="showPage('course-performance')"
-          >
-            Courses Performance
-          </button>
-          <button
-            class="tab-btn"
-            type="button"
             onclick="showPage('custom-reports')"
           >
-            Custom Reports
+            Registration Reports
           </button>
         </div>
 
@@ -417,307 +397,66 @@
                 <div class="chart-card mb-4">
                   <div class="card-header">
                     <h5 class="fw-bold">Application Status Breakdown</h5>
+                    <small>Live summary based on current enrollment records</small>
                   </div>
                   <div class="card-body">
                     <div class="progress-group mb-3">
                       <div class="d-flex justify-content-between align-items-center mb-2">
                         <span><strong>Approved Application</strong></span>
                         <span>
-                          <strong>854 applicants</strong> 
-                          <span class="text-muted ms-2">(68.5%)</span>
+                          <strong id="reports-approved-count">0 applicants</strong> 
+                          <span class="text-muted ms-2" id="reports-approved-percent">(0%)</span>
                         </span>
                       </div>
                       <div class="progress progress-sm">
-                        <div class="progress-bar bg-success" style="width:68.5%"></div>
+                        <div
+                          id="reports-approved-progress"
+                          class="progress-bar bg-success"
+                          style="width:0%"
+                        ></div>
                       </div>
-                      <small class="text-muted">854 out of 1,247 total applications</small>
+                      <small class="text-muted" id="reports-approved-meta">0 out of 0 total applications</small>
                     </div>
 
                     <div class="progress-group mb-3">
                       <div class="d-flex justify-content-between align-items-center mb-2">
                         <span><strong>Pending Application</strong></span>
                         <span>
-                          <strong>310 applicants</strong> 
-                          <span class="text-muted ms-2">(24.9%)</span>
+                          <strong id="reports-pending-count">0 applicants</strong> 
+                          <span class="text-muted ms-2" id="reports-pending-percent">(0%)</span>
                         </span>
                       </div>
                       <div class="progress progress-sm">
-                        <div class="progress-bar bg-warning" style="width:24.9%"></div>
+                        <div
+                          id="reports-pending-progress"
+                          class="progress-bar bg-warning"
+                          style="width:0%"
+                        ></div>
                       </div>
-                      <small class="text-muted">310 out of 1,247 total applications</small>
+                      <small class="text-muted" id="reports-pending-meta">0 out of 0 total applications</small>
                     </div>
 
                     <div class="progress-group">
                       <div class="d-flex justify-content-between align-items-center mb-2">
                         <span><strong>Rejected Application</strong></span>
                         <span>
-                          <strong>83 applicants</strong> 
-                          <span class="text-muted ms-2">(6.7%)</span>
+                          <strong id="reports-rejected-count">0 applicants</strong> 
+                          <span class="text-muted ms-2" id="reports-rejected-percent">(0%)</span>
                         </span>
                       </div>
                       <div class="progress progress-sm">
-                        <div class="progress-bar bg-danger" style="width:6.7%"></div>
+                        <div
+                          id="reports-rejected-progress"
+                          class="progress-bar bg-danger"
+                          style="width:0%"
+                        ></div>
                       </div>
-                      <small class="text-muted">83 out of 1,247 total applications</small>
+                      <small class="text-muted" id="reports-rejected-meta">0 out of 0 total applications</small>
                     </div>
                   </div>
                 </div>
               </div>
               <!--ENd of status break down-->
-            </div>
-        </div>
-
-        <!-- ============ STUDENT ANALYTICS ============ -->
-        <div id="student-analytics" class="content-page d-none px-4 py-3">
-            <div class="row">
-              <div class="col-md-12">
-                <div class="chart-card mb-4">
-                  <div class="card-header">
-                    <h5 class="card-title">Student Enrollment Trends</h5>
-                    <div class="card-tools">
-                      <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
-                        <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
-                        <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
-                      </button>
-                      <div class="btn-group">
-                        <button
-                          type="button"
-                          class="btn btn-tool dropdown-toggle"
-                          data-bs-toggle="dropdown"
-                        >
-                          <i class="bi bi-wrench"></i>
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-end" role="menu">
-                          <a href="#" class="dropdown-item">Action</a>
-                          <a href="#" class="dropdown-item">Another action</a>
-                          <a href="#" class="dropdown-item"> Something else here </a>
-                          <a class="dropdown-divider"></a>
-                          <a href="#" class="dropdown-item">Separated link</a>
-                        </div>
-                      </div>
-                      <button type="button" class="btn btn-tool" data-lte-toggle="card-remove">
-                        <i class="bi bi-x-lg"></i>
-                      </button>
-                    </div>
-                  </div>
-                  <!-- /.card-header -->
-                  <div class="card-body">
-                    <!--begin::Row-->
-                    <div class="row">
-                      <div class="col-md-12">
-                        <p class="text-center mb-3">
-                          <strong>Enrollment & Retention: Jan 2023 - Aug 2024</strong>
-                        </p>
-                        <div id="enrollment-retention-chart" style="height:400px;"></div>
-                      </div>
-                      <!-- /.col -->
-                    </div>
-                    <!--end::Row-->
-                  </div>
-                  <!-- ./card-body -->
-                  <!-- /.card-footer -->
-                </div>
-                <!-- /.card -->
-              </div>
-              <!-- /.col -->
-            </div>
-
-            <!-- Student Metrics Card -->
-            <div class="row">
-              <div class="col-md-12">
-                <div class="chart-card mb-4">
-                  <div class="card-header">
-                    <h5 class="fw-bold">Student Metrics</h5>
-                    <small>Key performance indicators and statistics</small>
-                  </div>
-                  <div class="card-body">
-                    <div class="row">
-                      <!-- Left Column - Progress Metrics -->
-                      <div class="col-md-6">
-                        <p class="text-center mb-4"><strong>Performance Metrics</strong></p>
-                        
-                        <div class="progress-group mb-4">
-                          <div class="d-flex justify-content-between mb-2">
-                            <span><i class="fa-solid fa-graduation-cap me-2"></i>Course Completion Rate</span>
-                            <span><b>85.2%</b></span>
-                          </div>
-                          <div class="progress progress-lg">
-                            <div class="progress-bar bg-success" role="progressbar" style="width: 85.2%" aria-valuenow="85.2" aria-valuemin="0" aria-valuemax="100"></div>
-                          </div>
-                          <small class="text-muted">1,245 / 1,460 students completed</small>
-                        </div>
-
-                        <div class="progress-group mb-4">
-                          <div class="d-flex justify-content-between mb-2">
-                            <span><i class="fa-solid fa-star me-2"></i>Student Satisfaction</span>
-                            <span><b>91.5%</b></span>
-                          </div>
-                          <div class="progress progress-lg">
-                            <div class="progress-bar bg-info" role="progressbar" style="width: 91.5%" aria-valuenow="91.5" aria-valuemin="0" aria-valuemax="100"></div>
-                          </div>
-                          <small class="text-muted">Based on 1,200 survey responses</small>
-                        </div>
-
-                        <div class="progress-group mb-4">
-                          <div class="d-flex justify-content-between mb-2">
-                            <span><i class="fa-solid fa-trophy me-2"></i>Graduation Rate</span>
-                            <span><b>78.8%</b></span>
-                          </div>
-                          <div class="progress progress-lg">
-                            <div class="progress-bar bg-warning" role="progressbar" style="width: 78.8%" aria-valuenow="78.8" aria-valuemin="0" aria-valuemax="100"></div>
-                          </div>
-                          <small class="text-muted">945 / 1,200 students graduated</small>
-                        </div>
-
-                        <div class="progress-group mb-4">
-                          <div class="d-flex justify-content-between mb-2">
-                            <span><i class="fa-solid fa-chart-line me-2"></i>Average GPA</span>
-                            <span><b>3.42</b></span>
-                          </div>
-                          <div class="progress progress-lg">
-                            <div class="progress-bar bg-primary" role="progressbar" style="width: 85.5%" aria-valuenow="85.5" aria-valuemin="0" aria-valuemax="100"></div>
-                          </div>
-                          <small class="text-muted">Out of 4.0 scale</small>
-                        </div>
-                      </div>
-
-                      <!-- Right Column - Statistics Cards -->
-                      <div class="col-md-6">
-                        <p class="text-center mb-4"><strong>Student Statistics</strong></p>
-                        
-                        <div class="row g-3">
-                          <div class="col-6">
-                            <div class="card bg-primary-subtle p-3 text-center">
-                              <h3 class="mb-1">8,835</h3>
-                              <small class="text-muted">
-                                <i class="fa-solid fa-users me-1"></i>Total Enrolled
-                              </small>
-                            </div>
-                          </div>
-                          <div class="col-6">
-                            <div class="card bg-primary-subtle p-3 text-center">
-                              <h3 class="mb-1">7,245</h3>
-                              <small class="text-muted">
-                                <i class="fa-solid fa-user-check me-1"></i>Active Students
-                              </small>
-                            </div>
-                          </div>
-                          <div class="col-6">
-                            <div class="card bg-primary-subtle p-3 text-center">
-                              <h3 class="mb-1">1,590</h3>
-                              <small class="text-muted">
-                                <i class="fa-solid fa-user-clock me-1"></i>On Leave
-                              </small>
-                            </div>
-                          </div>
-                          <div class="col-6">
-                            <div class="card bg-primary-subtle p-3 text-center">
-                              <h3 class="mb-1">540</h3>
-                              <small class="text-muted">
-                                <i class="fa-solid fa-user-plus me-1"></i>New This Month
-                              </small>
-                            </div>
-                          </div>
-                          <div class="col-6">
-                            <div class="card bg-primary-subtle p-3 text-center">
-                              <h3 class="mb-1">4,235</h3>
-                              <small class="text-muted">
-                                <i class="fa-solid fa-user-graduate me-1"></i>Male Students
-                              </small>
-                            </div>
-                          </div>
-                          <div class="col-6">
-                            <div class="card bg-primary-subtle p-3 text-center">
-                              <h3 class="mb-1">4,600</h3>
-                              <small class="text-muted">
-                                <i class="fa-solid fa-user-graduate me-1"></i>Female Students
-                              </small>
-                            </div>
-                          </div>
-                        </div>
-
-                        <!-- Additional Metrics -->
-                        <div class="mt-4">
-                          <p class="text-center mb-3"><strong>Retention Metrics</strong></p>
-                          <div class="row text-center">
-                            <div class="col-4">
-                              <div class="border-end">
-                                <h5 class="text-success mb-1">94.2%</h5>
-                                <small class="text-muted">Current Retention</small>
-                              </div>
-                            </div>
-                            <div class="col-4">
-                              <div class="border-end">
-                                <h5 class="text-info mb-1">+2.7%</h5>
-                                <small class="text-muted">vs Last Year</small>
-                              </div>
-                            </div>
-                            <div class="col-4">
-                              <h5 class="text-warning mb-1">5.8%</h5>
-                              <small class="text-muted">Dropout Rate</small>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-        </div>
-
-        <!-- ============ COURSE PERFORMANCE ============ -->
-        <div id="course-performance" class="content-page d-none px-4 py-3">
-            <div class="chart-card mb-4">
-              <div class="card-header">
-                <h5 class="fw-bold">Program Performance Comparison</h5>
-              </div>
-              <div class="card-body p-0">
-                <div class="table-responsive">
-                  <table class="table table-bordered table-hover mb-0">
-                    <thead class="table-header">
-                      <tr>
-                        <th class="px-4 py-3 fw-semibold">Course</th>
-                        <th class="px-4 py-3 fw-semibold">Application</th>
-                        <th class="px-4 py-3 fw-semibold">Acceptance Rate</th>
-                        <th class="px-4 py-3 fw-semibold">Student Retention Rate</th>
-                      </tr>
-                    </thead>
-                    <tbody class="table-body">
-                      <tr>
-                        <td class="px-4 py-3">BSCS</td>
-                        <td class="px-4 py-3">320</td>
-                        <td class="px-4 py-3">78%</td>
-                        <td class="px-4 py-3">92%</td>
-                      </tr>
-                      <tr>
-                        <td class="px-4 py-3">BSBA</td>
-                        <td class="px-4 py-3">210</td>
-                        <td class="px-4 py-3">71%</td>
-                        <td class="px-4 py-3">88%</td>
-                      </tr>
-                      <tr>
-                        <td class="px-4 py-3">BSED English</td>
-                        <td class="px-4 py-3">180</td>
-                        <td class="px-4 py-3">50%</td>
-                        <td class="px-4 py-3">85%</td>
-                      </tr>
-                      <tr>
-                        <td class="px-4 py-3">BSED Filipino</td>
-                        <td class="px-4 py-3">180</td>
-                        <td class="px-4 py-3">50%</td>
-                        <td class="px-4 py-3">82%</td>
-                      </tr>
-                      <tr>
-                        <td class="px-4 py-3">BSED</td>
-                        <td class="px-4 py-3">180</td>
-                        <td class="px-4 py-3">50%</td>
-                        <td class="px-4 py-3">80%</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
             </div>
         </div>
 
@@ -741,11 +480,10 @@
                           <select class="form-select" id="report-type" required>
                             <option value="">Select report type...</option>
                             <option value="applications">Application Analytics</option>
-                            <option value="enrollment">Enrollment Trends</option>
-                            <option value="retention">Student Retention</option>
-                            <option value="performance">Course Performance</option>
-                            <option value="demographics">Student Demographics</option>
-                            <option value="comprehensive">Comprehensive Report</option>
+                            <option value="status">Application Status Summary</option>
+                            <option value="courses">Course Distribution</option>
+                            <option value="queue">Pending Review Queue</option>
+                            <option value="daily">Daily Registration Summary</option>
                           </select>
                         </div>
                         <div class="col-md-6">
@@ -786,11 +524,14 @@
                           <select class="form-select" id="course-filter" multiple>
                             <option value="all">All Courses</option>
                             <option value="BSCS">BSCS</option>
-                            <option value="BSBA">BSBA</option>
-                            <option value="BSED English">BSED English</option>
-                            <option value="BSED Filipino">BSED Filipino</option>
-                            <option value="BSIT">BSIT</option>
-                            <option value="BSA">BSA</option>
+                            <option value="BSBA-MM">BSBA-MM</option>
+                            <option value="BSBA-FM">BSBA-FM</option>
+                            <option value="BSBA-HRM">BSBA-HRM</option>
+                            <option value="BEED">BEED</option>
+                            <option value="BSCRIM">BSCRIM</option>
+                            <option value="BSED-ENG">BSED-ENG</option>
+                            <option value="BSED-FIL">BSED-FIL</option>
+                            <option value="BSED-MATH">BSED-MATH</option>
                           </select>
                           <small class="text-muted">Hold Ctrl/Cmd to select multiple</small>
                         </div>
@@ -800,12 +541,11 @@
                           </label>
                           <select class="form-select" id="status-filter" multiple>
                             <option value="all">All Statuses</option>
+                            <option value="submitted">Submitted</option>
+                            <option value="under-review">Under Review</option>
                             <option value="approved">Approved</option>
-                            <option value="pending">Pending</option>
                             <option value="rejected">Rejected</option>
                             <option value="enrolled">Enrolled</option>
-                            <option value="active">Active</option>
-                            <option value="graduated">Graduated</option>
                           </select>
                           <small class="text-muted">Hold Ctrl/Cmd to select multiple</small>
                         </div>
@@ -825,55 +565,55 @@
                               </label>
                             </div>
                             <div class="form-check mb-2">
-                              <input class="form-check-input" type="checkbox" id="metric-enrollment" value="enrollment" checked>
-                              <label class="form-check-label" for="metric-enrollment">
-                                Enrollment Trends
+                              <input class="form-check-input" type="checkbox" id="metric-status-summary" value="status-summary" checked>
+                              <label class="form-check-label" for="metric-status-summary">
+                                Status Summary
                               </label>
                             </div>
                             <div class="form-check mb-2">
-                              <input class="form-check-input" type="checkbox" id="metric-retention" value="retention" checked>
-                              <label class="form-check-label" for="metric-retention">
-                                Retention Rates
-                              </label>
-                            </div>
-                          </div>
-                          <div class="col-md-4">
-                            <div class="form-check mb-2">
-                              <input class="form-check-input" type="checkbox" id="metric-performance" value="performance" checked>
-                              <label class="form-check-label" for="metric-performance">
-                                Course Performance
-                              </label>
-                            </div>
-                            <div class="form-check mb-2">
-                              <input class="form-check-input" type="checkbox" id="metric-demographics" value="demographics">
-                              <label class="form-check-label" for="metric-demographics">
-                                Demographics
-                              </label>
-                            </div>
-                            <div class="form-check mb-2">
-                              <input class="form-check-input" type="checkbox" id="metric-satisfaction" value="satisfaction">
-                              <label class="form-check-label" for="metric-satisfaction">
-                                Student Satisfaction
+                              <input class="form-check-input" type="checkbox" id="metric-course-distribution" value="course-distribution" checked>
+                              <label class="form-check-label" for="metric-course-distribution">
+                                Course Distribution
                               </label>
                             </div>
                           </div>
                           <div class="col-md-4">
                             <div class="form-check mb-2">
-                              <input class="form-check-input" type="checkbox" id="metric-gpa" value="gpa">
-                              <label class="form-check-label" for="metric-gpa">
-                                GPA Statistics
+                              <input class="form-check-input" type="checkbox" id="metric-pending-queue" value="pending-queue" checked>
+                              <label class="form-check-label" for="metric-pending-queue">
+                                Pending Queue Count
                               </label>
                             </div>
                             <div class="form-check mb-2">
-                              <input class="form-check-input" type="checkbox" id="metric-graduation" value="graduation">
-                              <label class="form-check-label" for="metric-graduation">
-                                Graduation Rates
+                              <input class="form-check-input" type="checkbox" id="metric-approved-count" value="approved-count">
+                              <label class="form-check-label" for="metric-approved-count">
+                                Approved Count
                               </label>
                             </div>
                             <div class="form-check mb-2">
-                              <input class="form-check-input" type="checkbox" id="metric-completion" value="completion">
-                              <label class="form-check-label" for="metric-completion">
-                                Course Completion
+                              <input class="form-check-input" type="checkbox" id="metric-rejected-count" value="rejected-count">
+                              <label class="form-check-label" for="metric-rejected-count">
+                                Rejected Count
+                              </label>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-check mb-2">
+                              <input class="form-check-input" type="checkbox" id="metric-review-rate" value="review-rate">
+                              <label class="form-check-label" for="metric-review-rate">
+                                Approval Rate
+                              </label>
+                            </div>
+                            <div class="form-check mb-2">
+                              <input class="form-check-input" type="checkbox" id="metric-submission-date" value="submission-date">
+                              <label class="form-check-label" for="metric-submission-date">
+                                Submission Dates
+                              </label>
+                            </div>
+                            <div class="form-check mb-2">
+                              <input class="form-check-input" type="checkbox" id="metric-status-history" value="status-history">
+                              <label class="form-check-label" for="metric-status-history">
+                                Status History
                               </label>
                             </div>
                           </div>
@@ -890,9 +630,8 @@
                             <option value="none">No Grouping</option>
                             <option value="course">Course</option>
                             <option value="month">Month</option>
-                            <option value="year">Year</option>
                             <option value="status">Status</option>
-                            <option value="gender">Gender</option>
+                            <option value="year">Year</option>
                           </select>
                         </div>
                         <div class="col-md-6">
@@ -923,6 +662,8 @@
                         </label>
                         <textarea class="form-control" id="report-description" rows="3" placeholder="Add a description or notes for this report (optional)"></textarea>
                       </div>
+
+                      <div id="report-preview" class="alert alert-info d-none" role="alert"></div>
 
                       <!-- Action Buttons -->
                       <div class="d-flex gap-2 justify-content-end">
@@ -990,9 +731,9 @@
                             </td>
                           </tr>
                           <tr>
-                            <td class="px-4 py-3">Student Retention Analysis</td>
-                            <td class="px-4 py-3"><span class="badge bg-warning">Retention</span></td>
-                            <td class="px-4 py-3">Jan 2023 - Aug 2024</td>
+                            <td class="px-4 py-3">Pending Review Queue Summary</td>
+                            <td class="px-4 py-3"><span class="badge bg-warning text-dark">Queue</span></td>
+                            <td class="px-4 py-3">Current snapshot</td>
                             <td class="px-4 py-3">PDF</td>
                             <td class="px-4 py-3">2 weeks ago</td>
                             <td class="px-4 py-3 text-end">
@@ -1049,12 +790,11 @@
 
     <script src="https://code.highcharts.com/themes/adaptive.js"></script>
 
-    <script src="/js/charts.js"></script>
-
     <script>
       async function loadReportsData() {
         const totalApplicationsElement = document.getElementById("reports-total-applications");
         const pendingReviewElement = document.getElementById("reports-pending-review");
+        const approvalRateElement = document.querySelector(".card-approved h3");
         if (!totalApplicationsElement) {
           return;
         }
@@ -1071,15 +811,23 @@
             ? result.data.length
             : Number(result.totalEnrollments) || 0;
           const applications = Array.isArray(result.data) ? result.data : [];
+          const statusSummary = getApplicationStatusSummary(applications);
           const pendingReviewCount = applications.filter((application) =>
             isPendingReviewStatus(application.application_status)
           ).length;
+          const approvalRate = totalApplications
+            ? ((statusSummary.approved / totalApplications) * 100).toFixed(1)
+            : "0.0";
 
           totalApplicationsElement.textContent = formatCount(totalApplications);
           if (pendingReviewElement) {
             pendingReviewElement.textContent = formatCount(pendingReviewCount);
           }
+          if (approvalRateElement) {
+            approvalRateElement.textContent = `${approvalRate}%`;
+          }
 
+          updateStatusBreakdown(statusSummary, totalApplications);
           renderReportCharts(applications);
         } catch (error) {
           console.error("Error loading reports total applications:", error);
@@ -1087,6 +835,10 @@
           if (pendingReviewElement) {
             pendingReviewElement.textContent = "0";
           }
+          if (approvalRateElement) {
+            approvalRateElement.textContent = "0.0%";
+          }
+          updateStatusBreakdown(getApplicationStatusSummary([]), 0);
           renderReportCharts([]);
         }
       }
@@ -1097,6 +849,58 @@
 
       function isPendingReviewStatus(status) {
         return status === "Submitted" || status === "Under Review";
+      }
+
+      function getApplicationStatusSummary(applications) {
+        return applications.reduce(
+          (summary, application) => {
+            const status = application.application_status;
+
+            if (status === "Approved" || status === "Enrolled") {
+              summary.approved += 1;
+            } else if (status === "Rejected") {
+              summary.rejected += 1;
+            } else if (status === "Submitted" || status === "Under Review") {
+              summary.pending += 1;
+            }
+
+            return summary;
+          },
+          {
+            approved: 0,
+            pending: 0,
+            rejected: 0,
+          }
+        );
+      }
+
+      function updateStatusBreakdown(statusSummary, totalApplications) {
+        updateStatusBreakdownItem("approved", statusSummary.approved, totalApplications);
+        updateStatusBreakdownItem("pending", statusSummary.pending, totalApplications);
+        updateStatusBreakdownItem("rejected", statusSummary.rejected, totalApplications);
+      }
+
+      function updateStatusBreakdownItem(type, count, totalApplications) {
+        const countElement = document.getElementById(`reports-${type}-count`);
+        const percentElement = document.getElementById(`reports-${type}-percent`);
+        const metaElement = document.getElementById(`reports-${type}-meta`);
+        const progressElement = document.getElementById(`reports-${type}-progress`);
+        const percentage = totalApplications
+          ? ((count / totalApplications) * 100).toFixed(1)
+          : "0.0";
+
+        if (countElement) {
+          countElement.textContent = `${formatCount(count)} applicants`;
+        }
+        if (percentElement) {
+          percentElement.textContent = `(${percentage}%)`;
+        }
+        if (metaElement) {
+          metaElement.textContent = `${formatCount(count)} out of ${formatCount(totalApplications)} total applications`;
+        }
+        if (progressElement) {
+          progressElement.style.width = `${percentage}%`;
+        }
       }
 
       function renderReportCharts(enrollments) {
@@ -1290,6 +1094,44 @@
           .map(([name, total]) => ({ name, y: total }));
       }
 
+      function resetCustomReportForm() {
+        const form = document.getElementById("custom-report-form");
+        if (form) {
+          form.reset();
+        }
+        setReportPreview("");
+      }
+
+      function previewCustomReport() {
+        const reportType = document.getElementById("report-type")?.value || "custom";
+        const exportFormat = document.getElementById("export-format")?.value || "pdf";
+        const groupBy = document.getElementById("group-by")?.value || "none";
+        const selectedMetrics = Array.from(
+          document.querySelectorAll('#custom-report-form input[type="checkbox"]:checked')
+        ).map((input) => input.nextElementSibling?.textContent?.trim()).filter(Boolean);
+
+        setReportPreview(
+          `Preview ready: ${reportType} report in ${exportFormat.toUpperCase()} format` +
+          ` with ${groupBy} grouping and ${selectedMetrics.length || 0} selected metric(s).`
+        );
+      }
+
+      function setReportPreview(message) {
+        const previewElement = document.getElementById("report-preview");
+        if (!previewElement) {
+          return;
+        }
+
+        if (!message) {
+          previewElement.textContent = "";
+          previewElement.classList.add("d-none");
+          return;
+        }
+
+        previewElement.textContent = message;
+        previewElement.classList.remove("d-none");
+      }
+
       // Hide Registrar link for admin users, hide Accounts for registrars
       const sessionUser = JSON.parse(localStorage.getItem('sessionUser'));
       if (sessionUser && sessionUser.user) {
@@ -1304,6 +1146,13 @@
 
       document.addEventListener("DOMContentLoaded", () => {
         loadReportsData();
+        const customReportForm = document.getElementById("custom-report-form");
+        if (customReportForm) {
+          customReportForm.addEventListener("submit", (event) => {
+            event.preventDefault();
+            previewCustomReport();
+          });
+        }
 
         setTimeout(() => {
           const skeleton = document.getElementById("page-skeleton");
