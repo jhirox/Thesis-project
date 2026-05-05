@@ -807,7 +807,7 @@
         const signOutBtn = document.querySelector('#sign-out');
         const sessionUserStr = localStorage.getItem('sessionUser');
         const authToken = localStorage.getItem('authToken');
-        const storedStudentProfileId = localStorage.getItem('studentProfileId');
+        let storedStudentProfileId = localStorage.getItem('studentProfileId');
         const authUser = sessionUserStr ? JSON.parse(sessionUserStr) : null;
         const timeout = localStorage.getItem('sessionTimeout');
         const guestMode = localStorage.getItem('guestMode') === 'true';
@@ -821,6 +821,8 @@
             localStorage.removeItem('sessionTimeout');
             localStorage.removeItem('authToken');
             localStorage.removeItem('guestMode');
+            localStorage.removeItem('studentProfileId');
+            localStorage.removeItem('studentProfileEmail');
           } catch (error) {
             // Ignored
           }
@@ -866,6 +868,13 @@
 
         const user = authUser.user;
         const userEmail = user.email;
+        const storedStudentProfileEmail = localStorage.getItem('studentProfileEmail');
+
+        if (storedStudentProfileEmail && storedStudentProfileEmail !== userEmail) {
+          localStorage.removeItem('studentProfileId');
+          localStorage.removeItem('studentProfileEmail');
+          storedStudentProfileId = null;
+        }
 
         if (profileBody) {
           profileBody.classList.add('authenticated');
@@ -929,7 +938,7 @@
         };
 
         const uploadOfficialReceipt = async ({ file = null, receiptNumber = null } = {}) => {
-          if (!currentProfile?.student_id && !storedStudentProfileId && !userEmail) {
+          if (!userEmail) {
             return;
           }
 
@@ -943,13 +952,7 @@
             formData.append('officialReceiptNumber', receiptNumber);
           }
 
-          if (currentProfile?.student_id) {
-            formData.append('studentId', currentProfile.student_id);
-          } else if (storedStudentProfileId) {
-            formData.append('studentId', storedStudentProfileId);
-          } else if (userEmail) {
-            formData.append('email', userEmail);
-          }
+          formData.append('email', userEmail);
 
           const response = await fetch('/api/students/profile/receipt', {
             method: 'PUT',
@@ -970,6 +973,13 @@
         };
 
         const renderProfile = (profile) => {
+          if (profile?.email_address && userEmail && profile.email_address !== userEmail) {
+            console.warn('Blocked profile render for a different signed-in user.');
+            localStorage.removeItem('studentProfileId');
+            localStorage.removeItem('studentProfileEmail');
+            return;
+          }
+
           currentProfile = profile;
 
           const fullNameText = buildFullName(profile);
@@ -1027,7 +1037,7 @@
             if (userEmail) {
               requestTargets.push(`/api/students/profile?${new URLSearchParams({ email: userEmail }).toString()}`);
             }
-            if (storedStudentProfileId) {
+            if (!userEmail && storedStudentProfileId) {
               requestTargets.push(`/api/students/profile/${encodeURIComponent(storedStudentProfileId)}`);
             }
 
@@ -1037,6 +1047,9 @@
               if (response.ok && data.success) {
                 if (data.data?.student_id) {
                   localStorage.setItem('studentProfileId', String(data.data.student_id));
+                }
+                if (data.data?.email_address) {
+                  localStorage.setItem('studentProfileEmail', data.data.email_address);
                 }
                 renderProfile(data.data);
                 return;
@@ -1130,13 +1143,7 @@
               const formData = new FormData();
               formData.append('profilePhoto', file);
 
-              if (currentProfile?.student_id) {
-                formData.append('studentId', currentProfile.student_id);
-              } else if (storedStudentProfileId) {
-                formData.append('studentId', storedStudentProfileId);
-              } else if (userEmail) {
-                formData.append('email', userEmail);
-              }
+              formData.append('email', userEmail);
 
               console.log("FormData contents:");
               for (let [key, value] of formData.entries()) {

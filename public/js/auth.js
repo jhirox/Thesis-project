@@ -135,6 +135,8 @@ function logout() {
     localStorage.removeItem('sessionTimeout');
     localStorage.removeItem('authToken');
     localStorage.removeItem('guestMode');
+    localStorage.removeItem('studentProfileId');
+    localStorage.removeItem('studentProfileEmail');
   } catch (error) {}
 
   window.location.replace('/login');
