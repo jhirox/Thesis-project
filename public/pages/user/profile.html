@@ -988,7 +988,7 @@
           if (highestAttainmentInfo) highestAttainmentInfo.textContent = profile.highest_attainment || 'Not set';
           if (lastSchoolInfo) lastSchoolInfo.textContent = profile.last_school_attended || 'Not set';
           if (lastSchoolYearInfo) lastSchoolYearInfo.textContent = profile.last_school_year || 'Not set';
-          if (workingStatusInfo) workingStatusInfo.textContent = profile.working_status || 'Not set';
+          if (workingStatusInfo) workingStatusInfo.textContent = profile.is_working === 1 ? 'Working student' : (profile.is_working === 0 ? 'Non-working' : 'Not set');
           if (motherMaidenInfo) motherMaidenInfo.textContent = profile.mother_maiden_name || 'Not set';
           if (fatherNameInfo) fatherNameInfo.textContent = profile.father_name || 'Not set';
           if (guardianNameInfo) guardianNameInfo.textContent = profile.guardian_name || 'Not set';
