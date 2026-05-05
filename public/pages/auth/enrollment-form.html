@@ -45,6 +45,9 @@
 </head>
 
 <body class="page-shell bg-light page-enrollment-form">
+    <button class="btn btn-outline-secondary btn-sm position-fixed top-0 start-0 m-3 z-3 shadow-sm" onclick="window.location.href='/enrollment'" title="Back to Enrollment">
+        <i class="bi bi-arrow-left"></i> Back
+    </button>
     
     <div class="school-header">
         <img src="/assets/images/logo.png" alt="QECI Logo">
@@ -668,6 +671,7 @@
 
             referenceModalElement.addEventListener("hidden.bs.modal", () => {
                 resetEnrollmentForm();
+                window.location.href = '/profile';
             });
 
             successTriggerButton.addEventListener("click", () => {
