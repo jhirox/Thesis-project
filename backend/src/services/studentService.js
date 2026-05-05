@@ -87,7 +87,7 @@ export async function submitEnrollment(payload) {
 
       // Family / guardian + academic extras (used by profile.html)
       highestAttainment: payload.highestAttainment ?? null,
-      lastSchoolAttended: payload.lastSchoolAttended ?? null,
+      lastSchoolAttended: payload.lastSchool ?? payload.lastSchoolAttended ?? null,
       lastSchoolYear: payload.lastSchoolYear ?? null,
       isWorking: payload.workingStatus
         ? payload.workingStatus === "Working student" ? 1
