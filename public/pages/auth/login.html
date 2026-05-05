@@ -213,6 +213,8 @@
                 localStorage.setItem("sessionTimeout", Date.now() + timeout);
                 localStorage.setItem("authToken", data.token);
                 localStorage.removeItem("guestMode");
+                localStorage.removeItem("studentProfileId");
+                localStorage.removeItem("studentProfileEmail");
                 setTimeout(() => window.location.href = getRedirectTarget(data.user), 1200);
             } else {
                 Swal.fire({ icon: "error", title: "Error", text: data.error || "Login failed" });

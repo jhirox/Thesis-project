@@ -11,6 +11,26 @@ import {
   updateStudentReceiptSchema,
 } from "../validators/studentSchemas.js";
 
+const normalizeRole = (role) => String(role || "").trim().toLowerCase();
+
+const isSelfServiceStudent = (req) => {
+  const role = normalizeRole(req.user?.role);
+  return role === "user" || role === "student";
+};
+
+const applySelfServiceStudentScope = (req, payload = {}) => {
+  if (!isSelfServiceStudent(req)) {
+    return payload;
+  }
+
+  return {
+    ...payload,
+    studentId: undefined,
+    enrollmentId: undefined,
+    email: req.user?.email,
+  };
+};
+
 export const getStudents = asyncHandler(async (req, res) => {
   const result = await studentService.findStudents(req.query);
 
@@ -88,9 +108,10 @@ export const getEnrollmentApplicantDetails = asyncHandler(async (req, res) => {
 });
 
 export const getStudentProfile = asyncHandler(async (req, res) => {
+  const isSelfService = isSelfServiceStudent(req);
   const profile = await studentService.findStudentProfile({
-    studentId: req.params.id,
-    email: req.query.email,
+    studentId: isSelfService ? undefined : req.params.id,
+    email: isSelfService ? req.user?.email : req.query.email,
   });
 
   res.status(200).json({
@@ -100,7 +121,8 @@ export const getStudentProfile = asyncHandler(async (req, res) => {
 });
 
 export const updateStudentProfile = asyncHandler(async (req, res) => {
-  const payload = updateStudentProfileSchema.parse(req.body);
+  const scopedBody = isSelfServiceStudent(req) ? { ...req.body, email: req.user?.email } : req.body;
+  const payload = applySelfServiceStudentScope(req, updateStudentProfileSchema.parse(scopedBody));
 
   if (req.file) {
     payload.profilePhotoUrl = buildStoredFileUrl(req.file.filename);
@@ -115,7 +137,8 @@ export const updateStudentProfile = asyncHandler(async (req, res) => {
 });
 
 export const updateStudentReceipt = asyncHandler(async (req, res) => {
-  const payload = updateStudentReceiptSchema.parse(req.body);
+  const scopedBody = isSelfServiceStudent(req) ? { ...req.body, email: req.user?.email } : req.body;
+  const payload = applySelfServiceStudentScope(req, updateStudentReceiptSchema.parse(scopedBody));
 
   if (req.file) {
     payload.officialReceiptFileUrl = buildStoredFileUrl(req.file.filename);
