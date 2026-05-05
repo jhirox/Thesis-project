@@ -9,11 +9,42 @@ class Student {
 
   // Used by findStudentProfile and updateStudentProfile
   static getProfileSelectionSql() {
+    // NOTE:
+    // `profile.html` expects enrollment/family-extra fields to come from the
+    // latest enrollment record (stored in `enrollments`).
+    // In `studentService.findStudentProfile()`, we join the latest enrollment
+    // via `latestEnrollmentJoinSql("e","le")`, so selecting from `e.*` is correct.
     return `
       s.student_id, s.first_name, s.middle_name, s.last_name, s.suffix,
       ${fullNameSql("s")} AS full_name, s.email_address, s.contact_number,
       s.birth_date, s.birth_place, s.complete_address, s.sex,
       s.civil_status, s.spouse_name, s.nationality, s.religion,
+
+      -- Academic/Enrollment (from latest enrollment)
+      e.program_id,
+      e.modality_id,
+      e.student_type_id,
+      e.year_level,
+      e.semester_types AS semester,
+      e.academic_year,
+      e.queue_number,
+      e.application_status,
+      e.special_remarks,
+      e.official_receipt_number,
+      e.official_receipt_file_url,
+      e.official_receipt_file_name,
+      e.official_receipt_file_type,
+
+      e.highest_attainment,
+      e.last_school_attended,
+      e.last_school_year,
+      e.is_working,
+
+      e.mother_maiden_name,
+      e.father_name,
+      e.guardian_name,
+      e.guardian_contact,
+
       ${studentStatusSql("s")} AS enrollment_status
     `;
   }
