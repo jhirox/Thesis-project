@@ -11,6 +11,10 @@ class AuthService {
       await db.query("ALTER TABLE users ADD COLUMN full_name VARCHAR(150) NULL AFTER email");
     }
 
+    if (!columnNames.has("profile_image")) {
+      await db.query("ALTER TABLE users ADD COLUMN profile_image LONGTEXT NULL AFTER full_name");
+    }
+
     if (!columnNames.has("updated_at")) {
       await db.query("ALTER TABLE users ADD COLUMN updated_at DATETIME NULL AFTER created_date");
     }
@@ -41,6 +45,7 @@ class AuthService {
         u.user_id,
         u.email,
         u.full_name,
+        u.profile_image,
         u.is_active,
         u.created_date,
         u.updated_at,
@@ -58,6 +63,7 @@ class AuthService {
       userId: row.user_id,
       email: row.email,
       fullName: row.full_name || this.getDisplayNameFromEmail(row.email),
+      profileImage: row.profile_image || "",
       role: this.normalizeStaffRoleLabel(row.role),
       status: row.is_active === 1 ? "Active" : "Inactive",
       createdAt: row.created_date,
@@ -70,6 +76,7 @@ class AuthService {
 
     const email = String(payload.email || "").trim().toLowerCase();
     const fullName = String(payload.fullName || "").trim();
+    const profileImage = String(payload.profileImage || "").trim();
     const password = String(payload.password || "");
     const role = this.normalizeStaffRoleLabel(payload.role);
 
@@ -85,9 +92,9 @@ class AuthService {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const [result] = await db.query(
-      `INSERT INTO users (email, full_name, passkey, role_id, is_active, created_date, updated_at)
-       VALUES (?, ?, ?, ?, 1, NOW(), NOW())`,
-      [email, fullName || this.getDisplayNameFromEmail(email), hashedPassword, roleId]
+      `INSERT INTO users (email, full_name, profile_image, passkey, role_id, is_active, created_date, updated_at)
+       VALUES (?, ?, ?, ?, ?, 1, NOW(), NOW())`,
+      [email, fullName || this.getDisplayNameFromEmail(email), profileImage || null, hashedPassword, roleId]
     );
 
     return this.findStaffAccountById(result.insertId);
@@ -108,6 +115,9 @@ class AuthService {
 
     const email = String(payload.email || current.email).trim().toLowerCase();
     const fullName = String(payload.fullName || current.fullName || "").trim();
+    const profileImage = payload.profileImage === undefined
+      ? current.profileImage
+      : String(payload.profileImage || "").trim();
     const role = this.normalizeStaffRoleLabel(payload.role || current.role);
     const status = String(payload.status || current.status).trim();
     const isActive = status === "Inactive" ? 0 : 1;
@@ -115,9 +125,9 @@ class AuthService {
 
     await db.query(
       `UPDATE users
-       SET email = ?, full_name = ?, role_id = ?, is_active = ?, updated_at = NOW()
+       SET email = ?, full_name = ?, profile_image = ?, role_id = ?, is_active = ?, updated_at = NOW()
        WHERE user_id = ?`,
-      [email, fullName || this.getDisplayNameFromEmail(email), roleId, isActive, id]
+      [email, fullName || this.getDisplayNameFromEmail(email), profileImage || null, roleId, isActive, id]
     );
 
     if (payload.password) {
@@ -155,6 +165,7 @@ class AuthService {
         u.user_id,
         u.email,
         u.full_name,
+        u.profile_image,
         u.is_active,
         u.created_date,
         u.updated_at,
@@ -173,6 +184,7 @@ class AuthService {
       userId: row.user_id,
       email: row.email,
       fullName: row.full_name || this.getDisplayNameFromEmail(row.email),
+      profileImage: row.profile_image || "",
       role: this.normalizeStaffRoleLabel(row.role),
       status: row.is_active === 1 ? "Active" : "Inactive",
       createdAt: row.created_date,
@@ -220,7 +232,7 @@ class AuthService {
 
     // 1. Fetch user with role and profile info in one join
     const [users] = await db.query(
-      `SELECT u.user_id, u.email, u.full_name, u.passkey, u.role_id, u.is_active,
+      `SELECT u.user_id, u.email, u.full_name, u.profile_image, u.passkey, u.role_id, u.is_active,
               r.role_name as role,
               s.first_name, s.last_name
        FROM users u
@@ -252,7 +264,8 @@ class AuthService {
         id: user.user_id,
         email: user.email,
         role: user.role,
-        fullname: user.full_name || `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email.split('@')[0]
+        fullname: user.full_name || `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email.split('@')[0],
+        profileImage: user.profile_image || ''
       }
     };
   }

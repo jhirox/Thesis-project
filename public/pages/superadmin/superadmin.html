@@ -412,6 +412,22 @@
             </div>
             <div class="modal-body">
               <input type="hidden" id="staffUserId" />
+              <input type="hidden" id="staffProfileImage" />
+              <div class="superadmin-profile-editor mb-4">
+                <img
+                  id="staffProfilePreview"
+                  class="superadmin-profile-editor__image"
+                  src="https://lh3.googleusercontent.com/a/ACg8ocJZRFDYP52Px5s5A5hCDSPAwCHlrEebkZDNYbMcQnSSdvacvufz=s360-c-no"
+                  alt="Staff profile preview"
+                />
+                <div class="superadmin-profile-editor__controls">
+                  <label class="form-label" for="staffProfileImageInput">Profile Image</label>
+                  <input type="file" class="form-control" id="staffProfileImageInput" accept="image/*" />
+                  <button type="button" class="btn btn-sm btn-outline-light mt-2" id="removeStaffProfileImageBtn">
+                    <i class="fa-solid fa-trash me-2"></i>Remove image
+                  </button>
+                </div>
+              </div>
               <div class="mb-3">
                 <label class="form-label" for="staffFullName">Full Name</label>
                 <input type="text" class="form-control" id="staffFullName" maxlength="150" required />
@@ -486,6 +502,11 @@
         const staffAccountForm = document.getElementById("staffAccountForm");
         const openStaffAccountModalBtn = document.getElementById("openStaffAccountModalBtn");
         const staffAccountSaveBtn = document.getElementById("staffAccountSaveBtn");
+        const staffProfileImageInput = document.getElementById("staffProfileImageInput");
+        const staffProfilePreview = document.getElementById("staffProfilePreview");
+        const staffProfileImageField = document.getElementById("staffProfileImage");
+        const removeStaffProfileImageBtn = document.getElementById("removeStaffProfileImageBtn");
+        const defaultStaffProfileImage = "https://lh3.googleusercontent.com/a/ACg8ocJZRFDYP52Px5s5A5hCDSPAwCHlrEebkZDNYbMcQnSSdvacvufz=s360-c-no";
         let staffAccounts = [];
 
         const logout = () => {
@@ -619,7 +640,9 @@
             <tr data-user-id="${escapeHtml(account.userId)}">
               <td>
                 <div class="superadmin-user">
-                  <span class="superadmin-avatar">${escapeHtml(getInitials(account.fullName || account.email))}</span>
+                  ${account.profileImage
+                    ? `<img class="superadmin-avatar-img" src="${escapeHtml(account.profileImage)}" alt="${escapeHtml(account.fullName || account.email)} profile" />`
+                    : `<span class="superadmin-avatar">${escapeHtml(getInitials(account.fullName || account.email))}</span>`}
                   <span class="superadmin-user-name">${escapeHtml(account.fullName || "Staff Account")}</span>
                 </div>
               </td>
@@ -664,6 +687,9 @@
           document.getElementById("staffRole").value = normalizeRole(account?.role || "admin");
           document.getElementById("staffStatus").value = account?.status || "Active";
           document.getElementById("staffPassword").value = "";
+          staffProfileImageField.value = account?.profileImage || "";
+          staffProfilePreview.src = account?.profileImage || defaultStaffProfileImage;
+          staffProfileImageInput.value = "";
           document.getElementById("staffPassword").required = !account;
           document.getElementById("staffAccountModalLabel").textContent = account ? "Edit Staff Account" : "Add Staff Account";
           staffAccountSaveBtn.textContent = account ? "Save Changes" : "Create Account";
@@ -678,6 +704,7 @@
             email: document.getElementById("staffEmail").value.trim(),
             role: document.getElementById("staffRole").value,
             status: document.getElementById("staffStatus").value,
+            profileImage: staffProfileImageField.value,
           };
           const password = document.getElementById("staffPassword").value;
           if (password) {
@@ -785,6 +812,36 @@
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
         }
+
+        staffProfileImageInput?.addEventListener("change", () => {
+          const file = staffProfileImageInput.files?.[0];
+          if (!file) return;
+
+          if (!file.type.startsWith("image/")) {
+            alert("Please select a valid image file.");
+            staffProfileImageInput.value = "";
+            return;
+          }
+
+          if (file.size > 800 * 1024) {
+            alert("Please choose an image smaller than 800KB.");
+            staffProfileImageInput.value = "";
+            return;
+          }
+
+          const reader = new FileReader();
+          reader.addEventListener("load", () => {
+            staffProfileImageField.value = reader.result;
+            staffProfilePreview.src = reader.result;
+          });
+          reader.readAsDataURL(file);
+        });
+
+        removeStaffProfileImageBtn?.addEventListener("click", () => {
+          staffProfileImageField.value = "";
+          staffProfilePreview.src = defaultStaffProfileImage;
+          staffProfileImageInput.value = "";
+        });
 
         openStaffAccountModalBtn?.addEventListener("click", () => openStaffModal());
         staffAccountForm?.addEventListener("submit", handleStaffFormSubmit);
