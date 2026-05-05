@@ -17,12 +17,14 @@ export async function sendEmail({ to, subject, text, html }) {
 
   try {
     dns.setDefaultResultOrder("ipv4first");
+    const [ipv4Host] = await dns.promises.resolve4(host);
+    const smtpHost = ipv4Host || host;
 
     const nodemailerModule = await import("nodemailer");
     const nodemailer = nodemailerModule.default || nodemailerModule;
 
     const transporter = nodemailer.createTransport({
-      host,
+      host: smtpHost,
       port,
       family: 4,
       secure: port === 465,
@@ -30,6 +32,9 @@ export async function sendEmail({ to, subject, text, html }) {
       greetingTimeout: Number(process.env.SMTP_GREETING_TIMEOUT_MS || 8000),
       socketTimeout: Number(process.env.SMTP_SOCKET_TIMEOUT_MS || 10000),
       requireTLS: port === 587,
+      tls: {
+        servername: host,
+      },
       auth: {
         user,
         pass,
