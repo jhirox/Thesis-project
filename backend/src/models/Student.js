@@ -1,6 +1,8 @@
 import db from "../config/db.js";
 import { fullNameSql, studentStatusSql } from "../utils/sqlBuilders.js";
 
+const DEFAULT_PROFILE_PHOTO_URL = "/assets/images/lancephoto.png";
+
 class Student {
   static async findById(id) {
     const [rows] = await db.query("SELECT * FROM students WHERE student_id = ?", [id]);
@@ -54,8 +56,8 @@ class Student {
       INSERT INTO students (
         first_name, middle_name, last_name, suffix, birth_date, birth_place, sex,
         civil_status, spouse_name, nationality, religion, email_address,
-        contact_number, complete_address, is_active, created_date, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), NOW())
+        contact_number, complete_address, profile_photo_url, is_active, created_date, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), NOW())
       ON DUPLICATE KEY UPDATE
         student_id = LAST_INSERT_ID(student_id),
         first_name = VALUES(first_name),
@@ -65,7 +67,7 @@ class Student {
       data.firstName, data.middleName, data.lastName, data.suffix,
       data.birthDate, data.birthPlace, data.sex, data.civilStatus || "Single",
       data.spouseName, data.nationality, data.religion, data.email,
-      data.contactNumber, data.address
+      data.contactNumber, data.address, data.profilePhotoUrl || DEFAULT_PROFILE_PHOTO_URL
     ]);
     return result.insertId;
   }
