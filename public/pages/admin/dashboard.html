@@ -1193,7 +1193,8 @@
                   </div>
                   <div class="col-md-6">
                     <label class="form-label text-muted small">Working Status</label>
-                    <p class="fw-semibold mb-0">${getDisplayValue(profile.working_student)}</p>
+                    <p class="fw-semibold mb-0">${getWorkingStatus(profile.is_working)}</p>
+
                   </div>
                   <div class="col-md-6">
                     <label class="form-label text-muted small">Entry Status</label>
@@ -1279,6 +1280,13 @@
 
           const normalized = String(value).trim();
           return normalized ? escapeHtml(normalized) : fallback;
+        }
+
+        function getWorkingStatus(value) {
+          if (value == 1 || value === '1' || value === true) {
+            return 'Working student';
+          }
+          return 'Non-working student';
         }
 
         function getDateInputValue(value) {
