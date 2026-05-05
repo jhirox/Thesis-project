@@ -590,6 +590,33 @@
     </div>
     <!--end::App Wrapper-->
 
+    <div
+      class="modal fade"
+      id="recentApplicationDetailsModal"
+      tabindex="-1"
+      aria-labelledby="recentApplicationDetailsModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-primary-subtle text-white" data-bs-theme="dark">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold" id="recentApplicationDetailsModalLabel">Student Details</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="recentApplicationDetailsBody">
+            <div class="text-center py-5">
+              <div class="spinner-border text-light mb-3" role="status"></div>
+              <p class="mb-0 text-white-50">Loading student details...</p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-light" id="recentApplicationShortcutBtn">Open Record</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
@@ -615,6 +642,8 @@
         const authUserStr = localStorage.getItem("sessionUser");
         const authUser = authUserStr ? JSON.parse(authUserStr) : null;
         const timeout = localStorage.getItem("sessionTimeout");
+        const recentApplicationsById = new Map();
+        let activeRecentApplication = null;
 
         const logout = () => {
           const sessionUserStr = localStorage.getItem("sessionUser");
@@ -967,6 +996,7 @@
             return;
           }
           recentContainer.innerHTML = "";
+          recentApplicationsById.clear();
 
           const previewCount = Math.min(enrollments.length, 5);
           const recentEnrollments = [...enrollments]
@@ -986,13 +1016,20 @@
           }
 
           recentEnrollments.forEach((enrollment) => {
+            const enrollmentKey = String(enrollment.enrollment_id || "");
             const fullName =
               enrollment.full_name ||
               `${enrollment.first_name} ${enrollment.middle_name || ""} ${enrollment.last_name}`.trim();
             const course = enrollment.program_code || enrollment.program_name || "No course";
             const applicationId = enrollment.queue_number || `ENR-${enrollment.enrollment_id}`;
+            if (enrollmentKey) {
+              recentApplicationsById.set(enrollmentKey, enrollment);
+            }
             const card = document.createElement("div");
-            card.className = "card p-3 d-flex flex-row justify-content-between align-items-center";
+            card.className = "card p-3 d-flex flex-row justify-content-between align-items-center recent-application-card";
+            card.setAttribute("role", "button");
+            card.setAttribute("tabindex", "0");
+            card.dataset.enrollmentId = enrollmentKey;
             card.innerHTML = `
               <div>
                 <strong>${escapeHtml(fullName)}</strong><br />
@@ -1004,6 +1041,153 @@
               </div>
             `;
             recentContainer.appendChild(card);
+          });
+        }
+
+        async function openRecentApplicationDetails(enrollmentId) {
+          const fallbackRecord = recentApplicationsById.get(String(enrollmentId)) || null;
+          activeRecentApplication = fallbackRecord;
+          renderRecentApplicationDetails(fallbackRecord, { isLoading: true });
+
+          const modalElement = document.getElementById("recentApplicationDetailsModal");
+          const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+          modal.show();
+
+          if (!enrollmentId) {
+            renderRecentApplicationDetails(fallbackRecord);
+            return;
+          }
+
+          try {
+            const response = await fetch(`/api/students/enrollments/details/${encodeURIComponent(enrollmentId)}`);
+            const result = await response.json();
+            if (!response.ok || !result.success || !result.data) {
+              throw new Error(result.message || "Unable to load student details.");
+            }
+
+            activeRecentApplication = { ...fallbackRecord, ...result.data };
+            renderRecentApplicationDetails(activeRecentApplication);
+          } catch (error) {
+            console.error("Error loading recent application details:", error);
+            renderRecentApplicationDetails(fallbackRecord, {
+              errorMessage: "Showing available dashboard details only.",
+            });
+          }
+        }
+
+        function renderRecentApplicationDetails(record = {}, options = {}) {
+          record = record || {};
+          const body = document.getElementById("recentApplicationDetailsBody");
+          const shortcutBtn = document.getElementById("recentApplicationShortcutBtn");
+          if (!body || !shortcutBtn) {
+            return;
+          }
+
+          if (options.isLoading) {
+            body.innerHTML = `
+              <div class="text-center py-5">
+                <div class="spinner-border text-light mb-3" role="status"></div>
+                <p class="mb-0 text-white-50">Loading student details...</p>
+              </div>
+            `;
+          } else {
+            const fullName = getStudentFullName(record);
+            const course = record.program_code || record.program_name || "No course";
+            const applicationId = record.queue_number || `ENR-${record.enrollment_id || "Not set"}`;
+            const status = record.application_status || "Submitted";
+            const submittedDate = formatDateTime(record.enrollment_date || record.created_at);
+            const updatedDate = formatDateTime(record.updated_at);
+
+            body.innerHTML = `
+              ${options.errorMessage ? `<div class="alert alert-warning py-2">${escapeHtml(options.errorMessage)}</div>` : ""}
+              <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-4">
+                <div>
+                  <h4 class="fw-bold mb-1">${escapeHtml(fullName)}</h4>
+                  <p class="text-white-50 mb-0">${escapeHtml(course)} &bull; ${escapeHtml(applicationId)}</p>
+                </div>
+                <div>
+                  <span class="status-badge status-${getStatusClass(status)}">${escapeHtml(status)}</span>
+                </div>
+              </div>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label text-white-50 small">Student ID</label>
+                  <p class="fw-semibold mb-0">${escapeHtml(record.student_id || "Not set")}</p>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-white-50 small">Email Address</label>
+                  <p class="fw-semibold mb-0">${escapeHtml(record.email_address || record.email || "Not set")}</p>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-white-50 small">Contact Number</label>
+                  <p class="fw-semibold mb-0">${escapeHtml(record.contact_number || "Not set")}</p>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-white-50 small">Student Type</label>
+                  <p class="fw-semibold mb-0">${escapeHtml(record.student_type || "Not set")}</p>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-white-50 small">Submitted</label>
+                  <p class="fw-semibold mb-0">${escapeHtml(submittedDate)}</p>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-white-50 small">Last Updated</label>
+                  <p class="fw-semibold mb-0">${escapeHtml(updatedDate)}</p>
+                </div>
+              </div>
+            `;
+          }
+
+          const shortcut = getRecentApplicationShortcut(record || {});
+          shortcutBtn.textContent = shortcut.label;
+          shortcutBtn.dataset.targetUrl = shortcut.url;
+          shortcutBtn.disabled = !shortcut.url;
+        }
+
+        function getRecentApplicationShortcut(record = {}) {
+          const enrollmentId = record.enrollment_id ? `?enrollmentId=${encodeURIComponent(record.enrollment_id)}` : "";
+          const status = record.application_status || "Submitted";
+          const role = authUser?.user?.role || "";
+
+          if ((status === "Approved" || status === "Enrolled") && role !== "admin") {
+            return {
+              label: "Open in Registrar",
+              url: `/registrar${enrollmentId}`,
+            };
+          }
+
+          return {
+            label: "Open in Evaluation",
+            url: `/application-evaluation${enrollmentId}`,
+          };
+        }
+
+        function getStudentFullName(record = {}) {
+          return (
+            record.full_name ||
+            [record.first_name, record.middle_name, record.last_name, record.suffix]
+              .filter(Boolean)
+              .join(" ") ||
+            "Not set"
+          );
+        }
+
+        function formatDateTime(dateString) {
+          if (!dateString) {
+            return "Not set";
+          }
+
+          const date = new Date(dateString);
+          if (Number.isNaN(date.getTime())) {
+            return "Not set";
+          }
+
+          return date.toLocaleString([], {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
           });
         }
 
@@ -1129,6 +1313,36 @@
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
         }
+
+        document.getElementById("recent-applications-list")?.addEventListener("click", (event) => {
+          const card = event.target.closest(".recent-application-card[data-enrollment-id]");
+          if (!card) {
+            return;
+          }
+
+          openRecentApplicationDetails(card.dataset.enrollmentId);
+        });
+
+        document.getElementById("recent-applications-list")?.addEventListener("keydown", (event) => {
+          if (event.key !== "Enter" && event.key !== " ") {
+            return;
+          }
+
+          const card = event.target.closest(".recent-application-card[data-enrollment-id]");
+          if (!card) {
+            return;
+          }
+
+          event.preventDefault();
+          openRecentApplicationDetails(card.dataset.enrollmentId);
+        });
+
+        document.getElementById("recentApplicationShortcutBtn")?.addEventListener("click", (event) => {
+          const targetUrl = event.currentTarget.dataset.targetUrl;
+          if (targetUrl) {
+            window.location.href = targetUrl;
+          }
+        });
 
         // Skeleton loader simulation
         setTimeout(() => {

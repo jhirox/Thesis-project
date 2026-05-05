@@ -1190,6 +1190,18 @@ body.page-credentials {
   color: #ffffff
 }
 
+.recent-applications .recent-application-card {
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.recent-applications .recent-application-card:hover,
+.recent-applications .recent-application-card:focus {
+  background-color: rgba(255, 255, 255, 0.14);
+  outline: 2px solid rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
 .status-badge {
   padding: 5px 12px;
   border-radius: 10px;
