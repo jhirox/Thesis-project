@@ -1,7 +1,16 @@
 import express from 'express';
 import AuthService from '../services/auth.service.js';
+import { authenticateToken } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
+
+const requireSuperAdmin = (req, res, next) => {
+  const role = String(req.user?.role || '').trim().toLowerCase();
+  if (role !== 'superadmin' && role !== 'super admin') {
+    return res.status(403).json({ error: 'Super admin access required' });
+  }
+  next();
+};
 
 router.post('/signup', async (req, res) => {
   try {
@@ -36,6 +45,66 @@ router.post('/login', async (req, res) => {
 
     const status = error.message === 'Account is inactive' ? 403 : 401;
     res.status(status).json({ error: error.message });
+  }
+});
+
+router.get('/staff', authenticateToken, requireSuperAdmin, async (_req, res) => {
+  try {
+    const staff = await AuthService.listStaffAccounts();
+    res.json({ success: true, data: staff });
+  } catch (error) {
+    console.error('Staff List Error:', error.message);
+    res.status(500).json({ success: false, error: error.message || 'Unable to load staff accounts' });
+  }
+});
+
+router.post('/staff', authenticateToken, requireSuperAdmin, async (req, res) => {
+  try {
+    const account = await AuthService.createStaffAccount(req.body);
+    res.status(201).json({ success: true, data: account, message: 'Staff account created' });
+  } catch (error) {
+    console.error('Staff Create Error:', error.message);
+    const status = error.code === 'ER_DUP_ENTRY' ? 409 : 400;
+    res.status(status).json({ success: false, error: error.message || 'Unable to create staff account' });
+  }
+});
+
+router.put('/staff/:userId', authenticateToken, requireSuperAdmin, async (req, res) => {
+  try {
+    if (
+      String(req.user?.userId) === String(req.params.userId) &&
+      (String(req.body?.status || '').trim() === 'Inactive' ||
+        (req.body?.role !== undefined &&
+          !['superadmin', 'super admin'].includes(String(req.body.role || '').trim().toLowerCase())))
+    ) {
+      return res.status(400).json({
+        success: false,
+        error: 'You cannot remove super admin access from your current session.'
+      });
+    }
+
+    const account = await AuthService.updateStaffAccount(req.params.userId, req.body);
+    res.json({ success: true, data: account, message: 'Staff account updated' });
+  } catch (error) {
+    console.error('Staff Update Error:', error.message);
+    res.status(400).json({ success: false, error: error.message || 'Unable to update staff account' });
+  }
+});
+
+router.delete('/staff/:userId', authenticateToken, requireSuperAdmin, async (req, res) => {
+  try {
+    if (String(req.user?.userId) === String(req.params.userId)) {
+      return res.status(400).json({
+        success: false,
+        error: 'You cannot delete your own active super admin session.'
+      });
+    }
+
+    const account = await AuthService.deleteStaffAccount(req.params.userId);
+    res.json({ success: true, data: account, message: 'Staff account deleted' });
+  } catch (error) {
+    console.error('Staff Delete Error:', error.message);
+    res.status(400).json({ success: false, error: error.message || 'Unable to delete staff account' });
   }
 });
 

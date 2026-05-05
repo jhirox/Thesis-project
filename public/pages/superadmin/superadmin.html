@@ -51,6 +51,13 @@
               <div class="skeleton admin-page-skeleton__nav-item"></div>
               <div class="skeleton admin-page-skeleton__nav-item"></div>
               <div class="skeleton admin-page-skeleton__nav-item"></div>
+              <div class="skeleton admin-page-skeleton__nav-item"></div>
+            </div>
+            <div class="admin-page-skeleton__section">
+              <div class="skeleton admin-page-skeleton__section-title"></div>
+              <div class="skeleton admin-page-skeleton__nav-item"></div>
+              <div class="skeleton admin-page-skeleton__nav-item"></div>
+              <div class="skeleton admin-page-skeleton__nav-item"></div>
             </div>
             <div class="admin-page-skeleton__section">
               <div class="skeleton admin-page-skeleton__section-title"></div>
@@ -296,7 +303,7 @@
                   Manage admin and registrar accounts
                 </p>
               </div>
-              <button type="button" class="superadmin-add-btn">
+              <button type="button" class="superadmin-add-btn" id="openStaffAccountModalBtn">
                 <i class="fa-solid fa-user-plus"></i>
                 <span>Add Account</span>
               </button>
@@ -370,58 +377,10 @@
                       <th scope="col">Actions</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody id="superadmin-staff-tbody">
                     <tr>
-                      <td>
-                        <div class="superadmin-user">
-                          <span class="superadmin-avatar">SA</span>
-                          <span class="superadmin-user-name">Super Admin</span>
-                        </div>
-                      </td>
-                      <td class="superadmin-email">superadmin@eduadmin.com</td>
-                      <td>
-                        <span class="superadmin-role-badge">super admin</span>
-                      </td>
-                      <td>
-                        <div class="superadmin-actions">
-                          <button
-                            type="button"
-                            class="superadmin-action-btn"
-                            aria-label="Edit Super Admin"
-                          >
-                            <i class="fa-regular fa-pen-to-square"></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="superadmin-user">
-                          <span class="superadmin-avatar">AU</span>
-                          <span class="superadmin-user-name">Admin User</span>
-                        </div>
-                      </td>
-                      <td class="superadmin-email">admin@eduadmin.com</td>
-                      <td>
-                        <span class="superadmin-role-badge">admin</span>
-                      </td>
-                      <td>
-                        <div class="superadmin-actions">
-                          <button
-                            type="button"
-                            class="superadmin-action-btn"
-                            aria-label="Edit Admin User"
-                          >
-                            <i class="fa-regular fa-pen-to-square"></i>
-                          </button>
-                          <button
-                            type="button"
-                            class="superadmin-action-btn is-danger"
-                            aria-label="Delete Admin User"
-                          >
-                            <i class="fa-regular fa-trash-can"></i>
-                          </button>
-                        </div>
+                      <td colspan="4" class="text-center text-white-50 py-4">
+                        Loading staff accounts...
                       </td>
                     </tr>
                   </tbody>
@@ -441,6 +400,56 @@
         <br />
         All rights reserved.
       </footer>
+    </div>
+
+    <div class="modal fade" id="staffAccountModal" tabindex="-1" aria-labelledby="staffAccountModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content superadmin-modal" data-bs-theme="dark">
+          <form id="staffAccountForm">
+            <div class="modal-header">
+              <h5 class="modal-title fw-bold" id="staffAccountModalLabel">Add Staff Account</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <input type="hidden" id="staffUserId" />
+              <div class="mb-3">
+                <label class="form-label" for="staffFullName">Full Name</label>
+                <input type="text" class="form-control" id="staffFullName" maxlength="150" required />
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="staffEmail">Email Address</label>
+                <input type="email" class="form-control" id="staffEmail" required />
+              </div>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label" for="staffRole">Role</label>
+                  <select class="form-select" id="staffRole" required>
+                    <option value="admin">Admin</option>
+                    <option value="registrar">Registrar</option>
+                    <option value="super admin">Super Admin</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="staffStatus">Status</label>
+                  <select class="form-select" id="staffStatus" required>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mt-3">
+                <label class="form-label" for="staffPassword">Password</label>
+                <input type="password" class="form-control" id="staffPassword" minlength="6" autocomplete="new-password" />
+                <div class="form-text text-white-50" id="staffPasswordHelp">Required for new accounts. Leave blank when editing to keep the current password.</div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-primary" id="staffAccountSaveBtn">Save Account</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
 
     <script
@@ -470,6 +479,14 @@
         const authUserStr = localStorage.getItem("sessionUser");
         const authUser = authUserStr ? JSON.parse(authUserStr) : null;
         const timeout = localStorage.getItem("sessionTimeout");
+        const authToken = localStorage.getItem("authToken");
+        const staffAccountsTbody = document.getElementById("superadmin-staff-tbody");
+        const staffAccountModalEl = document.getElementById("staffAccountModal");
+        const staffAccountModal = staffAccountModalEl ? bootstrap.Modal.getOrCreateInstance(staffAccountModalEl) : null;
+        const staffAccountForm = document.getElementById("staffAccountForm");
+        const openStaffAccountModalBtn = document.getElementById("openStaffAccountModalBtn");
+        const staffAccountSaveBtn = document.getElementById("staffAccountSaveBtn");
+        let staffAccounts = [];
 
         const logout = () => {
           localStorage.removeItem("sessionUser");
@@ -512,8 +529,8 @@
           });
         });
 
-        function loadSuperAdminData() {
-          updateStaffRoleCards();
+        async function loadSuperAdminData() {
+          await loadStaffAccounts();
           setTimeout(showActualContent, 650);
         }
 
@@ -530,15 +547,15 @@
           }
         }
 
-        function updateStaffRoleCards() {
+        function updateStaffRoleCards(accounts = staffAccounts) {
           const roleCounts = {
             "super admin": 0,
             admin: 0,
             registrar: 0,
           };
 
-          document.querySelectorAll(".superadmin-role-badge").forEach((badge) => {
-            const role = badge.textContent.trim().toLowerCase();
+          accounts.forEach((account) => {
+            const role = normalizeRole(account.role);
             if (roleCounts[role] !== undefined) {
               roleCounts[role] += 1;
             }
@@ -558,6 +575,234 @@
             registrarCount.textContent = roleCounts.registrar.toLocaleString();
           }
         }
+
+        async function loadStaffAccounts() {
+          renderStaffTableMessage("Loading staff accounts...");
+
+          try {
+            const response = await staffApi("/api/auth/staff");
+            const result = await response.json();
+            if (!response.ok || !result.success) {
+              throw new Error(result.error || "Unable to load staff accounts.");
+            }
+
+            staffAccounts = Array.isArray(result.data) ? result.data : [];
+            renderStaffAccounts();
+            updateStaffRoleCards(staffAccounts);
+          } catch (error) {
+            console.error("Unable to load staff accounts:", error);
+            renderStaffTableMessage(error.message || "Unable to load staff accounts.");
+            updateStaffRoleCards([]);
+          }
+        }
+
+        async function staffApi(url, options = {}) {
+          return fetch(url, {
+            ...options,
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${authToken}`,
+              ...(options.headers || {}),
+            },
+          });
+        }
+
+        function renderStaffAccounts() {
+          if (!staffAccountsTbody) return;
+
+          if (!staffAccounts.length) {
+            renderStaffTableMessage("No staff accounts found.");
+            return;
+          }
+
+          staffAccountsTbody.innerHTML = staffAccounts.map((account) => `
+            <tr data-user-id="${escapeHtml(account.userId)}">
+              <td>
+                <div class="superadmin-user">
+                  <span class="superadmin-avatar">${escapeHtml(getInitials(account.fullName || account.email))}</span>
+                  <span class="superadmin-user-name">${escapeHtml(account.fullName || "Staff Account")}</span>
+                </div>
+              </td>
+              <td class="superadmin-email">${escapeHtml(account.email)}</td>
+              <td>
+                <span class="superadmin-role-badge">${escapeHtml(formatRole(account.role))}</span>
+                <span class="superadmin-status-badge ${account.status === "Inactive" ? "is-inactive" : ""}">${escapeHtml(account.status || "Active")}</span>
+              </td>
+              <td>
+                <div class="superadmin-actions">
+                  <button type="button" class="superadmin-action-btn btn-edit-staff" aria-label="Edit ${escapeHtml(account.fullName || account.email)}">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                  </button>
+                  <button type="button" class="superadmin-action-btn btn-toggle-staff" aria-label="Toggle status">
+                    <i class="fa-solid ${account.status === "Inactive" ? "fa-toggle-off" : "fa-toggle-on"}"></i>
+                  </button>
+                  <button type="button" class="superadmin-action-btn is-danger btn-delete-staff" aria-label="Delete ${escapeHtml(account.fullName || account.email)}">
+                    <i class="fa-regular fa-trash-can"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `).join("");
+        }
+
+        function renderStaffTableMessage(message) {
+          if (!staffAccountsTbody) return;
+          staffAccountsTbody.innerHTML = `
+            <tr>
+              <td colspan="4" class="text-center text-white-50 py-4">${escapeHtml(message)}</td>
+            </tr>
+          `;
+        }
+
+        function openStaffModal(account = null) {
+          if (!staffAccountForm || !staffAccountModal) return;
+
+          staffAccountForm.reset();
+          document.getElementById("staffUserId").value = account?.userId || "";
+          document.getElementById("staffFullName").value = account?.fullName || "";
+          document.getElementById("staffEmail").value = account?.email || "";
+          document.getElementById("staffRole").value = normalizeRole(account?.role || "admin");
+          document.getElementById("staffStatus").value = account?.status || "Active";
+          document.getElementById("staffPassword").value = "";
+          document.getElementById("staffPassword").required = !account;
+          document.getElementById("staffAccountModalLabel").textContent = account ? "Edit Staff Account" : "Add Staff Account";
+          staffAccountSaveBtn.textContent = account ? "Save Changes" : "Create Account";
+          staffAccountModal.show();
+        }
+
+        async function handleStaffFormSubmit(event) {
+          event.preventDefault();
+          const userId = document.getElementById("staffUserId").value;
+          const payload = {
+            fullName: document.getElementById("staffFullName").value.trim(),
+            email: document.getElementById("staffEmail").value.trim(),
+            role: document.getElementById("staffRole").value,
+            status: document.getElementById("staffStatus").value,
+          };
+          const password = document.getElementById("staffPassword").value;
+          if (password) {
+            payload.password = password;
+          }
+
+          staffAccountSaveBtn.disabled = true;
+          staffAccountSaveBtn.textContent = userId ? "Saving..." : "Creating...";
+
+          try {
+            const response = await staffApi(userId ? `/api/auth/staff/${encodeURIComponent(userId)}` : "/api/auth/staff", {
+              method: userId ? "PUT" : "POST",
+              body: JSON.stringify(payload),
+            });
+            const result = await response.json();
+            if (!response.ok || !result.success) {
+              throw new Error(result.error || "Unable to save staff account.");
+            }
+
+            staffAccountModal.hide();
+            await loadStaffAccounts();
+          } catch (error) {
+            console.error("Unable to save staff account:", error);
+            alert(error.message || "Unable to save staff account.");
+          } finally {
+            staffAccountSaveBtn.disabled = false;
+            staffAccountSaveBtn.textContent = userId ? "Save Changes" : "Create Account";
+          }
+        }
+
+        async function toggleStaffStatus(account) {
+          if (!account) return;
+          const nextStatus = account.status === "Inactive" ? "Active" : "Inactive";
+          try {
+            const response = await staffApi(`/api/auth/staff/${encodeURIComponent(account.userId)}`, {
+              method: "PUT",
+              body: JSON.stringify({ ...account, status: nextStatus }),
+            });
+            const result = await response.json();
+            if (!response.ok || !result.success) {
+              throw new Error(result.error || "Unable to update status.");
+            }
+            await loadStaffAccounts();
+          } catch (error) {
+            console.error("Unable to update staff status:", error);
+            alert(error.message || "Unable to update status.");
+          }
+        }
+
+        async function deleteStaffAccount(account) {
+          if (!account) return;
+          const currentUserId = authUser?.user?.id;
+          if (String(currentUserId) === String(account.userId)) {
+            alert("You cannot delete your own active super admin session.");
+            return;
+          }
+
+          if (!window.confirm(`Delete ${account.fullName || account.email}?`)) {
+            return;
+          }
+
+          try {
+            const response = await staffApi(`/api/auth/staff/${encodeURIComponent(account.userId)}`, {
+              method: "DELETE",
+            });
+            const result = await response.json();
+            if (!response.ok || !result.success) {
+              throw new Error(result.error || "Unable to delete staff account.");
+            }
+            await loadStaffAccounts();
+          } catch (error) {
+            console.error("Unable to delete staff account:", error);
+            alert(error.message || "Unable to delete staff account.");
+          }
+        }
+
+        function getStaffAccountFromRow(target) {
+          const row = target.closest("tr[data-user-id]");
+          if (!row) return null;
+          return staffAccounts.find((account) => String(account.userId) === String(row.dataset.userId));
+        }
+
+        function normalizeRole(role) {
+          const value = String(role || "").trim().toLowerCase();
+          if (value === "superadmin" || value === "super admin") return "super admin";
+          return value;
+        }
+
+        function formatRole(role) {
+          const normalized = normalizeRole(role);
+          if (normalized === "super admin") return "super admin";
+          return normalized || "staff";
+        }
+
+        function getInitials(value) {
+          const words = String(value || "Staff Account").trim().split(/\s+/).filter(Boolean);
+          return words.slice(0, 2).map((word) => word[0]).join("").toUpperCase() || "SA";
+        }
+
+        function escapeHtml(value) {
+          return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+        }
+
+        openStaffAccountModalBtn?.addEventListener("click", () => openStaffModal());
+        staffAccountForm?.addEventListener("submit", handleStaffFormSubmit);
+        staffAccountsTbody?.addEventListener("click", (event) => {
+          const account = getStaffAccountFromRow(event.target);
+          if (!account) return;
+          if (event.target.closest(".btn-edit-staff")) {
+            openStaffModal(account);
+            return;
+          }
+          if (event.target.closest(".btn-toggle-staff")) {
+            toggleStaffStatus(account);
+            return;
+          }
+          if (event.target.closest(".btn-delete-staff")) {
+            deleteStaffAccount(account);
+          }
+        });
 
         function updateRecentApplications(enrollments) {
           const recentContainer = document.querySelector('#actual-content .recent-applications');
