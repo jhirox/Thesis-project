@@ -19,6 +19,30 @@ const registrarApprovalDraftColumnDefinitions = {
 };
 
 let registrarApprovalDraftSchemaReady = false;
+let studentAccountSchemaReady = false;
+
+async function ensureStudentAccountSchema() {
+  if (studentAccountSchemaReady) {
+    return;
+  }
+
+  const [columns] = await db.query("SHOW COLUMNS FROM users");
+  const columnNames = new Set(columns.map((column) => column.Field));
+
+  if (!columnNames.has("full_name")) {
+    await db.query("ALTER TABLE users ADD COLUMN full_name VARCHAR(150) NULL AFTER email");
+  }
+
+  if (!columnNames.has("profile_image")) {
+    await db.query("ALTER TABLE users ADD COLUMN profile_image LONGTEXT NULL AFTER full_name");
+  }
+
+  if (!columnNames.has("updated_at")) {
+    await db.query("ALTER TABLE users ADD COLUMN updated_at DATETIME NULL AFTER created_date");
+  }
+
+  studentAccountSchemaReady = true;
+}
 
 async function ensureRegistrarApprovalDraftsTableShape() {
   if (registrarApprovalDraftSchemaReady) {
@@ -281,6 +305,8 @@ export async function findEnrollmentApplicantDetails(id) {
 }
 
 export async function findStudents(query) {
+  await ensureStudentAccountSchema();
+
   const { limit, offset } = normalizePagination(query, { defaultLimit: 25, maxLimit: 100 });
   const { course, status, search } = query;
   const filters = [];
@@ -292,21 +318,22 @@ export async function findStudents(query) {
   }
 
   if (status) {
-    filters.push(`${studentStatusSql("s")} = ?`);
+    filters.push(`CASE WHEN u.is_active = 1 THEN 'Active' ELSE 'Inactive' END = ?`);
     values.push(status);
   }
 
   if (search) {
     filters.push(`(
       ${fullNameSql("s")} LIKE ?
-      OR s.email_address LIKE ?
+      OR u.full_name LIKE ?
+      OR u.email LIKE ?
       OR CAST(s.student_id AS CHAR) LIKE ?
     )`);
     const searchValue = `%${search}%`;
-    values.push(searchValue, searchValue, searchValue);
+    values.push(searchValue, searchValue, searchValue, searchValue);
   }
 
-  const whereClause = filters.length ? `WHERE ${filters.join(" AND ")}` : "";
+  const whereClause = filters.length ? `AND ${filters.join(" AND ")}` : "";
 
   const [data] = await db.query(
     `SELECT
@@ -315,36 +342,46 @@ export async function findStudents(query) {
       s.middle_name,
       s.last_name,
       s.suffix,
-      ${fullNameSql("s")} AS full_name,
-      s.email_address,
+      COALESCE(
+        NULLIF(TRIM(${fullNameSql("s")}), ''),
+        NULLIF(TRIM(u.full_name), ''),
+        SUBSTRING_INDEX(u.email, '@', 1)
+      ) AS full_name,
+      u.email AS email_address,
       s.contact_number,
-      s.profile_photo_url AS photo,
-      ${studentStatusSql("s")} AS enrollment_status,
+      COALESCE(s.profile_photo_url, u.profile_image, '/assets/images/lancephoto.png') AS photo,
+      CASE WHEN u.is_active = 1 THEN 'Active' ELSE 'Inactive' END AS enrollment_status,
       e.enrollment_id,
       e.queue_number,
       e.year_level,
-      e.application_status,
+      COALESCE(e.application_status, 'Not submitted') AS application_status,
       e.official_receipt_file_url,
       st.type_name AS student_type,
       p.program_name,
       p.program_code,
-      s.created_date,
-      s.updated_at
-    FROM students s
+      COALESCE(u.created_date, s.created_date) AS created_date,
+      COALESCE(u.updated_at, s.updated_at, u.created_date) AS updated_at
+    FROM users u
+    INNER JOIN role r ON r.id = u.role_id
+    LEFT JOIN students s ON LOWER(s.email_address) = LOWER(u.email)
     ${latestEnrollmentJoinSql("e", "le")}
     LEFT JOIN programs p ON e.program_id = p.program_id
     LEFT JOIN student_types st ON e.student_type_id = st.type_id
+    WHERE LOWER(r.role_name) IN ('user', 'student')
     ${whereClause}
-    ORDER BY s.created_date DESC
+    ORDER BY COALESCE(u.created_date, s.created_date) DESC, u.user_id DESC
     LIMIT ? OFFSET ?`,
     [...values, limit, offset]
   );
   const [[countResult]] = await db.query(
     `SELECT COUNT(*) AS total
-    FROM students s
+    FROM users u
+    INNER JOIN role r ON r.id = u.role_id
+    LEFT JOIN students s ON LOWER(s.email_address) = LOWER(u.email)
     ${latestEnrollmentJoinSql("e", "le")}
     LEFT JOIN programs p ON e.program_id = p.program_id
     LEFT JOIN student_types st ON e.student_type_id = st.type_id
+    WHERE LOWER(r.role_name) IN ('user', 'student')
     ${whereClause}`,
     values
   );
@@ -476,56 +513,101 @@ export async function updateStudentProfile(payload) {
 }
 
 export async function updateStudentStatus(payload) {
+  await ensureStudentAccountSchema();
+
   const isActive = payload.status === "Active" ? 1 : 0;
-  const whereClause = payload.studentId ? "student_id = ?" : "email_address = ?";
-  const whereValue = payload.studentId || payload.email;
+  const connection = await db.getConnection();
 
-  const [result] = await db.query(
-    `UPDATE students SET is_active = ?, updated_at = NOW() WHERE ${whereClause}`,
-    [isActive, whereValue]
-  );
+  try {
+    await connection.beginTransaction();
 
-  if (result.affectedRows === 0) {
-    throw new Error("Student account not found.");
+    let affectedRows = 0;
+
+    if (payload.email) {
+      const [userResult] = await connection.query(
+        "UPDATE users SET is_active = ?, updated_at = NOW() WHERE email = ?",
+        [isActive, payload.email]
+      );
+      affectedRows += userResult.affectedRows;
+    }
+
+    if (payload.studentId || payload.email) {
+      const whereClause = payload.studentId ? "student_id = ?" : "email_address = ?";
+      const whereValue = payload.studentId || payload.email;
+      const [studentResult] = await connection.query(
+        `UPDATE students SET is_active = ?, updated_at = NOW() WHERE ${whereClause}`,
+        [isActive, whereValue]
+      );
+      affectedRows += studentResult.affectedRows;
+    }
+
+    if (affectedRows === 0) {
+      throw new Error("Student account not found.");
+    }
+
+    await connection.commit();
+    return findStudentAccountByEmail(payload.email);
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
   }
-
-  return findStudentProfile({ studentId: payload.studentId, email: payload.email });
 }
 
 export async function updateStudentAccount(payload) {
+  await ensureStudentAccountSchema();
+
   const connection = await db.getConnection();
 
   try {
     await connection.beginTransaction();
 
     const target = await resolveStudentAccountTarget(connection, payload);
-    if (!target?.student_id) {
+    const userTarget = await resolveUserAccountTarget(connection, payload);
+    if (!target?.student_id && !userTarget?.user_id) {
       throw new Error("Student account not found.");
     }
 
     const nameParts = splitFullName(payload.fullName);
-    await connection.query(
-      `UPDATE students
-      SET first_name = ?,
-          middle_name = ?,
-          last_name = ?,
-          suffix = ?,
-          email_address = ?,
-          is_active = ?,
-          updated_at = NOW()
-      WHERE student_id = ?`,
-      [
-        nameParts.firstName,
-        nameParts.middleName,
-        nameParts.lastName,
-        nameParts.suffix,
-        payload.email,
-        payload.status === "Active" ? 1 : 0,
-        target.student_id,
-      ]
-    );
+    const isActive = payload.status === "Active" ? 1 : 0;
 
-    const enrollment = await findLatestEnrollmentForStudent(connection, target.student_id);
+    if (userTarget?.user_id) {
+      await connection.query(
+        `UPDATE users
+        SET email = ?,
+            full_name = ?,
+            is_active = ?,
+            updated_at = NOW()
+        WHERE user_id = ?`,
+        [payload.email, payload.fullName, isActive, userTarget.user_id]
+      );
+    }
+
+    if (target?.student_id) {
+      await connection.query(
+        `UPDATE students
+        SET first_name = ?,
+            middle_name = ?,
+            last_name = ?,
+            suffix = ?,
+            email_address = ?,
+            is_active = ?,
+            updated_at = NOW()
+        WHERE student_id = ?`,
+        [
+          nameParts.firstName,
+          nameParts.middleName,
+          nameParts.lastName,
+          nameParts.suffix,
+          payload.email,
+          isActive,
+          target.student_id,
+        ]
+      );
+    }
+
+    const enrollment = target?.student_id ? await findLatestEnrollmentForStudent(connection, target.student_id) : null;
     if (enrollment?.enrollment_id) {
       const enrollmentUpdates = [];
       const enrollmentValues = [];
@@ -556,13 +638,34 @@ export async function updateStudentAccount(payload) {
     }
 
     await connection.commit();
-    return findStudentProfile({ studentId: target.student_id, email: payload.email });
+    return findStudentAccountByEmail(payload.email);
   } catch (error) {
     await connection.rollback();
     throw error;
   } finally {
     connection.release();
   }
+}
+
+async function findStudentAccountByEmail(email) {
+  if (!email) {
+    return null;
+  }
+
+  const result = await findStudents({ search: email, limit: 1 });
+  return result.data.find((account) => String(account.email_address || "").toLowerCase() === String(email).toLowerCase()) || null;
+}
+
+async function resolveUserAccountTarget(connection, payload) {
+  const [rows] = await connection.query(
+    `SELECT user_id
+    FROM users
+    WHERE email = ? OR email = ?
+    LIMIT 1`,
+    [payload.originalEmail || null, payload.email || null]
+  );
+
+  return rows[0] || null;
 }
 
 async function resolveStudentAccountTarget(connection, payload) {
