@@ -2312,6 +2312,10 @@
                   <p class="fw-semibold mb-0">${getDisplayValue(profile.year_level)}</p>
                 </div>
                 <div class="col-md-6">
+                  <label class="form-label text-muted small">Semester</label>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.semester || profile.semester_types)}</p>
+                </div>
+                <div class="col-md-6">
                   <label class="form-label text-muted small">Entry Status</label>
                   <p class="fw-semibold mb-0">${getDisplayValue(profile.entry_status)}</p>
                 </div>
@@ -2330,10 +2334,6 @@
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Last School Year</label>
                   <p class="fw-semibold mb-0">${getDisplayValue(profile.last_school_year)}</p>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label text-muted small">Semester</label>
-                  <p class="fw-semibold mb-0">${getDisplayValue(profile.semester || profile.semester_types)}</p>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Student Type</label>
