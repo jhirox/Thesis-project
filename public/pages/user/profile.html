@@ -880,7 +880,13 @@
           profileBody.classList.add('authenticated');
         }
 
-        const buildFullName = (profile) => {
+        const createEmptyProfile = () => ({
+          email_address: userEmail,
+          full_name: user.fullname || formatNameFromEmail(userEmail),
+          photo: user.profileImage || '/assets/images/lancephoto.png',
+        });
+
+        const buildFullName = (profile = {}) => {
           if (profile.full_name) {
             return profile.full_name;
           }
@@ -973,6 +979,11 @@
         };
 
         const renderProfile = (profile) => {
+          if (!profile) {
+            currentProfile = null;
+            profile = createEmptyProfile();
+          }
+
           if (profile?.email_address && userEmail && profile.email_address !== userEmail) {
             console.warn('Blocked profile render for a different signed-in user.');
             localStorage.removeItem('studentProfileId');
@@ -1045,6 +1056,11 @@
               const response = await fetch(target, { headers });
               const data = await response.json();
               if (response.ok && data.success) {
+                if (!data.data) {
+                  renderProfile(null);
+                  return;
+                }
+
                 if (data.data?.student_id) {
                   localStorage.setItem('studentProfileId', String(data.data.student_id));
                 }

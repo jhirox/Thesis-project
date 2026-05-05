@@ -400,6 +400,8 @@ export async function findStudentById(id) {
 }
 
 export async function findStudentProfile({ studentId, email }) {
+  await ensureStudentAccountSchema();
+
   const [rows] = await db.query(
     `SELECT
       ${Student.getProfileSelectionSql()},
@@ -428,7 +430,57 @@ export async function findStudentProfile({ studentId, email }) {
     [studentId || null, email || null]
   );
 
-  return rows[0] || null;
+  if (rows[0]) {
+    return rows[0];
+  }
+
+  if (!email) {
+    return null;
+  }
+
+  const [userRows] = await db.query(
+    `SELECT
+      NULL AS student_id,
+      NULL AS first_name,
+      NULL AS middle_name,
+      NULL AS last_name,
+      NULL AS suffix,
+      COALESCE(NULLIF(TRIM(u.full_name), ''), SUBSTRING_INDEX(u.email, '@', 1)) AS full_name,
+      u.email AS email_address,
+      NULL AS contact_number,
+      NULL AS birth_date,
+      NULL AS birth_place,
+      NULL AS complete_address,
+      NULL AS sex,
+      NULL AS civil_status,
+      NULL AS spouse_name,
+      NULL AS nationality,
+      NULL AS religion,
+      u.profile_image AS photo,
+      NULL AS program_name,
+      NULL AS program_code,
+      NULL AS student_type,
+      NULL AS modality_name,
+      NULL AS year_level,
+      NULL AS semester_types,
+      NULL AS academic_year,
+      NULL AS queue_number,
+      'Not submitted' AS application_status,
+      NULL AS special_remarks,
+      NULL AS official_receipt_number,
+      NULL AS official_receipt_file_url,
+      NULL AS official_receipt_file_name,
+      NULL AS official_receipt_file_type,
+      CASE WHEN u.is_active = 1 THEN 'Active' ELSE 'Inactive' END AS enrollment_status
+    FROM users u
+    INNER JOIN role r ON r.id = u.role_id
+    WHERE u.email = ?
+      AND LOWER(r.role_name) IN ('user', 'student')
+    LIMIT 1`,
+    [email]
+  );
+
+  return userRows[0] || null;
 }
 
 async function resolveEnrollmentTarget({ enrollmentId, studentId, email }) {
@@ -456,6 +508,8 @@ async function resolveEnrollmentTarget({ enrollmentId, studentId, email }) {
 }
 
 export async function updateStudentProfile(payload) {
+  await ensureStudentAccountSchema();
+
   const updates = [];
   const values = [];
 
@@ -505,7 +559,19 @@ export async function updateStudentProfile(payload) {
     values
   );
 
+  if (payload.profilePhotoUrl != null && payload.email) {
+    await db.query(
+      "UPDATE users SET profile_image = ?, updated_at = NOW() WHERE email = ?",
+      [payload.profilePhotoUrl, payload.email]
+    );
+  }
+
   if (result.affectedRows === 0) {
+    const profile = await findStudentProfile({ email: payload.email });
+    if (profile) {
+      return profile;
+    }
+
     throw new Error("Student profile not found.");
   }
 
