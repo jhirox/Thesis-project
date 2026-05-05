@@ -22,7 +22,7 @@ const portalRoutes = {
     registrar: {
         dashboard: "/registrar/dashboard",
         registrar: "/registrar",
-        accounts: "/registrar/dashboard",
+        accounts: "/registrar/accounts",
         applicationQueue: "/registrar/application-queue",
         applicationEvaluation: "/registrar/application-evaluation",
         notification: "/registrar/notification",
@@ -57,6 +57,10 @@ const routeAliases = {
     "/accounts": "accounts",
     "/accounts.html": "accounts",
     "./accounts.html": "accounts",
+    "/registrar/accounts": "accounts",
+    "/registrar/accounts.html": "accounts",
+    "/superadmin/accounts": "accounts",
+    "/superadmin/accounts.html": "accounts",
 
     "/application-queue": "applicationQueue",
     "/application-queue.html": "applicationQueue",
