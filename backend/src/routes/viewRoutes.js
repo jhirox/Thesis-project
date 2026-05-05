@@ -1,8 +1,65 @@
 import express from "express";
 import path from "path";
+import jwt from "jsonwebtoken";
 const router = express.Router();
 
 const publicPath = path.join(process.cwd(), "public");
+
+const roleHome = {
+    admin: "/dashboard",
+    registrar: "/registrar/dashboard",
+    superadmin: "/superadmin/dashboard",
+    "super admin": "/superadmin/dashboard",
+    user: "/profile",
+    student: "/profile",
+};
+
+const parseCookies = (cookieHeader = "") => Object.fromEntries(
+    cookieHeader
+        .split(";")
+        .map((cookie) => cookie.trim())
+        .filter(Boolean)
+        .map((cookie) => {
+            const separatorIndex = cookie.indexOf("=");
+            if (separatorIndex === -1) return [cookie, ""];
+            return [
+                decodeURIComponent(cookie.slice(0, separatorIndex)),
+                decodeURIComponent(cookie.slice(separatorIndex + 1)),
+            ];
+        })
+);
+
+const getAuthUser = (req) => {
+    const token = parseCookies(req.headers.cookie).authToken;
+    if (!token || !process.env.JWT_SECRET) {
+        return null;
+    }
+
+    try {
+        return jwt.verify(token, process.env.JWT_SECRET);
+    } catch {
+        return null;
+    }
+};
+
+const normalizeRole = (role) => String(role || "").trim().toLowerCase();
+
+const requireRoles = (...allowedRoles) => (req, res, next) => {
+    const user = getAuthUser(req);
+    const role = normalizeRole(user?.role);
+    const allowed = allowedRoles.map(normalizeRole);
+
+    if (!user) {
+        return res.redirect(`/login?next=${encodeURIComponent(req.originalUrl)}`);
+    }
+
+    if (!allowed.includes(role)) {
+        return res.redirect(roleHome[role] || "/profile");
+    }
+
+    req.user = user;
+    next();
+};
 
 // Helper to serve files from specific folders
 const serve = (folder, file) => (req, res) => {
@@ -28,21 +85,21 @@ const adminPages = ["dashboard", "accounts", "application-evaluation", "applicat
 
 adminPages.forEach(page => {
     // Standard Admin Routes
-    router.get(`/${page}`, serve('admin', page));
+    router.get(`/${page}`, requireRoles("admin", "superadmin", "super admin"), serve('admin', page));
     // Registrar mapping to Admin files
-    router.get(`/registrar/${page}`, serve('admin', page));
+    router.get(`/registrar/${page}`, requireRoles("registrar", "superadmin", "super admin"), serve('admin', page));
 });
 
-router.get("/registrar", serve('registrar', 'registrar'));
+router.get("/registrar", requireRoles("registrar", "superadmin", "super admin"), serve('registrar', 'registrar'));
 
 // --- SUPERADMIN ---
-router.get("/superadmin", serve('superadmin', 'superadmin'));
-router.get("/superadmin/dashboard", serve('admin', 'dashboard'));
+router.get("/superadmin", requireRoles("superadmin", "super admin"), serve('superadmin', 'superadmin'));
+router.get("/superadmin/dashboard", requireRoles("superadmin", "super admin"), serve('admin', 'dashboard'));
 
 // Superadmin can access registrar and all admin pages
-router.get("/superadmin/registrar", serve('registrar', 'registrar'));
+router.get("/superadmin/registrar", requireRoles("superadmin", "super admin"), serve('registrar', 'registrar'));
 adminPages.forEach(page => {
-    router.get(`/superadmin/${page}`, serve('admin', page));
+    router.get(`/superadmin/${page}`, requireRoles("superadmin", "super admin"), serve('admin', page));
 });
 
 export default router;

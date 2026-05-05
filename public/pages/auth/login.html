@@ -150,7 +150,23 @@
         return "/profile";
     };
 
-    const getRedirectTarget = (user) => requestedRedirect || getDefaultRedirect(user);
+    const isAllowedRedirect = (user, target) => {
+        if (!target || !target.startsWith("/")) return false;
+
+        const role = normalizeRole(user?.role);
+        const path = target.split("?")[0].replace(/\/+$/g, "") || "/";
+        const isSuperAdmin = role === "superadmin" || role === "super admin";
+        const adminPages = ["/dashboard", "/accounts", "/application-evaluation", "/application-queue", "/notification", "/rep-and-analytics"];
+
+        if (path === "/superadmin" || path.startsWith("/superadmin/")) return isSuperAdmin;
+        if (path === "/registrar" || path.startsWith("/registrar/")) return role === "registrar" || isSuperAdmin;
+        if (adminPages.includes(path)) return role === "admin" || isSuperAdmin;
+        return ["/", "/profile", "/enrollment-form", "/notifications", "/enrollment", "/courses", "/about-us"].includes(path);
+    };
+
+    const getRedirectTarget = (user) => (
+        isAllowedRedirect(user, requestedRedirect) ? requestedRedirect : getDefaultRedirect(user)
+    );
 
     // Redirect if session exists
     const authUser = JSON.parse(localStorage.getItem('sessionUser'));
