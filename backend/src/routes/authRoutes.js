@@ -74,6 +74,12 @@ router.post('/login', async (req, res) => {
     
     // Call the service
     const result = await AuthService.login(email, password);
+    res.cookie('authToken', result.token, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
+      maxAge: 24 * 60 * 60 * 1000,
+    });
 
     res.json({
       message: 'Login successful',
@@ -86,6 +92,15 @@ router.post('/login', async (req, res) => {
     const status = error.message === 'Account is inactive' ? 403 : 401;
     res.status(status).json({ error: error.message });
   }
+});
+
+router.post('/logout', (req, res) => {
+  res.clearCookie('authToken', {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
+  });
+  res.json({ success: true, message: 'Logged out' });
 });
 
 router.get('/me/profile', authenticateToken, async (req, res) => {

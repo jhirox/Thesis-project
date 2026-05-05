@@ -3,6 +3,7 @@ import multer from 'multer';
 import path from 'path';
 import { getStudents, getStudentByID, submitEnrollment, getEnrollments, getRecentEnrollments, getEnrollmentApplicantDetails, getStudentProfile, updateStudentProfile, updateStudentReceipt, updateEnrollmentStatus, updateStudentStatus, updateStudentAccount, getRegistrarApprovalDrafts, saveRegistrarApprovalDraft, deleteRegistrarApprovalDraft, searchStudents } from '../controllers/studentController.js';
 import { ensureUploadsDir, uploadsDir } from '../config/uploadStorage.js';
+import { authenticateToken, requireRoles } from '../middlewares/authMiddleware.js';
 
 ensureUploadsDir();
 
@@ -23,47 +24,52 @@ const upload = multer({
 
 const router = express.Router();
 
+const staffAccess = requireRoles('admin', 'registrar', 'superadmin', 'super admin');
+const adminAccess = requireRoles('admin', 'superadmin', 'super admin');
+const registrarAccess = requireRoles('registrar', 'superadmin', 'super admin');
+const registrarOrAdminAccess = requireRoles('admin', 'registrar', 'superadmin', 'super admin');
+
 // GET all students
-router.get('/', getStudents);
+router.get('/', adminAccess, getStudents);
 
 // SEARCH students by name
-router.get('/search/by-name', searchStudents);
+router.get('/search/by-name', adminAccess, searchStudents);
 
 // GET all enrollments
-router.get('/enrollments/all', getEnrollments);
+router.get('/enrollments/all', staffAccess, getEnrollments);
 
 // GET recent enrollments
-router.get('/enrollments/recent', getRecentEnrollments);
+router.get('/enrollments/recent', staffAccess, getRecentEnrollments);
 
 // GET applicant name and course by enrollment ID or application ID
-router.get('/enrollments/details/:id', getEnrollmentApplicantDetails);
+router.get('/enrollments/details/:id', staffAccess, getEnrollmentApplicantDetails);
 
 // UPDATE enrollment application status
-router.put('/enrollments/status', updateEnrollmentStatus);
+router.put('/enrollments/status', registrarOrAdminAccess, updateEnrollmentStatus);
 
 // UPDATE student account status
-router.put('/status', updateStudentStatus);
+router.put('/status', adminAccess, updateStudentStatus);
 
 // UPDATE student account summary fields
-router.put('/account', updateStudentAccount);
+router.put('/account', adminAccess, updateStudentAccount);
 
 // Registrar approval drafts
-router.get('/enrollments/approval-drafts', getRegistrarApprovalDrafts);
-router.put('/enrollments/approval-drafts', saveRegistrarApprovalDraft);
-router.delete('/enrollments/approval-drafts', deleteRegistrarApprovalDraft);
+router.get('/enrollments/approval-drafts', registrarAccess, getRegistrarApprovalDrafts);
+router.put('/enrollments/approval-drafts', registrarAccess, saveRegistrarApprovalDraft);
+router.delete('/enrollments/approval-drafts', registrarAccess, deleteRegistrarApprovalDraft);
 
 // POST submit enrollment
 router.post('/enrollment', submitEnrollment);
 
 // GET profile by email or student ID
-router.get('/profile', getStudentProfile);
-router.get('/profile/:id', getStudentProfile);
+router.get('/profile', authenticateToken, getStudentProfile);
+router.get('/profile/:id', authenticateToken, getStudentProfile);
 
 // UPDATE profile by email or student ID
-router.put('/profile', upload.single('profilePhoto'), updateStudentProfile);
-router.put('/profile/receipt', upload.single('officialReceiptFile'), updateStudentReceipt);
+router.put('/profile', authenticateToken, upload.single('profilePhoto'), updateStudentProfile);
+router.put('/profile/receipt', authenticateToken, upload.single('officialReceiptFile'), updateStudentReceipt);
 
 // GET student by ID
-router.get('/:id', getStudentByID);
+router.get('/:id', staffAccess, getStudentByID);
 
 export default router;

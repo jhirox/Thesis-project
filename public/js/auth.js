@@ -20,6 +20,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const currentPath = window.location.pathname.replace(/\/+$|^\s+|\s+$/g, '') || '/';
+    const parsedSessionUser = sessionUser ? JSON.parse(sessionUser) : null;
+    const role = String(parsedSessionUser?.user?.role || parsedSessionUser?.role || '').trim().toLowerCase();
+    const roleHome = {
+      admin: '/dashboard',
+      registrar: '/registrar/dashboard',
+      superadmin: '/superadmin/dashboard',
+      'super admin': '/superadmin/dashboard',
+      user: '/profile',
+      student: '/profile',
+    };
 
     // ✅ STRICTLY protected pages - No guest mode allowed
     const restrictedPages = [
@@ -52,6 +62,28 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
+    const adminOnlyPages = [
+      '/dashboard',
+      '/accounts',
+      '/application-evaluation',
+      '/application-queue',
+      '/notification',
+      '/rep-and-analytics',
+    ];
+    const superAdminOnlyPage = currentPath === '/superadmin' || currentPath.startsWith('/superadmin/');
+    const registrarOnlyPage = currentPath === '/registrar' || currentPath.startsWith('/registrar/');
+    const adminPage = adminOnlyPages.includes(currentPath);
+    const isSuperAdmin = role === 'superadmin' || role === 'super admin';
+    const hasWrongRole =
+      (adminPage && role !== 'admin' && !isSuperAdmin) ||
+      (registrarOnlyPage && role !== 'registrar' && !isSuperAdmin) ||
+      (superAdminOnlyPage && !isSuperAdmin);
+
+    if (isRestrictedPage && hasValidSession && hasWrongRole) {
+      window.location.replace(roleHome[role] || '/profile');
+      return;
+    }
+
     // For homepage, require login unless in guest mode
     if (currentPath === '/' && !hasValidSession && !guestMode) {
       window.location.replace('/login');
@@ -76,6 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // ======================
 function logout() {
   try {
+    fetch('/api/auth/logout', { method: 'POST', keepalive: true }).catch(() => {});
     localStorage.removeItem('sessionUser');
     localStorage.removeItem('sessionTimeout');
     localStorage.removeItem('authToken');

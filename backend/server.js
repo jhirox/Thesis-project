@@ -52,6 +52,14 @@ app.use((req, res, next) => {
 if (uploadsPublicUrlBase.startsWith("/")) {
   app.use(uploadsPublicUrlBase, express.static(uploadsDir));
 }
+
+app.use((req, res, next) => {
+    if (/^\/pages\/(admin|registrar|superadmin)\//i.test(req.path)) {
+        return res.redirect(`/login?next=${encodeURIComponent(req.originalUrl)}`);
+    }
+    next();
+});
+
 app.use(express.static(publicPath));
 
 // 4. API & VIEW ROUTES
