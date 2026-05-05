@@ -1,8 +1,48 @@
 import express from 'express';
+import multer from 'multer';
+import path from 'path';
 import AuthService from '../services/auth.service.js';
 import { authenticateToken } from '../middlewares/authMiddleware.js';
+import { buildStoredFileUrl, ensureUploadsDir, uploadsDir } from '../config/uploadStorage.js';
 
 const router = express.Router();
+
+ensureUploadsDir();
+
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => {
+      ensureUploadsDir();
+      cb(null, uploadsDir);
+    },
+    filename: (_req, file, cb) => {
+      const extension = path.extname(file.originalname).toLowerCase();
+      const safeName = `portal-profile-${Date.now()}-${Math.round(Math.random() * 1e6)}${extension}`;
+      cb(null, safeName);
+    },
+  }),
+  fileFilter: (_req, file, cb) => {
+    if (!file.mimetype.startsWith('image/')) {
+      return cb(new Error('Please upload a valid image file.'));
+    }
+    cb(null, true);
+  },
+  limits: {
+    fileSize: 2 * 1024 * 1024,
+  },
+});
+
+const uploadPortalProfileImage = (req, res, next) => {
+  upload.single('profileImage')(req, res, (error) => {
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        error: error.message || 'Unable to upload profile image',
+      });
+    }
+    next();
+  });
+};
 
 const requireSuperAdmin = (req, res, next) => {
   const role = String(req.user?.role || '').trim().toLowerCase();
@@ -45,6 +85,30 @@ router.post('/login', async (req, res) => {
 
     const status = error.message === 'Account is inactive' ? 403 : 401;
     res.status(status).json({ error: error.message });
+  }
+});
+
+router.get('/me/profile', authenticateToken, async (req, res) => {
+  try {
+    const profile = await AuthService.findPortalProfileById(req.user.userId);
+    res.json({ success: true, data: profile });
+  } catch (error) {
+    console.error('Portal Profile Load Error:', error.message);
+    res.status(400).json({ success: false, error: error.message || 'Unable to load profile' });
+  }
+});
+
+router.put('/me/profile', authenticateToken, uploadPortalProfileImage, async (req, res) => {
+  try {
+    const profile = await AuthService.updatePortalProfile(req.user.userId, {
+      displayName: req.body.displayName,
+      profileImage: req.file ? buildStoredFileUrl(req.file.filename) : undefined,
+      removeProfileImage: req.body.removeProfileImage === 'true',
+    });
+    res.json({ success: true, data: profile, message: 'Profile updated' });
+  } catch (error) {
+    console.error('Portal Profile Update Error:', error.message);
+    res.status(400).json({ success: false, error: error.message || 'Unable to update profile' });
   }
 });
 

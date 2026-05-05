@@ -301,9 +301,72 @@ function savePortalProfile(sessionUser, profile) {
         localStorage.setItem("sessionUser", JSON.stringify(sessionUser));
         return true;
     } catch (error) {
-        alert("The selected image is too large to save in this browser. Please choose a smaller picture.");
+        alert("Unable to save profile in this browser.");
         return false;
     }
+}
+
+function getAuthToken() {
+    return localStorage.getItem("authToken") || "";
+}
+
+function toPortalProfile(sessionUser, data = {}) {
+    return {
+        displayName: data.fullname || data.fullName || data.displayName || getPortalDisplayName(sessionUser, {}),
+        profileImage: data.profileImage || defaultPortalProfileImage
+    };
+}
+
+async function loadPortalProfileFromServer(sessionUser) {
+    const authToken = getAuthToken();
+    if (!authToken) {
+        return null;
+    }
+
+    const response = await fetch("/api/auth/me/profile", {
+        headers: {
+            Authorization: `Bearer ${authToken}`
+        }
+    });
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+        throw new Error(result.error || "Unable to load profile.");
+    }
+
+    const profile = toPortalProfile(sessionUser, result.data);
+    savePortalProfile(sessionUser, profile);
+    updatePortalProfileUi(profile.displayName, profile.profileImage);
+    return profile;
+}
+
+async function savePortalProfileToServer({ displayName, profileImageFile, removeProfileImage }) {
+    const authToken = getAuthToken();
+    if (!authToken) {
+        throw new Error("Your session token is missing. Please sign in again.");
+    }
+
+    const formData = new FormData();
+    formData.append("displayName", displayName);
+    if (profileImageFile) {
+        formData.append("profileImage", profileImageFile);
+    }
+    if (removeProfileImage) {
+        formData.append("removeProfileImage", "true");
+    }
+
+    const response = await fetch("/api/auth/me/profile", {
+        method: "PUT",
+        headers: {
+            Authorization: `Bearer ${authToken}`
+        },
+        body: formData
+    });
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+        throw new Error(result.error || "Unable to save profile.");
+    }
+
+    return result.data;
 }
 
 function updatePortalProfileUi(displayName, profileImage) {
@@ -389,6 +452,9 @@ function setupPortalProfileEditor() {
 
     savePortalProfile(sessionUser, profile);
     updatePortalProfileUi(profile.displayName, profile.profileImage);
+    loadPortalProfileFromServer(sessionUser).catch((error) => {
+        console.warn("Portal profile load failed:", error.message);
+    });
 
     const profileLink = Array.from(document.querySelectorAll(".user-menu .user-footer a")).find((link) =>
         (link.textContent || "").trim().toLowerCase() === "profile"
@@ -408,7 +474,10 @@ function setupPortalProfileEditor() {
     const imageInput = modal.querySelector("#portalProfileImageInput");
     const imagePreview = modal.querySelector("#portalProfilePreview");
     const removeImageButton = modal.querySelector("#portalProfileRemoveImage");
+    const saveButton = profileForm.querySelector('button[type="submit"]');
     let selectedProfileImage = profile.profileImage;
+    let selectedProfileImageFile = null;
+    let removeSelectedProfileImage = false;
 
     modal.addEventListener("show.bs.modal", () => {
         const latestSessionUser = getStoredSessionUser();
@@ -418,6 +487,8 @@ function setupPortalProfileEditor() {
             profileImage: getPortalProfileImage(latestSessionUser, latestProfile)
         };
         selectedProfileImage = profile.profileImage;
+        selectedProfileImageFile = null;
+        removeSelectedProfileImage = false;
         nameInput.value = profile.displayName;
         imagePreview.src = selectedProfileImage;
         imageInput.value = "";
@@ -431,9 +502,18 @@ function setupPortalProfileEditor() {
 
         if (!file.type.startsWith("image/")) {
             imageInput.value = "";
+            alert("Please select a valid image file.");
             return;
         }
 
+        if (file.size > 2 * 1024 * 1024) {
+            imageInput.value = "";
+            alert("Please choose an image smaller than 2MB.");
+            return;
+        }
+
+        selectedProfileImageFile = file;
+        removeSelectedProfileImage = false;
         const reader = new FileReader();
         reader.addEventListener("load", () => {
             selectedProfileImage = reader.result;
@@ -444,11 +524,13 @@ function setupPortalProfileEditor() {
 
     removeImageButton.addEventListener("click", () => {
         selectedProfileImage = defaultPortalProfileImage;
+        selectedProfileImageFile = null;
+        removeSelectedProfileImage = true;
         imagePreview.src = selectedProfileImage;
         imageInput.value = "";
     });
 
-    profileForm.addEventListener("submit", (event) => {
+    profileForm.addEventListener("submit", async (event) => {
         event.preventDefault();
 
         const latestSessionUser = getStoredSessionUser();
@@ -457,15 +539,34 @@ function setupPortalProfileEditor() {
             return;
         }
 
-        profile = {
-            displayName,
-            profileImage: selectedProfileImage || defaultPortalProfileImage
-        };
-
-        if (!savePortalProfile(latestSessionUser, profile)) {
-            return;
+        if (saveButton) {
+            saveButton.disabled = true;
+            saveButton.textContent = "Saving...";
         }
-        updatePortalProfileUi(profile.displayName, profile.profileImage);
+
+        try {
+            const savedProfile = await savePortalProfileToServer({
+                displayName,
+                profileImageFile: selectedProfileImageFile,
+                removeProfileImage: removeSelectedProfileImage
+            });
+
+            profile = toPortalProfile(latestSessionUser, savedProfile);
+
+            if (!savePortalProfile(latestSessionUser, profile)) {
+                return;
+            }
+            updatePortalProfileUi(profile.displayName, profile.profileImage);
+        } catch (error) {
+            console.error("Portal profile save failed:", error);
+            alert(error.message || "Unable to save profile.");
+            return;
+        } finally {
+            if (saveButton) {
+                saveButton.disabled = false;
+                saveButton.textContent = "Save Profile";
+            }
+        }
 
         const modalInstance = bootstrap.Modal.getInstance(modal);
         if (document.activeElement) {

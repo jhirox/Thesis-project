@@ -192,6 +192,67 @@ class AuthService {
     };
   }
 
+  async findPortalProfileById(userId) {
+    await this.ensureStaffAccountShape();
+
+    const id = Number.parseInt(userId, 10);
+    if (!Number.isInteger(id) || id <= 0) {
+      throw new Error("A valid user id is required.");
+    }
+
+    const [rows] = await db.query(
+      `SELECT u.user_id, u.email, u.full_name, u.profile_image, r.role_name AS role
+       FROM users u
+       LEFT JOIN role r ON r.id = u.role_id
+       WHERE u.user_id = ?
+       LIMIT 1`,
+      [id]
+    );
+
+    const user = rows[0];
+    if (!user) {
+      throw new Error("User profile not found.");
+    }
+
+    return {
+      id: user.user_id,
+      email: user.email,
+      role: user.role,
+      fullname: user.full_name || this.getDisplayNameFromEmail(user.email),
+      profileImage: user.profile_image || "",
+    };
+  }
+
+  async updatePortalProfile(userId, payload) {
+    await this.ensureStaffAccountShape();
+
+    const id = Number.parseInt(userId, 10);
+    if (!Number.isInteger(id) || id <= 0) {
+      throw new Error("A valid user id is required.");
+    }
+
+    const current = await this.findPortalProfileById(id);
+    const displayName = String(payload.displayName || current.fullname || "").trim();
+    const profileImage = payload.removeProfileImage
+      ? ""
+      : payload.profileImage === undefined
+        ? current.profileImage
+        : String(payload.profileImage || "").trim();
+
+    if (!displayName) {
+      throw new Error("Display name is required.");
+    }
+
+    await db.query(
+      `UPDATE users
+       SET full_name = ?, profile_image = ?, updated_at = NOW()
+       WHERE user_id = ?`,
+      [displayName, profileImage || null, id]
+    );
+
+    return this.findPortalProfileById(id);
+  }
+
   normalizeStaffRoleLabel(role) {
     const normalized = String(role || "").trim().toLowerCase();
     if (normalized === "superadmin" || normalized === "super admin") return "super admin";

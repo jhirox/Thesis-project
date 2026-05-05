@@ -1,10 +1,12 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import dotenv from "dotenv";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, "../../..");
+dotenv.config({ path: path.join(projectRoot, ".env") });
 
 const configuredUploadsDir = process.env.UPLOADS_DIR?.trim();
 const configuredPublicBase = process.env.UPLOADS_PUBLIC_URL_BASE?.trim();
