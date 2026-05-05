@@ -1,5 +1,14 @@
 import db from "../config/db.js";
 
+const programAliases = {
+  "BSBA Major in Marketing Management": "BSBA-MM",
+  "BSBA Major in Financial Management": "BSBA-FM",
+  "BSBA Major in Human Resource Management": "BSBA-HRM",
+  "BSED Major in English": "BSED-ENG",
+  "BSED Major in Mathematics": "BSED-MATH",
+  "BSED Major in Filipino": "BSED-FIL",
+};
+
 class Lookup {
   static async findIdByName(connection, table, idCol, nameCol, value) {
     const [rows] = await connection.query(
@@ -29,11 +38,14 @@ class Lookup {
   }
 
   static async resolveProgramId(connection, value) {
+    const normalizedValue = String(value || "").trim();
+    const lookupValue = programAliases[normalizedValue] || normalizedValue;
+
      const [rows] = await connection.query(
       `SELECT program_id FROM programs 
        WHERE program_name = ? OR program_code = ? 
        OR CONCAT(program_code, ' - ', program_name) = ? LIMIT 1`,
-      [value, value, value]
+      [lookupValue, lookupValue, lookupValue]
     );
     return rows[0]?.program_id || null;
   }
