@@ -121,7 +121,10 @@ export async function findEnrollments(query) {
       e.enrollment_id,
       e.student_id,
       e.program_id,
+<<<<<<< HEAD
       p.program_code AS major,
+=======
+>>>>>>> fd92341b02f768c5cbb62410e46bc0f072205d58
       e.modality_id,
       e.student_type_id,
       e.year_level,
@@ -173,7 +176,10 @@ export async function findRecentEnrollments(query) {
       e.enrollment_id,
       e.student_id,
       e.program_id,
+<<<<<<< HEAD
       p.program_code AS major,
+=======
+>>>>>>> fd92341b02f768c5cbb62410e46bc0f072205d58
       e.modality_id,
       e.student_type_id,
       e.year_level,
@@ -219,7 +225,10 @@ export async function findEnrollmentApplicantDetails(id) {
       e.enrollment_id,
       e.student_id,
       e.program_id,
+<<<<<<< HEAD
       p.program_code AS major,
+=======
+>>>>>>> fd92341b02f768c5cbb62410e46bc0f072205d58
       e.modality_id,
       e.student_type_id,
       e.year_level,
