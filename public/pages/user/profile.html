@@ -988,6 +988,7 @@
           profileImg.src = profile.photo || '/assets/images/lancephoto.png';
           programInfo.textContent = profile.program_name ? `${profile.program_name} ${profile.program_code ? `(${profile.program_code})` : ''}`.trim() : 'Not set';
           majorInfo.textContent = profile.program_code || 'Not set';
+          if (yearLevelInfo) yearLevelInfo.textContent = profile.year_level || 'Not set';
           entryStatus.textContent = profile.application_status || 'Not set';
           if (studentTypeInfo) studentTypeInfo.textContent = profile.student_type || 'Not set';
           modality.textContent = profile.modality_name || 'Not set';
