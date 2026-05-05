@@ -61,6 +61,17 @@ const requireRoles = (...allowedRoles) => (req, res, next) => {
     next();
 };
 
+const redirectRegistrarToMappedPage = (page) => (req, res, next) => {
+    const user = getAuthUser(req);
+    const role = normalizeRole(user?.role);
+
+    if (role === "registrar") {
+        return res.redirect(`/registrar/${page}`);
+    }
+
+    next();
+};
+
 // Helper to serve files from specific folders
 const serve = (folder, file) => (req, res) => {
     res.sendFile(path.join(publicPath, `pages/${folder}/${file}.html`));
@@ -85,7 +96,7 @@ const adminPages = ["dashboard", "accounts", "application-evaluation", "applicat
 
 adminPages.forEach(page => {
     // Standard Admin Routes
-    router.get(`/${page}`, requireRoles("admin", "superadmin", "super admin"), serve('admin', page));
+    router.get(`/${page}`, redirectRegistrarToMappedPage(page), requireRoles("admin", "superadmin", "super admin"), serve('admin', page));
     // Registrar mapping to Admin files
     router.get(`/registrar/${page}`, requireRoles("registrar", "superadmin", "super admin"), serve('admin', page));
 });
