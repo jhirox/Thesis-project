@@ -522,8 +522,8 @@
 
     <!-- Student Details Modal -->
     <div class="modal fade" id="studentDetailsModal" tabindex="-1" aria-labelledby="studentDetailsModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content bg-primary-subtle text-white">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content text-white" style="background-color: #12395b;">
           <div class="modal-header border-bottom border-secondary-subtle">
             <h5 class="modal-title fw-bold" id="studentDetailsModalLabel">
               <i class="fa-solid fa-user me-2"></i>Student Details
@@ -1027,22 +1027,144 @@
         }
       }
 
+      function buildStudentName(student = {}) {
+        return `${student.first_name || ""} ${student.middle_name || ""} ${student.last_name || ""}`.trim();
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "<")
+          .replace(/>/g, ">")
+          .replace(/"/g, "")
+          .replace(/'/g, "&#039;");
+      }
+
+      let activeStudentRecord = null;
+      let activeStudentProfile = null;
+
       const studentDetailsModalEl = document.getElementById('studentDetailsModal');
       const modalDetails = document.getElementById('modal-student-details');
 
-      function getStudentDetailsMarkup({ name = 'Not set', id = 'Not set' } = {}) {
+function getDisplayValue(value, fallback = "Not set") {
+        if (value === undefined || value === null) {
+          return fallback;
+        }
+
+        const normalized = String(value).trim();
+        return normalized ? escapeHtml(normalized) : fallback;
+      }
+
+      function getDateInputValue(value) {
+        if (!value) return "";
+
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) {
+          return "";
+        }
+
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      }
+
+      function buildStudentStatusBadge(status) {
+        if (status === "Active") {
+          return `<span class="badge text-bg-success">Active</span>`;
+        }
+        if (status === "Inactive") {
+          return `<span class="badge text-bg-secondary">Inactive</span>`;
+        }
+        return `<span class="badge text-bg-secondary">Not set</span>`;
+      }
+
+      function normalizeUploadUrl(url) {
+        const normalized = String(url || "").trim();
+        if (!normalized) {
+          return "";
+        }
+        if (/^(https?:)?\/\//i.test(normalized) || normalized.startsWith("data:") || normalized.startsWith("/")) {
+          return normalized;
+        }
+        if (normalized.startsWith("uploads/")) {
+          return `/${normalized}`;
+        }
+        return normalized;
+      }
+
+      function getOfficialReceiptMarkup(profile = {}) {
+        const fileUrl = profile.official_receipt_file_url;
+        const fileName = profile.official_receipt_file_name;
+        const fileType = profile.official_receipt_file_type;
+        const receiptNumber = getDisplayValue(profile.official_receipt_number);
+
+        if (fileUrl && fileType?.startsWith("image/")) {
+          return `
+            <div class="text-center">
+              <img
+                src="${escapeHtml(fileUrl)}"
+                alt="Official Receipt"
+                class="img-fluid rounded border mb-3"
+                style="max-height: 260px; object-fit: contain;"
+              />
+              <p class="mb-1 fw-semibold">${getDisplayValue(fileName)}</p>
+              <p class="text-muted small mb-0">Receipt Number: ${receiptNumber}</p>
+            </div>
+          `;
+        }
+
+        if (fileUrl && fileType === "application/pdf") {
+          return `
+            <div class="text-center">
+              <i class="fa-solid fa-file-pdf fa-2x text-danger mb-3"></i>
+              <p class="mb-1 fw-semibold">${getDisplayValue(fileName)}</p>
+              <p class="text-muted small mb-2">Receipt Number: ${receiptNumber}</p>
+              <a href="${escapeHtml(fileUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger btn-sm">Open PDF</a>
+            </div>
+          `;
+        }
+
+        if (profile.official_receipt_number) {
+          return `
+            <div class="text-center">
+              <i class="fa-solid fa-receipt fa-2x text-secondary mb-3"></i>
+              <p class="mb-1 fw-semibold">Official Receipt</p>
+              <p class="text-muted small mb-0">Receipt Number: ${receiptNumber}</p>
+            </div>
+          `;
+        }
+
+        return `
+          <div class="text-center">
+            <i class="fa-solid fa-image fa-2x text-secondary mb-3"></i>
+            <p class="mb-1 fw-semibold">No OR uploaded yet.</p>
+            <p class="text-muted small mb-0">Receipt Number: Not set</p>
+          </div>
+        `;
+      }
+
+      function getStudentDetailsMarkup(profile = {}) {
+        const name = profile.full_name || buildStudentName(profile) || "Not set";
+        const id = profile.student_id || "Not set";
+        const program = (profile.program_code || profile.program_name)
+          ? [profile.program_code, profile.program_name].filter(Boolean).join(" - ")
+          : "Not set";
+        const statusBadge = buildStudentStatusBadge(profile.enrollment_status);
+        const photo = normalizeUploadUrl(profile.photo) || "/assets/images/lancephoto.png";
+
         return `
           <div class="text-center mb-4">
             <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center overflow-hidden mb-3" style="width: 120px; height: 120px">
               <img
-                src="/assets/images/lancephoto.png"
+                src="${escapeHtml(photo)}"
                 alt="Profile"
                 style="width: 120px; height: 120px; object-fit: cover; display: block;"
                 onerror="this.src='/assets/images/lancephoto.png';"
               />
             </div>
-            <h4 class="fw-bold mb-1 text-white">${name}</h4>
-            <p class="text-white-50 mb-0">Student ID: ${id}</p>
+            <h4 class="fw-bold mb-1 text-white">${getDisplayValue(name)}</h4>
+            <p class="text-white-50 mb-0">Student ID: ${getDisplayValue(id)}</p>
           </div>
 
           <div class="card shadow-sm border-0 bg-white text-dark mb-4">
@@ -1054,43 +1176,43 @@
                 <div class="row g-3">
                   <div class="col-md-6">
                     <label class="form-label text-muted small">Full Name</label>
-                    <input type="text" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
+                    <input type="text" class="form-control form-control-sm" value="${getDisplayValue(name)}" disabled />
                   </div>
                   <div class="col-md-6">
                     <label class="form-label text-muted small">Email Address</label>
-                    <input type="email" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
+                    <input type="email" class="form-control form-control-sm" value="${getDisplayValue(profile.email_address)}" disabled />
                   </div>
                   <div class="col-md-6">
                     <label class="form-label text-muted small">Contact Number</label>
-                    <input type="text" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
+                    <input type="text" class="form-control form-control-sm" value="${getDisplayValue(profile.contact_number)}" disabled />
                   </div>
                   <div class="col-md-6">
                     <label class="form-label text-muted small">Date of Birth</label>
-                    <input type="date" class="form-control form-control-sm" value="" disabled />
+                    <input type="date" class="form-control form-control-sm" value="${getDateInputValue(profile.birth_date)}" disabled />
                   </div>
                   <div class="col-md-6">
                     <label class="form-label text-muted small">Address</label>
-                    <input type="text" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
+                    <input type="text" class="form-control form-control-sm" value="${getDisplayValue(profile.complete_address)}" disabled />
                   </div>
                   <div class="col-md-6">
                     <label class="form-label text-muted small">Birth Place</label>
-                    <input type="text" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
+                    <input type="text" class="form-control form-control-sm" value="${getDisplayValue(profile.birth_place)}" disabled />
                   </div>
                   <div class="col-md-6">
                     <label class="form-label text-muted small">Sex</label>
-                    <input type="text" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
+                    <input type="text" class="form-control form-control-sm" value="${getDisplayValue(profile.sex)}" disabled />
                   </div>
                   <div class="col-md-6">
                     <label class="form-label text-muted small">Civil Status</label>
-                    <input type="text" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
+                    <input type="text" class="form-control form-control-sm" value="${getDisplayValue(profile.civil_status)}" disabled />
                   </div>
                   <div class="col-md-6">
                     <label class="form-label text-muted small">Nationality</label>
-                    <input type="text" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
+                    <input type="text" class="form-control form-control-sm" value="${getDisplayValue(profile.nationality)}" disabled />
                   </div>
                   <div class="col-md-6">
                     <label class="form-label text-muted small">Religion</label>
-                    <input type="text" class="form-control form-control-sm" value="" placeholder="Not set" disabled />
+                    <input type="text" class="form-control form-control-sm" value="${getDisplayValue(profile.religion)}" disabled />
                   </div>
                 </div>
               </form>
@@ -1105,47 +1227,31 @@
               <div class="row g-3">
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Program</label>
-                  <p class="fw-semibold mb-0">Not set</p>
+                  <p class="fw-semibold mb-0">${getDisplayValue(program)}</p>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label text-muted small">Major</label>
-                  <p class="fw-semibold mb-0">Not set</p>
+                  <label class="form-label text-muted small">Year Level</label>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.year_level)}</p>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label text-muted small">Entry Status</label>
-                  <p class="fw-semibold mb-0">Not set</p>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label text-muted small">Student Type</label>
-                  <p class="fw-semibold mb-0">Not set</p>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label text-muted small">Learning Modality</label>
-                  <p class="fw-semibold mb-0">Not set</p>
+                  <label class="form-label text-muted small">Application Status</label>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.application_status)}</p>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Semester</label>
-                  <p class="fw-semibold mb-0">Not set</p>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.semester || profile.semester_types)}</p>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label text-muted small">Highest Attainment</label>
-                  <p class="fw-semibold mb-0">Not set</p>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label text-muted small">Last School Attended</label>
-                  <p class="fw-semibold mb-0">Not set</p>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label text-muted small">Last School Year</label>
-                  <p class="fw-semibold mb-0">Not set</p>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label text-muted small">Working Status</label>
-                  <p class="fw-semibold mb-0">Not set</p>
+                  <label class="form-label text-muted small">Student Type</label>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.student_type)}</p>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Enrollment Status</label>
-                  <span class="badge bg-success">Active</span>
+                  ${statusBadge}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Learning Modality</label>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.modality_name)}</p>
                 </div>
               </div>
             </div>
@@ -1159,35 +1265,33 @@
               <div class="row g-3">
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Mother's Maiden Name</label>
-                  <p class="fw-semibold mb-0">Not set</p>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.mother_maiden_name)}</p>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Father's Name</label>
-                  <p class="fw-semibold mb-0">Not set</p>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.father_name)}</p>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Guardian Name</label>
-                  <p class="fw-semibold mb-0">Not set</p>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.guardian_name)}</p>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Guardian Contact</label>
-                  <p class="fw-semibold mb-0">Not set</p>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.guardian_contact)}</p>
                 </div>
               </div>
               <div class="row mt-4">
                 <div class="col-12">
                   <div class="card border-dashed border-secondary-subtle bg-secondary-subtle text-center p-3">
-                    <div class="mb-3">
-                      <i class="fa-solid fa-image fa-2x text-secondary"></i>
-                    </div>
-                    <p class="mb-2 fw-semibold">Upload Official Receipt / Document</p>
-                    <p class="text-muted small mb-3">Drop or select an image here to attach proof of payment.</p>
-                    <button class="btn btn-outline-secondary btn-sm">View Image</button>
+                    ${getOfficialReceiptMarkup(profile)}
+                    <hr class="my-3" />
+                    <p class="mb-2 fw-semibold">Queue / Remarks</p>
+                    <p class="text-muted small mb-2">Queue Number: ${getDisplayValue(profile.queue_number)}</p>
+                    <p class="text-muted small mb-0">Remarks: ${getDisplayValue(profile.special_remarks)}</p>
                   </div>
                 </div>
               </div>
             </div>
-
           </div>
         `;
       }
@@ -1285,6 +1389,35 @@
         console.log('Enrollment appointment scheduled.');
       });
 
+      async function openStudentDetails(record) {
+        if (!modalDetails || !studentDetailsModalEl || !record) {
+          return;
+        }
+
+        activeStudentRecord = record;
+        activeStudentProfile = null;
+        modalDetails.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-light mb-3" role="status"></div><p class="mb-0 text-white-50">Loading student details...</p></div>'; 
+
+        const modal = bootstrap.Modal.getOrCreateInstance(studentDetailsModalEl);
+        modal.show();
+
+        try {
+          const response = await fetch(`/api/students/enrollments/details/${encodeURIComponent(record.enrollment_id)}`);
+          const result = await response.json();
+          const profile = result.data || result.studentDetails;
+
+          if (!response.ok || !result.success || !profile) {
+            throw new Error(result.message || "Unable to load student details.");
+          }
+
+          activeStudentProfile = profile;
+          modalDetails.innerHTML = getStudentDetailsMarkup(profile);
+        } catch (error) {
+          console.error("Error loading student details:", error);
+          modalDetails.innerHTML = '<div class="alert alert-danger mb-0">Unable to load student details right now.</div>';
+        }
+      }
+
       document.querySelector('.queue')?.addEventListener('click', function (event) {
         const icon = event.target.closest('.queue-icon');
         if (!icon) return;
@@ -1293,13 +1426,27 @@
         if (!card) return;
 
         if (icon.textContent.trim() === 'visibility') {
+          const studentId = card.dataset.studentId || '';
+          const enrollmentId = card.dataset.enrollmentId || '';
+          
+          if (enrollmentId && queueApplications.length) {
+            // Find matching application record
+            const record = queueApplications.find(app => 
+              String(app.enrollment_id) === enrollmentId || 
+              String(app.student_id) === studentId
+            );
+            if (record) {
+              openStudentDetails(record);
+              return;
+            }
+          }
+
+          // Fallback mock
           const name = card.querySelector('.info-main strong')?.textContent.trim() || 'Not set';
           const appId = card.querySelector('.info-main small')?.textContent.trim() || 'Not set';
-
-          modalDetails.innerHTML = getStudentDetailsMarkup({ name, id: appId });
+          modalDetails.innerHTML = getStudentDetailsMarkup({ full_name: name, student_id: appId });
           const modal = bootstrap.Modal.getOrCreateInstance(studentDetailsModalEl);
           modal.show();
-          return;
         }
 
         if (icon.textContent.trim() === 'check') {
