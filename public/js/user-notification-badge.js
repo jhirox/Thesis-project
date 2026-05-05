@@ -57,10 +57,26 @@
     });
   }
 
+  function isNotificationRead(notification) {
+    const readValue = notification?.is_read;
+    return readValue === true ||
+      readValue === 1 ||
+      String(readValue).trim().toLowerCase() === "1" ||
+      String(readValue).trim().toLowerCase() === "true";
+  }
+
+  function setStoredUnreadCount(count) {
+    const safeCount = Math.max(0, Number(count) || 0);
+    try {
+      localStorage.setItem("userNotificationUnreadCount", String(safeCount));
+    } catch (error) {}
+    renderUnreadBadge(safeCount);
+  }
+
   async function fetchUnreadCount() {
     const email = getSessionUserEmail();
     if (!email) {
-      renderUnreadBadge(0);
+      setStoredUnreadCount(0);
       return;
     }
 
@@ -72,11 +88,11 @@
       }
 
       const notifications = Array.isArray(result.data) ? result.data : [];
-      const unreadCount = notifications.filter((notification) => !notification.is_read).length;
-      localStorage.setItem("userNotificationUnreadCount", String(unreadCount));
-      renderUnreadBadge(unreadCount);
+      const unreadCount = notifications.filter((notification) => !isNotificationRead(notification)).length;
+      setStoredUnreadCount(unreadCount);
     } catch (error) {
       console.error("Unable to refresh notifications badge:", error);
+      setStoredUnreadCount(0);
     }
   }
 
@@ -90,7 +106,7 @@
   }
 
   window.addEventListener("user-notifications-updated", (event) => {
-    renderUnreadBadge(event?.detail?.unreadCount || 0);
+    setStoredUnreadCount(event?.detail?.unreadCount || 0);
   });
 
   window.addEventListener("storage", (event) => {
@@ -100,7 +116,7 @@
   });
 
   document.addEventListener("DOMContentLoaded", () => {
-    loadStoredUnreadCount();
+    renderUnreadBadge(0);
     fetchUnreadCount();
   });
 })();
