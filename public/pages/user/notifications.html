@@ -1188,6 +1188,9 @@
                     <div>Date: ${escapeHtml(notification.appointment_date || "Not set")}</div>
                     <div>Time: ${escapeHtml(notification.appointment_time || "Not set")}</div>
                     <div>Email delivery: ${escapeHtml(notification.email_delivery_status || "pending")}</div>
+                    ${notification.email_delivery_status === "failed" && notification.email_delivery_message
+                      ? `<div>Email issue: ${escapeHtml(notification.email_delivery_message)}</div>`
+                      : ""}
                     ${notification.includes_soft_copy ? "<div>Soft copy of enrollment form included.</div>" : ""}
                     <div>Received: ${escapeHtml(formatNotificationDate(notification.created_at))}</div>
                   </div>
@@ -1254,7 +1257,9 @@
         document.getElementById("notificationViewMessage").textContent = notification.message || "No message available.";
         document.getElementById("notificationViewDate").textContent = notification.appointment_date || "Not set";
         document.getElementById("notificationViewTime").textContent = notification.appointment_time || "Not set";
-        document.getElementById("notificationViewDeliveryStatus").textContent = notification.email_delivery_status || "pending";
+        document.getElementById("notificationViewDeliveryStatus").textContent = notification.email_delivery_message
+          ? `${notification.email_delivery_status || "pending"} - ${notification.email_delivery_message}`
+          : notification.email_delivery_status || "pending";
         document.getElementById("notificationViewReceived").textContent = formatNotificationDate(notification.created_at);
         document.getElementById("notificationViewMeta").textContent = notification.is_read
           ? "This message has already been opened or marked as read."

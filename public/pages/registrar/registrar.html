@@ -3215,12 +3215,12 @@
         }
         if (scheduleResult?.data?.emailDeliveryStatus === 'sent') {
           toastMessageParts.push('Email delivery completed.');
-        } else if (scheduleResult?.data?.emailDeliveryStatus === 'queued') {
-          toastMessageParts.push('Email delivery is being processed in the background.');
+        } else if (scheduleResult?.data?.emailDeliveryStatus === 'queued' || scheduleResult?.data?.emailDeliveryStatus === 'sending') {
+          toastMessageParts.push('Email delivery is still processing.');
         } else if (scheduleResult?.data?.emailDeliveryStatus === 'skipped') {
           toastMessageParts.push('Saved to in-app notifications. Email delivery is not configured yet.');
         } else if (scheduleResult?.data?.emailDeliveryStatus === 'failed') {
-          toastMessageParts.push('Saved to in-app notifications, but email delivery failed.');
+          toastMessageParts.push(`Saved to in-app notifications, but email delivery failed: ${scheduleResult?.data?.emailDeliveryMessage || 'No delivery message.'}`);
         }
         if (appointmentMessage) {
           toastMessageParts.push(`Message: "${appointmentMessage}"`);
