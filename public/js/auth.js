@@ -30,6 +30,28 @@ document.addEventListener('DOMContentLoaded', function() {
       user: '/profile',
       student: '/profile',
     };
+    const roleRoutePrefix = role === 'registrar'
+      ? '/registrar'
+      : (role === 'superadmin' || role === 'super admin')
+        ? '/superadmin'
+        : '';
+
+    if (roleRoutePrefix) {
+      const roleAwareLinks = [
+        '/dashboard',
+        '/accounts',
+        '/application-evaluation',
+        '/application-queue',
+        '/notification',
+        '/rep-and-analytics',
+      ];
+
+      roleAwareLinks.forEach((path) => {
+        document.querySelectorAll(`a[href="${path}"]`).forEach((link) => {
+          link.setAttribute('href', `${roleRoutePrefix}${path}`);
+        });
+      });
+    }
 
     // ✅ STRICTLY protected pages - No guest mode allowed
     const restrictedPages = [
