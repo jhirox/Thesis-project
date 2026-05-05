@@ -84,6 +84,21 @@ export async function submitEnrollment(payload) {
       remarks: payload.remarks,
       agreedToTerms: payload.agreedToTerms,
       formattedAgreedAt: agreedAtDate,
+
+      // Family / guardian + academic extras (used by profile.html)
+      highestAttainment: payload.highestAttainment ?? null,
+      lastSchoolAttended: payload.lastSchoolAttended ?? null,
+      lastSchoolYear: payload.lastSchoolYear ?? null,
+      isWorking: payload.workingStatus
+        ? payload.workingStatus === "Working student" ? 1
+          : payload.workingStatus === "Non-working" ? 0
+          : payload.isWorking ?? 0
+        : payload.isWorking ?? 0,
+
+      motherMaidenName: payload.motherMaiden ?? null,
+      fatherName: payload.fatherName ?? null,
+      guardianName: payload.guardianName ?? null,
+      guardianContact: payload.guardianContact ?? null,
     });
 
     await ApplicationQueue.addToQueue(connection, enrollmentId, queueNumber);
