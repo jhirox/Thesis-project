@@ -516,7 +516,7 @@
                         <td class="px-4 py-3">
                           <div class="d-flex align-items-center">
                             <img
-                              src="/assets/images/johnpic.jpg"
+                              src="/assets/images/lancephoto.png"
                               alt="John photo"
                               class="profile-img me-3"
                             />
@@ -546,7 +546,7 @@
                         <td class="px-4 py-3">
                           <div class="d-flex align-items-center">
                             <img
-                              src="/assets/images/markphoto.jpg"
+                              src="/assets/images/lancephoto.png"
                               alt="Mark photo"
                               class="profile-img me-3"
                             />
@@ -576,7 +576,7 @@
                         <td class="px-4 py-3">
                           <div class="d-flex align-items-center">
                             <img
-                              src="/assets/images/nathphoto.jpg"
+                              src="/assets/images/lancephoto.png"
                               alt="Nathaniel photo"
                               class="profile-img me-3"
                             />
@@ -730,7 +730,7 @@
                         <td class="px-4 py-3">
                           <div class="d-flex align-items-center">
                             <img
-                              src="/assets/images/johnpic.jpg"
+                              src="/assets/images/lancephoto.png"
                               alt="John photo"
                               class="profile-img me-3"
                             />
@@ -758,7 +758,7 @@
                         <td class="px-4 py-3">
                           <div class="d-flex align-items-center">
                             <img
-                              src="/assets/images/johnpic.jpg"
+                              src="/assets/images/lancephoto.png"
                               alt="John photo"
                               class="profile-img me-3"
                             />
@@ -786,7 +786,7 @@
                         <td class="px-4 py-3">
                           <div class="d-flex align-items-center">
                             <img
-                              src="/assets/images/johnpic.jpg"
+                              src="/assets/images/lancephoto.png"
                               alt="John photo"
                               class="profile-img me-3"
                             />
@@ -910,7 +910,7 @@
                         <td class="px-4 py-3">
                           <div class="d-flex align-items-center">
                             <img
-                              src="/assets/images/nathphoto.jpg"
+                              src="/assets/images/lancephoto.png"
                               alt="Nathaniel photo"
                               class="profile-img me-3"
                             />
@@ -1161,7 +1161,7 @@
         return {
           row,
           studentId: row.dataset.studentId || "",
-          photoSrc: photo?.getAttribute("src") || "/assets/images/johnpic.jpg",
+          photoSrc: photo?.getAttribute("src") || "/assets/images/lancephoto.png",
           photoAlt: photo?.getAttribute("alt") || "Student photo",
           name: row.querySelector(".fw-semibold")?.textContent?.trim() || "",
           email: row.querySelector("small.text-muted")?.textContent?.trim() || "",
@@ -1384,7 +1384,7 @@
           studentType: student.student_type || student.year_level || "Not set",
           lastLogin: formatAccountDate(student.updated_at || student.created_date),
           status,
-          photoSrc: student.photo || "/assets/images/johnpic.jpg",
+          photoSrc: student.photo || "/assets/images/lancephoto.png",
           photoAlt: `${fullName || "Student"} photo`,
         };
       }
