@@ -30,10 +30,10 @@ const registrarAccess = requireRoles('registrar', 'superadmin', 'super admin');
 const registrarOrAdminAccess = requireRoles('admin', 'registrar', 'superadmin', 'super admin');
 
 // GET all students
-router.get('/', adminAccess, getStudents);
+router.get('/', registrarOrAdminAccess, getStudents);
 
 // SEARCH students by name
-router.get('/search/by-name', adminAccess, searchStudents);
+router.get('/search/by-name', registrarOrAdminAccess, searchStudents);
 
 // GET all enrollments
 router.get('/enrollments/all', staffAccess, getEnrollments);
