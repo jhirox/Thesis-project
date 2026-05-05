@@ -177,7 +177,7 @@
                   </p>
                 </li>
                 <li class="user-footer">
-                  <a href="#" class="btn btn-default btn-flat">Profile</a>
+                  <a href="#" class="btn btn-default btn-flat" id="openCurrentStaffProfileBtn">Profile</a>
                   <a
                     href="/login"
                     class="btn btn-default btn-flat float-end"
@@ -501,6 +501,7 @@
         const staffAccountModal = staffAccountModalEl ? bootstrap.Modal.getOrCreateInstance(staffAccountModalEl) : null;
         const staffAccountForm = document.getElementById("staffAccountForm");
         const openStaffAccountModalBtn = document.getElementById("openStaffAccountModalBtn");
+        const openCurrentStaffProfileBtn = document.getElementById("openCurrentStaffProfileBtn");
         const staffAccountSaveBtn = document.getElementById("staffAccountSaveBtn");
         const staffProfileImageInput = document.getElementById("staffProfileImageInput");
         const staffProfilePreview = document.getElementById("staffProfilePreview");
@@ -610,6 +611,7 @@
             staffAccounts = Array.isArray(result.data) ? result.data : [];
             renderStaffAccounts();
             updateStaffRoleCards(staffAccounts);
+            syncCurrentUserProfileUi();
           } catch (error) {
             console.error("Unable to load staff accounts:", error);
             renderStaffTableMessage(error.message || "Unable to load staff accounts.");
@@ -726,6 +728,10 @@
 
             staffAccountModal.hide();
             await loadStaffAccounts();
+            if (String(userId) === String(getCurrentUserId())) {
+              updateStoredCurrentUser(result.data);
+              syncCurrentUserProfileUi(result.data);
+            }
           } catch (error) {
             console.error("Unable to save staff account:", error);
             alert(error.message || "Unable to save staff account.");
@@ -787,6 +793,69 @@
           return staffAccounts.find((account) => String(account.userId) === String(row.dataset.userId));
         }
 
+        function getCurrentUserId() {
+          return authUser?.user?.id || authUser?.userId || authUser?.id || "";
+        }
+
+        function getCurrentUserEmail() {
+          return authUser?.user?.email || authUser?.email || "";
+        }
+
+        function getCurrentStaffAccount() {
+          const currentUserId = getCurrentUserId();
+          const currentUserEmail = String(getCurrentUserEmail()).trim().toLowerCase();
+
+          return staffAccounts.find((account) => String(account.userId) === String(currentUserId)) ||
+            staffAccounts.find((account) => String(account.email || "").trim().toLowerCase() === currentUserEmail) ||
+            null;
+        }
+
+        function updateStoredCurrentUser(account) {
+          if (!account || !authUser) return;
+
+          if (authUser.user) {
+            authUser.user.id = account.userId;
+            authUser.user.email = account.email;
+            authUser.user.fullname = account.fullName;
+            authUser.user.profileImage = account.profileImage || "";
+            authUser.user.role = account.role;
+          } else {
+            authUser.id = account.userId;
+            authUser.email = account.email;
+            authUser.fullname = account.fullName;
+            authUser.profileImage = account.profileImage || "";
+            authUser.role = account.role;
+          }
+
+          localStorage.setItem("sessionUser", JSON.stringify(authUser));
+        }
+
+        function syncCurrentUserProfileUi(account = getCurrentStaffAccount()) {
+          if (!account) return;
+
+          updateStoredCurrentUser(account);
+
+          const displayName = account.fullName || account.email || "Super Admin";
+          const profileImage = account.profileImage || defaultStaffProfileImage;
+
+          if (fullName) {
+            fullName.textContent = displayName;
+          }
+
+          document.querySelectorAll(".user-menu img, img.user-image").forEach((image) => {
+            image.src = profileImage;
+          });
+
+          document.querySelectorAll(".user-menu .user-header p").forEach((profileText) => {
+            const smallText = profileText.querySelector("small")?.textContent || "Account management portal";
+            profileText.innerHTML = "";
+            profileText.append(document.createTextNode(displayName));
+            const small = document.createElement("small");
+            small.textContent = smallText;
+            profileText.appendChild(small);
+          });
+        }
+
         function normalizeRole(role) {
           const value = String(role || "").trim().toLowerCase();
           if (value === "superadmin" || value === "super admin") return "super admin";
@@ -844,6 +913,24 @@
         });
 
         openStaffAccountModalBtn?.addEventListener("click", () => openStaffModal());
+        openCurrentStaffProfileBtn?.removeAttribute("data-bs-toggle");
+        openCurrentStaffProfileBtn?.removeAttribute("data-bs-target");
+        openCurrentStaffProfileBtn?.addEventListener("click", async (event) => {
+          event.preventDefault();
+
+          let account = getCurrentStaffAccount();
+          if (!account && !staffAccounts.length) {
+            await loadStaffAccounts();
+            account = getCurrentStaffAccount();
+          }
+
+          if (!account) {
+            alert("Unable to find your staff account profile.");
+            return;
+          }
+
+          openStaffModal(account);
+        });
         staffAccountForm?.addEventListener("submit", handleStaffFormSubmit);
         staffAccountsTbody?.addEventListener("click", (event) => {
           const account = getStaffAccountFromRow(event.target);
