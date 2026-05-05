@@ -17,6 +17,37 @@ const connection = await mysql.createConnection({
 });
 
 try {
+  // Add missing student background columns if they don't exist
+  const columns = [
+    ["highest_attainment", "VARCHAR(255) NULL"],
+    ["last_school_attended", "VARCHAR(255) NULL"],
+    ["last_school_year", "VARCHAR(50) NULL"],
+    ["working_status", "VARCHAR(100) NULL"],
+    ["mother_maiden_name", "VARCHAR(255) NULL"],
+    ["father_name", "VARCHAR(255) NULL"],
+    ["guardian_name", "VARCHAR(255) NULL"],
+    ["guardian_contact", "VARCHAR(20) NULL"],
+  ];
+
+  for (const [columnName, definition] of columns) {
+    const [rows] = await connection.query(
+      `SELECT 1
+      FROM information_schema.COLUMNS
+      WHERE TABLE_SCHEMA = DATABASE()
+        AND TABLE_NAME = 'students'
+        AND COLUMN_NAME = ?
+      LIMIT 1`,
+      [columnName]
+    );
+
+    if (!rows.length) {
+      await connection.query(
+        `ALTER TABLE students ADD COLUMN ${columnName} ${definition}`
+      );
+      console.log(`Added column: ${columnName}`);
+    }
+  }
+
   const query = `
     CREATE OR REPLACE VIEW student_profile_view AS
     SELECT 
@@ -40,6 +71,16 @@ try {
       e.year_level,
       e.semester_types AS semester,
       lm.modality_name AS learning_modality,
+      s.highest_attainment,
+      s.last_school_attended,
+      s.last_school_year,
+      s.working_status,
+      
+      -- Family Information
+      s.mother_maiden_name,
+      s.father_name,
+      s.guardian_name,
+      s.guardian_contact,
       
       -- Application Tracking (For the Profile Bottom Card)
       e.queue_number,
