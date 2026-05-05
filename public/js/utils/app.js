@@ -20,13 +20,13 @@ const portalRoutes = {
         login: "/login"
     },
     registrar: {
-        dashboard: "/dashboard",
+        dashboard: "/registrar/dashboard",
         registrar: "/registrar",
-        accounts: "/accounts",
-        applicationQueue: "/application-queue",
-        applicationEvaluation: "/application-evaluation",
-        notification: "/notification",
-        analytics: "/rep-and-analytics",
+        accounts: "/registrar/dashboard",
+        applicationQueue: "/registrar/application-queue",
+        applicationEvaluation: "/registrar/application-evaluation",
+        notification: "/registrar/notification",
+        analytics: "/registrar/rep-and-analytics",
         login: "/login"
     },
     superadmin: {
