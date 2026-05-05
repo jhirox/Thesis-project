@@ -1974,7 +1974,7 @@
             <td class="px-4 py-3">${escapeHtml(String(report.format || "pdf").toUpperCase())}</td>
             <td class="px-4 py-3">${escapeHtml(formatTimeAgo(report.createdAt))}</td>
             <td class="px-4 py-3 text-center">
-              <div class="d-flex justify-content-center gap-2">
+              <div class="d-flex flex-sm-row flex-column justify-content-center gap-1">
                 <button class="btn btn-sm btn-outline-primary me-2" onclick="downloadRecentReport('${escapeHtml(report.id)}')" type="button">
                   <i class="fa-solid fa-download"></i>
                 </button>
