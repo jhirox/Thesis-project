@@ -1389,8 +1389,11 @@
       function normalizeRegistrarStatus(record = {}) {
         const rawStatus = String(record.application_status || "").trim();
 
-        if (rawStatus === "Approved" || rawStatus === "Enrolled") {
+        if (rawStatus === "Enrolled") {
           return "Enrolled";
+        }
+        if (rawStatus === "Approved") {
+          return "Pending";
         }
         if (rawStatus === "Submitted" || rawStatus === "Under Review" || rawStatus === "Pending") {
           return "Pending";
@@ -1400,6 +1403,11 @@
         }
 
         return rawStatus || "Pending";
+      }
+
+      function isRegistrarVisibleRecord(record = {}) {
+        const rawStatus = String(record.application_status || "").trim();
+        return ["Approved", "Enrolled", "Rejected", "Dropped", "On Hold"].includes(rawStatus);
       }
 
       function getStatusBadgeClass(status) {
@@ -1983,7 +1991,7 @@
 
       function mapRegistrarStatusToApiStatus(applicationStatus) {
         if (applicationStatus === "Pending") {
-          return "Submitted";
+          return "Approved";
         }
 
         return applicationStatus;
@@ -2368,7 +2376,7 @@
             throw new Error(result.message || "Unable to load student records.");
           }
 
-          const rawRecords = Array.isArray(result.data) ? result.data : [];
+          const rawRecords = Array.isArray(result.data) ? result.data.filter(isRegistrarVisibleRecord) : [];
           await ensureApprovedRecordsHaveDrafts(rawRecords);
           registrarRecords = rawRecords.map(toRegistrarRecord);
           hideAppointmentEmailSuggestions();
