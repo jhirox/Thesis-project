@@ -59,11 +59,14 @@ async function dispatchScheduleEmailInBackground({
     });
 
     await updateNotificationDeliveryResult(notificationId, emailResult);
+    return emailResult;
   } catch (error) {
-    await updateNotificationDeliveryResult(notificationId, {
+    const emailResult = {
       status: "failed",
       message: error?.message || "Failed to send email.",
-    });
+    };
+    await updateNotificationDeliveryResult(notificationId, emailResult);
+    return emailResult;
   }
 }
 
@@ -226,9 +229,9 @@ export async function createScheduleNotification(payload) {
     process.env.SMTP_PASS &&
     (process.env.SMTP_FROM || process.env.SMTP_USER)
   );
-  const initialEmailDeliveryStatus = smtpConfigured ? "queued" : "skipped";
+  const initialEmailDeliveryStatus = smtpConfigured ? "sending" : "skipped";
   const initialEmailDeliveryMessage = smtpConfigured
-    ? "Email delivery queued in background."
+    ? "Email delivery in progress."
     : "SMTP is not configured.";
 
   const [result] = await db.query(
@@ -265,9 +268,8 @@ export async function createScheduleNotification(payload) {
     ]
   );
 
-  if (smtpConfigured) {
-    setTimeout(() => {
-      dispatchScheduleEmailInBackground({
+  const emailResult = smtpConfigured
+    ? await dispatchScheduleEmailInBackground({
         notificationId: result.insertId,
         studentEmail: payload.studentEmail,
         notificationTitle,
@@ -277,19 +279,20 @@ export async function createScheduleNotification(payload) {
         appointmentTime: payload.appointmentTime,
         customMessage: payload.message,
         includesSoftCopy: payload.includesSoftCopy,
-      }).catch((error) => {
-        console.error("Background schedule email dispatch failed:", error);
-      });
-    }, 0);
-  }
+      })
+    : {
+        success: false,
+        status: "skipped",
+        message: "SMTP is not configured.",
+      };
 
   return {
     notificationId: result.insertId,
     title: notificationTitle,
     type: notificationType,
     message: notificationMessage,
-    emailDeliveryStatus: initialEmailDeliveryStatus,
-    emailDeliveryMessage: initialEmailDeliveryMessage,
+    emailDeliveryStatus: emailResult.status,
+    emailDeliveryMessage: emailResult.message,
   };
 }
 
