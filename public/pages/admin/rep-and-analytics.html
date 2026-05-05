@@ -696,7 +696,7 @@
                             <th class="px-4 py-3 fw-semibold">Date Range</th>
                             <th class="px-4 py-3 fw-semibold">Format</th>
                             <th class="px-4 py-3 fw-semibold">Generated</th>
-                            <th class="px-4 py-3 fw-semibold">Actions</th>
+                            <th class="px-4 py-3 fw-semibold text-center">Actions</th>
                           </tr>
                         </thead>
                         <tbody id="recent-reports-body" class="table-body">
@@ -1973,13 +1973,15 @@
             <td class="px-4 py-3">${escapeHtml(buildRangeLabel(report.config || {}))}</td>
             <td class="px-4 py-3">${escapeHtml(String(report.format || "pdf").toUpperCase())}</td>
             <td class="px-4 py-3">${escapeHtml(formatTimeAgo(report.createdAt))}</td>
-            <td class="px-4 py-3 text-end">
-              <button class="btn btn-sm btn-outline-primary me-2" onclick="downloadRecentReport('${escapeHtml(report.id)}')" type="button">
-                <i class="fa-solid fa-download"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-danger" onclick="deleteRecentReport('${escapeHtml(report.id)}')" type="button">
-                <i class="fa-solid fa-trash"></i>
-              </button>
+            <td class="px-4 py-3 text-center">
+              <div class="d-flex justify-content-center gap-2">
+                <button class="btn btn-sm btn-outline-primary me-2" onclick="downloadRecentReport('${escapeHtml(report.id)}')" type="button">
+                  <i class="fa-solid fa-download"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteRecentReport('${escapeHtml(report.id)}')" type="button">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
             </td>
           </tr>
         `).join("");
