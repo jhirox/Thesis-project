@@ -136,6 +136,20 @@ function buildEmailHtml({ profile, appointmentDate, appointmentTime, customMessa
   `;
 }
 
+function buildDirectEmailHtml({ title, studentName, message, notificationType, appointmentDate }) {
+  return `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #1f2937;">
+      <h2 style="margin-bottom: 12px;">${title}</h2>
+      <p>Hello ${studentName || "Student"},</p>
+      <p>${message}</p>
+      ${notificationType ? `<p><strong>Type:</strong> ${notificationType}</p>` : ""}
+      ${appointmentDate ? `<p><strong>Date:</strong> ${appointmentDate}</p>` : ""}
+      <p>Thank you.</p>
+      <p><strong>QEC Registrar</strong></p>
+    </div>
+  `;
+}
+
 async function ensureNotificationsTableShape() {
   if (notificationSchemaReady) {
     return;
@@ -276,6 +290,81 @@ export async function createScheduleNotification(payload) {
     message: notificationMessage,
     emailDeliveryStatus: initialEmailDeliveryStatus,
     emailDeliveryMessage: initialEmailDeliveryMessage,
+  };
+}
+
+export async function createDirectNotification(payload) {
+  await ensureNotificationsTableShape();
+
+  const smtpConfigured = Boolean(
+    process.env.SMTP_HOST &&
+    process.env.SMTP_USER &&
+    process.env.SMTP_PASS &&
+    (process.env.SMTP_FROM || process.env.SMTP_USER)
+  );
+  const initialEmailDeliveryStatus = smtpConfigured ? "queued" : "skipped";
+  const initialEmailDeliveryMessage = smtpConfigured
+    ? "Email delivery queued."
+    : "SMTP is not configured.";
+  const notificationType = payload.notificationType || "General";
+
+  const [result] = await db.query(
+    `INSERT INTO notifications (
+      enrollment_id,
+      student_id,
+      student_email,
+      title,
+      notification_type,
+      message,
+      appointment_date,
+      appointment_time,
+      includes_soft_copy,
+      soft_copy_payload,
+      email_delivery_status,
+      email_delivery_message,
+      is_read,
+      created_at,
+      updated_at
+    ) VALUES (NULL, NULL, ?, ?, ?, ?, ?, NULL, 0, NULL, ?, ?, 0, NOW(), NOW())`,
+    [
+      payload.studentEmail,
+      payload.title,
+      notificationType,
+      payload.message,
+      payload.appointmentDate || null,
+      initialEmailDeliveryStatus,
+      initialEmailDeliveryMessage,
+    ]
+  );
+
+  const emailResult = smtpConfigured
+    ? await sendEmail({
+        to: payload.studentEmail,
+        subject: payload.title,
+        text: payload.message,
+        html: buildDirectEmailHtml({
+          title: payload.title,
+          studentName: payload.studentName,
+          message: payload.message,
+          notificationType,
+          appointmentDate: payload.appointmentDate,
+        }),
+      })
+    : {
+        success: false,
+        status: "skipped",
+        message: "SMTP is not configured.",
+      };
+
+  await updateNotificationDeliveryResult(result.insertId, emailResult);
+
+  return {
+    notificationId: result.insertId,
+    title: payload.title,
+    type: notificationType,
+    message: payload.message,
+    emailDeliveryStatus: emailResult.status,
+    emailDeliveryMessage: emailResult.message,
   };
 }
 

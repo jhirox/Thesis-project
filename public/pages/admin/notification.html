@@ -931,6 +931,35 @@
         return window.confirm(`Send this notification to ${recipientName}?`);
       }
 
+      async function sendNotificationToServer({ title, student, type, message }) {
+        const studentEmail = (document.getElementById("studentEmail")?.value || "").trim();
+        const appointmentDate = (document.getElementById("scheduleDate")?.value || "").trim();
+
+        if (!studentEmail) {
+          throw new Error("Please enter the student's email address.");
+        }
+
+        const response = await fetch("/api/notifications/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title,
+            notificationType: type,
+            studentName: student,
+            studentEmail,
+            message,
+            appointmentDate: appointmentDate || null,
+          }),
+        });
+
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || result.success === false) {
+          throw new Error(result.error || result.message || "Unable to send notification.");
+        }
+
+        return result.data || {};
+      }
+
       function bindDraftTableActions() {
         if (!draftTableBody) {
           return;
@@ -1065,7 +1094,7 @@
       });
 
       // Send Now (from form directly)
-      sendNowBtn.addEventListener("click", (e) => {
+      sendNowBtn.addEventListener("click", async (e) => {
         e.preventDefault(); // prevent form submission
         const title = titleField.value.trim();
         const student = studentField.value.trim();
@@ -1081,16 +1110,31 @@
           return;
         }
 
-        alert(`Notification sent to ${student}: "${message}"`);
+        const originalButtonHtml = sendNowBtn.innerHTML;
+        sendNowBtn.disabled = true;
+        sendNowBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Sending...';
 
-        if (window.getNotificationSettings().saveHistory) {
-          addHistoryCard(title, student, type, message);
-        }
+        try {
+          const delivery = await sendNotificationToServer({ title, student, type, message });
+          alert(delivery.emailDeliveryStatus === "sent"
+            ? `Notification emailed to ${student}.`
+            : `Notification saved, but email status is ${delivery.emailDeliveryStatus || "unknown"}: ${delivery.emailDeliveryMessage || "No delivery message."}`);
 
-        if (window.getNotificationSettings().clearFormAfterAction) {
-          window.clearNotificationForm();
+          if (window.getNotificationSettings().saveHistory) {
+            addHistoryCard(title, student, type, message);
+          }
+
+          if (window.getNotificationSettings().clearFormAfterAction) {
+            window.clearNotificationForm();
+          }
+          updateNotificationCards();
+        } catch (error) {
+          console.error("Notification send failed:", error);
+          alert(error.message || "Unable to send notification.");
+        } finally {
+          sendNowBtn.disabled = false;
+          sendNowBtn.innerHTML = originalButtonHtml;
         }
-        updateNotificationCards();
       });
 
       // Send Now (from drafts table)

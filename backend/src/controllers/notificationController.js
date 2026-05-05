@@ -2,6 +2,7 @@ import { asyncHandler } from "../middlewares/asyncHandler.js";
 import * as notificationService from "../services/notificationService.js";
 import {
   clearNotificationsSchema,
+  createDirectNotificationSchema,
   createScheduleNotificationSchema,
   listNotificationsSchema,
   markNotificationReadSchema,
@@ -14,6 +15,17 @@ export const createScheduleNotification = asyncHandler(async (req, res) => {
   res.status(201).json({
     success: true,
     message: "Schedule notification created successfully.",
+    data: result,
+  });
+});
+
+export const createDirectNotification = asyncHandler(async (req, res) => {
+  const payload = createDirectNotificationSchema.parse(req.body);
+  const result = await notificationService.createDirectNotification(payload);
+
+  res.status(201).json({
+    success: true,
+    message: "Notification sent successfully.",
     data: result,
   });
 });

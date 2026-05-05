@@ -23,6 +23,15 @@ export const createScheduleNotificationSchema = z.object({
   includesSoftCopy: z.boolean().default(true),
 });
 
+export const createDirectNotificationSchema = z.object({
+  title: trimmedString.min(1, "title is required"),
+  notificationType: optionalTrimmedString,
+  studentName: optionalTrimmedString,
+  studentEmail: trimmedString.email("A valid student email is required"),
+  message: trimmedString.min(1, "message is required"),
+  appointmentDate: optionalTrimmedString,
+});
+
 export const listNotificationsSchema = z.object({
   email: trimmedString.email("A valid email is required"),
 });

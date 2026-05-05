@@ -1,6 +1,7 @@
 import express from "express";
 import {
   clearNotifications,
+  createDirectNotification,
   createScheduleNotification,
   deleteNotification,
   getNotifications,
@@ -12,6 +13,7 @@ import { authenticateToken, requireRoles } from "../middlewares/authMiddleware.j
 const router = express.Router();
 
 router.post("/schedule", requireRoles("registrar", "superadmin", "super admin"), createScheduleNotification);
+router.post("/send", requireRoles("registrar", "superadmin", "super admin"), createDirectNotification);
 router.get("/", authenticateToken, getNotifications);
 router.patch("/:id/read", authenticateToken, markNotificationRead);
 router.patch("/read-all", authenticateToken, markAllNotificationsRead);
