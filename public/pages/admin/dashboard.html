@@ -1261,9 +1261,13 @@
           const role = authUser?.user?.role || "";
 
           if ((status === "Approved" || status === "Enrolled") && role !== "admin") {
+            const registrarPath = role === "superadmin" || role === "super admin"
+              ? "/superadmin/registrar"
+              : "/registrar";
+
             return {
               label: "Open in Registrar",
-              url: `/registrar${enrollmentId}`,
+              url: `${registrarPath}${enrollmentId}`,
             };
           }
 
