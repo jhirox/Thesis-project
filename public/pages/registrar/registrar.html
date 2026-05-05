@@ -2316,14 +2316,6 @@
                   <p class="fw-semibold mb-0">${getDisplayValue(profile.semester || profile.semester_types)}</p>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label text-muted small">Entry Status</label>
-                  <p class="fw-semibold mb-0">${getDisplayValue(profile.entry_status)}</p>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label text-muted small">Application Status</label>
-                  <p class="fw-semibold mb-0">${getDisplayValue(profile.application_status)}</p>
-                </div>
-                <div class="col-md-6">
                   <label class="form-label text-muted small">Highest Attainment</label>
                   <p class="fw-semibold mb-0">${getDisplayValue(profile.highest_attainment)}</p>
                 </div>
@@ -2340,16 +2332,24 @@
                   <p class="fw-semibold mb-0">${getDisplayValue(profile.student_type)}</p>
                 </div>
                 <div class="col-md-6">
+                  <label class="form-label text-muted small">Learning Modality</label>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.modality_name)}</p>
+                </div>
+                <div class="col-md-6">
                   <label class="form-label text-muted small">Working Status</label>
                   <p class="fw-semibold mb-0">${getDisplayValue(profile.working_student)}</p>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label text-muted small">Enrollment Status</label>
-                  ${statusBadge}
+                  <label class="form-label text-muted small">Entry Status</label>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.entry_status)}</p>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label text-muted small">Learning Modality</label>
-                  <p class="fw-semibold mb-0">${getDisplayValue(profile.modality_name)}</p>
+                  <label class="form-label text-muted small">Application Status</label>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.application_status)}</p>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small">Enrollment Status</label>
+                  ${statusBadge}
                 </div>
               </div>
             </div>
