@@ -1,3 +1,5 @@
+import dns from "node:dns";
+
 export async function sendEmail({ to, subject, text, html }) {
   const host = process.env.SMTP_HOST;
   const port = Number(process.env.SMTP_PORT || 587);
@@ -14,12 +16,15 @@ export async function sendEmail({ to, subject, text, html }) {
   }
 
   try {
+    dns.setDefaultResultOrder("ipv4first");
+
     const nodemailerModule = await import("nodemailer");
     const nodemailer = nodemailerModule.default || nodemailerModule;
 
     const transporter = nodemailer.createTransport({
       host,
       port,
+      family: 4,
       secure: port === 465,
       connectionTimeout: Number(process.env.SMTP_CONNECTION_TIMEOUT_MS || 8000),
       greetingTimeout: Number(process.env.SMTP_GREETING_TIMEOUT_MS || 8000),
