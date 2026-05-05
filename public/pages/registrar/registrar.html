@@ -39,6 +39,74 @@
   >
     <!--begin::App Wrapper-->
     <div class="app-wrapper">
+      <div id="page-skeleton" class="admin-page-skeleton">
+        <div class="admin-page-skeleton__header">
+          <div class="admin-page-skeleton__header-group">
+            <div class="skeleton admin-page-skeleton__hamburger"></div>
+          </div>
+          <div class="admin-page-skeleton__header-group">
+            <div class="skeleton admin-page-skeleton__header-user"></div>
+            <div class="skeleton admin-page-skeleton__header-avatar"></div>
+          </div>
+        </div>
+        <div class="admin-page-skeleton__body">
+          <aside class="admin-page-skeleton__sidebar">
+            <div class="admin-page-skeleton__brand">
+              <div class="skeleton admin-page-skeleton__brand-logo"></div>
+              <div class="skeleton admin-page-skeleton__brand-text"></div>
+            </div>
+            <div class="admin-page-skeleton__section">
+              <div class="skeleton admin-page-skeleton__section-title"></div>
+              <div class="skeleton admin-page-skeleton__nav-item"></div>
+              <div class="skeleton admin-page-skeleton__nav-item"></div>
+              <div class="skeleton admin-page-skeleton__nav-item"></div>
+              <div class="skeleton admin-page-skeleton__nav-item is-active"></div>
+            </div>
+            <div class="admin-page-skeleton__section">
+              <div class="skeleton admin-page-skeleton__section-title"></div>
+              <div class="skeleton admin-page-skeleton__nav-item"></div>
+              <div class="skeleton admin-page-skeleton__nav-item"></div>
+              <div class="skeleton admin-page-skeleton__nav-item"></div>
+            </div>
+          </aside>
+          <div class="admin-page-skeleton__main">
+            <div class="admin-page-skeleton__page-header">
+              <div class="skeleton admin-page-skeleton__page-title"></div>
+              <div class="admin-page-skeleton__breadcrumbs">
+                <div class="skeleton admin-page-skeleton__crumb"></div>
+                <div class="skeleton admin-page-skeleton__crumb admin-page-skeleton__crumb--small"></div>
+              </div>
+            </div>
+            <div class="admin-page-skeleton__content">
+              <div class="admin-skeleton-panel mx-4">
+                <div class="admin-skeleton-fields">
+                  <div class="skeleton admin-skeleton-field"></div>
+                  <div class="skeleton admin-skeleton-field"></div>
+                  <div class="skeleton admin-skeleton-field"></div>
+                  <div class="skeleton admin-skeleton-field"></div>
+                </div>
+                <div class="admin-skeleton-toolbar mt-4">
+                  <div class="skeleton admin-skeleton-button--wide"></div>
+                  <div class="skeleton admin-skeleton-button--wide"></div>
+                </div>
+              </div>
+              <div class="admin-skeleton-panel mx-4 mt-4">
+                <div class="skeleton admin-skeleton-panel-title"></div>
+                <div class="admin-skeleton-table">
+                  <div class="skeleton admin-skeleton-table-head"></div>
+                  <div class="skeleton admin-skeleton-table-row"></div>
+                  <div class="skeleton admin-skeleton-table-row"></div>
+                  <div class="skeleton admin-skeleton-table-row"></div>
+                </div>
+              </div>
+            </div>
+            <div class="admin-page-skeleton__footer">
+              <div class="skeleton admin-page-skeleton__footer-line"></div>
+              <div class="skeleton admin-page-skeleton__footer-line admin-page-skeleton__footer-line--short"></div>
+            </div>
+          </div>
+        </div>
+      </div>
       <!--begin::Header-->
       <nav
         class="app-header navbar navbar-expand bg-primary-subtle shadow"
@@ -2359,6 +2427,18 @@
         });
       }
 
+      function hidePageSkeleton() {
+        const skeleton = document.getElementById("page-skeleton");
+        if (!skeleton) return;
+
+        skeleton.style.opacity = "0";
+        skeleton.style.pointerEvents = "none";
+
+        setTimeout(() => {
+          skeleton.style.display = "none";
+        }, 250);
+      }
+
       async function loadRegistrarRecords(options = {}) {
         const { showLoading = false } = options;
 
@@ -2398,6 +2478,9 @@
           }
         } finally {
           registrarRefreshInFlight = false;
+          if (showLoading) {
+            setTimeout(hidePageSkeleton, 650);
+          }
         }
       }
 

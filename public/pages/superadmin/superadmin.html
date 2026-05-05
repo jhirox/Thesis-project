@@ -284,7 +284,11 @@
         </div>
 
         <div class="app-content">
-          <div id="actual-content" class="superadmin-surface px-3 px-md-4 pb-4">
+          <div
+            id="actual-content"
+            class="superadmin-surface px-3 px-md-4 pb-4"
+            style="visibility: hidden; opacity: 0; pointer-events: none"
+          >
             <section class="superadmin-toolbar">
               <div>
                 <h1 class="superadmin-title">Super Admin</h1>
@@ -510,7 +514,7 @@
 
         function loadSuperAdminData() {
           updateStaffRoleCards();
-          showActualContent();
+          setTimeout(showActualContent, 650);
         }
 
         function showActualContent() {

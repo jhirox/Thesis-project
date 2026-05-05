@@ -2158,6 +2158,7 @@ span .icon:hover {
   background: #0b1130;
   color: #fff;
   overflow: hidden;
+  transition: opacity 0.25s ease;
 }
 
 .admin-page-skeleton .skeleton {
