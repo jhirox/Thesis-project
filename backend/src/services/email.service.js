@@ -22,37 +22,54 @@ export async function sendEmail({ to, subject, text, html }) {
 
     const nodemailerModule = await import("nodemailer");
     const nodemailer = nodemailerModule.default || nodemailerModule;
-
-    const transporter = nodemailer.createTransport({
-      host: smtpHost,
+    const portsToTry = Array.from(new Set([
       port,
-      family: 4,
-      secure: port === 465,
-      connectionTimeout: Number(process.env.SMTP_CONNECTION_TIMEOUT_MS || 8000),
-      greetingTimeout: Number(process.env.SMTP_GREETING_TIMEOUT_MS || 8000),
-      socketTimeout: Number(process.env.SMTP_SOCKET_TIMEOUT_MS || 10000),
-      requireTLS: port === 587,
-      tls: {
-        servername: host,
-      },
-      auth: {
-        user,
-        pass,
-      },
-    });
+      ...(host === "smtp.gmail.com" && port !== 465 ? [465] : []),
+    ]));
+    const errors = [];
 
-    await transporter.sendMail({
-      from,
-      to,
-      subject,
-      text,
-      html,
-    });
+    for (const smtpPort of portsToTry) {
+      try {
+        const transporter = nodemailer.createTransport({
+          host: smtpHost,
+          port: smtpPort,
+          family: 4,
+          secure: smtpPort === 465,
+          connectionTimeout: Number(process.env.SMTP_CONNECTION_TIMEOUT_MS || 8000),
+          greetingTimeout: Number(process.env.SMTP_GREETING_TIMEOUT_MS || 8000),
+          socketTimeout: Number(process.env.SMTP_SOCKET_TIMEOUT_MS || 10000),
+          requireTLS: smtpPort === 587,
+          tls: {
+            servername: host,
+          },
+          auth: {
+            user,
+            pass,
+          },
+        });
+
+        await transporter.sendMail({
+          from,
+          to,
+          subject,
+          text,
+          html,
+        });
+
+        return {
+          success: true,
+          status: "sent",
+          message: `Email sent successfully via SMTP port ${smtpPort}.`,
+        };
+      } catch (error) {
+        errors.push(`port ${smtpPort}: ${error.message || "Failed to send email."}`);
+      }
+    }
 
     return {
-      success: true,
-      status: "sent",
-      message: "Email sent successfully.",
+      success: false,
+      status: "failed",
+      message: `SMTP delivery failed after ${portsToTry.length} attempt(s): ${errors.join(" | ")}. If this is hosted on Railway, outbound SMTP to Gmail may be blocked or timing out from the deployment network.`,
     };
   } catch (error) {
     return {
