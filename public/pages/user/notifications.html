@@ -533,7 +533,7 @@
         const appointmentDate = String(notification?.appointment_date || payload?.appointmentDate || "appointment")
           .replace(/[^a-z0-9_-]+/gi, "-")
           .replace(/^-+|-+$/g, "");
-        return `enrollment-form-soft-copy-${studentIdentifier}-${appointmentDate || "summary"}.doc`;
+        return `enrollment-form-soft-copy-${studentIdentifier}-${appointmentDate || "summary"}.html`;
       }
 
       function splitStudentName(fullName) {
@@ -1377,7 +1377,7 @@
 
         const filename = buildSoftCopyFilename(activeNotificationForView, payload);
         const documentHtml = buildEnrollmentFormHtml(activeNotificationForView, payload);
-        const blob = new Blob([documentHtml], { type: "application/msword;charset=utf-8" });
+        const blob = new Blob([documentHtml], { type: "text/html;charset=utf-8" });
         const objectUrl = URL.createObjectURL(blob);
         const tempLink = document.createElement("a");
         tempLink.href = objectUrl;
