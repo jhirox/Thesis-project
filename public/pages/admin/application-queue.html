@@ -774,8 +774,7 @@
             const course = application.program_code || application.program_name || 'N/A';
             const submittedDate = formatDate(application.created_at || application.enrollment_date);
             const waitDays = calculateWaitDays(application.created_at || application.enrollment_date);
-            const statusLabel = getQueueStatusLabel(application.application_status);
-            const statusClass = getQueueStatusClass(application.application_status);
+            const statusBadge = buildQueueStatusBadge(application.application_status || "Submitted");
 
             const card = document.createElement('div');
             card.className = 'card text-white p-3 mb-3 queue-card';
@@ -800,7 +799,7 @@
               </div>
 
               <div class="status queue-status">
-                <span class="status-badge ${statusClass}">${escapeHtml(statusLabel)}</span>
+                ${statusBadge}
                 <div class="icons queue-icons student-records-actions">
                   <button type="button" class="btn btn-sm btn-outline-primary queue-icon queue-icon--view" data-action="view">View</button>
                   <button type="button" class="btn btn-sm btn-outline-success queue-icon queue-icon--approve" data-action="review">Open Evaluation</button>
@@ -985,12 +984,16 @@
         return status === "Under Review" ? "review" : "submitted";
       }
 
-      function getQueueStatusLabel(status) {
-        return status === "Under Review" ? "Under Review" : "Submitted";
-      }
+      function buildQueueStatusBadge(status) {
+        if (status === "Approved" || status === "Enrolled") {
+          return `<span class="badge text-bg-success">${escapeHtml(status)}</span>`;
+        }
 
-      function getQueueStatusClass(status) {
-        return status === "Under Review" ? "review" : "pending";
+        if (status === "Rejected") {
+          return `<span class="badge bg-danger">${escapeHtml(status)}</span>`;
+        }
+
+        return `<span class="badge bg-warning text-dark">${escapeHtml(status)}</span>`;
       }
 
       function calculateWaitDays(dateValue) {
