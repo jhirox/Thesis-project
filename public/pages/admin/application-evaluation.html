@@ -844,12 +844,14 @@
           return;
         }
 
+        const sortedApplications = sortApplicationsForEvaluation(applications);
+
         // Calculate pagination
-        const totalItems = applications.length;
+        const totalItems = sortedApplications.length;
         const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
         const startIndex = (currentStudentPage - 1) * ITEMS_PER_PAGE;
         const endIndex = startIndex + ITEMS_PER_PAGE;
-        const paginatedApplications = applications.slice(startIndex, endIndex);
+        const paginatedApplications = sortedApplications.slice(startIndex, endIndex);
 
         tableBody.innerHTML = '';
 
@@ -1053,7 +1055,7 @@
           return;
         }
 
-        applications.forEach((application) => {
+        sortApplicationsForEvaluation(applications).forEach((application) => {
           const row = document.createElement('tr');
           const applicationId = application.queue_number || `ENR-${application.enrollment_id}`;
           const applicantName =
@@ -1120,11 +1122,12 @@
         }
 
         // Use passed parameters
-        const totalItems = applications.length;
+        const sortedApplications = sortApplicationsBySubmittedDate(applications);
+        const totalItems = sortedApplications.length;
         const totalPages = Math.ceil(totalItems / itemsPerPage);
         const startIndex = (page - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
-        const paginatedApplications = applications.slice(startIndex, endIndex);
+        const paginatedApplications = sortedApplications.slice(startIndex, endIndex);
 
         tableBody.innerHTML = '';
 
@@ -1188,6 +1191,45 @@
         }
 
         return `<span class="badge bg-warning text-dark">${status}</span>`;
+      }
+
+      function getEvaluationStatusPriority(status) {
+        const normalizedStatus = String(status || 'Submitted').trim();
+        const priorityMap = {
+          'Under Review': 0,
+          Submitted: 1,
+          Approved: 2,
+          Enrolled: 3,
+          Rejected: 4,
+        };
+
+        return priorityMap[normalizedStatus] ?? 5;
+      }
+
+      function getApplicationSubmittedTime(application = {}) {
+        const dateValue = application.created_at || application.enrollment_date;
+        const date = new Date(dateValue);
+        return Number.isNaN(date.getTime()) ? Number.MAX_SAFE_INTEGER : date.getTime();
+      }
+
+      function sortApplicationsBySubmittedDate(applications = []) {
+        return [...applications].sort((left, right) =>
+          getApplicationSubmittedTime(left) - getApplicationSubmittedTime(right)
+        );
+      }
+
+      function sortApplicationsForEvaluation(applications = []) {
+        return [...applications].sort((left, right) => {
+          const statusDifference =
+            getEvaluationStatusPriority(left.application_status) -
+            getEvaluationStatusPriority(right.application_status);
+
+          if (statusDifference !== 0) {
+            return statusDifference;
+          }
+
+          return getApplicationSubmittedTime(left) - getApplicationSubmittedTime(right);
+        });
       }
 
       function formatDate(dateValue) {
