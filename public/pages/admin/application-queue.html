@@ -494,9 +494,8 @@
               <label for="filterStatus" class="form-label">Status</label>
               <select class="form-select" id="filterStatus">
                 <option value="">All Status</option>
-                <option value="pending">Pending</option>
+                <option value="submitted">Submitted</option>
                 <option value="review">Under Review</option>
-                <option value="completed">Completed</option>
               </select>
             </div>
             <div class="mb-3">
@@ -553,89 +552,10 @@
           </div>
           <div class="modal-footer border-top border-secondary-subtle">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" onclick="scheduleApplication()">
-              <i class="fa-solid fa-calendar-days me-2"></i>Schedule
-            </button>
+            <a href="/application-evaluation" class="btn btn-primary">
+              <i class="fa-solid fa-file-circle-check me-2"></i>Open Evaluation
+            </a>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Schedule Appointment Modal -->
-    <div class="modal fade" id="scheduleAppointmentModal" tabindex="-1" aria-labelledby="scheduleAppointmentModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content bg-white text-dark rounded-4 overflow-hidden shadow-sm">
-          <div class="modal-header border-0 px-4 pt-4">
-            <h5 class="modal-title fw-bold" id="scheduleAppointmentModalLabel">
-              <i class="fa-regular fa-calendar-days me-2"></i>Schedule Enrollment Appointment
-            </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <form id="scheduleAppointmentForm">
-            <div class="modal-body px-4 pb-4">
-              <p class="text-muted mb-4">Set the date and time. You can also include an optional message and choose whether to send a soft copy of the enrollment form for registration.</p>
-              <div class="card rounded-4 border-0 bg-light mb-4">
-                <div class="card-body py-4 px-4">
-                  <p class="mb-1 text-muted small">Student</p>
-                  <h5 class="fw-bold mb-1" id="appointmentStudentName">Not set</h5>
-                  <p class="mb-0 text-muted" id="appointmentStudentInfo">APP-2024-089 • Computer Science</p>
-                </div>
-              </div>
-              <div class="row g-3 mb-3">
-                <div class="col-md-6">
-                  <label for="appointmentDate" class="form-label fw-semibold">Date</label>
-                  <input type="date" class="form-control" id="appointmentDate" value="2026-04-30" required />
-                </div>
-                <div class="col-md-6">
-                  <label for="appointmentTime" class="form-label fw-semibold">Time</label>
-                  <input type="time" class="form-control" id="appointmentTime" value="09:00" required />
-                </div>
-              </div>
-              <div class="mb-3">
-                <label for="appointmentEmail" class="form-label fw-semibold">Student Email (auto-filled)</label>
-                <input type="email" class="form-control" id="appointmentEmail" value="a.smith@email.com" readonly />
-                <div class="form-text">Appointment notification will be sent here.</div>
-              </div>
-              <div class="mb-3">
-                <label for="appointmentMessage" class="form-label fw-semibold">Optional Message</label>
-                <textarea
-                  class="form-control"
-                  id="appointmentMessage"
-                  rows="3"
-                  placeholder="Add extra instructions or reminders for the student."
-                ></textarea>
-              </div>
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="sendEnrollmentSoftCopy" checked />
-                <label class="form-check-label fw-semibold" for="sendEnrollmentSoftCopy">
-                  Also send a soft copy of the enrollment form for registration
-                </label>
-              </div>
-              <div class="form-text">Turn this off if you only want to send the appointment schedule.</div>
-              <div id="appointmentSummaryNote" class="alert alert-light border mt-3 mb-0 small text-muted">
-                The student will receive the appointment schedule. If checked, the certificate of registration soft copy will also be marked for sending.
-              </div>
-            </div>
-            <div class="modal-footer border-0 px-4 pb-4 pt-0">
-              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-              <button type="submit" class="btn btn-dark">
-                <i class="fa-solid fa-paper-plane me-2"></i>Send & Schedule
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <!-- Success Toast Notification -->
-    <div class="position-fixed top-0 start-0 p-3" style="z-index: 9999;">
-      <div id="successToast" class="toast align-items-center border-0 bg-light" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-          <div class="toast-body">
-            <strong>Email sent to student</strong><br/>
-            <small id="toastEmailMessage">Notification + enrollment form copy sent to a.smith@email.com.</small>
-          </div>
-          <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
       </div>
     </div>
@@ -882,8 +802,7 @@
                 <span class="status-badge ${statusClass}">${escapeHtml(statusLabel)}</span>
                 <div class="icons queue-icons student-records-actions">
                   <button type="button" class="btn btn-sm btn-outline-primary queue-icon queue-icon--view" data-action="view">View</button>
-                  <button type="button" class="btn btn-sm btn-outline-success queue-icon queue-icon--approve" data-action="review">Review</button>
-                  <button type="button" class="btn btn-sm btn-outline-danger queue-icon queue-icon--reject" data-action="remove">Remove</button>
+                  <button type="button" class="btn btn-sm btn-outline-success queue-icon queue-icon--approve" data-action="review">Open Evaluation</button>
                 </div>
               </div>
             `;
@@ -1052,19 +971,11 @@
       }
 
       function getQueueStatusKey(status) {
-        if (status === "Under Review") {
-          return "review";
-        }
-
-        if (status === "Approved" || status === "Rejected" || status === "Enrolled") {
-          return "completed";
-        }
-
-        return "pending";
+        return status === "Under Review" ? "review" : "submitted";
       }
 
       function getQueueStatusLabel(status) {
-        return status === "Under Review" ? "Review" : "Pending";
+        return status === "Under Review" ? "Under Review" : "Submitted";
       }
 
       function getQueueStatusClass(status) {
@@ -1455,99 +1366,6 @@ function getDisplayValue(value, fallback = "Not set") {
         `;
       }
 
-      function scheduleApplication() {
-        console.log('Schedule clicked');
-
-        const selectedStudentName = studentDetailsModalEl.querySelector('h4')?.textContent?.trim() || 'Alexandra Smith';
-        const selectedStudentId = studentDetailsModalEl.querySelector('p')?.textContent?.replace('Student ID:', '').trim() || 'APP-2024-089';
-
-        document.getElementById('appointmentStudentName').textContent = selectedStudentName;
-        document.getElementById('appointmentStudentInfo').textContent = `${selectedStudentId} • Computer Science`;
-
-        const detailsModal = bootstrap.Modal.getInstance(studentDetailsModalEl);
-        const scheduleModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('scheduleAppointmentModal'));
-
-        if (detailsModal) {
-          // Blur the active element to prevent focus retention on hidden modal
-          if (document.activeElement) {
-            document.activeElement.blur();
-          }
-          studentDetailsModalEl.addEventListener('hidden.bs.modal', function onModalHidden() {
-            scheduleModal.show();
-            studentDetailsModalEl.removeEventListener('hidden.bs.modal', onModalHidden);
-          }, { once: true });
-          detailsModal.hide();
-        } else {
-          scheduleModal.show();
-        }
-      }
-
-      function updateAppointmentSummaryNote() {
-        const note = document.getElementById('appointmentSummaryNote');
-        const sendEnrollmentSoftCopy = document.getElementById('sendEnrollmentSoftCopy')?.checked ?? true;
-        if (!note) {
-          return;
-        }
-
-        note.textContent = sendEnrollmentSoftCopy
-          ? 'The student will receive the appointment schedule and the certificate of registration soft copy will also be marked for sending.'
-          : 'The student will receive only the appointment schedule notification.';
-      }
-
-      const scheduleAppointmentModalEl = document.getElementById('scheduleAppointmentModal');
-      scheduleAppointmentModalEl?.addEventListener('show.bs.modal', function () {
-        const appointmentMessageInput = document.getElementById('appointmentMessage');
-        const sendEnrollmentSoftCopyInput = document.getElementById('sendEnrollmentSoftCopy');
-
-        if (appointmentMessageInput) {
-          appointmentMessageInput.value = '';
-        }
-        if (sendEnrollmentSoftCopyInput) {
-          sendEnrollmentSoftCopyInput.checked = true;
-        }
-
-        updateAppointmentSummaryNote();
-      });
-
-      document.getElementById('sendEnrollmentSoftCopy')?.addEventListener('change', updateAppointmentSummaryNote);
-
-      document.getElementById('scheduleAppointmentForm')?.addEventListener('submit', function (event) {
-        event.preventDefault();
-
-        const email = document.getElementById('appointmentEmail')?.value || 'a.smith@email.com';
-        const appointmentMessage = document.getElementById('appointmentMessage')?.value.trim() || '';
-        const sendEnrollmentSoftCopy = document.getElementById('sendEnrollmentSoftCopy')?.checked ?? true;
-        const toastEl = document.getElementById('successToast');
-        const toastMessageEl = document.getElementById('toastEmailMessage');
-
-        if (toastMessageEl) {
-          const toastMessageParts = [`Appointment notification sent to ${email}.`];
-          if (sendEnrollmentSoftCopy) {
-            toastMessageParts.push('Soft copy of the enrollment form included.');
-          }
-          if (appointmentMessage) {
-            toastMessageParts.push(`Message: "${appointmentMessage}"`);
-          }
-          toastMessageEl.textContent = toastMessageParts.join(' ');
-        }
-
-        const scheduleModal = bootstrap.Modal.getInstance(document.getElementById('scheduleAppointmentModal'));
-        if (scheduleModal) {
-          // Blur the active element to prevent focus retention on hidden modal
-          if (document.activeElement) {
-            document.activeElement.blur();
-          }
-          scheduleModal.hide();
-        }
-
-        if (toastEl) {
-          const toast = new bootstrap.Toast(toastEl);
-          toast.show();
-        }
-
-        console.log('Enrollment appointment scheduled.');
-      });
-
       async function openStudentDetails(record) {
         if (!modalDetails || !studentDetailsModalEl || !record) {
           return;
@@ -1611,16 +1429,8 @@ function getDisplayValue(value, fallback = "Not set") {
         }
 
         if (action === 'review') {
-          const badge = card.querySelector('.status-badge');
-          if (badge) {
-            badge.className = 'status-badge review';
-            badge.textContent = 'Review';
-          }
+          window.location.href = "/application-evaluation";
           return;
-        }
-
-        if (action === 'remove') {
-          card.remove();
         }
       });
 
