@@ -2903,14 +2903,16 @@ span .icon:hover {
   align-self: center;
   flex-wrap: wrap;
   row-gap: 0.45rem;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .queue-icons {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   flex-wrap: wrap;
   gap: 0.45rem;
+  max-width: 100%;
 }
 
 .queue-icon {
@@ -3021,6 +3023,11 @@ span .icon:hover {
     padding-top: 0.75rem;
     justify-self: stretch;
   }
+
+  .queue-icons {
+    justify-content: flex-end;
+    max-width: 15rem;
+  }
 }
 
 @media (max-width: 575.98px) {
@@ -3044,11 +3051,12 @@ span .icon:hover {
 
   .queue-icons {
     width: 100%;
-    justify-content: stretch;
+    justify-content: flex-start;
+    max-width: 100%;
   }
 
   .queue-icon {
-    width: 100%;
+    width: auto;
   }
 }
 
