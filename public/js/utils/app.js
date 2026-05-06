@@ -20,13 +20,13 @@ const portalRoutes = {
         login: "/login"
     },
     registrar: {
-        dashboard: "/registrar/dashboard",
+        dashboard: "/registrar",
         registrar: "/registrar",
-        accounts: "/registrar/accounts",
-        applicationQueue: "/registrar/application-queue",
-        applicationEvaluation: "/registrar/application-evaluation",
-        notification: "/registrar/notification",
-        analytics: "/registrar/rep-and-analytics",
+        accounts: "/registrar",
+        applicationQueue: "/registrar",
+        applicationEvaluation: "/registrar",
+        notification: "/registrar",
+        analytics: "/registrar",
         login: "/login"
     },
     superadmin: {
@@ -222,6 +222,32 @@ function toggleSuperAdminOnlyNav(role) {
             navItem.style.display = "none";
         });
     }
+}
+
+function toggleRegistrarWorkflowNav(role) {
+    if (role !== "registrar") {
+        return;
+    }
+
+    const hiddenRouteKeys = new Set([
+        "accounts",
+        "applicationQueue",
+        "applicationEvaluation",
+        "notification",
+        "analytics"
+    ]);
+
+    document.querySelectorAll("a[href]").forEach((link) => {
+        const routeKey = routeAliases[link.getAttribute("href")];
+        if (!hiddenRouteKeys.has(routeKey)) {
+            return;
+        }
+
+        const navItem = link.closest(".nav-item");
+        if (navItem) {
+            navItem.style.display = "none";
+        }
+    });
 }
 
 function hideEmptySectionHeaders() {
@@ -590,6 +616,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (role) {
         toggleRegistrarOnlyNav(role);
         toggleSuperAdminOnlyNav(role);
+        toggleRegistrarWorkflowNav(role);
         hideEmptySectionHeaders();
     }
 

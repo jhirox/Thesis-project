@@ -7,7 +7,7 @@ const publicPath = path.join(process.cwd(), "public");
 
 const roleHome = {
     admin: "/dashboard",
-    registrar: "/registrar/dashboard",
+    registrar: "/registrar",
     superadmin: "/superadmin/dashboard",
     "super admin": "/superadmin/dashboard",
     user: "/profile",
@@ -91,14 +91,13 @@ router.get("/signup", serve('auth', 'signup'));
 router.get("/enrollment-form", serve('auth', 'enrollment-form'));
 
 // --- ADMIN & REGISTRAR ROUTES ---
-// Since Registrar uses Admin files, we can group them logically
 const adminPages = ["dashboard", "accounts", "application-evaluation", "application-queue", "notification", "rep-and-analytics"];
 
 adminPages.forEach(page => {
-    // Standard Admin Routes
     router.get(`/${page}`, redirectRegistrarToMappedPage(page), requireRoles("admin", "superadmin", "super admin"), serve('admin', page));
-    // Registrar mapping to Admin files
-    router.get(`/registrar/${page}`, requireRoles("registrar", "superadmin", "super admin"), serve('admin', page));
+    router.get(`/registrar/${page}`, requireRoles("registrar", "superadmin", "super admin"), (req, res) => {
+        res.redirect("/registrar");
+    });
 });
 
 router.get("/registrar", requireRoles("registrar", "superadmin", "super admin"), serve('registrar', 'registrar'));

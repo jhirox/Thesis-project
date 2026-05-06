@@ -1748,6 +1748,8 @@
             <td class="px-4 py-3 text-center">
               <div class="student-records-actions">
                 <button type="button" class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
+                <button type="button" class="btn btn-sm btn-outline-success me-1 btn-schedule-record">Schedule</button>
+                <button type="button" class="btn btn-sm btn-outline-light me-1 btn-print-record">Print</button>
                 <button type="button" class="btn btn-sm btn-outline-secondary btn-revert-pending">Revert to Pending</button>
               </div>
             </td>
@@ -2187,12 +2189,25 @@
 
       function bindStudentDetailsActions() {
         const detailApproveBtn = document.getElementById("detailApproveBtn");
+        const detailScheduleBtn = document.getElementById("detailScheduleBtn");
+        const detailPrintBtn = document.getElementById("detailPrintBtn");
         const detailRevertBtn = document.getElementById("detailRevertBtn");
         const detailRejectBtn = document.getElementById("detailRejectBtn");
 
         detailApproveBtn?.addEventListener("click", function () {
           if (!activeStudentRecord) return;
           openApproveEnrollmentConfirmation(activeStudentProfile || activeStudentRecord);
+        });
+
+        detailScheduleBtn?.addEventListener("click", function () {
+          if (!activeStudentRecord) return;
+          populateScheduleAppointmentFields();
+          openScheduleFromDetails();
+        });
+
+        detailPrintBtn?.addEventListener("click", function () {
+          if (!activeStudentRecord) return;
+          openEnrollmentPrintForRecord(activeStudentProfile || activeStudentRecord);
         });
 
         detailRevertBtn?.addEventListener("click", async function () {
@@ -2225,6 +2240,8 @@
         const isApproved = normalizedRegistrarStatus === "Enrolled";
         const detailsActionMarkup = isApproved
           ? `
+            <button type="button" class="btn btn-success flex-fill" id="detailScheduleBtn"><i class="fa-regular fa-calendar-days me-2"></i>Schedule Appointment</button>
+            <button type="button" class="btn btn-primary flex-fill" id="detailPrintBtn"><i class="fa-solid fa-print me-2"></i>Print Form</button>
             <button type="button" class="btn btn-outline-secondary flex-fill" id="detailRevertBtn"><i class="fa-solid fa-rotate-left me-2"></i>Revert to Pending</button>
           `
           : `
@@ -2560,6 +2577,19 @@
           removeRegistrarApprovalDraft(record, { silent: true }).then(() => handleRecordStatusChange(record, "Pending", {
             successMessage: "Approved applicant has been moved back to pending.",
           }));
+          return;
+        }
+
+        if (event.target.closest(".btn-schedule-record")) {
+          activeStudentProfile = null;
+          activeStudentRecord = record;
+          populateScheduleAppointmentFields();
+          openScheduleFromDetails();
+          return;
+        }
+
+        if (event.target.closest(".btn-print-record")) {
+          openEnrollmentPrintForRecord(record);
           return;
         }
 
@@ -2926,6 +2956,54 @@
         } else {
           scheduleModal.show();
         }
+      }
+
+      async function openEnrollmentPrintForRecord(record = {}) {
+        if (!record?.enrollment_id) {
+          alert("No enrolled applicant selected for printing.");
+          return;
+        }
+
+        let studentProfileForForm = activeStudentProfile;
+        if (!studentProfileForForm || String(studentProfileForForm.enrollment_id) !== String(record.enrollment_id)) {
+          try {
+            const profileResponse = await fetch(`/api/students/enrollments/details/${encodeURIComponent(record.enrollment_id)}`);
+            const profileResult = await profileResponse.json();
+            if (!profileResponse.ok || !profileResult.success || !profileResult.data) {
+              throw new Error(profileResult.message || "Unable to load enrollment form details.");
+            }
+            studentProfileForForm = profileResult.data;
+            activeStudentProfile = studentProfileForForm;
+          } catch (error) {
+            console.error("Unable to load enrollment form for printing:", error);
+            alert(error.message || "Unable to prepare enrollment form for printing.");
+            return;
+          }
+        }
+
+        activeStudentRecord = toRegistrarRecord(studentProfileForForm);
+        populateEnrollmentForm(studentProfileForForm);
+        syncSavedSoftCopyDraftIfNeeded();
+        setEnrollmentFormModalMode("print");
+        enrollmentFormReturnTarget = null;
+        syncEnrollmentFormSecondaryAction();
+
+        const printModal = bootstrap.Modal.getOrCreateInstance(document.getElementById("enrollmentPrintModal"));
+        const detailModal = bootstrap.Modal.getInstance(studentDetailsModalEl);
+
+        if (detailModal && studentDetailsModalEl?.classList.contains("show")) {
+          if (document.activeElement) {
+            document.activeElement.blur();
+          }
+          studentDetailsModalEl.addEventListener("hidden.bs.modal", function onDetailsHidden() {
+            studentDetailsModalEl.removeEventListener("hidden.bs.modal", onDetailsHidden);
+            printModal.show();
+          }, { once: true });
+          detailModal.hide();
+          return;
+        }
+
+        printModal.show();
       }
 
       function updateAppointmentSummaryNote() {
