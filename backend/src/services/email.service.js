@@ -25,7 +25,20 @@ export function isEmailDeliveryConfigured() {
   return config.resendConfigured || config.smtpConfigured;
 }
 
-async function sendWithResend({ to, subject, text, html, config }) {
+function normalizeResendAttachments(attachments = []) {
+  return attachments
+    .filter((attachment) => attachment?.filename && attachment?.content)
+    .map((attachment) => ({
+      filename: attachment.filename,
+      content: Buffer.isBuffer(attachment.content)
+        ? attachment.content.toString("base64")
+        : Buffer.from(String(attachment.content), "utf8").toString("base64"),
+      contentType: attachment.contentType,
+    }));
+}
+
+async function sendWithResend({ to, subject, text, html, attachments, config }) {
+  const normalizedAttachments = normalizeResendAttachments(attachments);
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -38,6 +51,7 @@ async function sendWithResend({ to, subject, text, html, config }) {
       subject,
       text,
       html,
+      ...(normalizedAttachments.length ? { attachments: normalizedAttachments } : {}),
     }),
   });
 
@@ -55,7 +69,7 @@ async function sendWithResend({ to, subject, text, html, config }) {
   };
 }
 
-export async function sendEmail({ to, subject, text, html }) {
+export async function sendEmail({ to, subject, text, html, attachments = [] }) {
   const config = getEmailProviderConfig();
   const host = config.host;
   const port = Number(process.env.SMTP_PORT || 587);
@@ -73,7 +87,7 @@ export async function sendEmail({ to, subject, text, html }) {
 
   if (config.resendConfigured) {
     try {
-      return await sendWithResend({ to, subject, text, html, config });
+      return await sendWithResend({ to, subject, text, html, attachments, config });
     } catch (error) {
       return {
         success: false,
@@ -137,6 +151,7 @@ export async function sendEmail({ to, subject, text, html }) {
           subject,
           text,
           html,
+          attachments,
         });
 
         return {

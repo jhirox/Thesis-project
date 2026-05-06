@@ -56,6 +56,7 @@ async function dispatchScheduleEmailInBackground({
         customMessage,
         includesSoftCopy,
       }),
+      attachments: includesSoftCopy ? [buildSoftCopyAttachment({ profile, appointmentDate, appointmentTime })] : [],
     });
 
     await updateNotificationDeliveryResult(notificationId, emailResult);
@@ -99,6 +100,73 @@ function buildSoftCopySummary(profile = {}, appointmentDate, appointmentTime) {
   };
 }
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function buildSoftCopyAttachment({ profile = {}, appointmentDate, appointmentTime }) {
+  const studentName = profile.full_name || "Student";
+  const program = [profile.program_code, profile.program_name].filter(Boolean).join(" - ") || "Not set";
+  const semester = profile.semester || profile.semester_types || "Not set";
+  const rows = [
+    ["Student ID", profile.student_id || "Not set"],
+    ["Student Name", studentName],
+    ["Email", profile.email_address || "Not set"],
+    ["Program", program],
+    ["Year Level", profile.year_level || "Not set"],
+    ["Semester", semester],
+    ["Appointment Date", appointmentDate || "Not set"],
+    ["Appointment Time", appointmentTime || "Not set"],
+  ];
+  const filenameName = String(studentName)
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "student";
+  const content = `<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Enrollment Form Soft Copy</title>
+    <style>
+      body { font-family: Arial, sans-serif; color: #111827; margin: 32px; }
+      .header { border-bottom: 2px solid #111827; margin-bottom: 24px; padding-bottom: 12px; }
+      h1 { font-size: 22px; margin: 0 0 6px; }
+      p { margin: 0; color: #4b5563; }
+      table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+      th, td { border: 1px solid #d1d5db; padding: 10px 12px; text-align: left; }
+      th { width: 220px; background: #f3f4f6; }
+      .footer { margin-top: 28px; font-size: 13px; color: #4b5563; }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>Enrollment Form Soft Copy</h1>
+      <p>QEC Registrar</p>
+    </div>
+    <table>
+      <tbody>
+        ${rows.map(([label, value]) => `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(value)}</td></tr>`).join("")}
+      </tbody>
+    </table>
+    <div class="footer">
+      Please keep this soft copy for your registration reference.
+    </div>
+  </body>
+</html>`;
+
+  return {
+    filename: `enrollment-form-${filenameName}.html`,
+    content,
+    contentType: "text/html",
+  };
+}
+
 function buildEmailHtml({ profile, appointmentDate, appointmentTime, customMessage, includesSoftCopy }) {
   const studentName = profile.full_name || "Student";
   const program = [profile.program_code, profile.program_name].filter(Boolean).join(" - ") || "Not set";
@@ -122,7 +190,7 @@ function buildEmailHtml({ profile, appointmentDate, appointmentTime, customMessa
         includesSoftCopy
           ? `
             <h3 style="margin-top: 20px;">Enrollment Form Soft Copy</h3>
-            <p>Please keep this summary for your registration reference:</p>
+            <p>The enrollment form soft copy is attached to this email. Please keep this summary for your registration reference:</p>
             <ul>
               <li><strong>Student ID:</strong> ${profile.student_id || "Not set"}</li>
               <li><strong>Student Name:</strong> ${studentName}</li>
