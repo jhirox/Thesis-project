@@ -881,9 +881,9 @@
               <div class="status queue-status">
                 <span class="status-badge ${statusClass}">${escapeHtml(statusLabel)}</span>
                 <div class="icons queue-icons">
-                  <span class="material-symbols-outlined icon queue-icon queue-icon--view" title="View details" aria-label="View details">visibility</span>
-                  <span class="material-symbols-outlined icon queue-icon queue-icon--approve" title="Mark for review" aria-label="Mark for review">check</span>
-                  <span class="material-symbols-outlined icon queue-icon queue-icon--reject" title="Remove application" aria-label="Remove application">close</span>
+                  <button type="button" class="queue-icon queue-icon--view" data-action="view">View</button>
+                  <button type="button" class="queue-icon queue-icon--approve" data-action="review">Review</button>
+                  <button type="button" class="queue-icon queue-icon--reject" data-action="remove">Remove</button>
                 </div>
               </div>
             `;
@@ -1584,7 +1584,9 @@ function getDisplayValue(value, fallback = "Not set") {
         const card = icon.closest('.queue-card');
         if (!card) return;
 
-        if (icon.textContent.trim() === 'visibility') {
+        const action = icon.dataset.action;
+
+        if (action === 'view') {
           const studentId = card.dataset.studentId || '';
           const enrollmentId = card.dataset.enrollmentId || '';
           
@@ -1608,7 +1610,7 @@ function getDisplayValue(value, fallback = "Not set") {
           modal.show();
         }
 
-        if (icon.textContent.trim() === 'check') {
+        if (action === 'review') {
           const badge = card.querySelector('.status-badge');
           if (badge) {
             badge.className = 'status-badge review';
@@ -1617,7 +1619,7 @@ function getDisplayValue(value, fallback = "Not set") {
           return;
         }
 
-        if (icon.textContent.trim() === 'close') {
+        if (action === 'remove') {
           card.remove();
         }
       });
