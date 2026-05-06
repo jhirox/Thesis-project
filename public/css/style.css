@@ -2824,6 +2824,22 @@ span .icon:hover {
   transform: translateY(-1px);
 }
 
+#queue-pagination .pagination {
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+#queue-pagination .page-item {
+  margin: 0 0.12rem;
+}
+
+#queue-pagination .page-link {
+  min-width: 2.4rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 0.7rem;
+  text-align: center;
+}
+
 .queue-card {
   background-color: rgba(255, 255, 255, 0.08) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
