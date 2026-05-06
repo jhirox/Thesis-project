@@ -1646,6 +1646,18 @@
           renderStudentTable(getFilteredApplications());
           renderApplicationStatusTables(allApplications);
 
+          if (nextStatus === 'Under Review') {
+            const updatedProfile = result.data || {
+              ...(allApplications.find((application) => String(application.enrollment_id) === String(enrollmentId)) || {}),
+              application_status: nextStatus,
+            };
+            modalDetails.innerHTML = getStudentDetailsMarkup(updatedProfile);
+            const nextActionButton = modalDetails.querySelector('.evaluation-status-action');
+            nextActionButton?.focus();
+            nextActionButton?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+          }
+
           bootstrap.Modal.getInstance(studentDetailsModalEl)?.hide();
         } catch (error) {
           console.error('Error updating application status:', error);
