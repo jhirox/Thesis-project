@@ -954,6 +954,10 @@
         saveStoredDrafts(getDraftRows().map(readDraftFromRow));
       }
 
+      function refreshNotificationCards() {
+        window.updateNotificationCards?.();
+      }
+
       function renderDraftEmptyState() {
         if (!draftTableBody || getDraftRows().length > 0) {
           return;
@@ -1090,7 +1094,7 @@
         row.remove();
         persistDraftTable();
         renderDraftEmptyState();
-        updateNotificationCards();
+        refreshNotificationCards();
       }
 
       function setDraftButtonMode(isEditing) {
@@ -1130,7 +1134,7 @@
         if (!options.skipPersist) {
           persistDraftTable();
         }
-        updateNotificationCards();
+        refreshNotificationCards();
       }
 
       // Edit draft
@@ -1197,7 +1201,7 @@
         if (window.getNotificationSettings().clearFormAfterAction) {
           window.clearNotificationForm();
         }
-        updateNotificationCards();
+        refreshNotificationCards();
       });
 
       // Send Now (from form directly)
@@ -1234,7 +1238,7 @@
           if (window.getNotificationSettings().clearFormAfterAction) {
             window.clearNotificationForm();
           }
-          updateNotificationCards();
+          refreshNotificationCards();
         } catch (error) {
           console.error("Notification send failed:", error);
           alert(error.message || "Unable to send notification.");
@@ -1284,7 +1288,7 @@
           }
           persistDraftTable();
           renderDraftEmptyState();
-          updateNotificationCards();
+          refreshNotificationCards();
         } catch (error) {
           console.error("Draft notification send failed:", error);
           alert(error.message || "Unable to send notification.");
