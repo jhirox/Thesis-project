@@ -837,13 +837,21 @@
         }
       }
 
+      function getAdminNotificationAuthHeaders() {
+        const token = localStorage.getItem("authToken");
+        return token ? { Authorization: `Bearer ${token}` } : {};
+      }
+
       input.addEventListener("input", async () => {
         const query = input.value.trim();
         suggestions.innerHTML = "";
 
         if (query.length > 0) {
           try {
-            const response = await fetch(`/api/students/search/by-name?query=${encodeURIComponent(query)}`);
+            const response = await fetch(`/api/students/search/by-name?query=${encodeURIComponent(query)}`, {
+              credentials: "same-origin",
+              headers: getAdminNotificationAuthHeaders(),
+            });
             const result = await response.json();
 
             if (!result.success || result.data.length === 0) {
@@ -897,9 +905,10 @@
       const typeField = document.getElementById("notificationType");
       const studentField = document.getElementById("studentSearch");
       const messageField = document.querySelector("textarea");
+      const notificationForm = document.querySelector("#sendNotification form");
 
-      const saveDraftBtn = document.querySelector(".btn-light.custom-btn");
-      const sendNowBtn = document.querySelector(".btn-dark.custom-btn");
+      const saveDraftBtn = document.querySelector("#sendNotification .btn-light.custom-btn");
+      const sendNowBtn = document.querySelector("#sendNotification .btn-dark.custom-btn");
       const draftTableBody = document.querySelector("#sendNotification table tbody");
       const draftEmailField = document.getElementById("studentEmail");
       const scheduleDateField = document.getElementById("scheduleDate");
@@ -990,6 +999,20 @@
         return window.confirm(`Send this notification to ${recipientName}?`);
       }
 
+      function getNotificationAuthHeaders() {
+        const headers = { "Content-Type": "application/json" };
+        const token = localStorage.getItem("authToken");
+        if (token) {
+          headers.Authorization = `Bearer ${token}`;
+        }
+        return headers;
+      }
+
+      function getSelectedNotificationType() {
+        const selectedType = typeField?.value?.trim() || "";
+        return selectedType === "Select notifications type" ? "" : selectedType;
+      }
+
       async function sendNotificationToServer({ title, student, type, message, studentEmail, appointmentDate }) {
         const targetEmail = (studentEmail || draftEmailField?.value || "").trim();
         const targetAppointmentDate = (appointmentDate || scheduleDateField?.value || "").trim();
@@ -1000,7 +1023,8 @@
 
         const response = await fetch("/api/notifications/send", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          headers: getNotificationAuthHeaders(),
           body: JSON.stringify({
             title,
             notificationType: type,
@@ -1013,6 +1037,9 @@
 
         const result = await response.json().catch(() => ({}));
         if (!response.ok || result.success === false) {
+          if (response.status === 401 || response.status === 403) {
+            throw new Error(result.error || result.message || "Your account is not allowed to send notifications. Please sign in again with an admin or registrar account.");
+          }
           throw new Error(result.error || result.message || "Unable to send notification.");
         }
 
@@ -1141,7 +1168,7 @@
       saveDraftBtn.addEventListener("click", () => {
         const title = titleField.value.trim();
         const student = studentField.value.trim();
-        const type = typeField.value;
+        const type = getSelectedNotificationType();
         const message = messageField.value.trim();
         const studentEmail = draftEmailField?.value.trim() || "";
         const scheduleDate = scheduleDateField?.value.trim() || "";
@@ -1174,11 +1201,11 @@
       });
 
       // Send Now (from form directly)
-      sendNowBtn.addEventListener("click", async (e) => {
+      async function handleSendNow(e) {
         e.preventDefault(); // prevent form submission
         const title = titleField.value.trim();
         const student = studentField.value.trim();
-        const type = typeField.value;
+        const type = getSelectedNotificationType();
         const message = messageField.value.trim();
 
         if (!title || !student || !type || !message) {
@@ -1215,7 +1242,10 @@
           sendNowBtn.disabled = false;
           sendNowBtn.innerHTML = originalButtonHtml;
         }
-      });
+      }
+
+      sendNowBtn.addEventListener("click", handleSendNow);
+      notificationForm?.addEventListener("submit", handleSendNow);
 
       // Send Now (from drafts table)
       async function sendDraft(row) {
