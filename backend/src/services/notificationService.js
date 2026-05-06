@@ -87,7 +87,7 @@ function buildNotificationMessage({ studentName, appointmentDate, appointmentTim
   return `Hello ${studentName}, ${messageParts.join(" ")}`;
 }
 
-function buildSoftCopySummary(profile = {}, appointmentDate, appointmentTime) {
+function buildSoftCopySummary(profile = {}, appointmentDate, appointmentTime, formValues = null) {
   return {
     studentId: profile.student_id || null,
     studentName: profile.full_name || null,
@@ -97,6 +97,7 @@ function buildSoftCopySummary(profile = {}, appointmentDate, appointmentTime) {
     semester: profile.semester || profile.semester_types || null,
     appointmentDate,
     appointmentTime,
+    formValues: formValues && typeof formValues === "object" ? formValues : null,
   };
 }
 
@@ -533,7 +534,7 @@ export async function createScheduleNotification(payload) {
     includesSoftCopy: payload.includesSoftCopy,
   });
   const softCopyPayload = payload.includesSoftCopy
-    ? JSON.stringify(buildSoftCopySummary(profile, payload.appointmentDate, payload.appointmentTime))
+    ? JSON.stringify(buildSoftCopySummary(profile, payload.appointmentDate, payload.appointmentTime, payload.softCopyFormValues))
     : null;
   const emailDeliveryConfigured = isEmailDeliveryConfigured();
   const initialEmailDeliveryStatus = emailDeliveryConfigured ? "sending" : "skipped";

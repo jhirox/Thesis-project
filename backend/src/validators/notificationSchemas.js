@@ -21,6 +21,7 @@ export const createScheduleNotificationSchema = z.object({
   appointmentTime: trimmedString.min(1, "appointmentTime is required"),
   message: optionalTrimmedString,
   includesSoftCopy: z.boolean().default(true),
+  softCopyFormValues: z.record(z.string(), z.string()).nullable().optional(),
 });
 
 export const createDirectNotificationSchema = z.object({

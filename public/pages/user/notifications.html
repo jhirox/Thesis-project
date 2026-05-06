@@ -574,13 +574,19 @@
       }
 
       function buildEnrollmentFormHtml(notification, payload) {
+        const formValues = payload?.formValues && typeof payload.formValues === "object" ? payload.formValues : {};
         const nameParts = splitStudentName(payload?.studentName || notification?.title || "Student");
         const { courseField, yearSectionField, feesTitle } = buildProgramFields(payload);
-        const semester = formatSemesterLabel(payload?.semester);
-        const appointmentDate = payload?.appointmentDate || notification?.appointment_date || "Not set";
-        const studentNumber = payload?.studentId || notification?.student_id || "";
+        const semester = formValues.certSemester || formatSemesterLabel(payload?.semester);
+        const appointmentDate = formValues.certProcessDate || payload?.appointmentDate || notification?.appointment_date || "Not set";
+        const studentNumber = formValues.certStudNo || payload?.studentId || notification?.student_id || "";
+        const firstName = formValues.certFirstName || nameParts.firstName;
+        const middleName = formValues.certMiddleName || nameParts.middleName;
+        const lastName = formValues.certLastName || nameParts.lastName;
+        const courseDisplay = formValues.certCourse || (courseField === "Not set" ? "" : courseField);
+        const yearSectionDisplay = formValues.certYearSection || (yearSectionField === "Not set" ? "" : yearSectionField);
         const escapedTitle = escapeHtml(notification?.title || "Enrollment Form Soft Copy");
-        const escapedStudentName = escapeHtml(payload?.studentName || "Student");
+        const escapedStudentName = escapeHtml(formValues.certStudentSignature || payload?.studentName || "Student");
         const logoUrl = escapeHtml(`${window.location.origin}/assets/images/logo.png`);
 
         return `<!DOCTYPE html>
@@ -954,15 +960,15 @@
         <div class="cert-reg-student-info">
           <div class="cert-reg-info-field">
             <label>Student Last Name:</label>
-            <div class="field-value">${escapeHtml(nameParts.lastName)}</div>
+            <div class="field-value">${escapeHtml(lastName)}</div>
           </div>
           <div class="cert-reg-info-field">
             <label>Student First Name:</label>
-            <div class="field-value">${escapeHtml(nameParts.firstName)}</div>
+            <div class="field-value">${escapeHtml(firstName)}</div>
           </div>
           <div class="cert-reg-info-field">
             <label>Student Middle Name:</label>
-            <div class="field-value">${escapeHtml(nameParts.middleName)}</div>
+            <div class="field-value">${escapeHtml(middleName)}</div>
           </div>
           <div class="cert-reg-info-field">
             <label>Student Number:</label>
@@ -970,7 +976,7 @@
           </div>
           <div class="cert-reg-info-field">
             <label>School Year:</label>
-            <div class="field-value">SY 2025-2026</div>
+            <div class="field-value">${escapeHtml(formValues.certSchoolYear || "SY 2025-2026")}</div>
           </div>
           <div class="cert-reg-info-field">
             <label>Semester:</label>
@@ -978,35 +984,35 @@
           </div>
           <div class="cert-reg-info-field">
             <label>Course:</label>
-            <div class="field-value">${escapeHtml(courseField === "Not set" ? "" : courseField)}</div>
+            <div class="field-value">${escapeHtml(courseDisplay)}</div>
           </div>
           <div class="cert-reg-info-field">
             <label>Year & Section:</label>
-            <div class="field-value">${escapeHtml(yearSectionField === "Not set" ? "" : yearSectionField)}</div>
+            <div class="field-value">${escapeHtml(yearSectionDisplay)}</div>
           </div>
           <div class="cert-reg-info-field">
             <label>Email Adrress:</label>
-            <div class="field-value"></div>
+            <div class="field-value">${escapeHtml(formValues.certEmail || "")}</div>
           </div>
           <div class="cert-reg-info-field">
             <label>Birthday:</label>
-            <div class="field-value"></div>
+            <div class="field-value">${escapeHtml(formValues.certBirthday || "")}</div>
           </div>
           <div class="cert-reg-info-field">
             <label>Birthplace:</label>
-            <div class="field-value"></div>
+            <div class="field-value">${escapeHtml(formValues.certBirthplace || "")}</div>
           </div>
           <div class="cert-reg-info-field">
             <label>Gender:</label>
-            <div class="field-value"></div>
+            <div class="field-value">${escapeHtml(formValues.certSex || "")}</div>
           </div>
           <div class="cert-reg-info-field">
             <label>Contact Number:</label>
-            <div class="field-value"></div>
+            <div class="field-value">${escapeHtml(formValues.certContactNo || "")}</div>
           </div>
           <div class="cert-reg-info-field">
             <label>Address:</label>
-            <div class="field-value"></div>
+            <div class="field-value">${escapeHtml(formValues.certAddress || "")}</div>
           </div>
           <div class="cert-reg-info-field">
             <label>PWD:</label>
@@ -1089,15 +1095,15 @@
         <div class="cert-reg-bottom-info">
           <div class="cert-reg-bottom-field">
             <label>Number of units earned:</label>
-            <div class="field-value">18</div>
+            <div class="field-value">${escapeHtml(formValues.certUnitsEarned || "18")}</div>
           </div>
           <div class="cert-reg-bottom-field">
             <label>Remarks:</label>
-            <div class="field-value">Approved</div>
+            <div class="field-value">${escapeHtml(formValues.certRemarks || "Approved")}</div>
           </div>
           <div class="cert-reg-bottom-field">
             <label>Learning Modality:</label>
-            <div class="field-value">Face-to-face</div>
+            <div class="field-value">${escapeHtml(formValues.certModality || "Face-to-face")}</div>
           </div>
           <div class="cert-reg-bottom-field text-center">
             <div class="field-value">${escapedStudentName}</div>
@@ -1110,11 +1116,11 @@
           <div class="cert-reg-process-by-label">Process by:</div>
           <div class="cert-reg-signature-section">
             <div class="cert-reg-signature-block">
-              <div class="field-value"></div>
+              <div class="field-value">${escapeHtml(formValues.certAdmissionOfficer || "")}</div>
               <div class="cert-reg-signature-label">Admission Officer</div>
             </div>
             <div class="cert-reg-signature-block">
-              <div class="field-value"></div>
+              <div class="field-value">${escapeHtml(formValues.certSignature || "")}</div>
               <div class="cert-reg-signature-label">Signature</div>
             </div>
             <div class="cert-reg-signature-block">

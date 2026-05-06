@@ -2981,12 +2981,14 @@
           "certFirstName",
           "certMiddleName",
           "certStudNo",
+          "certEmail",
           "certBirthday",
           "certBirthplace",
           "certSchoolYear",
           "certSemester",
           "certCourse",
           "certYearSection",
+          "certSex",
           "certContactNo",
           "certAddress",
           "certUnitsEarned",
@@ -3012,6 +3014,60 @@
             field.value = value ?? "";
           }
         });
+      }
+
+      function getEnrollmentFormDefaultValues(student = {}, options = {}) {
+        const firstName = getDisplayValue(student.first_name, '');
+        const lastName = getDisplayValue(student.last_name, '');
+        const middleName = getDisplayValue(student.middle_name, '');
+        const studNo = getDisplayValue(student.student_id, '');
+        const email = getDisplayValue(student.email_address, '');
+        const contactNumber = getDisplayValue(student.contact_number, '');
+        const birthDate = getDateInputValue(student.birth_date);
+        const birthPlace = getDisplayValue(student.birth_place, '');
+        const address = getDisplayValue(student.complete_address, '');
+        const sex = getDisplayValue(student.sex, '');
+        const programName = getDisplayValue(student.program_name || student.program_code, '');
+        const yearLevel = getDisplayValue(student.year_level, '');
+        const semester = getDisplayValue(student.semester || student.semester_types, '');
+        const modality = getDisplayValue(student.modality_name, '');
+        const fullName = getDisplayValue(student.full_name || `${firstName} ${middleName} ${lastName}`.trim(), '');
+
+        return {
+          certFirstName: firstName,
+          certLastName: lastName,
+          certMiddleName: middleName,
+          certStudNo: studNo,
+          certEmail: email,
+          certContactNo: contactNumber,
+          certBirthday: birthDate,
+          certBirthplace: birthPlace,
+          certAddress: address,
+          certSex: sex,
+          certCourse: programName,
+          certYearSection: yearLevel,
+          certSchoolYear: options.schoolYear || 'SY 2025-2026',
+          certSemester: semester || options.semester || '2nd Sem',
+          certModality: modality || options.modality || 'Face-to-face',
+          certUnitsEarned: options.unitsEarned || '18',
+          certRemarks: options.remarks || 'Approved',
+          certStudentSignature: fullName,
+          certAdmissionOfficer: options.admissionOfficer || '',
+          certSignature: options.signature || '',
+          certProcessDate: options.processDate || '',
+        };
+      }
+
+      function getEnrollmentFormValuesForNotification(student = {}, options = {}) {
+        const baseValues = getEnrollmentFormDefaultValues(student, options);
+        const currentKey = getCurrentSoftCopyDraftKey();
+        if (savedSoftCopyDraft && savedSoftCopyDraft.key === currentKey && savedSoftCopyDraft.values) {
+          return {
+            ...baseValues,
+            ...savedSoftCopyDraft.values,
+          };
+        }
+        return baseValues;
       }
 
       function syncSavedSoftCopyDraftIfNeeded() {
@@ -3180,6 +3236,31 @@
             submitButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Sending...';
           }
 
+          let studentProfileForSoftCopy = activeStudentProfile;
+          if (sendEnrollmentSoftCopy && !studentProfileForSoftCopy && activeRecord?.enrollment_id) {
+            try {
+              const profileResponse = await fetch(`/api/students/enrollments/details/${encodeURIComponent(activeRecord.enrollment_id)}`);
+              const profileResult = await profileResponse.json();
+              if (profileResponse.ok && profileResult.success && profileResult.data) {
+                studentProfileForSoftCopy = profileResult.data;
+                activeStudentProfile = studentProfileForSoftCopy;
+              }
+            } catch (error) {
+              console.warn('Unable to fetch full student profile for soft copy payload, using available data:', error);
+              studentProfileForSoftCopy = activeStudentProfile || activeStudentRecord || {};
+            }
+          }
+
+          if (!studentProfileForSoftCopy) {
+            studentProfileForSoftCopy = activeStudentRecord || {};
+          }
+
+          const softCopyFormValues = sendEnrollmentSoftCopy
+            ? getEnrollmentFormValuesForNotification(studentProfileForSoftCopy, {
+                processDate: appointmentDate,
+              })
+            : null;
+
           const response = await fetch('/api/notifications/schedule', {
             method: 'POST',
             headers: {
@@ -3193,6 +3274,7 @@
               appointmentTime,
               message: appointmentMessage,
               includesSoftCopy: sendEnrollmentSoftCopy,
+              softCopyFormValues,
             }),
           });
 
@@ -3291,45 +3373,7 @@
       });
 
       function populateEnrollmentForm(student = {}, options = {}) {
-        // Extract student properties with fallback values
-        const firstName = getDisplayValue(student.first_name, '');
-        const lastName = getDisplayValue(student.last_name, '');
-        const middleName = getDisplayValue(student.middle_name, '');
-        const studNo = getDisplayValue(student.student_id, '');
-        const email = getDisplayValue(student.email_address, '');
-        const contactNumber = getDisplayValue(student.contact_number, '');
-        const birthDate = getDateInputValue(student.birth_date);
-        const birthPlace = getDisplayValue(student.birth_place, '');
-        const address = getDisplayValue(student.complete_address, '');
-        const sex = getDisplayValue(student.sex, '');
-        const programName = getDisplayValue(student.program_name || student.program_code, '');
-        const yearLevel = getDisplayValue(student.year_level, '');
-        const semester = getDisplayValue(student.semester || student.semester_types, '');
-        const modality = getDisplayValue(student.modality_name, '');
-        const fullName = getDisplayValue(student.full_name || `${firstName} ${middleName} ${lastName}`.trim(), '');
-
-        // Map student properties directly to form fields
-        document.getElementById('certFirstName').value = firstName;
-        document.getElementById('certLastName').value = lastName;
-        document.getElementById('certMiddleName').value = middleName;
-        document.getElementById('certStudNo').value = studNo;
-        document.getElementById('certEmail').value = email;
-        document.getElementById('certContactNo').value = contactNumber;
-        document.getElementById('certBirthday').value = birthDate;
-        document.getElementById('certBirthplace').value = birthPlace;
-        document.getElementById('certAddress').value = address;
-        document.getElementById('certSex').value = sex;
-        document.getElementById('certCourse').value = programName;
-        document.getElementById('certYearSection').value = yearLevel;
-        document.getElementById('certSchoolYear').value = options.schoolYear || 'SY 2025-2026';
-        document.getElementById('certSemester').value = semester || options.semester || '2nd Sem';
-        document.getElementById('certModality').value = modality || options.modality || 'Face-to-face';
-        document.getElementById('certUnitsEarned').value = options.unitsEarned || '18';
-        document.getElementById('certRemarks').value = options.remarks || 'Approved';
-        document.getElementById('certStudentSignature').value = fullName;
-        document.getElementById('certAdmissionOfficer').value = options.admissionOfficer || '';
-        document.getElementById('certSignature').value = options.signature || '';
-        document.getElementById('certProcessDate').value = options.processDate || '';
+        applyEnrollmentFormValues(getEnrollmentFormDefaultValues(student, options));
       }
 
       function printEnrollmentForm() {
