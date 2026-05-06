@@ -1263,11 +1263,18 @@ function getDisplayValue(value, fallback = "Not set") {
                 </div>
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Working Status</label>
-                  <p class="fw-semibold mb-0">${getDisplayValue(profile.working_student)}</p>
+                  <p class="fw-semibold mb-0">${getDisplayValue(
+                    profile.working_student
+                    || (profile.is_working === 1 || profile.is_working === "1" || profile.is_working === true
+                      ? "Working student"
+                      : profile.is_working === 0 || profile.is_working === "0" || profile.is_working === false
+                        ? "Non-working"
+                        : null)
+                  )}</p>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Entry Status</label>
-                  <p class="fw-semibold mb-0">${getDisplayValue(profile.entry_status)}</p>
+                  <p class="fw-semibold mb-0">${getDisplayValue(profile.entry_status || profile.application_status)}</p>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label text-muted small">Application Status</label>
