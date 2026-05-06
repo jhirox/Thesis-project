@@ -109,6 +109,103 @@ function escapeHtml(value) {
     .replace(/'/g, "&#039;");
 }
 
+function escapeXml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
+function crc32(buffer) {
+  let crc = 0xffffffff;
+
+  for (const byte of buffer) {
+    crc ^= byte;
+    for (let bit = 0; bit < 8; bit += 1) {
+      crc = (crc >>> 1) ^ (0xedb88320 & -(crc & 1));
+    }
+  }
+
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+function getDosDateTime(date = new Date()) {
+  const dosTime =
+    (date.getHours() << 11) |
+    (date.getMinutes() << 5) |
+    Math.floor(date.getSeconds() / 2);
+  const dosDate =
+    ((date.getFullYear() - 1980) << 9) |
+    ((date.getMonth() + 1) << 5) |
+    date.getDate();
+
+  return { dosTime, dosDate };
+}
+
+function createZip(entries) {
+  const localParts = [];
+  const centralParts = [];
+  let offset = 0;
+  const { dosTime, dosDate } = getDosDateTime();
+
+  for (const entry of entries) {
+    const nameBuffer = Buffer.from(entry.name, "utf8");
+    const contentBuffer = Buffer.isBuffer(entry.content) ? entry.content : Buffer.from(entry.content, "utf8");
+    const checksum = crc32(contentBuffer);
+
+    const localHeader = Buffer.alloc(30);
+    localHeader.writeUInt32LE(0x04034b50, 0);
+    localHeader.writeUInt16LE(20, 4);
+    localHeader.writeUInt16LE(0, 6);
+    localHeader.writeUInt16LE(0, 8);
+    localHeader.writeUInt16LE(dosTime, 10);
+    localHeader.writeUInt16LE(dosDate, 12);
+    localHeader.writeUInt32LE(checksum, 14);
+    localHeader.writeUInt32LE(contentBuffer.length, 18);
+    localHeader.writeUInt32LE(contentBuffer.length, 22);
+    localHeader.writeUInt16LE(nameBuffer.length, 26);
+    localHeader.writeUInt16LE(0, 28);
+    localParts.push(localHeader, nameBuffer, contentBuffer);
+
+    const centralHeader = Buffer.alloc(46);
+    centralHeader.writeUInt32LE(0x02014b50, 0);
+    centralHeader.writeUInt16LE(20, 4);
+    centralHeader.writeUInt16LE(20, 6);
+    centralHeader.writeUInt16LE(0, 8);
+    centralHeader.writeUInt16LE(0, 10);
+    centralHeader.writeUInt16LE(dosTime, 12);
+    centralHeader.writeUInt16LE(dosDate, 14);
+    centralHeader.writeUInt32LE(checksum, 16);
+    centralHeader.writeUInt32LE(contentBuffer.length, 20);
+    centralHeader.writeUInt32LE(contentBuffer.length, 24);
+    centralHeader.writeUInt16LE(nameBuffer.length, 28);
+    centralHeader.writeUInt16LE(0, 30);
+    centralHeader.writeUInt16LE(0, 32);
+    centralHeader.writeUInt16LE(0, 34);
+    centralHeader.writeUInt16LE(0, 36);
+    centralHeader.writeUInt32LE(0, 38);
+    centralHeader.writeUInt32LE(offset, 42);
+    centralParts.push(centralHeader, nameBuffer);
+
+    offset += localHeader.length + nameBuffer.length + contentBuffer.length;
+  }
+
+  const centralDirectory = Buffer.concat(centralParts);
+  const endRecord = Buffer.alloc(22);
+  endRecord.writeUInt32LE(0x06054b50, 0);
+  endRecord.writeUInt16LE(0, 4);
+  endRecord.writeUInt16LE(0, 6);
+  endRecord.writeUInt16LE(entries.length, 8);
+  endRecord.writeUInt16LE(entries.length, 10);
+  endRecord.writeUInt32LE(centralDirectory.length, 12);
+  endRecord.writeUInt32LE(offset, 16);
+  endRecord.writeUInt16LE(0, 20);
+
+  return Buffer.concat([...localParts, centralDirectory, endRecord]);
+}
+
 function formatDisplayDate(value) {
   if (!value) {
     return "Not set";
@@ -164,7 +261,46 @@ function buildEnrollmentSubjectRows(appointmentTime) {
     .join("");
 }
 
-function buildSoftCopyAttachment({ profile = {}, appointmentDate, appointmentTime }) {
+function docxText(value) {
+  return `<w:r><w:t xml:space="preserve">${escapeXml(value)}</w:t></w:r>`;
+}
+
+function docxParagraph(value, { bold = false, center = false, size = 22 } = {}) {
+  return `
+    <w:p>
+      <w:pPr>${center ? '<w:jc w:val="center"/>' : ""}</w:pPr>
+      <w:r>
+        <w:rPr>${bold ? "<w:b/>" : ""}<w:sz w:val="${size}"/></w:rPr>
+        <w:t xml:space="preserve">${escapeXml(value)}</w:t>
+      </w:r>
+    </w:p>`;
+}
+
+function docxTable(rows) {
+  return `
+    <w:tbl>
+      <w:tblPr><w:tblW w:w="5000" w:type="pct"/><w:tblBorders>
+        <w:top w:val="single" w:sz="4" w:space="0" w:color="999999"/>
+        <w:left w:val="single" w:sz="4" w:space="0" w:color="999999"/>
+        <w:bottom w:val="single" w:sz="4" w:space="0" w:color="999999"/>
+        <w:right w:val="single" w:sz="4" w:space="0" w:color="999999"/>
+        <w:insideH w:val="single" w:sz="4" w:space="0" w:color="999999"/>
+        <w:insideV w:val="single" w:sz="4" w:space="0" w:color="999999"/>
+      </w:tblBorders></w:tblPr>
+      ${rows.map((row) => `
+        <w:tr>
+          ${row.map((cell) => `
+            <w:tc>
+              <w:tcPr><w:tcW w:w="2400" w:type="dxa"/></w:tcPr>
+              <w:p>${docxText(cell)}</w:p>
+            </w:tc>
+          `).join("")}
+        </w:tr>
+      `).join("")}
+    </w:tbl>`;
+}
+
+function createDocxDocumentXml({ profile, appointmentDate, appointmentTime }) {
   const studentName = profile.full_name || "Student";
   const programCode = profile.program_code || profile.major || "";
   const programName = profile.program_name || "";
@@ -173,174 +309,105 @@ function buildSoftCopyAttachment({ profile = {}, appointmentDate, appointmentTim
   const course = profile.year_level || programCode || "Not set";
   const yearSection = programName || programCode || "Not set";
   const registrationDate = formatDisplayDate(appointmentDate || profile.enrollment_date);
-  const fullAddress = profile.complete_address || "Not Provided";
-  const feesTitle = [programCode || "BSCS", profile.year_level || "2", semester, schoolYear].join(" ");
+  const subjectRows = [
+    ["CODE", "DESCRIPTION", "UNITS", "TIME", "DAYS", "ROOM", "INSTRUCTOR"],
+    ["GE", "Art Appreciation", "3", appointmentTime || "--:--", "MTWFSaSu", "Room 101", "Instructor"],
+    ["CS ELECTIVE 1", "Graphics and Visual Computing", "3", appointmentTime || "--:--", "MTWFSaSu", "Room 101", "Instructor"],
+    ["HC 101 / IAS 101", "Human Computer Interaction, Information Assurance and Security", "3", appointmentTime || "--:--", "MTWFSaSu", "Room 101", "Instructor"],
+    ["SP 101", "Social Issues and Professional Practice", "3", appointmentTime || "--:--", "MTWFSaSu", "Room 101", "Instructor"],
+    ["SE 102", "Software Engineering 2", "3", appointmentTime || "--:--", "MTWFSaSu", "Room 101", "Instructor"],
+    ["THS 101", "Thesis 1", "3", appointmentTime || "--:--", "MTWFSaSu", "Room 101", "Instructor"],
+  ];
+  const studentRows = [
+    ["Student Last Name", profile.last_name || "Not set", "Student First Name", profile.first_name || "Not set", "Student Middle Name", profile.middle_name || "Not set"],
+    ["Student Number", profile.student_id || "Not set", "School Year", schoolYear, "Semester", semester],
+    ["Course", course, "Year & Section", yearSection, "Email Address", profile.email_address || "Not set"],
+    ["Birthday", formatDisplayDate(profile.birth_date), "Birthplace", profile.birth_place || "Not set", "Gender", profile.sex || "Not set"],
+    ["Contact Number", profile.contact_number || "Not set", "Address", profile.complete_address || "Not Provided", "PWD", ""],
+  ];
+  const feeRows = [
+    ["ASSESSMENT OF FEES", `${programCode || "BSCS"} ${profile.year_level || "2"} ${semester} ${schoolYear}`],
+    ["Tuition Fee", "5,400.00"],
+    ["Registration Fee", ""],
+    ["Miscellaneous Fee", ""],
+    ["Computer Lab Fee", ""],
+    ["Cultural Fee", ""],
+    ["CSSG Fee", ""],
+    ["Class Card", ""],
+    ["Research Fee", ""],
+    ["Thesis/FS/Comp Proj: Oral Defense", ""],
+    ["Practicum/OJT Fee", ""],
+    ["TOTAL OBLIGATION", "10,700.00"],
+  ];
+
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    ${docxParagraph("QUEZONIAN EDUCATIONAL COLLEGE, INC.", { bold: true, center: true, size: 28 })}
+    ${docxParagraph("Dr. Ramon Solar Street, Zone II Poblacion, Atimonan, Quezon", { center: true, size: 18 })}
+    ${docxParagraph("Tel. No. (042) 316-4129 | Email: qeciatimonan@yahoo.com.ph", { center: true, size: 18 })}
+    ${docxParagraph("COLLEGIATE DEPARTMENT", { bold: true, center: true, size: 20 })}
+    ${docxParagraph("CERTIFICATE OF REGISTRATION", { bold: true, center: true, size: 26 })}
+    ${docxTable(studentRows)}
+    ${docxParagraph("Subjects", { bold: true, size: 22 })}
+    ${docxTable(subjectRows)}
+    ${docxTable([
+      ["Number of units earned", "18", "Remarks", profile.special_remarks || "Approved", "Learning Modality", profile.modality_name || "Face-to-face"],
+      ["Student", studentName, "Signature Over Printed Name", "", "Date of Registration", registrationDate],
+    ])}
+    ${docxParagraph("(QECI STAFF ONLY)", { bold: true, size: 20 })}
+    ${docxTable([
+      ["Admission Officer", "Registrar", "Signature", "", "Date of Registration", registrationDate],
+    ])}
+    ${docxParagraph("IMPORTANT: Keep this portion. Present it to your instructors on the first day of classes for his/her signature. You will also be required to present this at the Office of the Student Affairs when applying for your identification card and in all your dealings in the School.", { size: 18 })}
+    ${docxTable(feeRows)}
+    ${docxTable([
+      ["SCHOOL CASHIER", "", "FINANCE OFFICER", ""],
+    ])}
+    ${docxParagraph("NOTES: Please settle your account before the examination. If you have settled your account, please present your OR to our Finance Officer for your examination permit. Thank you.", { size: 18 })}
+    <w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="720" w:right="720" w:bottom="720" w:left="720"/></w:sectPr>
+  </w:body>
+</w:document>`;
+}
+
+function createDocxBuffer(documentXml) {
+  return createZip([
+    {
+      name: "[Content_Types].xml",
+      content: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+</Types>`,
+    },
+    {
+      name: "_rels/.rels",
+      content: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+</Relationships>`,
+    },
+    {
+      name: "word/document.xml",
+      content: documentXml,
+    },
+  ]);
+}
+
+function buildSoftCopyAttachment({ profile = {}, appointmentDate, appointmentTime }) {
+  const studentName = profile.full_name || "Student";
   const filenameName = String(studentName)
     .trim()
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "") || "student";
-  const content = `<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Enrollment Form</title>
-    <xml>
-      <w:WordDocument>
-        <w:View>Print</w:View>
-        <w:Zoom>90</w:Zoom>
-      </w:WordDocument>
-    </xml>
-    <style>
-      @page Section1 { size: 8.27in 11.69in; margin: .35in; }
-      body { font-family: Arial, sans-serif; color: #111827; margin: 0; }
-      .doc { width: 100%; border: 1px solid #9ca3af; background: #fffdfa; }
-      .header { background: #0b2545; color: #ffffff; border: 2px solid #d5aa20; padding: 10px 14px; text-align: center; }
-      .header h2 { margin: 0; font-size: 18px; letter-spacing: .04em; }
-      .header p { margin: 4px 0 0; font-size: 11px; }
-      .title { background: #d5aa20; color: #0b2545; text-align: center; font-weight: bold; text-transform: uppercase; padding: 8px; }
-      .title .small { font-size: 11px; }
-      .title .large { font-size: 16px; letter-spacing: 1px; }
-      .student-grid { width: 100%; border-collapse: collapse; margin-top: 8px; }
-      .student-grid td { width: 33.33%; padding: 6px 8px; vertical-align: top; }
-      .label { display: block; font-size: 10px; font-weight: bold; color: #0b2545; text-transform: uppercase; }
-      .field { display: block; min-height: 18px; border-bottom: 2px solid #94a3b8; padding: 3px 0; font-size: 12px; }
-      .subjects, .fees { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 10px; }
-      .subjects th { background: #0b2545; color: #ffffff; text-transform: uppercase; padding: 5px; border: 1px solid #d9dee7; }
-      .subjects td, .fees td { border: 1px solid #d9dee7; padding: 5px; }
-      .bottom-grid { width: 100%; border-collapse: collapse; margin-top: 8px; }
-      .bottom-grid td { width: 33.33%; padding: 6px 8px; vertical-align: top; }
-      .staff { margin-top: 10px; border-top: 1px solid #d5aa20; padding-top: 8px; }
-      .signatures { width: 100%; border-collapse: collapse; margin-top: 8px; }
-      .signatures td { width: 33.33%; text-align: center; padding: 8px; vertical-align: bottom; }
-      .notice { background: #0b2545; color: #ffffff; border: 1px solid #d5aa20; margin-top: 10px; padding: 8px; font-size: 10px; line-height: 1.35; }
-      .notice strong { color: #ffd24a; }
-      .fees-title { background: #d5aa20; color: #0b2545; text-align: center; font-weight: bold; text-transform: uppercase; padding: 7px; margin-top: 10px; }
-      .fees .amount { text-align: right; width: 150px; }
-      .total td { font-weight: bold; border-color: #d5aa20; }
-      .cashier-box { width: 100%; border-collapse: collapse; margin-top: 8px; }
-      .cashier-box td { border: 1px solid #d9dee7; text-align: center; padding: 18px 8px 8px; font-weight: bold; color: #0b2545; text-transform: uppercase; }
-    </style>
-  </head>
-  <body>
-    <div class="doc">
-      <div class="header">
-        <h2>QUEZONIAN EDUCATIONAL COLLEGE, INC.</h2>
-        <p>Dr. Ramon Solar Street, Zone II Poblacion, Atimonan, Quezon</p>
-        <p>Tel. No. (042) 316-4129 | Email: qeciatimonan@yahoo.com.ph</p>
-      </div>
-      <div class="title">
-        <div class="small">COLLEGIATE DEPARTMENT</div>
-        <div class="large">CERTIFICATE OF REGISTRATION</div>
-      </div>
-
-      <table class="student-grid">
-        <tr>
-          <td><span class="label">Student Last Name:</span><span class="field">${escapeHtml(profile.last_name || "Not set")}</span></td>
-          <td><span class="label">Student First Name:</span><span class="field">${escapeHtml(profile.first_name || "Not set")}</span></td>
-          <td><span class="label">Student Middle Name:</span><span class="field">${escapeHtml(profile.middle_name || "Not set")}</span></td>
-        </tr>
-        <tr>
-          <td><span class="label">Student Number:</span><span class="field">${escapeHtml(profile.student_id || "Not set")}</span></td>
-          <td><span class="label">School Year:</span><span class="field">${escapeHtml(schoolYear)}</span></td>
-          <td><span class="label">Semester:</span><span class="field">${escapeHtml(semester)}</span></td>
-        </tr>
-        <tr>
-          <td><span class="label">Course:</span><span class="field">${escapeHtml(course)}</span></td>
-          <td><span class="label">Year & Section:</span><span class="field">${escapeHtml(yearSection)}</span></td>
-          <td><span class="label">Email Address:</span><span class="field">${escapeHtml(profile.email_address || "Not set")}</span></td>
-        </tr>
-        <tr>
-          <td><span class="label">Birthday:</span><span class="field">${escapeHtml(formatDisplayDate(profile.birth_date))}</span></td>
-          <td><span class="label">Birthplace:</span><span class="field">${escapeHtml(profile.birth_place || "Not set")}</span></td>
-          <td><span class="label">Gender:</span><span class="field">${escapeHtml(profile.sex || "Not set")}</span></td>
-        </tr>
-        <tr>
-          <td><span class="label">Contact Number:</span><span class="field">${escapeHtml(profile.contact_number || "Not set")}</span></td>
-          <td colspan="2"><span class="label">Address:</span><span class="field">${escapeHtml(fullAddress)}</span></td>
-        </tr>
-      </table>
-
-      <table class="subjects">
-        <thead>
-          <tr>
-            <th>CODE</th>
-            <th>DESCRIPTION</th>
-            <th>UNITS</th>
-            <th>TIME</th>
-            <th>DAYS</th>
-            <th>ROOM</th>
-            <th>INSTRUCTOR</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${buildEnrollmentSubjectRows(appointmentTime)}
-        </tbody>
-      </table>
-
-      <table class="bottom-grid">
-        <tr>
-          <td><span class="label">Number of units earned:</span><span class="field">18</span></td>
-          <td><span class="label">Remarks:</span><span class="field">${escapeHtml(profile.special_remarks || "Approved")}</span></td>
-          <td><span class="label">Learning Modality:</span><span class="field">${escapeHtml(profile.modality_name || "Face-to-face")}</span></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td><span class="field" style="text-align:center;">${escapeHtml(studentName)}</span><span class="label" style="text-align:center;">STUDENT<br>(Signature Over Printed Name)</span></td>
-          <td></td>
-        </tr>
-      </table>
-
-      <div class="staff">
-        <span class="label">(QECI STAFF ONLY)</span>
-        <span class="label" style="margin-top: 8px;">Process by:</span>
-        <table class="signatures">
-          <tr>
-            <td><span class="field">Registrar</span><span class="label">Admission Officer</span></td>
-            <td><span class="field">&nbsp;</span><span class="label">Signature</span></td>
-            <td><span class="field">${escapeHtml(registrationDate)}</span><span class="label">Date of Registration</span></td>
-          </tr>
-        </table>
-      </div>
-
-      <div class="notice">
-        <strong>IMPORTANT:</strong> Keep this portion. Present it to your instructors on the first day of classes for his/her signature.
-        You will also be required to present this at the Office of the Student Affairs when applying for your identification card and in all your dealings in the School.
-      </div>
-
-      <div class="fees-title">ASSESSMENT OF FEES</div>
-      <table class="fees">
-        <tr><td colspan="2" style="text-align:center;font-weight:bold;color:#0b2545;">${escapeHtml(feesTitle)}</td></tr>
-        <tr><td>Tuition Fee</td><td class="amount">5,400.00</td></tr>
-        <tr><td>Registration Fee</td><td class="amount"></td></tr>
-        <tr><td>Miscellaneous Fee</td><td class="amount"></td></tr>
-        <tr><td>Computer Lab Fee</td><td class="amount"></td></tr>
-        <tr><td>Cultural Fee</td><td class="amount"></td></tr>
-        <tr><td>CSSG Fee</td><td class="amount"></td></tr>
-        <tr><td>Class Card</td><td class="amount"></td></tr>
-        <tr><td>Research Fee</td><td class="amount"></td></tr>
-        <tr><td>Thesis/FS/Comp Proj: Oral Defense</td><td class="amount"></td></tr>
-        <tr><td>Practicum/OJT Fee</td><td class="amount"></td></tr>
-        <tr class="total"><td>TOTAL OBLIGATION</td><td class="amount">10,700.00</td></tr>
-      </table>
-      <table class="cashier-box">
-        <tr>
-          <td>School Cashier</td>
-          <td>Finance Officer</td>
-        </tr>
-      </table>
-      <div class="notice">
-        <strong>NOTES:</strong> Please settle your account before the examination. If you have settled your account,
-        please present your OR to our Finance Officer for your examination permit. Thank you.
-      </div>
-    </div>
-  </body>
-</html>`;
+  const content = createDocxBuffer(createDocxDocumentXml({ profile, appointmentDate, appointmentTime }));
 
   return {
-    filename: `enrollment-form-${filenameName}.doc`,
+    filename: `enrollment-form-${filenameName}.docx`,
     content,
-    contentType: "application/msword",
+    contentType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   };
 }
 
