@@ -530,28 +530,7 @@
                         <th>Action</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <tr>
-                        <td>Exam Reminder</td>
-                        <td>Nathaniel Amandy</td>
-                        <td>Reminder</td>
-                        <td>WAG KANA MAG REVIEW.</td>
-                        <td>
-                          <button class="btn btn-sm btn-primary">Edit</button>
-                          <button class="btn btn-sm btn-danger">Delete</button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Tuition Notice</td>
-                        <td>Zairus Jester Gilles</td>
-                        <td>Announcement</td>
-                        <td>MAGBAYAD KANA YA.</td>
-                        <td>
-                          <button class="btn btn-sm btn-primary">Edit</button>
-                          <button class="btn btn-sm btn-danger">Delete</button>
-                        </td>
-                      </tr>
-                    </tbody>
+                    <tbody></tbody>
                   </table>
                 </div>
               </div>
@@ -565,7 +544,8 @@
               <p class="mb-4 text-muted">View all sent and scheduled notifications</p>
 
               <!-- history cards will be inserted here -->
-              <div id="historyCards">
+              <div id="historyCards"></div>
+              <div class="d-none" aria-hidden="true">
               <!-- CARD 1 -->
               <div class="card mb-3 border border-secondary-subtle bg-primary-subtle">
                 <div class="card-body px-4 py-3">
@@ -628,6 +608,7 @@
 
               </div> <!-- end #historyCards -->
 
+              <div class="d-none" aria-hidden="true">
               <!-- CARD 3 -->
               <div class="card mb-3 border border-secondary-subtle bg-primary-subtle">
                 <div class="card-body px-4 py-3">
@@ -656,6 +637,7 @@
                     </div>
                   </div>
                 </div>
+              </div>
               </div>
             </div>
           </div>
@@ -919,8 +901,85 @@
       const saveDraftBtn = document.querySelector(".btn-light.custom-btn");
       const sendNowBtn = document.querySelector(".btn-dark.custom-btn");
       const draftTableBody = document.querySelector("#sendNotification table tbody");
+      const draftEmailField = document.getElementById("studentEmail");
+      const scheduleDateField = document.getElementById("scheduleDate");
+      const NOTIFICATION_DRAFTS_KEY = "notificationPageDrafts";
 
       let editingRow = null;
+
+      function createLocalId(prefix) {
+        return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      }
+
+      function getStoredDrafts() {
+        try {
+          return JSON.parse(localStorage.getItem(NOTIFICATION_DRAFTS_KEY) || "[]");
+        } catch (error) {
+          console.error("Error loading notification drafts:", error);
+          return [];
+        }
+      }
+
+      function saveStoredDrafts(drafts) {
+        localStorage.setItem(NOTIFICATION_DRAFTS_KEY, JSON.stringify(drafts));
+      }
+
+      function getDraftRows() {
+        return Array.from(draftTableBody?.querySelectorAll("tr[data-draft-id]") || []);
+      }
+
+      function readDraftFromRow(row) {
+        return {
+          id: row.dataset.draftId,
+          title: row.cells[0]?.innerText || "",
+          student: row.cells[1]?.innerText || "",
+          type: row.cells[2]?.innerText || "",
+          message: row.cells[3]?.innerText || "",
+          studentEmail: row.dataset.studentEmail || "",
+          scheduleDate: row.dataset.scheduleDate || "",
+          createdAt: row.dataset.createdAt || new Date().toISOString(),
+        };
+      }
+
+      function persistDraftTable() {
+        saveStoredDrafts(getDraftRows().map(readDraftFromRow));
+      }
+
+      function renderDraftEmptyState() {
+        if (!draftTableBody || getDraftRows().length > 0) {
+          return;
+        }
+
+        const row = draftTableBody.insertRow();
+        row.className = "draft-empty-row";
+        row.innerHTML = `<td colspan="5" class="text-center text-muted py-4">No saved drafts yet.</td>`;
+      }
+
+      function clearDraftEmptyState() {
+        draftTableBody?.querySelector(".draft-empty-row")?.remove();
+      }
+
+      function renderStoredDrafts() {
+        if (!draftTableBody) {
+          return;
+        }
+
+        draftTableBody.innerHTML = "";
+        getStoredDrafts().forEach((draft) => addDraftRow(
+          draft.title,
+          draft.student,
+          draft.type,
+          draft.message,
+          {
+            id: draft.id,
+            studentEmail: draft.studentEmail,
+            scheduleDate: draft.scheduleDate,
+            createdAt: draft.createdAt,
+            skipPersist: true,
+          }
+        ));
+        renderDraftEmptyState();
+      }
 
       function shouldProceedWithSend(recipientName) {
         const settings = window.getNotificationSettings();
@@ -931,11 +990,11 @@
         return window.confirm(`Send this notification to ${recipientName}?`);
       }
 
-      async function sendNotificationToServer({ title, student, type, message }) {
-        const studentEmail = (document.getElementById("studentEmail")?.value || "").trim();
-        const appointmentDate = (document.getElementById("scheduleDate")?.value || "").trim();
+      async function sendNotificationToServer({ title, student, type, message, studentEmail, appointmentDate }) {
+        const targetEmail = (studentEmail || draftEmailField?.value || "").trim();
+        const targetAppointmentDate = (appointmentDate || scheduleDateField?.value || "").trim();
 
-        if (!studentEmail) {
+        if (!targetEmail) {
           throw new Error("Please enter the student's email address.");
         }
 
@@ -946,9 +1005,9 @@
             title,
             notificationType: type,
             studentName: student,
-            studentEmail,
+            studentEmail: targetEmail,
             message,
-            appointmentDate: appointmentDate || null,
+            appointmentDate: targetAppointmentDate || null,
           }),
         });
 
@@ -1002,6 +1061,8 @@
         }
 
         row.remove();
+        persistDraftTable();
+        renderDraftEmptyState();
         updateNotificationCards();
       }
 
@@ -1019,21 +1080,29 @@
       }
 
       // Add new draft row
-      function addDraftRow(title, student, type, message) {
+      function addDraftRow(title, student, type, message, options = {}) {
+        clearDraftEmptyState();
         const row = draftTableBody.insertRow();
-        row.dataset.createdAt = new Date().toISOString();
-        row.innerHTML = `
-          <td>${title}</td>
-          <td>${student}</td>
-          <td>${type}</td>
-          <td>${message}</td>
-          <td>
-            <button class="btn btn-sm btn-primary">Edit</button>
-            <button class="btn btn-sm btn-danger">Delete</button>
-            <button class="btn btn-sm btn-success">Send Now</button>
-          </td>
+        row.dataset.draftId = options.id || createLocalId("draft");
+        row.dataset.studentEmail = options.studentEmail || draftEmailField?.value.trim() || "";
+        row.dataset.scheduleDate = options.scheduleDate || scheduleDateField?.value.trim() || "";
+        row.dataset.createdAt = options.createdAt || new Date().toISOString();
+
+        [title, student, type, message].forEach((value) => {
+          const cell = row.insertCell();
+          cell.textContent = value;
+        });
+
+        const actionsCell = row.insertCell();
+        actionsCell.innerHTML = `
+          <button class="btn btn-sm btn-primary" type="button">Edit</button>
+          <button class="btn btn-sm btn-danger" type="button">Delete</button>
+          <button class="btn btn-sm btn-success" type="button">Send Now</button>
         `;
 
+        if (!options.skipPersist) {
+          persistDraftTable();
+        }
         updateNotificationCards();
       }
 
@@ -1044,6 +1113,12 @@
         studentField.value = cells[1].innerText;
         typeField.value = cells[2].innerText;
         messageField.value = cells[3].innerText;
+        if (draftEmailField) {
+          draftEmailField.value = row.dataset.studentEmail || "";
+        }
+        if (scheduleDateField) {
+          scheduleDateField.value = row.dataset.scheduleDate || "";
+        }
         editingRow = row;
         setDraftButtonMode(true);
 
@@ -1068,6 +1143,8 @@
         const student = studentField.value.trim();
         const type = typeField.value;
         const message = messageField.value.trim();
+        const studentEmail = draftEmailField?.value.trim() || "";
+        const scheduleDate = scheduleDateField?.value.trim() || "";
 
         if (!title || !student || !type || !message) {
           alert("Please fill out all fields before saving.");
@@ -1080,13 +1157,16 @@
           editingRow.cells[1].innerText = student;
           editingRow.cells[2].innerText = type;
           editingRow.cells[3].innerText = message;
+          editingRow.dataset.studentEmail = studentEmail;
+          editingRow.dataset.scheduleDate = scheduleDate;
           editingRow = null;
           setDraftButtonMode(false);
         } else {
           // Add new draft
-          addDraftRow(title, student, type, message);
+          addDraftRow(title, student, type, message, { studentEmail, scheduleDate });
         }
 
+        persistDraftTable();
         if (window.getNotificationSettings().clearFormAfterAction) {
           window.clearNotificationForm();
         }
@@ -1138,28 +1218,55 @@
       });
 
       // Send Now (from drafts table)
-      function sendDraft(row) {
+      async function sendDraft(row) {
         const title = row.cells[0].innerText;
         const student = row.cells[1].innerText;
         const type = row.cells[2].innerText;
         const message = row.cells[3].innerText;
+        const studentEmail = row.dataset.studentEmail || "";
+        const appointmentDate = row.dataset.scheduleDate || "";
 
         if (!shouldProceedWithSend(student)) {
           return;
         }
 
-        alert(`Notification sent to ${student}: "${message}"`);
-        if (window.getNotificationSettings().saveHistory) {
-          addHistoryCard(title, student, type, message);
+        const sendButton = row.querySelector(".btn-success");
+        const originalButtonText = sendButton?.textContent || "Send Now";
+        if (sendButton) {
+          sendButton.disabled = true;
+          sendButton.textContent = "Sending...";
         }
-        row.remove(); // remove draft after sending
-        if (editingRow === row) {
-          editingRow = null;
-          setDraftButtonMode(false);
+
+        try {
+          const delivery = await sendNotificationToServer({ title, student, type, message, studentEmail, appointmentDate });
+          alert(delivery.emailDeliveryStatus === "sent"
+            ? `Notification emailed to ${student}.`
+            : `Notification saved, but email status is ${delivery.emailDeliveryStatus || "unknown"}: ${delivery.emailDeliveryMessage || "No delivery message."}`);
+
+          if (window.getNotificationSettings().saveHistory) {
+            addHistoryCard(title, student, type, message);
+          }
+
+          row.remove(); // remove draft after sending
+          if (editingRow === row) {
+            editingRow = null;
+            setDraftButtonMode(false);
+          }
+          persistDraftTable();
+          renderDraftEmptyState();
+          updateNotificationCards();
+        } catch (error) {
+          console.error("Draft notification send failed:", error);
+          alert(error.message || "Unable to send notification.");
+        } finally {
+          if (sendButton) {
+            sendButton.disabled = false;
+            sendButton.textContent = originalButtonText;
+          }
         }
-        updateNotificationCards();
       }
 
+      renderStoredDrafts();
       bindDraftTableActions();
       setDraftButtonMode(false);
       window.cancelDraftEditing = cancelDraftEditing;
@@ -1483,6 +1590,251 @@
       initializeViewDetails();
       initializeNotificationDates();
       updateNotificationCards();
+    </script>
+
+    <script>
+      const NOTIFICATION_HISTORY_KEY_CLEAN = "notificationPageHistory";
+
+      function cleanEscapeHtml(value) {
+        return String(value ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function createNotificationLocalId(prefix) {
+        return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      }
+
+      function getStoredNotificationHistory() {
+        try {
+          return JSON.parse(localStorage.getItem(NOTIFICATION_HISTORY_KEY_CLEAN) || "[]");
+        } catch (error) {
+          console.error("Error loading notification history:", error);
+          return [];
+        }
+      }
+
+      function saveStoredNotificationHistory(items) {
+        localStorage.setItem(NOTIFICATION_HISTORY_KEY_CLEAN, JSON.stringify(items));
+      }
+
+      function getCleanHistoryCards() {
+        return Array.from(document.querySelectorAll("#historyCards > .card[data-history-id]"));
+      }
+
+      function readCleanHistoryCard(card) {
+        return {
+          id: card.dataset.historyId,
+          title: card.dataset.title || "",
+          student: card.dataset.student || "",
+          type: card.dataset.notificationType || "General",
+          message: card.dataset.message || "",
+          date: card.dataset.notificationDate || "",
+        };
+      }
+
+      function persistCleanHistoryCards() {
+        saveStoredNotificationHistory(getCleanHistoryCards().map(readCleanHistoryCard));
+      }
+
+      function renderCleanHistoryEmptyState() {
+        const container = document.getElementById("historyCards");
+        if (!container || getCleanHistoryCards().length > 0) {
+          return;
+        }
+
+        container.innerHTML = '<div class="text-center text-muted py-4" data-history-empty>No notification history yet.</div>';
+      }
+
+      function clearCleanHistoryEmptyState() {
+        document.querySelector("#historyCards [data-history-empty]")?.remove();
+      }
+
+      function cleanTypeIcon(type) {
+        if (type === "Announcement") {
+          return '<i class="fa-solid fa-circle-check"></i>';
+        }
+        if (type === "General") {
+          return '<i class="fa-solid fa-bullhorn"></i>';
+        }
+        return '<i class="fa-regular fa-bell"></i>';
+      }
+
+      function createCleanHistoryCard({ id, title, student, type, message, date }) {
+        const sentDate = date || new Date().toISOString().split("T")[0];
+        const card = document.createElement("div");
+        card.className = "card mb-3 border border-secondary-subtle bg-primary-subtle";
+        card.dataset.historyId = id || createNotificationLocalId("history");
+        card.dataset.title = title || "";
+        card.dataset.student = student || "";
+        card.dataset.notificationType = type || "General";
+        card.dataset.message = message || "";
+        card.dataset.notificationDate = sentDate;
+        card.innerHTML = `
+          <div class="card-body px-4 py-3">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start">
+              <div class="d-flex gap-3 flex-grow-1">
+                <span class="icon fs-4">${cleanTypeIcon(type)}</span>
+                <div class="flex-grow-1">
+                  <h5 class="fw-bold mb-2">${cleanEscapeHtml(title)}</h5>
+                  <p class="text-muted mb-3">${cleanEscapeHtml(message)}</p>
+                  <div class="d-flex flex-wrap gap-3">
+                    <span class="text-muted small">
+                      <i class="fa-solid fa-user me-1"></i> ${cleanEscapeHtml(student || "All Users")}
+                    </span>
+                    <span class="text-muted small">
+                      <i class="fa-solid fa-calendar me-1"></i> ${cleanEscapeHtml(sentDate)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex flex-wrap gap-2 ms-0 ms-sm-3 mt-3 mt-sm-0">
+                <button class="btn btn-outline-light btn-sm btn-view-details" type="button">View Details</button>
+                <button class="btn btn-outline-light btn-sm btn-duplicate-history" type="button">Duplicate</button>
+                <button class="btn btn-outline-danger btn-sm btn-delete-history" type="button">Delete</button>
+              </div>
+            </div>
+          </div>`;
+
+        return card;
+      }
+
+      function renderCleanStoredHistory() {
+        const container = document.getElementById("historyCards");
+        if (!container) {
+          return;
+        }
+
+        container.innerHTML = "";
+        getStoredNotificationHistory().forEach((item) => {
+          container.appendChild(createCleanHistoryCard(item));
+        });
+        renderCleanHistoryEmptyState();
+      }
+
+      window.addHistoryCard = function addHistoryCard(title, student, type, message, options = {}) {
+        const container = document.getElementById("historyCards");
+        if (!container) {
+          return;
+        }
+
+        clearCleanHistoryEmptyState();
+        container.prepend(createCleanHistoryCard({
+          id: options.id,
+          title,
+          student,
+          type,
+          message,
+          date: options.date,
+        }));
+        persistCleanHistoryCards();
+        window.updateNotificationCards?.();
+      };
+
+      function getCleanHistoryCardData(card) {
+        return {
+          title: card.dataset.title || "",
+          student: card.dataset.student || "",
+          type: card.dataset.notificationType || "General",
+          message: card.dataset.message || "",
+          date: card.dataset.notificationDate || "",
+        };
+      }
+
+      function showCleanHistoryDetails(card) {
+        const data = getCleanHistoryCardData(card);
+        document.getElementById("detailTitle").innerText = data.title;
+        document.getElementById("detailStudent").innerText = data.student || "All Users";
+        document.getElementById("detailType").innerText = data.type;
+        document.getElementById("detailMessage").innerText = data.message;
+        document.getElementById("detailDate").innerText = data.date || "";
+
+        const modalEl = document.getElementById("notificationDetailsModal");
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+      }
+
+      function duplicateCleanHistoryNotification(card) {
+        const data = getCleanHistoryCardData(card);
+        window.cancelDraftEditing?.();
+        titleField.value = data.title;
+        studentField.value = data.student;
+        typeField.value = data.type || "General";
+        messageField.value = data.message;
+        document.querySelectorAll(".content-page").forEach((page) => page.classList.add("d-none"));
+        document.getElementById("sendNotification")?.classList.remove("d-none");
+        document.querySelectorAll(".tab-btn").forEach((button) => button.classList.remove("active"));
+        document.querySelector(".tab-btn[onclick=\"showPage('sendNotification')\"]")?.classList.add("active");
+      }
+
+      document.getElementById("notificationsHistory")?.addEventListener("click", (event) => {
+        const button = event.target.closest("button");
+        const card = button?.closest("#historyCards > .card[data-history-id]");
+        if (!button || !card) {
+          return;
+        }
+
+        event.stopImmediatePropagation();
+
+        if (button.classList.contains("btn-view-details")) {
+          showCleanHistoryDetails(card);
+          return;
+        }
+
+        if (button.classList.contains("btn-duplicate-history")) {
+          duplicateCleanHistoryNotification(card);
+          return;
+        }
+
+        if (button.classList.contains("btn-delete-history") && window.confirm("Delete this notification from history?")) {
+          card.remove();
+          persistCleanHistoryCards();
+          renderCleanHistoryEmptyState();
+          window.updateNotificationCards?.();
+        }
+      }, true);
+
+      window.updateNotificationCards = function updateNotificationCards() {
+        const totalSentElement = document.getElementById("notifications-total-sent");
+        const recentActivityElement = document.getElementById("notifications-recent-activity");
+        const scheduledCountElement = document.getElementById("notifications-scheduled-count");
+        const draftCountElement = document.getElementById("notifications-draft-count");
+        const now = new Date();
+        const notificationDates = getCleanHistoryCards()
+          .map((card) => card.dataset.notificationDate || "")
+          .filter(Boolean);
+        const sentDates = notificationDates.filter((dateValue) => {
+          const parsedDate = new Date(dateValue);
+          return !Number.isNaN(parsedDate.getTime()) && parsedDate <= now;
+        });
+        const scheduledDates = notificationDates.filter((dateValue) => {
+          const parsedDate = new Date(dateValue);
+          return !Number.isNaN(parsedDate.getTime()) && parsedDate > now;
+        });
+        const currentWeekSent = sentDates.filter((dateValue) => isWithinLastDays(dateValue, 7, 0));
+        const previousWeekSent = sentDates.filter((dateValue) => isWithinLastDays(dateValue, 14, 7));
+        const nextWeekScheduled = scheduledDates.filter((dateValue) => isWithinNextDays(dateValue, 0, 7));
+        const followingWeekScheduled = scheduledDates.filter((dateValue) => isWithinNextDays(dateValue, 7, 14));
+        const draftRows = Array.from(draftTableBody?.querySelectorAll("tr[data-draft-id]") || []);
+        const currentWeekDrafts = draftRows.filter((row) => isWithinLastDays(row.dataset.createdAt, 7, 0));
+        const previousWeekDrafts = draftRows.filter((row) => isWithinLastDays(row.dataset.createdAt, 14, 7));
+
+        if (totalSentElement) totalSentElement.textContent = formatCount(sentDates.length);
+        if (recentActivityElement) recentActivityElement.textContent = formatCount(currentWeekSent.length);
+        if (scheduledCountElement) scheduledCountElement.textContent = formatCount(scheduledDates.length);
+        if (draftCountElement) draftCountElement.textContent = formatCount(draftRows.length);
+
+        setTrendMarkup("notifications-total-trend", currentWeekSent.length, previousWeekSent.length);
+        setTrendMarkup("notifications-recent-trend", currentWeekSent.length, previousWeekSent.length);
+        setTrendMarkup("notifications-scheduled-trend", nextWeekScheduled.length, followingWeekScheduled.length);
+        setTrendMarkup("notifications-draft-trend", currentWeekDrafts.length, previousWeekDrafts.length);
+      };
+
+      renderCleanStoredHistory();
+      window.updateNotificationCards();
     </script>
 
     <script
