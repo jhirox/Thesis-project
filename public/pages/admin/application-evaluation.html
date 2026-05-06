@@ -408,6 +408,13 @@
           <button
             class="tab-btn"
             type="button"
+            onclick="showPage('enrolled')"
+          >
+            Enrolled
+          </button>
+          <button
+            class="tab-btn"
+            type="button"
             onclick="showPage('pending')"
           >
             Pending Review
@@ -542,6 +549,55 @@
                 <!-- Pagination for Approved -->
                 <div id="approved-pagination" class="d-flex justify-content-center mt-3" style="display: none;">
                   <nav aria-label="Approved applications pagination">
+                    <ul class="pagination pagination-sm">
+                      <li class="page-item">
+                        <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" aria-label="Previous">
+                          <span aria-hidden="true">&laquo;</span>
+                        </a>
+                      </li>
+                      <li class="page-item">
+                        <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" aria-label="Next">
+                          <span aria-hidden="true">&raquo;</span>
+                        </a>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============ ENROLLED ============ -->
+          <div id="enrolled" class="content-page d-none px-4 py-3">
+            <div class="card-section">
+              <h2 class="section-title">Enrolled</h2>
+              <p class="section-subtitle">
+                Finalized student applications
+              </p>
+
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle mb-0">
+                  <thead class="table-header">
+                    <tr>
+                      <th scope="col">Application ID</th>
+                      <th scope="col">Applicant</th>
+                      <th scope="col">Course</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Submitted</th>
+                      <th scope="col" class="text-center">Actions</th>
+                    </tr>
+                  </thead>
+
+                  <tbody class="table-body" id="enrolled-applications-body">
+                    <tr>
+                      <td colspan="6" class="text-center text-muted">No enrolled applications yet.</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <!-- Pagination for Enrolled -->
+                <div id="enrolled-pagination" class="d-flex justify-content-center mt-3" style="display: none;">
+                  <nav aria-label="Enrolled applications pagination">
                     <ul class="pagination pagination-sm">
                       <li class="page-item">
                         <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" aria-label="Previous">
@@ -764,6 +820,7 @@
     <script>
       let allApplications = [];
       let currentApprovedPage = 1;
+      let currentEnrolledPage = 1;
       let currentPendingPage = 1;
       let currentRejectedPage = 1;
       let currentStudentPage = 1;
@@ -1092,9 +1149,17 @@
       function renderApplicationStatusTables(applications) {
         renderStatusTable({
           tableBodyId: 'approved-applications-body',
-          applications: applications.filter((application) => isApprovedStatus(application.application_status)),
+          applications: applications.filter((application) => application.application_status === 'Approved'),
           emptyMessage: 'No approved applications yet.',
           page: currentApprovedPage,
+          itemsPerPage: ITEMS_PER_PAGE
+        });
+
+        renderStatusTable({
+          tableBodyId: 'enrolled-applications-body',
+          applications: applications.filter((application) => application.application_status === 'Enrolled'),
+          emptyMessage: 'No enrolled applications yet.',
+          page: currentEnrolledPage,
           itemsPerPage: ITEMS_PER_PAGE
         });
 
@@ -1995,6 +2060,9 @@
               switch(tablePrefix) {
                 case 'approved-applications':
                   currentApprovedPage = pageNum;
+                  break;
+                case 'enrolled-applications':
+                  currentEnrolledPage = pageNum;
                   break;
                 case 'pending-applications':
                   currentPendingPage = pageNum;
