@@ -567,8 +567,8 @@
         const yearLevel = String(payload.yearLevel || "").trim();
 
         return {
-          courseField: yearLevel || programCode || "Not set",
-          yearSectionField: programName || programCode || "Not set",
+          courseField: programName || programCode || "Not set",
+          yearSectionField: yearLevel || "Not set",
           feesTitle: [programCode || "BSCS", yearLevel || "2", formatSemesterLabel(payload.semester), "SY 2025-2026"].join(" "),
         };
       }
@@ -578,10 +578,10 @@
         const { courseField, yearSectionField, feesTitle } = buildProgramFields(payload);
         const semester = formatSemesterLabel(payload?.semester);
         const appointmentDate = payload?.appointmentDate || notification?.appointment_date || "Not set";
-        const appointmentTime = payload?.appointmentTime || notification?.appointment_time || "Not set";
         const studentNumber = payload?.studentId || notification?.student_id || "";
         const escapedTitle = escapeHtml(notification?.title || "Enrollment Form Soft Copy");
         const escapedStudentName = escapeHtml(payload?.studentName || "Student");
+        const logoUrl = escapeHtml(`${window.location.origin}/assets/images/logo.png`);
 
         return `<!DOCTYPE html>
 <html lang="en">
@@ -590,11 +590,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${escapedTitle}</title>
   <style>
+    :root {
+      --qeci-navy: #021b3a;
+      --qeci-navy-2: #05263f;
+      --qeci-gold: #d4af37;
+    }
+    * {
+      box-sizing: border-box;
+    }
     body.page-certificate-registration {
       margin: 0;
       padding: 14px;
       background: #d7dbe2;
-      font-family: Arial, sans-serif;
+      font-family: "Open Sans", Arial, sans-serif;
       color: #0f172a;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
@@ -607,34 +615,46 @@
       border: 1px solid #9ca3af;
       padding: 0;
     }
+    #certificatePrintArea {
+      width: 210mm;
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 0;
+      background: transparent;
+    }
     .cert-reg-container {
       margin: 0;
-      padding: 0;
+      padding: 3px;
       background: #fffdfa;
     }
     .cert-reg-header {
-      background: #0b2545;
-      border: 2px solid #d5b02d;
+      background: linear-gradient(135deg, var(--qeci-navy), var(--qeci-navy-2));
+      border: 1px solid rgba(212, 175, 55, 0.24);
       border-radius: 12px;
-      margin: 12px 12px 4px;
-      padding: 6px 14px;
+      margin-bottom: 4px;
+      padding: 6px 8px;
       color: #fff;
     }
     .cert-reg-header-content {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
+      gap: 8px;
     }
     .cert-reg-institution-logo {
-      width: 38px;
-      height: 38px;
-      flex: 0 0 38px;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #fffdf5, #f4ead0);
+      border: 2px solid rgba(212, 175, 55, 0.75);
     }
     .cert-reg-institution-logo img {
       width: 100%;
       height: 100%;
       object-fit: contain;
+      padding: 3px;
     }
     .cert-reg-institution-info {
       text-align: left;
@@ -642,8 +662,8 @@
     }
     .cert-reg-institution-info h2 {
       margin: 0;
-      font-size: 14px;
-      line-height: 1.15;
+      font-size: 12px;
+      line-height: 1.1;
       letter-spacing: 0.03em;
       font-weight: 700;
     }
@@ -653,29 +673,32 @@
       line-height: 1.2;
     }
     .cert-reg-title-section {
-      background: #d5aa20;
-      color: #0b2545;
+      background: linear-gradient(135deg, var(--qeci-gold), #c4961f);
+      color: var(--qeci-navy);
       border-radius: 10px;
-      margin: 0 12px 6px;
-      padding: 6px 10px;
+      margin-bottom: 4px;
+      padding: 4px;
       text-align: center;
       text-transform: uppercase;
       font-weight: 700;
       letter-spacing: 1px;
     }
     .cert-reg-title-section div:first-child {
-      font-size: 9px;
-      margin-bottom: 4px;
+      font-size: 9.5px;
+      margin-bottom: 2px;
     }
     .cert-reg-title-section div:last-child {
-      font-size: 13px;
+      font-size: 11px;
     }
     .cert-reg-student-info {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 6px 8px;
-      margin: 0 12px 6px;
-      padding: 0;
+      gap: 6px;
+      margin-bottom: 3px;
+      padding: 6px;
+      background: linear-gradient(180deg, rgba(2, 27, 58, 0.03), rgba(212, 175, 55, 0.05));
+      border-radius: 12px;
+      border: 1px solid rgba(2, 27, 58, 0.08);
     }
     .cert-reg-info-field,
     .cert-reg-bottom-field {
@@ -689,83 +712,93 @@
     .sched-fees-fee-name,
     .cert-reg-process-by-label,
     .cert-reg-staff-only-label {
-      font-size: 9px;
+      font-size: 9.5px;
       font-weight: 700;
       text-transform: uppercase;
-      color: #0b2545;
+      color: var(--qeci-navy);
       letter-spacing: 0.03em;
     }
     .field-value {
-      min-height: 18px;
-      padding: 2px 2px 4px;
+      min-height: 0;
+      padding: 1px 2px;
       border: 0;
-      border-bottom: 2px solid #94a3b8;
+      border-bottom: 1.5px solid rgba(2, 27, 58, 0.65);
       background: transparent;
       font-size: 10px;
-      line-height: 1.2;
+      line-height: 1.05;
       color: #111827;
     }
     .cert-reg-table-section {
-      margin: 0 12px 6px;
+      margin-bottom: 3px;
       border-radius: 10px;
       overflow: hidden;
-      border: 1px solid #d7b447;
+      border: 1px solid rgba(2, 27, 58, 0.08);
     }
     .cert-reg-table {
       width: 100%;
       border-collapse: collapse;
       table-layout: fixed;
-      font-size: 9px;
+    }
+    .cert-reg-table thead {
+      background: linear-gradient(135deg, var(--qeci-navy), var(--qeci-navy-2));
+      color: #fff;
     }
     .cert-reg-table th {
-      background: #0b2545;
-      color: #fff;
-      font-size: 9px;
-      padding: 4px 5px;
+      font-size: 10px;
+      padding: 2px 2px;
       text-transform: uppercase;
       letter-spacing: 0.04em;
-      border-right: 1px solid rgba(255,255,255,0.14);
+      border: none;
     }
     .cert-reg-table td {
-      padding: 4px 5px;
-      border: 1px solid #d9dee7;
+      padding: 2px 2px;
+      border: 1px solid rgba(2, 27, 58, 0.12);
       color: #111827;
       background: #fff;
+      font-size: 10px;
+      text-align: center;
+    }
+    .cert-reg-table td:nth-child(2) {
+      text-align: left;
     }
     .cert-reg-bottom-info {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 8px;
-      margin: 0 12px;
-      padding: 6px 0 10px;
-      border: 1px solid #e2c459;
-      border-radius: 0 0 10px 10px;
-      border-top: 0;
+      gap: 6px;
+      margin-bottom: 3px;
+      padding: 6px;
+      background: linear-gradient(180deg, rgba(2, 27, 58, 0.03), rgba(212, 175, 55, 0.05));
+      border-radius: 12px;
+      border: 1px solid rgba(2, 27, 58, 0.08);
     }
     .cert-reg-bottom-field.text-center {
       align-items: center;
       justify-content: center;
       text-align: center;
       grid-column: 2 / 3;
-      margin-top: 2px;
     }
     .cert-reg-bottom-field.text-center .field-value {
       width: 100%;
       text-align: center;
-      border-bottom-color: #0b2545;
+      border-bottom-color: var(--qeci-navy);
     }
     .cert-reg-staff-only-section {
-      margin: 0 12px;
-      padding: 6px 0 0;
-      border-top: 1px solid #e2c459;
+      margin-top: 3px;
+      padding-top: 4px;
+      border-top: 1px solid rgba(212, 175, 55, 0.45);
     }
     .cert-reg-process-by-label {
-      margin: 8px 0 6px;
+      margin: 0 0 6px;
+      font-size: 9px;
     }
     .cert-reg-signature-section {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 8px;
+      gap: 6px;
+      margin-bottom: 3px;
+    }
+    .cert-reg-signature-block {
+      text-align: center;
     }
     .cert-reg-signature-block .field-value {
       text-align: center;
@@ -775,56 +808,42 @@
       margin-top: 4px;
     }
     .cert-reg-important-notice {
-      margin: 8px 12px 10px;
-      background: #0b2545;
+      margin-top: 3px;
+      background: linear-gradient(135deg, var(--qeci-navy), var(--qeci-navy-2));
       color: #fff;
-      border: 1px solid #d5aa20;
+      border: 1px solid rgba(212, 175, 55, 0.24);
       border-radius: 10px;
-      padding: 6px 8px;
-      font-size: 8px;
-      line-height: 1.2;
+      padding: 3px 4px;
+      font-size: 9px;
+      line-height: 1.1;
     }
     .cert-reg-important-notice strong {
-      color: #ffd24a;
+      color: var(--qeci-gold);
       text-transform: uppercase;
+      font-size: 9px;
     }
     .page-certificate-registration {
-      margin: 0 12px 12px;
-    }
-    .cert-reg-fees-section {
-      margin-top: 0;
-    }
-    .sched-fees-header {
-      background: #0b2545;
-      color: #fff;
-      border: 1px solid #d5aa20;
-      border-radius: 10px;
-      text-align: center;
-      padding: 6px 10px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      margin-bottom: 6px;
-      text-transform: uppercase;
+      margin-top: 2px;
     }
     .sched-fees-content-wrapper {
       display: grid;
-      grid-template-columns: minmax(0, 2.3fr) minmax(180px, 0.9fr);
-      gap: 6px;
+      grid-template-columns: minmax(0, 1.8fr) minmax(110px, 0.7fr);
+      gap: 4px;
+      margin-bottom: 2px;
     }
     .sched-fees-fee-section {
-      border: 1px solid #e2c459;
+      border: 1px solid rgba(2, 27, 58, 0.08);
       border-radius: 10px;
       overflow: hidden;
       background: #fff;
     }
     .sched-fees-section-header {
-      background: #d5aa20;
-      color: #0b2545;
+      background: linear-gradient(135deg, var(--qeci-gold), #c4961f);
+      color: var(--qeci-navy);
       text-align: center;
       font-size: 10px;
       font-weight: 700;
-      padding: 6px 8px;
+      padding: 4px;
       text-transform: uppercase;
     }
     .sched-fees-fee-table {
@@ -833,71 +852,77 @@
       font-size: 9px;
     }
     .sched-fees-fee-table td {
-      border: 1px solid #d9dee7;
-      padding: 5px 6px;
+      border: 1px solid rgba(2, 27, 58, 0.12);
+      padding: 1px 1px;
       background: #fff;
+      font-size: 9px;
     }
     .sched-fees-fee-name {
       color: #0f172a;
     }
     .sched-fees-fee-amount {
       text-align: right;
-      color: #6b7280;
+      color: #111827;
       width: 110px;
+      font-size: 10px;
     }
     .sched-fees-total-row td {
-      border-color: #d5aa20;
+      border-color: rgba(212, 175, 55, 0.45);
       font-weight: 700;
     }
     .sched-fees-side-panel {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      border: 1px solid #d9dee7;
+      gap: 4px;
+      border: 1px solid rgba(2, 27, 58, 0.08);
       border-radius: 10px;
       background: #fff;
-      overflow: hidden;
+      padding: 4px;
     }
     .sched-fees-signature-section {
       display: grid;
-      grid-template-columns: 1fr;
-      min-height: 112px;
+      gap: 4px;
+      padding-top: 3px;
     }
     .sched-fees-signature-block {
       display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      padding: 10px 8px;
-      border-bottom: 1px solid #d9dee7;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-end;
     }
-    .sched-fees-signature-block:last-child {
-      border-bottom: 0;
+    .sched-fees-signature-value {
+      min-height: 0;
+      padding: 1px 1px;
+      border-bottom: 1.5px solid rgba(2, 27, 58, 0.65);
+      font-size: 10px;
+      text-align: center;
+      color: #111827;
     }
     .sched-fees-signature-label {
       font-size: 10px;
       font-weight: 700;
-      color: #0b2545;
+      color: var(--qeci-navy);
       text-transform: uppercase;
       text-align: center;
     }
     .sched-fees-important-notice {
-      background: #0b2545;
+      background: linear-gradient(135deg, var(--qeci-navy), var(--qeci-navy-2));
       color: #fff;
-      padding: 6px 8px;
-      font-size: 8px;
-      line-height: 1.2;
-      border-top: 1px solid #d5aa20;
+      padding: 3px 4px;
+      font-size: 9px;
+      line-height: 1;
+      border-radius: 8px;
     }
     .sched-fees-important-notice strong {
-      color: #ffd24a;
+      color: var(--qeci-gold);
       text-transform: uppercase;
+      font-size: 9px;
     }
     .sched-fees-tagline {
       text-align: right;
       font-size: 9px;
       font-weight: 700;
-      color: #0b2545;
-      padding-top: 3px;
+      color: var(--qeci-navy);
     }
     @page {
       size: A4 portrait;
@@ -908,197 +933,244 @@
 <body class="page-certificate-registration">
   <div class="doc-shell">
     <div id="certificatePrintArea">
-    <div class="cert-reg-header">
-      <div class="cert-reg-header-content">
-        <div class="cert-reg-institution-logo">
-          <img src="https://online-registration.up.railway.app/assets/images/logo.png" alt="QECI Logo" />
-        </div>
-        <div class="cert-reg-institution-info">
-          <h2>QUEZONIAN EDUCATIONAL COLLEGE, INC.</h2>
-          <p>Dr. Ramon Solar Street, Zone II Poblacion, Atimonan, Quezon</p>
-          <p>Tel. No. (042) 316-4129 | Email: qeciatimonan@yahoo.com.ph</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="cert-reg-title-section">
-      <div>COLLEGIATE DEPARTMENT</div>
-      <div>CERTIFICATE OF REGISTRATION</div>
-    </div>
-
-    <div class="cert-reg-student-info">
-      <div class="cert-reg-info-field">
-        <label>Student Last Name</label>
-        <div class="field-value">${escapeHtml(nameParts.lastName || "Not set")}</div>
-      </div>
-      <div class="cert-reg-info-field">
-        <label>Student First Name</label>
-        <div class="field-value">${escapeHtml(nameParts.firstName || "Not set")}</div>
-      </div>
-      <div class="cert-reg-info-field">
-        <label>Student Middle Name</label>
-        <div class="field-value">${escapeHtml(nameParts.middleName || "Not set")}</div>
-      </div>
-      <div class="cert-reg-info-field">
-        <label>StudNo</label>
-        <div class="field-value">${escapeHtml(String(studentNumber || "Not set"))}</div>
-      </div>
-      <div class="cert-reg-info-field">
-        <label>Birthday</label>
-        <div class="field-value">Not set</div>
-      </div>
-      <div class="cert-reg-info-field">
-        <label>Birthplace</label>
-        <div class="field-value">Not set</div>
-      </div>
-      <div class="cert-reg-info-field">
-        <label>School Year</label>
-        <div class="field-value">SY 2025-2026</div>
-      </div>
-      <div class="cert-reg-info-field">
-        <label>Semester</label>
-        <div class="field-value">${escapeHtml(semester)}</div>
-      </div>
-      <div class="cert-reg-info-field">
-        <label>Course</label>
-        <div class="field-value">${escapeHtml(courseField)}</div>
-      </div>
-      <div class="cert-reg-info-field">
-        <label>Year & Section</label>
-        <div class="field-value">${escapeHtml(yearSectionField)}</div>
-      </div>
-      <div class="cert-reg-info-field">
-        <label>Contact No</label>
-        <div class="field-value">N/A</div>
-      </div>
-      <div class="cert-reg-info-field">
-        <label>Address</label>
-        <div class="field-value">Not Provided</div>
-      </div>
-    </div>
-
-    <div class="cert-reg-table-section">
-      <table class="cert-reg-table">
-        <thead>
-          <tr>
-            <th>CODE</th>
-            <th>DESCRIPTION</th>
-            <th>UNITS</th>
-            <th>TIME</th>
-            <th>DAYS</th>
-            <th>ROOM</th>
-            <th>INSTRUCTOR</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>GE</td>
-            <td>Art Appreciation</td>
-            <td>3</td>
-            <td>${escapeHtml(appointmentTime)}</td>
-            <td>TBA</td>
-            <td>Room 101</td>
-            <td>TBA</td>
-          </tr>
-          <tr>
-            <td>CS ELECTIVE 1</td>
-            <td>Graphics and Visual Computing</td>
-            <td>3</td>
-            <td>${escapeHtml(appointmentTime)}</td>
-            <td>TBA</td>
-            <td>Room 101</td>
-            <td>TBA</td>
-          </tr>
-          <tr>
-            <td>SE 102</td>
-            <td>Software Engineering 2</td>
-            <td>3</td>
-            <td>${escapeHtml(appointmentTime)}</td>
-            <td>TBA</td>
-            <td>Room 101</td>
-            <td>TBA</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="cert-reg-bottom-info">
-      <div class="cert-reg-bottom-field">
-        <label>Number of units earned</label>
-        <div class="field-value">18</div>
-      </div>
-      <div class="cert-reg-bottom-field">
-        <label>Remarks</label>
-        <div class="field-value">Approved</div>
-      </div>
-      <div class="cert-reg-bottom-field">
-        <label>Learning Modality</label>
-        <div class="field-value">Face-to-face</div>
-      </div>
-      <div class="cert-reg-bottom-field text-center">
-        <div class="field-value">${escapedStudentName}</div>
-        <label>Student<br />(Signature Over Printed Name)</label>
-      </div>
-    </div>
-
-    <div class="cert-reg-staff-only-section">
-      <div class="cert-reg-staff-only-label">(QECI Staff Only)</div>
-      <div class="cert-reg-process-by-label">Process by:</div>
-      <div class="cert-reg-signature-section">
-        <div class="cert-reg-signature-block">
-          <div class="field-value">Registrar</div>
-          <div class="cert-reg-signature-label">Admission Officer</div>
-        </div>
-        <div class="cert-reg-signature-block">
-          <div class="field-value">Registrar Signature</div>
-          <div class="cert-reg-signature-label">Signature</div>
-        </div>
-        <div class="cert-reg-signature-block">
-          <div class="field-value">${escapeHtml(String(appointmentDate))}</div>
-          <div class="cert-reg-signature-label">Date</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="cert-reg-important-notice">
-      <strong>IMPORTANT:</strong> Keep this portion. Present it to your instructors on the first day of classes for his or her signature. You will also be required to present this at the Office of the Student Affairs when applying for your identification card and in all your dealings in the School.
-    </div>
-
-    <section class="cert-reg-fees-section">
-      <div class="sched-fees-header">ASSESSMENT OF FEES</div>
-      <div class="sched-fees-content-wrapper">
-        <div class="sched-fees-fee-section">
-          <div class="sched-fees-section-header">${escapeHtml(feesTitle)}</div>
-          <table class="sched-fees-fee-table">
-            <tr><td class="sched-fees-fee-name">Tuition Fee</td><td class="sched-fees-fee-amount">5,400.00</td></tr>
-            <tr><td class="sched-fees-fee-name">Registration Fee</td><td class="sched-fees-fee-amount"></td></tr>
-            <tr><td class="sched-fees-fee-name">Miscellaneous Fee</td><td class="sched-fees-fee-amount"></td></tr>
-            <tr><td class="sched-fees-fee-name">Computer Lab Fee</td><td class="sched-fees-fee-amount"></td></tr>
-            <tr><td class="sched-fees-fee-name">Cultural Fee</td><td class="sched-fees-fee-amount"></td></tr>
-            <tr><td class="sched-fees-fee-name">CSSG Fee</td><td class="sched-fees-fee-amount"></td></tr>
-            <tr><td class="sched-fees-fee-name">Class Card</td><td class="sched-fees-fee-amount"></td></tr>
-            <tr><td class="sched-fees-fee-name">Research Fee</td><td class="sched-fees-fee-amount"></td></tr>
-            <tr class="sched-fees-total-row"><td class="sched-fees-fee-name">Total Obligation</td><td class="sched-fees-fee-amount">10,700.00</td></tr>
-          </table>
-        </div>
-        <div class="sched-fees-side-panel">
-          <div class="sched-fees-signature-section">
-            <div class="sched-fees-signature-block">
-              <div class="sched-fees-signature-label">Cashier</div>
+      <div class="cert-reg-container">
+        <div class="cert-reg-header">
+          <div class="cert-reg-header-content">
+            <div class="cert-reg-institution-logo">
+              <img src="${logoUrl}" alt="QECI Logo" />
             </div>
-            <div class="sched-fees-signature-block">
-              <div class="sched-fees-signature-label">Finance Officer</div>
+            <div class="cert-reg-institution-info">
+              <h2>QUEZONIAN EDUCATIONAL COLLEGE, INC.</h2>
+              <p>Dr. Ramon Solar Street, Zone II Poblacion, Atimonan, Quezon</p>
+              <p>Tel. No. (042) 316-4129 | Email: qeciatimonan@yahoo.com.ph</p>
             </div>
           </div>
-          <div class="sched-fees-important-notice"><strong>Notes:</strong> Please, settle your account before the examination. If you have settled your account, please present your OR to our Finance Officer for your examination permit. Thank you.</div>
-          <div class="sched-fees-tagline">Go For Growth!</div>
+        </div>
+        <div class="cert-reg-title-section">
+          <div>COLLEGIATE DEPARTMENT</div>
+          <div>CERTIFICATE OF REGISTRATION</div>
+        </div>
+
+        <div class="cert-reg-student-info">
+          <div class="cert-reg-info-field">
+            <label>Student Last Name:</label>
+            <div class="field-value">${escapeHtml(nameParts.lastName)}</div>
+          </div>
+          <div class="cert-reg-info-field">
+            <label>Student First Name:</label>
+            <div class="field-value">${escapeHtml(nameParts.firstName)}</div>
+          </div>
+          <div class="cert-reg-info-field">
+            <label>Student Middle Name:</label>
+            <div class="field-value">${escapeHtml(nameParts.middleName)}</div>
+          </div>
+          <div class="cert-reg-info-field">
+            <label>Student Number:</label>
+            <div class="field-value">${escapeHtml(String(studentNumber || ""))}</div>
+          </div>
+          <div class="cert-reg-info-field">
+            <label>School Year:</label>
+            <div class="field-value">SY 2025-2026</div>
+          </div>
+          <div class="cert-reg-info-field">
+            <label>Semester:</label>
+            <div class="field-value">${escapeHtml(semester)}</div>
+          </div>
+          <div class="cert-reg-info-field">
+            <label>Course:</label>
+            <div class="field-value">${escapeHtml(courseField === "Not set" ? "" : courseField)}</div>
+          </div>
+          <div class="cert-reg-info-field">
+            <label>Year & Section:</label>
+            <div class="field-value">${escapeHtml(yearSectionField === "Not set" ? "" : yearSectionField)}</div>
+          </div>
+          <div class="cert-reg-info-field">
+            <label>Email Adrress:</label>
+            <div class="field-value"></div>
+          </div>
+          <div class="cert-reg-info-field">
+            <label>Birthday:</label>
+            <div class="field-value"></div>
+          </div>
+          <div class="cert-reg-info-field">
+            <label>Birthplace:</label>
+            <div class="field-value"></div>
+          </div>
+          <div class="cert-reg-info-field">
+            <label>Gender:</label>
+            <div class="field-value"></div>
+          </div>
+          <div class="cert-reg-info-field">
+            <label>Contact Number:</label>
+            <div class="field-value"></div>
+          </div>
+          <div class="cert-reg-info-field">
+            <label>Address:</label>
+            <div class="field-value"></div>
+          </div>
+          <div class="cert-reg-info-field">
+            <label>PWD:</label>
+            <div class="field-value"></div>
+          </div>
+        </div>
+
+        <div class="cert-reg-table-section">
+          <table class="cert-reg-table">
+            <thead>
+              <tr>
+                <th>CODE</th>
+                <th>DESCRIPTION</th>
+                <th>UNITS</th>
+                <th>TIME</th>
+                <th>DAYS</th>
+                <th>ROOM</th>
+                <th>INSTRUCTOR</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>GE</td>
+                <td>Art Appreciation</td>
+                <td>3</td>
+                <td></td>
+                <td>MTWFSaSu</td>
+                <td>Room 101</td>
+                <td>Instructor</td>
+              </tr>
+              <tr>
+                <td>CS ELECTION 1</td>
+                <td>Graphics and Visual Computing</td>
+                <td>3</td>
+                <td></td>
+                <td>MTWFSaSu</td>
+                <td>Room 101</td>
+                <td>Instructor</td>
+              </tr>
+              <tr>
+                <td>HC 101/IAS 101</td>
+                <td>Human Computer Interaction, Information Assurance and Security</td>
+                <td>3</td>
+                <td></td>
+                <td>MTWFSaSu</td>
+                <td>Room 101</td>
+                <td>Instructor</td>
+              </tr>
+              <tr>
+                <td>SP 101</td>
+                <td>Social Issues and Professional Practice</td>
+                <td>3</td>
+                <td></td>
+                <td>MTWFSaSu</td>
+                <td>Room 101</td>
+                <td>Instructor</td>
+              </tr>
+              <tr>
+                <td>SE 102</td>
+                <td>Software Engineering 2</td>
+                <td>3</td>
+                <td></td>
+                <td>MTWFSaSu</td>
+                <td>Room 101</td>
+                <td>Instructor</td>
+              </tr>
+              <tr>
+                <td>THS 101</td>
+                <td>Thesis 1</td>
+                <td>3</td>
+                <td></td>
+                <td>MTWFSaSu</td>
+                <td>Room 101</td>
+                <td>Instructor</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="cert-reg-bottom-info">
+          <div class="cert-reg-bottom-field">
+            <label>Number of units earned:</label>
+            <div class="field-value">18</div>
+          </div>
+          <div class="cert-reg-bottom-field">
+            <label>Remarks:</label>
+            <div class="field-value">Approved</div>
+          </div>
+          <div class="cert-reg-bottom-field">
+            <label>Learning Modality:</label>
+            <div class="field-value">Face-to-face</div>
+          </div>
+          <div class="cert-reg-bottom-field text-center">
+            <div class="field-value">${escapedStudentName}</div>
+            <label>STUDENT<br>(Signature Over Printed Name)</label>
+          </div>
+        </div>
+
+        <div class="cert-reg-staff-only-section">
+          <div class="cert-reg-staff-only-label">(QECI STAFF ONLY)</div>
+          <div class="cert-reg-process-by-label">Process by:</div>
+          <div class="cert-reg-signature-section">
+            <div class="cert-reg-signature-block">
+              <div class="field-value"></div>
+              <div class="cert-reg-signature-label">Admission Officer</div>
+            </div>
+            <div class="cert-reg-signature-block">
+              <div class="field-value"></div>
+              <div class="cert-reg-signature-label">Signature</div>
+            </div>
+            <div class="cert-reg-signature-block">
+              <div class="field-value">${escapeHtml(String(appointmentDate || ""))}</div>
+              <div class="cert-reg-signature-label">Date of Registration</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cert-reg-important-notice">
+          <strong>IMPORTANT:</strong> Keep this portion. Present it to your instructors on the first day of classes for his/her signature.
+          You will also be required to present this at the Office of the Student Affairs when applying for your
+          Identification card and in all your dealings in the School.
+        </div>
+
+        <div class="page-certificate-registration">
+          <section class="cert-reg-fees-section">
+            <div class="sched-fees-content-wrapper">
+              <div class="sched-fees-fee-section">
+                <div class="sched-fees-section-header">${escapeHtml(feesTitle)}</div>
+                <table class="sched-fees-fee-table">
+                  <tr><td class="sched-fees-fee-name">Tuition Fee</td><td class="sched-fees-fee-amount">5,400.00</td></tr>
+                  <tr><td class="sched-fees-fee-name">Registration Fee</td><td class="sched-fees-fee-amount"></td></tr>
+                  <tr><td class="sched-fees-fee-name">Miscellaneous Fee</td><td class="sched-fees-fee-amount"></td></tr>
+                  <tr><td class="sched-fees-fee-name">Computer Lab Fee</td><td class="sched-fees-fee-amount"></td></tr>
+                  <tr><td class="sched-fees-fee-name">Cultural Fee</td><td class="sched-fees-fee-amount"></td></tr>
+                  <tr><td class="sched-fees-fee-name">CSSG Fee</td><td class="sched-fees-fee-amount"></td></tr>
+                  <tr><td class="sched-fees-fee-name">Class Card</td><td class="sched-fees-fee-amount"></td></tr>
+                  <tr><td class="sched-fees-fee-name">Research Fee</td><td class="sched-fees-fee-amount"></td></tr>
+                  <tr><td class="sched-fees-fee-name">Thesis/FS/Comp Proj: Oral Defense</td><td class="sched-fees-fee-amount"></td></tr>
+                  <tr><td class="sched-fees-fee-name">Practicum/OJT Fee</td><td class="sched-fees-fee-amount"></td></tr>
+                  <tr class="sched-fees-total-row"><td class="sched-fees-fee-name">TOTAL OBLIGATION</td><td class="sched-fees-fee-amount">10,700.00</td></tr>
+                </table>
+              </div>
+              <div class="sched-fees-side-panel">
+                <div class="sched-fees-signature-section">
+                  <div class="sched-fees-signature-block">
+                    <div class="sched-fees-signature-value"></div>
+                    <div class="sched-fees-signature-label">SCHOOL CASHIER</div>
+                  </div>
+                  <div class="sched-fees-signature-block">
+                    <div class="sched-fees-signature-value"></div>
+                    <div class="sched-fees-signature-label">FINANCE OFFICER</div>
+                  </div>
+                </div>
+                <div class="sched-fees-important-notice"><strong>NOTES:</strong> Please, settle your account before the examination. If you have settled your account, please present your OR to our Finance Officer for your examination permit. Thank you.</div>
+                <div class="sched-fees-tagline">Go For Growth!</div>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
-    </section>
+    </div>
   </div>
-</div>
-</body>
-</html>`;
+ </body>
+ </html>`;
       }
 
       function broadcastNotificationState() {
@@ -1418,4 +1490,3 @@
     <script src="/js/auth.js"></script>
   </body>
 </html>
-
