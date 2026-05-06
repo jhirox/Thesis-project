@@ -17,8 +17,15 @@ export async function sendEmail({ to, subject, text, html }) {
 
   try {
     dns.setDefaultResultOrder("ipv4first");
-    const [ipv4Host] = await dns.promises.resolve4(host);
-    const smtpHost = ipv4Host || host;
+    let smtpHost = host;
+
+    try {
+      const [ipv4Host] = await dns.promises.resolve4(host);
+      smtpHost = ipv4Host || host;
+    } catch {
+      const lookupResult = await dns.promises.lookup(host, { family: 4 });
+      smtpHost = lookupResult?.address || host;
+    }
 
     const nodemailerModule = await import("nodemailer");
     const nodemailer = nodemailerModule.default || nodemailerModule;
