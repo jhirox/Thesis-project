@@ -1,7 +1,7 @@
 import db from "../config/db.js";
 import { notFound } from "../utils/httpError.js";
 import { findEnrollmentApplicantDetails } from "./studentService.js";
-import { sendEmail } from "./email.service.js";
+import { isEmailDeliveryConfigured, sendEmail } from "./email.service.js";
 
 const notificationColumnDefinitions = {
   notification_id: "INT AUTO_INCREMENT PRIMARY KEY",
@@ -223,16 +223,11 @@ export async function createScheduleNotification(payload) {
   const softCopyPayload = payload.includesSoftCopy
     ? JSON.stringify(buildSoftCopySummary(profile, payload.appointmentDate, payload.appointmentTime))
     : null;
-  const smtpConfigured = Boolean(
-    process.env.SMTP_HOST &&
-    process.env.SMTP_USER &&
-    process.env.SMTP_PASS &&
-    (process.env.SMTP_FROM || process.env.SMTP_USER)
-  );
-  const initialEmailDeliveryStatus = smtpConfigured ? "sending" : "skipped";
-  const initialEmailDeliveryMessage = smtpConfigured
+  const emailDeliveryConfigured = isEmailDeliveryConfigured();
+  const initialEmailDeliveryStatus = emailDeliveryConfigured ? "sending" : "skipped";
+  const initialEmailDeliveryMessage = emailDeliveryConfigured
     ? "Email delivery in progress."
-    : "SMTP is not configured.";
+    : "Email delivery is not configured.";
 
   const [result] = await db.query(
     `INSERT INTO notifications (
@@ -268,7 +263,7 @@ export async function createScheduleNotification(payload) {
     ]
   );
 
-  const emailResult = smtpConfigured
+  const emailResult = emailDeliveryConfigured
     ? await dispatchScheduleEmailInBackground({
         notificationId: result.insertId,
         studentEmail: payload.studentEmail,
@@ -283,7 +278,7 @@ export async function createScheduleNotification(payload) {
     : {
         success: false,
         status: "skipped",
-        message: "SMTP is not configured.",
+        message: "Email delivery is not configured.",
       };
 
   return {
@@ -299,16 +294,11 @@ export async function createScheduleNotification(payload) {
 export async function createDirectNotification(payload) {
   await ensureNotificationsTableShape();
 
-  const smtpConfigured = Boolean(
-    process.env.SMTP_HOST &&
-    process.env.SMTP_USER &&
-    process.env.SMTP_PASS &&
-    (process.env.SMTP_FROM || process.env.SMTP_USER)
-  );
-  const initialEmailDeliveryStatus = smtpConfigured ? "queued" : "skipped";
-  const initialEmailDeliveryMessage = smtpConfigured
+  const emailDeliveryConfigured = isEmailDeliveryConfigured();
+  const initialEmailDeliveryStatus = emailDeliveryConfigured ? "queued" : "skipped";
+  const initialEmailDeliveryMessage = emailDeliveryConfigured
     ? "Email delivery queued."
-    : "SMTP is not configured.";
+    : "Email delivery is not configured.";
   const notificationType = payload.notificationType || "General";
 
   const [result] = await db.query(
@@ -340,7 +330,7 @@ export async function createDirectNotification(payload) {
     ]
   );
 
-  const emailResult = smtpConfigured
+  const emailResult = emailDeliveryConfigured
     ? await sendEmail({
         to: payload.studentEmail,
         subject: payload.title,
@@ -356,7 +346,7 @@ export async function createDirectNotification(payload) {
     : {
         success: false,
         status: "skipped",
-        message: "SMTP is not configured.",
+        message: "Email delivery is not configured.",
       };
 
   await updateNotificationDeliveryResult(result.insertId, emailResult);
