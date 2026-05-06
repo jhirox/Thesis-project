@@ -109,20 +109,72 @@ function escapeHtml(value) {
     .replace(/'/g, "&#039;");
 }
 
+function formatDisplayDate(value) {
+  if (!value) {
+    return "Not set";
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
+function formatSemesterLabel(value) {
+  const normalized = String(value || "").trim();
+  if (!normalized) {
+    return "Not set";
+  }
+
+  if (/semester/i.test(normalized) || /\bsem\b/i.test(normalized)) {
+    return normalized;
+  }
+
+  return `${normalized} Sem`;
+}
+
+function buildEnrollmentSubjectRows(appointmentTime) {
+  const subjects = [
+    ["GE", "Art Appreciation", "3"],
+    ["CS ELECTIVE 1", "Graphics and Visual Computing", "3"],
+    ["HC 101 / IAS 101", "Human Computer Interaction, Information Assurance and Security", "3"],
+    ["SP 101", "Social Issues and Professional Practice", "3"],
+    ["SE 102", "Software Engineering 2", "3"],
+    ["THS 101", "Thesis 1", "3"],
+  ];
+
+  return subjects
+    .map(([code, description, units]) => `
+      <tr>
+        <td>${escapeHtml(code)}</td>
+        <td>${escapeHtml(description)}</td>
+        <td>${escapeHtml(units)}</td>
+        <td>${escapeHtml(appointmentTime || "--:--")}</td>
+        <td>MTWFSaSu</td>
+        <td>Room 101</td>
+        <td>Instructor</td>
+      </tr>
+    `)
+    .join("");
+}
+
 function buildSoftCopyAttachment({ profile = {}, appointmentDate, appointmentTime }) {
   const studentName = profile.full_name || "Student";
-  const program = [profile.program_code, profile.program_name].filter(Boolean).join(" - ") || "Not set";
-  const semester = profile.semester || profile.semester_types || "Not set";
-  const rows = [
-    ["Student ID", profile.student_id || "Not set"],
-    ["Student Name", studentName],
-    ["Email", profile.email_address || "Not set"],
-    ["Program", program],
-    ["Year Level", profile.year_level || "Not set"],
-    ["Semester", semester],
-    ["Appointment Date", appointmentDate || "Not set"],
-    ["Appointment Time", appointmentTime || "Not set"],
-  ];
+  const programCode = profile.program_code || profile.major || "";
+  const programName = profile.program_name || "";
+  const semester = formatSemesterLabel(profile.semester || profile.semester_types);
+  const schoolYear = profile.academic_year || "SY 2025-2026";
+  const course = profile.year_level || programCode || "Not set";
+  const yearSection = programName || programCode || "Not set";
+  const registrationDate = formatDisplayDate(appointmentDate || profile.enrollment_date);
+  const fullAddress = profile.complete_address || "Not Provided";
+  const feesTitle = [programCode || "BSCS", profile.year_level || "2", semester, schoolYear].join(" ");
   const filenameName = String(studentName)
     .trim()
     .toLowerCase()
@@ -132,38 +184,163 @@ function buildSoftCopyAttachment({ profile = {}, appointmentDate, appointmentTim
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Enrollment Form Soft Copy</title>
+    <title>Enrollment Form</title>
+    <xml>
+      <w:WordDocument>
+        <w:View>Print</w:View>
+        <w:Zoom>90</w:Zoom>
+      </w:WordDocument>
+    </xml>
     <style>
-      body { font-family: Arial, sans-serif; color: #111827; margin: 32px; }
-      .header { border-bottom: 2px solid #111827; margin-bottom: 24px; padding-bottom: 12px; }
-      h1 { font-size: 22px; margin: 0 0 6px; }
-      p { margin: 0; color: #4b5563; }
-      table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-      th, td { border: 1px solid #d1d5db; padding: 10px 12px; text-align: left; }
-      th { width: 220px; background: #f3f4f6; }
-      .footer { margin-top: 28px; font-size: 13px; color: #4b5563; }
+      @page Section1 { size: 8.27in 11.69in; margin: .35in; }
+      body { font-family: Arial, sans-serif; color: #111827; margin: 0; }
+      .doc { width: 100%; border: 1px solid #9ca3af; background: #fffdfa; }
+      .header { background: #0b2545; color: #ffffff; border: 2px solid #d5aa20; padding: 10px 14px; text-align: center; }
+      .header h2 { margin: 0; font-size: 18px; letter-spacing: .04em; }
+      .header p { margin: 4px 0 0; font-size: 11px; }
+      .title { background: #d5aa20; color: #0b2545; text-align: center; font-weight: bold; text-transform: uppercase; padding: 8px; }
+      .title .small { font-size: 11px; }
+      .title .large { font-size: 16px; letter-spacing: 1px; }
+      .student-grid { width: 100%; border-collapse: collapse; margin-top: 8px; }
+      .student-grid td { width: 33.33%; padding: 6px 8px; vertical-align: top; }
+      .label { display: block; font-size: 10px; font-weight: bold; color: #0b2545; text-transform: uppercase; }
+      .field { display: block; min-height: 18px; border-bottom: 2px solid #94a3b8; padding: 3px 0; font-size: 12px; }
+      .subjects, .fees { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 10px; }
+      .subjects th { background: #0b2545; color: #ffffff; text-transform: uppercase; padding: 5px; border: 1px solid #d9dee7; }
+      .subjects td, .fees td { border: 1px solid #d9dee7; padding: 5px; }
+      .bottom-grid { width: 100%; border-collapse: collapse; margin-top: 8px; }
+      .bottom-grid td { width: 33.33%; padding: 6px 8px; vertical-align: top; }
+      .staff { margin-top: 10px; border-top: 1px solid #d5aa20; padding-top: 8px; }
+      .signatures { width: 100%; border-collapse: collapse; margin-top: 8px; }
+      .signatures td { width: 33.33%; text-align: center; padding: 8px; vertical-align: bottom; }
+      .notice { background: #0b2545; color: #ffffff; border: 1px solid #d5aa20; margin-top: 10px; padding: 8px; font-size: 10px; line-height: 1.35; }
+      .notice strong { color: #ffd24a; }
+      .fees-title { background: #d5aa20; color: #0b2545; text-align: center; font-weight: bold; text-transform: uppercase; padding: 7px; margin-top: 10px; }
+      .fees .amount { text-align: right; width: 150px; }
+      .total td { font-weight: bold; border-color: #d5aa20; }
+      .cashier-box { width: 100%; border-collapse: collapse; margin-top: 8px; }
+      .cashier-box td { border: 1px solid #d9dee7; text-align: center; padding: 18px 8px 8px; font-weight: bold; color: #0b2545; text-transform: uppercase; }
     </style>
   </head>
   <body>
-    <div class="header">
-      <h1>Enrollment Form Soft Copy</h1>
-      <p>QEC Registrar</p>
-    </div>
-    <table>
-      <tbody>
-        ${rows.map(([label, value]) => `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(value)}</td></tr>`).join("")}
-      </tbody>
-    </table>
-    <div class="footer">
-      Please keep this soft copy for your registration reference.
+    <div class="doc">
+      <div class="header">
+        <h2>QUEZONIAN EDUCATIONAL COLLEGE, INC.</h2>
+        <p>Dr. Ramon Solar Street, Zone II Poblacion, Atimonan, Quezon</p>
+        <p>Tel. No. (042) 316-4129 | Email: qeciatimonan@yahoo.com.ph</p>
+      </div>
+      <div class="title">
+        <div class="small">COLLEGIATE DEPARTMENT</div>
+        <div class="large">CERTIFICATE OF REGISTRATION</div>
+      </div>
+
+      <table class="student-grid">
+        <tr>
+          <td><span class="label">Student Last Name:</span><span class="field">${escapeHtml(profile.last_name || "Not set")}</span></td>
+          <td><span class="label">Student First Name:</span><span class="field">${escapeHtml(profile.first_name || "Not set")}</span></td>
+          <td><span class="label">Student Middle Name:</span><span class="field">${escapeHtml(profile.middle_name || "Not set")}</span></td>
+        </tr>
+        <tr>
+          <td><span class="label">Student Number:</span><span class="field">${escapeHtml(profile.student_id || "Not set")}</span></td>
+          <td><span class="label">School Year:</span><span class="field">${escapeHtml(schoolYear)}</span></td>
+          <td><span class="label">Semester:</span><span class="field">${escapeHtml(semester)}</span></td>
+        </tr>
+        <tr>
+          <td><span class="label">Course:</span><span class="field">${escapeHtml(course)}</span></td>
+          <td><span class="label">Year & Section:</span><span class="field">${escapeHtml(yearSection)}</span></td>
+          <td><span class="label">Email Address:</span><span class="field">${escapeHtml(profile.email_address || "Not set")}</span></td>
+        </tr>
+        <tr>
+          <td><span class="label">Birthday:</span><span class="field">${escapeHtml(formatDisplayDate(profile.birth_date))}</span></td>
+          <td><span class="label">Birthplace:</span><span class="field">${escapeHtml(profile.birth_place || "Not set")}</span></td>
+          <td><span class="label">Gender:</span><span class="field">${escapeHtml(profile.sex || "Not set")}</span></td>
+        </tr>
+        <tr>
+          <td><span class="label">Contact Number:</span><span class="field">${escapeHtml(profile.contact_number || "Not set")}</span></td>
+          <td colspan="2"><span class="label">Address:</span><span class="field">${escapeHtml(fullAddress)}</span></td>
+        </tr>
+      </table>
+
+      <table class="subjects">
+        <thead>
+          <tr>
+            <th>CODE</th>
+            <th>DESCRIPTION</th>
+            <th>UNITS</th>
+            <th>TIME</th>
+            <th>DAYS</th>
+            <th>ROOM</th>
+            <th>INSTRUCTOR</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${buildEnrollmentSubjectRows(appointmentTime)}
+        </tbody>
+      </table>
+
+      <table class="bottom-grid">
+        <tr>
+          <td><span class="label">Number of units earned:</span><span class="field">18</span></td>
+          <td><span class="label">Remarks:</span><span class="field">${escapeHtml(profile.special_remarks || "Approved")}</span></td>
+          <td><span class="label">Learning Modality:</span><span class="field">${escapeHtml(profile.modality_name || "Face-to-face")}</span></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><span class="field" style="text-align:center;">${escapeHtml(studentName)}</span><span class="label" style="text-align:center;">STUDENT<br>(Signature Over Printed Name)</span></td>
+          <td></td>
+        </tr>
+      </table>
+
+      <div class="staff">
+        <span class="label">(QECI STAFF ONLY)</span>
+        <span class="label" style="margin-top: 8px;">Process by:</span>
+        <table class="signatures">
+          <tr>
+            <td><span class="field">Registrar</span><span class="label">Admission Officer</span></td>
+            <td><span class="field">&nbsp;</span><span class="label">Signature</span></td>
+            <td><span class="field">${escapeHtml(registrationDate)}</span><span class="label">Date of Registration</span></td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="notice">
+        <strong>IMPORTANT:</strong> Keep this portion. Present it to your instructors on the first day of classes for his/her signature.
+        You will also be required to present this at the Office of the Student Affairs when applying for your identification card and in all your dealings in the School.
+      </div>
+
+      <div class="fees-title">ASSESSMENT OF FEES</div>
+      <table class="fees">
+        <tr><td colspan="2" style="text-align:center;font-weight:bold;color:#0b2545;">${escapeHtml(feesTitle)}</td></tr>
+        <tr><td>Tuition Fee</td><td class="amount">5,400.00</td></tr>
+        <tr><td>Registration Fee</td><td class="amount"></td></tr>
+        <tr><td>Miscellaneous Fee</td><td class="amount"></td></tr>
+        <tr><td>Computer Lab Fee</td><td class="amount"></td></tr>
+        <tr><td>Cultural Fee</td><td class="amount"></td></tr>
+        <tr><td>CSSG Fee</td><td class="amount"></td></tr>
+        <tr><td>Class Card</td><td class="amount"></td></tr>
+        <tr><td>Research Fee</td><td class="amount"></td></tr>
+        <tr><td>Thesis/FS/Comp Proj: Oral Defense</td><td class="amount"></td></tr>
+        <tr><td>Practicum/OJT Fee</td><td class="amount"></td></tr>
+        <tr class="total"><td>TOTAL OBLIGATION</td><td class="amount">10,700.00</td></tr>
+      </table>
+      <table class="cashier-box">
+        <tr>
+          <td>School Cashier</td>
+          <td>Finance Officer</td>
+        </tr>
+      </table>
+      <div class="notice">
+        <strong>NOTES:</strong> Please settle your account before the examination. If you have settled your account,
+        please present your OR to our Finance Officer for your examination permit. Thank you.
+      </div>
     </div>
   </body>
 </html>`;
 
   return {
-    filename: `enrollment-form-${filenameName}.html`,
+    filename: `enrollment-form-${filenameName}.doc`,
     content,
-    contentType: "text/html",
+    contentType: "application/msword",
   };
 }
 
