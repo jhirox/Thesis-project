@@ -984,7 +984,7 @@
         </div>
 
         <!-- Success Toast Notification -->
-        <div class="position-fixed top-0 start-0 p-3" style="z-index: 9999;">
+        <div id="successToastContainer" class="position-fixed top-0 start-0 p-3" style="z-index: 10880;">
           <div id="successToast" class="toast align-items-center border-0 bg-light" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
               <div class="toast-body">
@@ -1266,6 +1266,11 @@
     
 
     <script>
+      const successToastContainer = document.getElementById("successToastContainer");
+      if (successToastContainer && successToastContainer.parentElement !== document.body) {
+        document.body.appendChild(successToastContainer);
+      }
+
       // Add Student Function
       document
         .getElementById("addStudentForm")

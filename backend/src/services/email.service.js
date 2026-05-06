@@ -1,17 +1,107 @@
 import dns from "node:dns";
 
-export async function sendEmail({ to, subject, text, html }) {
+function getEmailProviderConfig() {
+  const resendApiKey = process.env.RESEND_API_KEY;
+  const resendFrom = process.env.RESEND_FROM;
   const host = process.env.SMTP_HOST;
-  const port = Number(process.env.SMTP_PORT || 587);
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
   const from = process.env.SMTP_FROM || user;
 
-  if (!host || !user || !pass || !from) {
+  return {
+    resendConfigured: Boolean(resendApiKey && resendFrom),
+    resendApiKey,
+    resendFrom,
+    smtpConfigured: Boolean(host && user && pass && from),
+    host,
+    user,
+    pass,
+    from,
+  };
+}
+
+export function isEmailDeliveryConfigured() {
+  const config = getEmailProviderConfig();
+  return config.resendConfigured || config.smtpConfigured;
+}
+
+function normalizeResendAttachments(attachments = []) {
+  return attachments
+    .filter((attachment) => attachment?.filename && attachment?.content)
+    .map((attachment) => ({
+      filename: attachment.filename,
+      content: Buffer.isBuffer(attachment.content)
+        ? attachment.content.toString("base64")
+        : Buffer.from(String(attachment.content), "utf8").toString("base64"),
+      contentType: attachment.contentType,
+    }));
+}
+
+async function sendWithResend({ to, subject, text, html, attachments, config }) {
+  const normalizedAttachments = normalizeResendAttachments(attachments);
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${config.resendApiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: config.resendFrom,
+      to,
+      subject,
+      text,
+      html,
+      ...(normalizedAttachments.length ? { attachments: normalizedAttachments } : {}),
+    }),
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const message = data?.message || data?.error?.message || response.statusText || "Resend delivery failed.";
+    throw new Error(message);
+  }
+
+  return {
+    success: true,
+    status: "sent",
+    message: `Email sent successfully via Resend${data?.id ? ` (${data.id})` : ""}.`,
+  };
+}
+
+export async function sendEmail({ to, subject, text, html, attachments = [] }) {
+  const config = getEmailProviderConfig();
+  const host = config.host;
+  const port = Number(process.env.SMTP_PORT || 587);
+  const user = config.user;
+  const pass = config.pass;
+  const from = config.from;
+
+  if (config.resendApiKey && !config.resendFrom) {
     return {
       success: false,
       status: "skipped",
-      message: "SMTP is not configured.",
+      message: "Resend is missing RESEND_FROM.",
+    };
+  }
+
+  if (config.resendConfigured) {
+    try {
+      return await sendWithResend({ to, subject, text, html, attachments, config });
+    } catch (error) {
+      return {
+        success: false,
+        status: "failed",
+        message: error.message || "Resend delivery failed.",
+      };
+    }
+  }
+
+  if (!config.smtpConfigured) {
+    return {
+      success: false,
+      status: "skipped",
+      message: "Email delivery is not configured.",
     };
   }
 
@@ -61,6 +151,7 @@ export async function sendEmail({ to, subject, text, html }) {
           subject,
           text,
           html,
+          attachments,
         });
 
         return {
