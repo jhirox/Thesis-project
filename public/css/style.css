@@ -2916,10 +2916,6 @@ span .icon:hover {
 .queue-icon {
   cursor: pointer;
   white-space: nowrap;
-  min-width: 4.35rem;
-  padding: 0.25rem 0.55rem;
-  font-size: 0.78rem;
-  line-height: 1.1;
 }
 
 .queue-icon:hover {
