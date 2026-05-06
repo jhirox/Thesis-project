@@ -1385,7 +1385,14 @@
                   </div>
                   <div class="col-md-6">
                     <label class="form-label text-muted small">Working Status</label>
-                    <p class="fw-semibold mb-0">${getDisplayValue(profile.working_student || getWorkingStatus(profile.is_working))}</p>
+                    <p class="fw-semibold mb-0">${getDisplayValue(
+                      profile.working_student ||
+                      (profile.is_working === 1 || profile.is_working === "1" || profile.is_working === true
+                        ? "Working student"
+                        : profile.is_working === 0 || profile.is_working === "0" || profile.is_working === false
+                          ? "Non-working"
+                          : null)
+                    )}</p>
                   </div>
                   <div class="col-md-6">
                     <label class="form-label text-muted small">Entry Status</label>
