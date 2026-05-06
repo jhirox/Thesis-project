@@ -422,7 +422,7 @@
               </div>
 
               <div id="queue-cards-list">
-                <div class="card text-white p-3 mb-3 queue-card">
+                <div class="card p-3 mb-3 queue-card">
                   <div class="queue-card-main">
                     <div class="info-main">
                       <strong>Loading applications...</strong>
@@ -438,6 +438,24 @@
                     </div>
                   </div>
                 </div>
+              </div>
+
+              <!-- Pagination Controls -->
+              <div id="queue-pagination" class="d-flex justify-content-center mt-4" style="display: none;">
+                <nav aria-label="Queue pagination">
+                  <ul class="pagination pagination-sm">
+                    <li class="page-item" id="queue-prev-page">
+                      <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                      </a>
+                    </li>
+                    <li class="page-item" id="queue-next-page">
+                      <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                      </a>
+                    </li>
+                  </ul>
+                </nav>
               </div>
             </div>
           </section>
@@ -634,6 +652,8 @@
 
     <script>
       let queueApplications = [];
+      let currentQueuePage = 1;
+      const ITEMS_PER_PAGE = 10;
 
       async function loadQueueData() {
         try {
@@ -646,12 +666,14 @@
 
           queueApplications = Array.isArray(result.data) ? result.data : [];
           updateQueueStats(queueApplications);
-          renderQueueCards(getFilteredQueueApplications());
+          currentQueuePage = 1; // Reset to first page when loading new data
+          renderQueueCards(getFilteredQueueApplications(), currentQueuePage, ITEMS_PER_PAGE);
         } catch (error) {
           console.error("Error loading queue data:", error);
           queueApplications = [];
           updateQueueStats([]);
-          renderQueueCards([]);
+          currentQueuePage = 1;
+          renderQueueCards([], currentQueuePage, ITEMS_PER_PAGE);
         }
       }
 
@@ -788,7 +810,7 @@
           });
       }
 
-      function renderQueueCards(applications) {
+      function renderQueueCards(applications, page = 1, itemsPerPage = 10) {
         const queueCardsList = document.getElementById('queue-cards-list');
         if (!queueCardsList) {
           return;
@@ -805,10 +827,22 @@
               </div>
             </div>
           `;
+          // Hide pagination when no results
+          const paginationContainer = document.getElementById('queue-pagination');
+          if (paginationContainer) {
+            paginationContainer.style.display = 'none';
+          }
           return;
         }
 
-        applications
+        // Calculate pagination
+        const totalItems = applications.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        const startIndex = (page - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const paginatedApplications = applications.slice(startIndex, endIndex);
+
+        paginatedApplications
           .sort((left, right) => new Date(left.created_at || left.enrollment_date) - new Date(right.created_at || right.enrollment_date))
           .forEach((application) => {
             const applicantName =
@@ -856,6 +890,99 @@
 
             queueCardsList.appendChild(card);
           });
+
+        // Render pagination
+        renderQueuePagination(totalItems, totalPages, page, itemsPerPage);
+      }
+
+      function renderQueuePagination(totalItems, totalPages, currentPage, itemsPerPage) {
+        const paginationContainer = document.getElementById('queue-pagination');
+        if (!paginationContainer) return;
+
+        if (totalPages <= 1) {
+          paginationContainer.style.display = 'none';
+          return;
+        }
+
+        paginationContainer.style.display = 'block';
+
+        // Update page info display
+        const startItem = (currentPage - 1) * itemsPerPage + 1;
+        const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+
+        // Create pagination HTML
+        let paginationHtml = `
+          <li class="page-item ${currentPage === 1 ? 'disabled' : ''}" id="queue-prev-page">
+            <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" data-page="${currentPage - 1}" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>`;
+
+        // Calculate page range to show
+        const maxPagesToShow = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+        let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+        if (endPage - startPage + 1 < maxPagesToShow) {
+          startPage = Math.max(1, endPage - maxPagesToShow + 1);
+        }
+
+        // Add first page and ellipsis if needed
+        if (startPage > 1) {
+          paginationHtml += `
+            <li class="page-item">
+              <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" data-page="1">1</a>
+            </li>`;
+          if (startPage > 2) {
+            paginationHtml += `
+              <li class="page-item disabled">
+                <span class="page-link bg-primary-subtle text-white border-secondary-subtle">...</span>
+              </li>`;
+          }
+        }
+
+        // Add page numbers
+        for (let i = startPage; i <= endPage; i++) {
+          paginationHtml += `
+            <li class="page-item ${i === currentPage ? 'active' : ''}">
+              <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" data-page="${i}">${i}</a>
+            </li>`;
+        }
+
+        // Add last page and ellipsis if needed
+        if (endPage < totalPages) {
+          if (endPage < totalPages - 1) {
+            paginationHtml += `
+              <li class="page-item disabled">
+                <span class="page-link bg-primary-subtle text-white border-secondary-subtle">...</span>
+              </li>`;
+          }
+          paginationHtml += `
+            <li class="page-item">
+              <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" data-page="${totalPages}">${totalPages}</a>
+            </li>`;
+        }
+
+        paginationHtml += `
+          <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}" id="queue-next-page">
+            <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" data-page="${currentPage + 1}" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>`;
+
+        paginationContainer.querySelector('.pagination').innerHTML = paginationHtml;
+
+        // Add click event listeners
+        paginationContainer.querySelectorAll('.page-link').forEach(link => {
+          link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const page = parseInt(this.getAttribute('data-page'));
+            if (page && page >= 1 && page <= totalPages) {
+              currentQueuePage = page;
+              renderQueueCards(getFilteredQueueApplications(), currentQueuePage);
+            }
+          });
+        });
       }
 
       function calculateAverageWaitDays(applications) {
@@ -1014,7 +1141,8 @@
       }
 
       function applyFilters() {
-        renderQueueCards(getFilteredQueueApplications());
+        currentQueuePage = 1; // Reset to first page when applying filters
+        renderQueueCards(getFilteredQueueApplications(), currentQueuePage, ITEMS_PER_PAGE);
         
         // Close the modal
         const modal = bootstrap.Modal.getInstance(document.getElementById('filterModal'));
@@ -1498,7 +1626,8 @@ function getDisplayValue(value, fallback = "Not set") {
         loadQueueData();
 
         document.querySelector('.queue-search')?.addEventListener('input', () => {
-          renderQueueCards(getFilteredQueueApplications());
+          currentQueuePage = 1; // Reset to first page when searching
+          renderQueueCards(getFilteredQueueApplications(), currentQueuePage, ITEMS_PER_PAGE);
         });
 
         setTimeout(() => {
