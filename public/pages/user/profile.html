@@ -21,96 +21,12 @@
     <link rel="stylesheet" href="/css/style.css" />
   </head>
   <body class="page-shell page-profile" id="profile-body">
-    <!-- SKELETON LOADING SCREEN -->
-    <div id="skeleton-screen" class="skeleton-screen">
-      <div class="container-fluid p-0 d-flex h-100">
-        <!-- Skeleton Sidebar -->
-        <div class="skeleton-sidebar-wrapper d-none d-md-flex flex-column align-items-center flex-shrink-0 p-3">
-          <div class="skeleton skeleton-logo mb-3"></div>
-          <div class="skeleton skeleton-nav-item mb-2"></div>
-          <div class="skeleton skeleton-nav-item mb-2"></div>
-          <div class="skeleton skeleton-nav-item mb-2"></div>
-          <div class="skeleton skeleton-nav-item mb-2"></div>
-        </div>
-
-        <!-- Skeleton Main Content -->
-        <div class="skeleton-main flex-fill">
-          <!-- Skeleton Mobile Header -->
-          <div class="skeleton-header d-md-none p-3">
-            <div class="d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-center">
-                <div class="skeleton skeleton-icon me-2"></div>
-                <div class="skeleton skeleton-title ms-2"></div>
-              </div>
-              <div class="skeleton skeleton-icon"></div>
-            </div>
-          </div>
-
-          <!-- Skeleton Desktop Header -->
-          <div class="skeleton-header d-none d-md-block p-3">
-            <div class="d-flex align-items-center justify-content-between">
-              <div class="skeleton skeleton-title"></div>
-              <div class="d-flex gap-3">
-                <div class="skeleton skeleton-icon"></div>
-                <div class="skeleton skeleton-icon"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Skeleton Profile Section -->
-          <div class="skeleton-office-section">
-            <div class="container">
-              <div class="row g-4">
-                <div class="col-lg-4">
-                  <div class="skeleton skeleton-profile-card"></div>
-                </div>
-                <div class="col-lg-8">
-                  <div class="skeleton skeleton-office-card mb-3"></div>
-                  <div class="skeleton skeleton-office-card mb-3"></div>
-                  <div class="skeleton skeleton-office-card mb-0"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Skeleton Footer -->
-          <div class="skeleton-footer py-4">
-            <div class="container">
-              <div class="row mb-4 pb-4">
-                <div class="col-md-3 mb-3 mb-md-0">
-                  <div class="skeleton skeleton-text mb-3"></div>
-                  <div class="skeleton skeleton-link mb-2"></div>
-                  <div class="skeleton skeleton-link mb-2"></div>
-                  <div class="skeleton skeleton-link mb-0"></div>
-                </div>
-                <div class="col-md-3 mb-3 mb-md-0">
-                  <div class="skeleton skeleton-text mb-3"></div>
-                  <div class="skeleton skeleton-link mb-2"></div>
-                  <div class="skeleton skeleton-link mb-2"></div>
-                  <div class="skeleton skeleton-link mb-0"></div>
-                </div>
-                <div class="col-md-3 mb-3 mb-md-0">
-                  <div class="skeleton skeleton-text mb-3"></div>
-                  <div class="skeleton skeleton-link mb-2"></div>
-                  <div class="skeleton skeleton-link mb-2"></div>
-                  <div class="skeleton skeleton-link mb-0"></div>
-                </div>
-                <div class="col-md-3">
-                  <div class="skeleton skeleton-text mb-3"></div>
-                  <div class="skeleton skeleton-link mb-2"></div>
-                  <div class="skeleton skeleton-link mb-0"></div>
-                </div>
-              </div>
-              <div class="text-center">
-                <div class="skeleton skeleton-text mb-1"></div>
-                <div class="skeleton skeleton-text-small mb-1"></div>
-                <div class="skeleton skeleton-text-small mb-0"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- SKELETON LOADING SCREEN (injected via skeletons.js) -->
+    <div id="skeleton-container"></div>
+    <script type="module">
+      import { injectSkeleton } from '/js/skeletons.js';
+      injectSkeleton('userProfileSkeleton', '#skeleton-container');
+    </script>
 
     <div class="container-fluid p-0 d-flex h-100">
       <!-- SIDEBAR -->
