@@ -2639,10 +2639,39 @@ span .icon:hover {
 }
 
 /* ===== ACCOUNTS PAGE STYLES ===== */
+.page-acc .account-table {
+  font-size: 0.92rem;
+}
+
+.page-acc .account-table thead th {
+  padding: 0.8rem 0.85rem !important;
+  font-size: 0.84rem;
+  line-height: 1.2;
+}
+
+.page-acc .account-table tbody td {
+  padding: 0.8rem 0.85rem !important;
+  font-size: 0.9rem;
+  line-height: 1.25;
+}
+
+.page-acc .account-table .fw-semibold {
+  font-size: 0.92rem;
+}
+
+.page-acc .account-table small {
+  font-size: 0.77rem;
+}
+
+.page-acc .profile-img {
+  width: 42px;
+  height: 42px;
+}
+
 .account-action-cell {
   width: 1%;
-  min-width: 18rem;
-  white-space: nowrap;
+  min-width: 12.5rem;
+  white-space: normal;
   vertical-align: middle;
 }
 
@@ -2660,7 +2689,7 @@ span .icon:hover {
 }
 
 .account-actions--buttons {
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   margin-inline: auto;
 }
 
@@ -2707,13 +2736,18 @@ span .icon:hover {
 
 @media (max-width: 991.98px) {
   .account-action-cell {
-    min-width: 17rem;
+    min-width: 11.5rem;
+  }
+
+  .page-acc .account-table thead th,
+  .page-acc .account-table tbody td {
+    padding: 0.7rem 0.75rem !important;
   }
 }
 
 @media (max-width: 767.98px) {
   .account-action-cell {
-    min-width: 16rem;
+    min-width: 11rem;
     text-align: center !important;
   }
 
@@ -2726,11 +2760,23 @@ span .icon:hover {
     justify-content: center;
     margin-inline: auto;
   }
+
+  .page-acc .account-table {
+    font-size: 0.88rem;
+  }
+
+  .page-acc .account-table thead th {
+    font-size: 0.8rem;
+  }
+
+  .page-acc .account-table tbody td {
+    font-size: 0.86rem;
+  }
 }
 
 @media (max-width: 575.98px) {
   .account-action-cell {
-    min-width: 16rem;
+    min-width: 10.5rem;
   }
 
   .account-actions--icons {
@@ -2744,7 +2790,7 @@ span .icon:hover {
   }
 
   .account-actions--buttons {
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     width: auto;
   }
 
