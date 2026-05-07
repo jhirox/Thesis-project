@@ -2380,6 +2380,7 @@
         const detailScheduleBtn = document.getElementById("detailScheduleBtn");
         const detailPrintBtn = document.getElementById("detailPrintBtn");
         const detailRevertBtn = document.getElementById("detailRevertBtn");
+        const detailTrashRejectedBtn = document.getElementById("detailTrashRejectedBtn");
         const detailRestoreRejectedBtn = document.getElementById("detailRestoreRejectedBtn");
         const detailRejectBtn = document.getElementById("detailRejectBtn");
 
@@ -2420,6 +2421,25 @@
           }
         });
 
+        detailTrashRejectedBtn?.addEventListener("click", async function () {
+          if (!activeStudentRecord) return;
+
+          try {
+            await moveRejectedRecordToTrash(activeStudentProfile || activeStudentRecord);
+            const detailModal = bootstrap.Modal.getInstance(studentDetailsModalEl);
+            if (detailModal) {
+              if (document.activeElement) {
+                document.activeElement.blur();
+              }
+              detailModal.hide();
+            }
+            alert("Rejected applicant moved to trash for 14 days.");
+          } catch (error) {
+            console.error("Error moving rejected applicant to trash:", error);
+            alert(error.message || "Unable to move rejected applicant to trash.");
+          }
+        });
+
         detailRejectBtn?.addEventListener("click", function () {
           if (!activeStudentRecord) return;
           handleRecordStatusChange(activeStudentRecord, "Rejected", {
@@ -2455,6 +2475,7 @@
         } else if (isRejected) {
           detailsActionMarkup = `
             <button type="button" class="btn btn-outline-secondary flex-fill" id="detailRevertBtn"><i class="fa-solid fa-rotate-left me-2"></i>Revert to Pending</button>
+            <button type="button" class="btn btn-outline-light flex-fill" id="detailTrashRejectedBtn"><i class="fa-solid fa-trash me-2"></i>Move to Trash</button>
           `;
 
           if (isTrashed) {
