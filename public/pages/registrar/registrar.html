@@ -1987,9 +1987,9 @@
 
         if (selectedStatus === "rejected") {
           renderRejectedRecords(rejectedRecords);
-          renderRejectedTrashRecords(rejectedTrashRecords);
           pendingRecordsSection?.classList.add("d-none");
           approvedRecordsSection?.classList.add("d-none");
+          rejectedTrashSection?.classList.add("d-none");
           return;
         }
 
