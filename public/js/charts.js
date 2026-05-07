@@ -7,13 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       title: { text: "" },
       xAxis: {
-        categories: [
-          "Total Applicants",
-          "Approved",
-          "Pending",
-          "Rejected",
-          "Enrolled",
-        ],
+        categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
         labels: { style: { color: "#ffffff" } },
       },
       yAxis: {
@@ -31,7 +25,8 @@ document.addEventListener("DOMContentLoaded", () => {
       credits: { enabled: false },
       exporting: { enabled: false },
       tooltip: {
-        pointFormat: "<b>{point.y}</b> application(s)",
+        shared: true,
+        valueSuffix: " applications",
       },
       plotOptions: {
         column: {
@@ -42,15 +37,24 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       series: [
         {
-          name: "Applications",
-          data: [
-            { y: 1820, color: "#2196f3" },
-            { y: 1280, color: "#4caf50" },
-            { y: 450, color: "#ff9800" },
-            { y: 90, color: "#f44336" },
-            { y: 0, color: "#9c27b0" },
-          ],
+          name: "Total Applications",
+          data: [1247, 1310, 1450, 1390, 1520, 1600, 1750, 1820],
           color: "#2196f3",
+        },
+        {
+          name: "Approved",
+          data: [850, 920, 1020, 980, 1080, 1120, 1220, 1280],
+          color: "#4caf50",
+        },
+        {
+          name: "Pending",
+          data: [320, 310, 340, 330, 350, 380, 420, 450],
+          color: "#ff9800",
+        },
+        {
+          name: "Rejected",
+          data: [77, 80, 90, 80, 90, 100, 110, 90],
+          color: "#f44336",
         },
       ],
     });
