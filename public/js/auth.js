@@ -185,6 +185,8 @@ async function refreshStaffNotificationBadge() {
   }
 }
 
+window.refreshStaffNotificationBadge = refreshStaffNotificationBadge;
+
 // ======================
 // LOGOUT FUNCTION
 // ======================

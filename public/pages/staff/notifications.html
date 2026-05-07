@@ -190,7 +190,7 @@
                 </div>
               </div>
               <div class="staff-notification-item-actions">
-                <a class="btn btn-sm btn-outline-info" href="${escapeHtml(actionUrl)}">Open</a>
+                <a class="btn btn-sm btn-outline-info btn-staff-open" href="${escapeHtml(actionUrl)}">Open</a>
                 ${unread ? '<button class="btn btn-sm btn-outline-light btn-staff-read" type="button">Mark read</button>' : ""}
                 <button class="btn btn-sm btn-outline-danger btn-staff-delete" type="button">Delete</button>
               </div>
@@ -215,12 +215,14 @@
           String(item.notification_id) === String(id) ? { ...item, is_read: 1 } : item
         );
         renderStaffNotifications();
+        window.refreshStaffNotificationBadge?.();
       }
 
       async function deleteNotification(id) {
         await fetch(`/api/notifications/${encodeURIComponent(id)}`, { method: "DELETE" });
         staffNotifications = staffNotifications.filter((item) => String(item.notification_id) !== String(id));
         renderStaffNotifications();
+        window.refreshStaffNotificationBadge?.();
       }
 
       document.addEventListener("DOMContentLoaded", () => {
@@ -242,6 +244,7 @@
           });
           staffNotifications = staffNotifications.map((item) => ({ ...item, is_read: 1 }));
           renderStaffNotifications();
+          window.refreshStaffNotificationBadge?.();
         });
 
         document.getElementById("staffClearBtn")?.addEventListener("click", async () => {
@@ -253,17 +256,28 @@
           });
           staffNotifications = [];
           renderStaffNotifications();
+          window.refreshStaffNotificationBadge?.();
         });
 
         document.getElementById("staffNotificationsList")?.addEventListener("click", async (event) => {
           const item = event.target.closest("[data-id]");
           if (!item) return;
           const id = item.dataset.id;
+          const openLink = event.target.closest(".btn-staff-open");
+          if (openLink) {
+            event.preventDefault();
+            const destination = openLink.getAttribute("href") || getRoleHome();
+            await markNotificationRead(id);
+            window.location.href = destination;
+            return;
+          }
           if (event.target.closest(".btn-staff-read")) {
             await markNotificationRead(id);
+            return;
           }
           if (event.target.closest(".btn-staff-delete")) {
             await deleteNotification(id);
+            return;
           }
         });
 
