@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
       exporting: { enabled: false },
       tooltip: {
         shared: true,
-        valueSuffix: " applications",
+        formatter: formatApplicationVolumeTooltip,
       },
       plotOptions: {
         column: {
@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         {
           name: "Approved",
-          data: [850, 920, 1020, 980, 1080, 1120, 1220, 1280],
+          data: [790, 860, 950, 900, 1000, 1040, 1130, 1180],
           color: "#4caf50",
         },
         {
@@ -56,11 +56,27 @@ document.addEventListener("DOMContentLoaded", () => {
           data: [77, 80, 90, 80, 90, 100, 110, 90],
           color: "#f44336",
         },
+        {
+          name: "Enrolled",
+          data: [60, 60, 70, 80, 80, 80, 90, 100],
+          color: "#9c27b0",
+        },
       ],
     });
   }
 
   // PIE CHART – APPLICATIONS BY COURSE
+  function formatApplicationVolumeTooltip() {
+    return this.points
+      .map(
+        (point) =>
+          `<span style="color:${point.color}">\u25CF</span> ${
+            point.series.name
+          }: <b>${point.y} application(s)</b>`
+      )
+      .join("<br/>");
+  }
+
   if (document.getElementById("application-course-chart")) {
     Highcharts.chart("application-course-chart", {
       chart: {
@@ -217,4 +233,3 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-

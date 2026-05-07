@@ -777,7 +777,7 @@
             },
             tooltip: {
               shared: true,
-              valueSuffix: " application(s)",
+              formatter: formatApplicationVolumeTooltip,
             },
             series: [
               {
@@ -799,6 +799,11 @@
                 name: "Rejected",
                 data: dailyVolume.rejected,
                 color: "#f44336",
+              },
+              {
+                name: "Enrolled",
+                data: dailyVolume.enrolled,
+                color: "#9c27b0",
               },
             ],
           });
@@ -874,16 +879,16 @@
               totalApplicants: 0,
               pending: 0,
               approved: 0,
+              enrolled: 0,
               rejected: 0,
             };
 
             bucket.totalApplicants += 1;
 
-            if (
-              enrollment.application_status === "Approved" ||
-              enrollment.application_status === "Enrolled"
-            ) {
+            if (enrollment.application_status === "Approved") {
               bucket.approved += 1;
+            } else if (enrollment.application_status === "Enrolled") {
+              bucket.enrolled += 1;
             } else if (enrollment.application_status === "Rejected") {
               bucket.rejected += 1;
             } else if (
@@ -907,8 +912,20 @@
             ),
             pending: sortedEntries.map((entry) => entry.pending),
             approved: sortedEntries.map((entry) => entry.approved),
+            enrolled: sortedEntries.map((entry) => entry.enrolled),
             rejected: sortedEntries.map((entry) => entry.rejected),
           };
+        }
+
+        function formatApplicationVolumeTooltip() {
+          return this.points
+            .map(
+              (point) =>
+                `<span style="color:${point.color}">\u25CF</span> ${
+                  point.series.name
+                }: <b>${point.y} application(s)</b>`,
+            )
+            .join("<br/>");
         }
 
         function buildCourseDistribution(enrollments) {
