@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
-import { getStudents, getStudentByID, submitEnrollment, getEnrollments, getRecentEnrollments, getEnrollmentApplicantDetails, getStudentProfile, updateStudentProfile, updateStudentReceipt, updateEnrollmentStatus, updateStudentStatus, updateStudentAccount, getRegistrarApprovalDrafts, saveRegistrarApprovalDraft, deleteRegistrarApprovalDraft, searchStudents } from '../controllers/studentController.js';
+import { getStudents, getStudentByID, submitEnrollment, getEnrollments, getRecentEnrollments, getEnrollmentApplicantDetails, getStudentProfile, updateStudentProfile, updateStudentReceipt, updateEnrollmentStatus, moveRejectedEnrollmentToTrash, restoreRejectedEnrollmentFromTrash, updateStudentStatus, updateStudentAccount, getRegistrarApprovalDrafts, saveRegistrarApprovalDraft, deleteRegistrarApprovalDraft, searchStudents } from '../controllers/studentController.js';
 import { ensureUploadsDir, uploadsDir } from '../config/uploadStorage.js';
 import { authenticateToken, requireRoles } from '../middlewares/authMiddleware.js';
 
@@ -46,6 +46,10 @@ router.get('/enrollments/details/:id', staffAccess, getEnrollmentApplicantDetail
 
 // UPDATE enrollment application status
 router.put('/enrollments/status', registrarOrAdminAccess, updateEnrollmentStatus);
+
+// MOVE rejected applicant to/from registrar trash
+router.put('/enrollments/rejected-trash', registrarAccess, moveRejectedEnrollmentToTrash);
+router.delete('/enrollments/rejected-trash', registrarAccess, restoreRejectedEnrollmentFromTrash);
 
 // UPDATE student account status
 router.put('/status', adminAccess, updateStudentStatus);

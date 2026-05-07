@@ -124,3 +124,9 @@ export const registrarApprovalDraftSchema = z.object({
   enrollmentId: z.union([z.string().trim(), z.number()]),
   studentId: z.union([z.string().trim(), z.number()]).optional(),
 });
+
+export const rejectedEnrollmentTrashSchema = z.object({
+  enrollmentId: z.union([z.string().trim(), z.number()]),
+  deletedBy: optionalTrimmedString,
+  deleteReason: optionalTrimmedString,
+});

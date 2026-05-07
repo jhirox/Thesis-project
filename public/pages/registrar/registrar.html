@@ -420,6 +420,7 @@
             <div class="card p-4 bg-primary-subtle shadow">
               <div class="mb-4">
                 <h6 class="mb-0 fw-bold fs-5">Rejected Applicants</h6>
+                <p class="text-white-50 small mb-0">Move rejected applicants to trash to keep this list clean.</p>
               </div>
                   <div class="table-responsive">
                     <table
@@ -461,6 +462,57 @@
                 >
                   <div id="rejected-records-summary" class="text-center text-white-50 small">
                     Waiting for rejected records...
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="px-4 py-3" id="rejected-trash-section">
+            <div class="card p-4 bg-primary-subtle shadow">
+              <div class="mb-4">
+                <h6 class="mb-0 fw-bold fs-5">Rejected Trash</h6>
+                <p class="text-white-50 small mb-0">Trashed rejected applicants are hidden after 14 days but remain in the database.</p>
+              </div>
+                  <div class="table-responsive">
+                    <table
+                      class="table table-bordered table-hover align-middle mb-0 student-records-table"
+                    >
+                      <thead class="table-header">
+                        <tr>
+                          <th scope="col" class="px-4 py-3 fw-bold text-white text-center">
+                            Student ID
+                          </th>
+                          <th scope="col" class="px-4 py-3 fw-bold text-white text-center">
+                            Name
+                          </th>
+                          <th scope="col" class="px-4 py-3 fw-bold text-white text-center">
+                            Program / Year
+                          </th>
+                          <th scope="col" class="px-4 py-3 fw-bold text-white text-center">
+                            Hidden After
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-4 py-3 fw-bold text-white text-center"
+                          >
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                  <tbody id="rejected-trash-tbody" class="table-body">
+                        <tr>
+                          <td colspan="5" class="px-4 py-5 text-center text-white-50">
+                            No trashed rejected applicants.
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                <div
+                  class="card-footer border-top border-secondary-subtle bg-transparent py-4"
+                >
+                  <div id="rejected-trash-summary" class="text-center text-white-50 small">
+                    No trashed rejected applicants.
                   </div>
                 </div>
               </div>
@@ -1294,10 +1346,13 @@
       const pendingRecordsSection = document.getElementById("pending-records-section");
       const approvedRecordsSection = document.getElementById("approved-records-section");
       const rejectedRecordsSection = document.getElementById("rejected-records-section");
+      const rejectedTrashSection = document.getElementById("rejected-trash-section");
       const approvedRecordsTbody = document.getElementById("approved-records-tbody");
       const approvedRecordsSummary = document.getElementById("approved-records-summary");
       const rejectedRecordsTbody = document.getElementById("rejected-records-tbody");
       const rejectedRecordsSummary = document.getElementById("rejected-records-summary");
+      const rejectedTrashTbody = document.getElementById("rejected-trash-tbody");
+      const rejectedTrashSummary = document.getElementById("rejected-trash-summary");
       const filterSearchInput = document.getElementById("filter-search");
       const filterCourseInput = document.getElementById("filter-course");
       const filterSemesterInput = document.getElementById("filter-year");
@@ -1349,6 +1404,25 @@
         const month = String(date.getMonth() + 1).padStart(2, "0");
         const day = String(date.getDate()).padStart(2, "0");
         return `${year}-${month}-${day}`;
+      }
+
+      function getReadableDateValue(value, fallback = "Not set") {
+        if (!value) return fallback;
+
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) {
+          return fallback;
+        }
+
+        return date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+      }
+
+      function isRejectedTrashRecord(record = {}) {
+        return Boolean(record.rejected_deleted_at);
       }
 
       function getWorkingStatus(value) {
@@ -1626,6 +1700,22 @@
         `;
       }
 
+      function renderRejectedTrashTableMessage(message) {
+        if (!rejectedTrashTbody) return;
+
+        if (rejectedTrashSummary) {
+          rejectedTrashSummary.textContent = message;
+        }
+
+        rejectedTrashTbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="px-4 py-5 text-center text-white-50">
+              ${escapeHtml(message)}
+            </td>
+          </tr>
+        `;
+      }
+
       function syncFilterOptions(records) {
         if (filterCourseInput) {
           const selected = filterCourseInput.value;
@@ -1741,6 +1831,39 @@
               <div class="student-records-actions">
                 <button type="button" class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
                 <button type="button" class="btn btn-sm btn-outline-secondary btn-revert-pending">Revert to Pending</button>
+                <button type="button" class="btn btn-sm btn-outline-light btn-trash-rejected">Move to Trash</button>
+              </div>
+            </td>
+          </tr>
+        `).join("");
+      }
+
+      function renderRejectedTrashRecords(records) {
+        if (!rejectedTrashTbody) return;
+
+        if (!records.length) {
+          renderRejectedTrashTableMessage("No trashed rejected applicants.");
+          return;
+        }
+
+        if (rejectedTrashSummary) {
+          rejectedTrashSummary.textContent = `Showing ${records.length} trashed rejected applicant(s). Hidden after 14 days.`;
+        }
+
+        rejectedTrashTbody.innerHTML = records.map((record) => `
+          <tr
+            data-enrollment-id="${escapeHtml(record.enrollment_id)}"
+            data-student-id="${escapeHtml(record.student_id)}"
+            data-section="rejected-trash"
+          >
+            <td class="px-4 py-3">${escapeHtml(record.student_id || "Not set")}</td>
+            <td class="px-4 py-3">${escapeHtml(record.full_name || "Not set")}</td>
+            <td class="px-4 py-3">${escapeHtml(getProgramYearLabel(record))}</td>
+            <td class="px-4 py-3">${escapeHtml(getReadableDateValue(record.rejected_delete_expires_at))}</td>
+            <td class="px-4 py-3 text-center">
+              <div class="student-records-actions">
+                <button type="button" class="btn btn-sm btn-outline-primary me-1 btn-view">View</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary btn-restore-rejected">Restore</button>
               </div>
             </td>
           </tr>
@@ -1754,6 +1877,10 @@
         const status = (filterStatusInput?.value || "").trim().toLowerCase();
 
         return registrarRecords.filter((record) => {
+          if (isRejectedTrashRecord(record)) {
+            return false;
+          }
+
           const studentId = String(record.student_id || "").toLowerCase();
           const fullName = String(record.full_name || "").toLowerCase();
           const program = String(record.program_label || "").toLowerCase();
@@ -1788,16 +1915,22 @@
         const pendingRecords = records.filter((record) => String(record.registrar_status || "").toLowerCase() === "pending");
         const approvedRecords = records.filter((record) => String(record.registrar_status || "").toLowerCase() === "enrolled");
         const rejectedRecords = records.filter((record) => String(record.registrar_status || "").toLowerCase() === "rejected");
+        const rejectedTrashRecords = registrarRecords.filter((record) =>
+          isRejectedTrashRecord(record) &&
+          String(record.registrar_status || "").toLowerCase() === "rejected"
+        );
         renderExportRecords();
 
         pendingRecordsSection?.classList.remove("d-none");
         approvedRecordsSection?.classList.remove("d-none");
         rejectedRecordsSection?.classList.remove("d-none");
+        rejectedTrashSection?.classList.remove("d-none");
 
         if (selectedStatus === "pending") {
           renderPendingRecords(pendingRecords);
           approvedRecordsSection?.classList.add("d-none");
           rejectedRecordsSection?.classList.add("d-none");
+          rejectedTrashSection?.classList.add("d-none");
           return;
         }
 
@@ -1805,11 +1938,13 @@
           renderApprovedRecords(approvedRecords);
           pendingRecordsSection?.classList.add("d-none");
           rejectedRecordsSection?.classList.add("d-none");
+          rejectedTrashSection?.classList.add("d-none");
           return;
         }
 
         if (selectedStatus === "rejected") {
           renderRejectedRecords(rejectedRecords);
+          renderRejectedTrashRecords(rejectedTrashRecords);
           pendingRecordsSection?.classList.add("d-none");
           approvedRecordsSection?.classList.add("d-none");
           return;
@@ -1818,6 +1953,7 @@
         renderPendingRecords(pendingRecords);
         renderApprovedRecords(approvedRecords);
         renderRejectedRecords(rejectedRecords);
+        renderRejectedTrashRecords(rejectedTrashRecords);
       }
 
       function updateRecordCache(updatedRecord) {
@@ -2058,6 +2194,51 @@
         return result.data;
       }
 
+      async function moveRejectedRecordToTrash(record) {
+        if (!record?.enrollment_id) return;
+
+        const response = await fetch("/api/students/enrollments/rejected-trash", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            enrollmentId: record.enrollment_id,
+            deleteReason: "Registrar moved rejected applicant to trash",
+          }),
+        });
+
+        const result = await response.json();
+        if (!response.ok || !result.success || !result.data) {
+          throw new Error(result.message || "Unable to move rejected applicant to trash.");
+        }
+
+        updateRecordCache(result.data);
+        return result.data;
+      }
+
+      async function restoreRejectedRecordFromTrash(record) {
+        if (!record?.enrollment_id) return;
+
+        const response = await fetch("/api/students/enrollments/rejected-trash", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            enrollmentId: record.enrollment_id,
+          }),
+        });
+
+        const result = await response.json();
+        if (!response.ok || !result.success || !result.data) {
+          throw new Error(result.message || "Unable to restore rejected applicant.");
+        }
+
+        updateRecordCache(result.data);
+        return result.data;
+      }
+
       async function ensureApprovedRecordsHaveDrafts(records = []) {
         const approvedRecordsWithoutDraft = records.filter((record) =>
           normalizeRegistrarStatus(record) === "Enrolled" && !hasRegistrarApprovalDraft(record)
@@ -2148,6 +2329,7 @@
         const detailScheduleBtn = document.getElementById("detailScheduleBtn");
         const detailPrintBtn = document.getElementById("detailPrintBtn");
         const detailRevertBtn = document.getElementById("detailRevertBtn");
+        const detailRestoreRejectedBtn = document.getElementById("detailRestoreRejectedBtn");
         const detailRejectBtn = document.getElementById("detailRejectBtn");
 
         detailApproveBtn?.addEventListener("click", function () {
@@ -2175,6 +2357,18 @@
           });
         });
 
+        detailRestoreRejectedBtn?.addEventListener("click", async function () {
+          if (!activeStudentRecord) return;
+
+          try {
+            await restoreRejectedRecordFromTrash(activeStudentProfile || activeStudentRecord);
+            alert("Rejected applicant has been restored.");
+          } catch (error) {
+            console.error("Error restoring rejected applicant:", error);
+            alert(error.message || "Unable to restore rejected applicant.");
+          }
+        });
+
         detailRejectBtn?.addEventListener("click", function () {
           if (!activeStudentRecord) return;
           handleRecordStatusChange(activeStudentRecord, "Rejected", {
@@ -2195,6 +2389,7 @@
         const normalizedRegistrarStatus = normalizeRegistrarStatus(profile);
         const isApproved = normalizedRegistrarStatus === "Enrolled";
         const isRejected = normalizedRegistrarStatus === "Rejected";
+        const isTrashed = isRejectedTrashRecord(profile);
         let detailsActionMarkup = `
             <button type="button" class="btn btn-success flex-fill" id="detailApproveBtn" ${isApproved ? "disabled" : ""}><i class="fa-solid fa-check me-2"></i>${isApproved ? "Approved" : "Approve Enrollment"}</button>
             <button type="button" class="btn btn-danger flex-fill" id="detailRejectBtn"><i class="fa-solid fa-times me-2"></i>Reject</button>
@@ -2210,6 +2405,13 @@
           detailsActionMarkup = `
             <button type="button" class="btn btn-outline-secondary flex-fill" id="detailRevertBtn"><i class="fa-solid fa-rotate-left me-2"></i>Revert to Pending</button>
           `;
+
+          if (isTrashed) {
+            detailsActionMarkup = `
+              <button type="button" class="btn btn-outline-secondary flex-fill" id="detailRestoreRejectedBtn"><i class="fa-solid fa-trash-arrow-up me-2"></i>Restore to Rejected</button>
+              <button type="button" class="btn btn-outline-primary flex-fill" id="detailRevertBtn"><i class="fa-solid fa-rotate-left me-2"></i>Revert to Pending</button>
+            `;
+          }
         }
 
         return `
@@ -2459,12 +2661,14 @@
         if (showLoading) {
           renderPendingTableMessage("Loading student records...");
           renderApprovedTableMessage("Loading approved applicants...");
+          renderRejectedTableMessage("Loading rejected applicants...");
+          renderRejectedTrashTableMessage("Loading rejected trash...");
         }
 
         try {
           const [, enrollmentsResponse] = await Promise.all([
             loadRegistrarApprovalDrafts(),
-            fetch("/api/students/enrollments/all?limit=500"),
+            fetch("/api/students/enrollments/all?limit=500&includeTrash=true"),
           ]);
           const result = await enrollmentsResponse.json();
 
@@ -2484,6 +2688,8 @@
           if (showLoading || !hasLoadedRegistrarRecordsOnce) {
             renderPendingTableMessage("Unable to load student records right now.");
             renderApprovedTableMessage("Unable to load approved applicants right now.");
+            renderRejectedTableMessage("Unable to load rejected applicants right now.");
+            renderRejectedTrashTableMessage("Unable to load rejected trash right now.");
           }
         } finally {
           registrarRefreshInFlight = false;
@@ -2543,6 +2749,26 @@
           return;
         }
 
+        if (event.target.closest(".btn-trash-rejected")) {
+          moveRejectedRecordToTrash(record)
+            .then(() => alert("Rejected applicant moved to trash for 14 days."))
+            .catch((error) => {
+              console.error("Error moving rejected applicant to trash:", error);
+              alert(error.message || "Unable to move rejected applicant to trash.");
+            });
+          return;
+        }
+
+        if (event.target.closest(".btn-restore-rejected")) {
+          restoreRejectedRecordFromTrash(record)
+            .then(() => alert("Rejected applicant has been restored."))
+            .catch((error) => {
+              console.error("Error restoring rejected applicant:", error);
+              alert(error.message || "Unable to restore rejected applicant.");
+            });
+          return;
+        }
+
         if (event.target.closest(".btn-schedule-record")) {
           activeStudentProfile = null;
           activeStudentRecord = record;
@@ -2566,6 +2792,7 @@
       studentRecordsTbody?.addEventListener("click", handleStudentRecordTableClick);
       approvedRecordsTbody?.addEventListener("click", handleStudentRecordTableClick);
       rejectedRecordsTbody?.addEventListener("click", handleStudentRecordTableClick);
+      rejectedTrashTbody?.addEventListener("click", handleStudentRecordTableClick);
 
       filterSearchInput?.addEventListener("keyup", applyFilters);
       filterCourseInput?.addEventListener("change", applyFilters);

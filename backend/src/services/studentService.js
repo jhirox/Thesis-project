@@ -20,6 +20,34 @@ const registrarApprovalDraftColumnDefinitions = {
 
 let registrarApprovalDraftSchemaReady = false;
 let studentAccountSchemaReady = false;
+let enrollmentTrashSchemaReady = false;
+
+async function ensureEnrollmentTrashSchema() {
+  if (enrollmentTrashSchemaReady) {
+    return;
+  }
+
+  const [columns] = await db.query("SHOW COLUMNS FROM enrollments");
+  const columnNames = new Set(columns.map((column) => column.Field));
+
+  if (!columnNames.has("rejected_deleted_at")) {
+    await db.query("ALTER TABLE enrollments ADD COLUMN rejected_deleted_at DATETIME NULL AFTER application_status");
+  }
+
+  if (!columnNames.has("rejected_deleted_by")) {
+    await db.query("ALTER TABLE enrollments ADD COLUMN rejected_deleted_by VARCHAR(150) NULL AFTER rejected_deleted_at");
+  }
+
+  if (!columnNames.has("rejected_delete_reason")) {
+    await db.query("ALTER TABLE enrollments ADD COLUMN rejected_delete_reason VARCHAR(255) NULL AFTER rejected_deleted_by");
+  }
+
+  if (!columnNames.has("rejected_delete_expires_at")) {
+    await db.query("ALTER TABLE enrollments ADD COLUMN rejected_delete_expires_at DATETIME NULL AFTER rejected_delete_reason");
+  }
+
+  enrollmentTrashSchemaReady = true;
+}
 
 async function ensureStudentAccountSchema() {
   if (studentAccountSchemaReady) {
@@ -138,7 +166,13 @@ export async function submitEnrollment(payload) {
 }
 
 export async function findEnrollments(query) {
+  await ensureEnrollmentTrashSchema();
+
   const { limit, offset } = normalizePagination(query, { defaultLimit: 50, maxLimit: 200 });
+  const includeTrash = String(query?.includeTrash || "").toLowerCase() === "true";
+  const trashFilter = includeTrash
+    ? "(e.rejected_deleted_at IS NULL OR e.rejected_delete_expires_at > NOW())"
+    : "e.rejected_deleted_at IS NULL";
 
   const [data] = await db.query(
     `SELECT
@@ -154,6 +188,10 @@ export async function findEnrollments(query) {
       e.enrollment_date,
       e.queue_number,
       e.application_status,
+      e.rejected_deleted_at,
+      e.rejected_deleted_by,
+      e.rejected_delete_reason,
+      e.rejected_delete_expires_at,
       e.special_remarks,
       e.official_receipt_number,
       e.official_receipt_file_url,
@@ -174,12 +212,13 @@ export async function findEnrollments(query) {
     FROM enrollments e
     LEFT JOIN students s ON e.student_id = s.student_id
     LEFT JOIN programs p ON e.program_id = p.program_id
+    WHERE ${trashFilter}
     ORDER BY e.created_at DESC
     LIMIT ? OFFSET ?`,
     [limit, offset]
   );
 
-  const [[countResult]] = await db.query("SELECT COUNT(*) AS total FROM enrollments");
+  const [[countResult]] = await db.query(`SELECT COUNT(*) AS total FROM enrollments e WHERE ${trashFilter}`);
 
   return {
     total: Number(countResult.total || 0),
@@ -190,6 +229,8 @@ export async function findEnrollments(query) {
 }
 
 export async function findRecentEnrollments(query) {
+  await ensureEnrollmentTrashSchema();
+
   const { limit, offset } = normalizePagination(query, { defaultLimit: 5, maxLimit: 20 });
 
   const [data] = await db.query(
@@ -206,6 +247,10 @@ export async function findRecentEnrollments(query) {
       e.enrollment_date,
       e.queue_number,
       e.application_status,
+      e.rejected_deleted_at,
+      e.rejected_deleted_by,
+      e.rejected_delete_reason,
+      e.rejected_delete_expires_at,
       e.special_remarks,
       e.official_receipt_number,
       e.official_receipt_file_url,
@@ -225,6 +270,7 @@ export async function findRecentEnrollments(query) {
     FROM enrollments e
     LEFT JOIN students s ON e.student_id = s.student_id
     LEFT JOIN programs p ON e.program_id = p.program_id
+    WHERE e.rejected_deleted_at IS NULL
     ORDER BY e.created_at DESC
     LIMIT ? OFFSET ?`,
     [limit, offset]
@@ -238,6 +284,8 @@ export async function findRecentEnrollments(query) {
 }
 
 export async function findEnrollmentApplicantDetails(id) {
+  await ensureEnrollmentTrashSchema();
+
   const [rows] = await db.query(
     `SELECT
       e.enrollment_id,
@@ -252,6 +300,10 @@ export async function findEnrollmentApplicantDetails(id) {
       e.enrollment_date,
       e.queue_number,
       e.application_status,
+      e.rejected_deleted_at,
+      e.rejected_deleted_by,
+      e.rejected_delete_reason,
+      e.rejected_delete_expires_at,
       e.special_remarks,
       e.official_receipt_number,
       e.official_receipt_file_url,
@@ -827,6 +879,8 @@ export async function updateStudentReceipt(payload) {
 }
 
 export async function updateEnrollmentStatus(payload) {
+  await ensureEnrollmentTrashSchema();
+
   const enrollmentId = Number.parseInt(payload.enrollmentId, 10);
 
   if (!Number.isInteger(enrollmentId) || enrollmentId <= 0) {
@@ -835,13 +889,79 @@ export async function updateEnrollmentStatus(payload) {
 
   const [result] = await db.query(
     `UPDATE enrollments
-    SET application_status = ?, updated_at = NOW()
+    SET
+      application_status = ?,
+      rejected_deleted_at = NULL,
+      rejected_deleted_by = NULL,
+      rejected_delete_reason = NULL,
+      rejected_delete_expires_at = NULL,
+      updated_at = NOW()
     WHERE enrollment_id = ?`,
     [payload.applicationStatus, enrollmentId]
   );
 
   if (result.affectedRows === 0) {
     throw new Error("Enrollment record not found.");
+  }
+
+  return findEnrollmentApplicantDetails(enrollmentId);
+}
+
+export async function moveRejectedEnrollmentToTrash(payload) {
+  await ensureEnrollmentTrashSchema();
+
+  const enrollmentId = Number.parseInt(payload.enrollmentId, 10);
+
+  if (!Number.isInteger(enrollmentId) || enrollmentId <= 0) {
+    throw new Error("A valid enrollment id is required to move rejected applicant to trash.");
+  }
+
+  const [result] = await db.query(
+    `UPDATE enrollments
+    SET
+      rejected_deleted_at = NOW(),
+      rejected_deleted_by = ?,
+      rejected_delete_reason = ?,
+      rejected_delete_expires_at = DATE_ADD(NOW(), INTERVAL 14 DAY),
+      updated_at = NOW()
+    WHERE enrollment_id = ?
+      AND application_status = 'Rejected'
+      AND rejected_deleted_at IS NULL`,
+    [payload.deletedBy || null, payload.deleteReason || null, enrollmentId]
+  );
+
+  if (result.affectedRows === 0) {
+    throw new Error("Rejected enrollment record not found or already in trash.");
+  }
+
+  return findEnrollmentApplicantDetails(enrollmentId);
+}
+
+export async function restoreRejectedEnrollmentFromTrash(payload) {
+  await ensureEnrollmentTrashSchema();
+
+  const enrollmentId = Number.parseInt(payload.enrollmentId, 10);
+
+  if (!Number.isInteger(enrollmentId) || enrollmentId <= 0) {
+    throw new Error("A valid enrollment id is required to restore rejected applicant.");
+  }
+
+  const [result] = await db.query(
+    `UPDATE enrollments
+    SET
+      rejected_deleted_at = NULL,
+      rejected_deleted_by = NULL,
+      rejected_delete_reason = NULL,
+      rejected_delete_expires_at = NULL,
+      updated_at = NOW()
+    WHERE enrollment_id = ?
+      AND application_status = 'Rejected'
+      AND rejected_deleted_at IS NOT NULL`,
+    [enrollmentId]
+  );
+
+  if (result.affectedRows === 0) {
+    throw new Error("Trashed rejected enrollment record not found.");
   }
 
   return findEnrollmentApplicantDetails(enrollmentId);

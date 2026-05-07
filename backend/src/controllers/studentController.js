@@ -3,6 +3,7 @@ import * as studentService from "../services/studentService.js";
 import { buildStoredFileUrl } from "../config/uploadStorage.js";
 import {
   registrarApprovalDraftSchema,
+  rejectedEnrollmentTrashSchema,
   submitEnrollmentSchema,
   updateEnrollmentStatusSchema,
   updateStudentAccountSchema,
@@ -161,6 +162,31 @@ export const updateEnrollmentStatus = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     message: "Enrollment status updated successfully",
+    data: enrollment,
+  });
+});
+
+export const moveRejectedEnrollmentToTrash = asyncHandler(async (req, res) => {
+  const payload = rejectedEnrollmentTrashSchema.parse({
+    ...req.body,
+    deletedBy: req.body?.deletedBy || req.user?.email || req.user?.username || req.user?.role,
+  });
+  const enrollment = await studentService.moveRejectedEnrollmentToTrash(payload);
+
+  res.status(200).json({
+    success: true,
+    message: "Rejected applicant moved to trash successfully",
+    data: enrollment,
+  });
+});
+
+export const restoreRejectedEnrollmentFromTrash = asyncHandler(async (req, res) => {
+  const payload = rejectedEnrollmentTrashSchema.parse(req.body);
+  const enrollment = await studentService.restoreRejectedEnrollmentFromTrash(payload);
+
+  res.status(200).json({
+    success: true,
+    message: "Rejected applicant restored successfully",
     data: enrollment,
   });
 });
