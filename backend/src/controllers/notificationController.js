@@ -40,6 +40,18 @@ export const getNotifications = asyncHandler(async (req, res) => {
   });
 });
 
+export const getStaffNotifications = asyncHandler(async (req, res) => {
+  const notifications = await notificationService.listStaffNotifications({
+    email: req.user?.email,
+    role: req.user?.role,
+  });
+
+  res.status(200).json({
+    success: true,
+    data: notifications,
+  });
+});
+
 export const markNotificationRead = asyncHandler(async (req, res) => {
   const payload = markNotificationReadSchema.parse({
     notificationId: req.params.id,
@@ -54,8 +66,15 @@ export const markNotificationRead = asyncHandler(async (req, res) => {
 });
 
 export const markAllNotificationsRead = asyncHandler(async (req, res) => {
-  const payload = clearNotificationsSchema.parse(req.body);
-  await notificationService.markAllNotificationsRead(payload.email);
+  if (req.body?.recipientType === "staff") {
+    await notificationService.markAllStaffNotificationsRead({
+      email: req.user?.email,
+      role: req.user?.role,
+    });
+  } else {
+    const payload = clearNotificationsSchema.parse(req.body);
+    await notificationService.markAllNotificationsRead(payload.email);
+  }
 
   res.status(200).json({
     success: true,
@@ -64,8 +83,15 @@ export const markAllNotificationsRead = asyncHandler(async (req, res) => {
 });
 
 export const clearNotifications = asyncHandler(async (req, res) => {
-  const payload = clearNotificationsSchema.parse(req.body);
-  await notificationService.clearNotificationsByEmail(payload.email);
+  if (req.body?.recipientType === "staff") {
+    await notificationService.clearStaffNotifications({
+      email: req.user?.email,
+      role: req.user?.role,
+    });
+  } else {
+    const payload = clearNotificationsSchema.parse(req.body);
+    await notificationService.clearNotificationsByEmail(payload.email);
+  }
 
   res.status(200).json({
     success: true,

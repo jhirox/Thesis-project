@@ -3,6 +3,7 @@ import Student from "../models/Student.js";
 import Enrollment from "../models/Enrollment.js";
 import ApplicationQueue from "../models/ApplicationQueue.js";
 import Lookup from "../models/Lookup.js";
+import { createDirectNotification, createStaffNotification } from "./notificationService.js";
 import {
   fullNameSql,
   latestEnrollmentJoinSql,
@@ -21,6 +22,14 @@ const registrarApprovalDraftColumnDefinitions = {
 let registrarApprovalDraftSchemaReady = false;
 let studentAccountSchemaReady = false;
 let enrollmentTrashSchemaReady = false;
+
+function notifyInBackground(task) {
+  Promise.resolve()
+    .then(task)
+    .catch((error) => {
+      console.error("Unable to create system notification:", error);
+    });
+}
 
 async function ensureEnrollmentTrashSchema() {
   if (enrollmentTrashSchemaReady) {
@@ -196,6 +205,33 @@ export async function submitEnrollment(payload) {
     await ApplicationQueue.addToQueue(connection, enrollmentId, queueNumber);
 
     await connection.commit();
+    notifyInBackground(async () => {
+      const studentName = [payload.firstName, payload.middleName, payload.lastName, payload.suffix]
+        .filter(Boolean)
+        .join(" ");
+      const programLabel = payload.program || "selected program";
+
+      await Promise.all([
+        createStaffNotification({
+          recipientRole: "admin",
+          enrollmentId,
+          studentId,
+          title: "New Application Submitted",
+          notificationType: "Application",
+          message: `${studentName || "A student"} submitted a new application for ${programLabel}.`,
+          actionUrl: "/application-evaluation",
+        }),
+        createStaffNotification({
+          recipientRole: "superadmin",
+          enrollmentId,
+          studentId,
+          title: "New Application Submitted",
+          notificationType: "Application",
+          message: `${studentName || "A student"} submitted a new application for ${programLabel}.`,
+          actionUrl: "/superadmin/application-evaluation",
+        }),
+      ]);
+    });
     return { studentId, enrollmentId, queueNumber };
   } catch (error) {
     await connection.rollback();
@@ -945,6 +981,12 @@ export async function updateEnrollmentStatus(payload) {
     throw new Error("A valid enrollment id is required to update status.");
   }
 
+  const [[previousEnrollment]] = await db.query(
+    "SELECT application_status FROM enrollments WHERE enrollment_id = ? LIMIT 1",
+    [enrollmentId]
+  );
+  const previousStatus = String(previousEnrollment?.application_status || "").trim();
+
   const [result] = await db.query(
     `UPDATE enrollments
     SET
@@ -962,7 +1004,50 @@ export async function updateEnrollmentStatus(payload) {
     throw new Error("Enrollment record not found.");
   }
 
-  return findEnrollmentApplicantDetails(enrollmentId);
+  const updatedEnrollment = await findEnrollmentApplicantDetails(enrollmentId);
+  notifyInBackground(async () => {
+    const studentName = updatedEnrollment?.full_name || "Student";
+    const programLabel = updatedEnrollment?.program_code || updatedEnrollment?.program_name || "the application";
+
+    if (
+      payload.applicationStatus === "Approved" &&
+      ["Submitted", "Under Review", "Pending"].includes(previousStatus)
+    ) {
+      await createStaffNotification({
+        recipientRole: "registrar",
+        enrollmentId,
+        studentId: updatedEnrollment?.student_id || null,
+        title: "Application Approved",
+        notificationType: "Registrar Queue",
+        message: `${studentName}'s application for ${programLabel} was approved and is ready for registrar processing.`,
+        actionUrl: "/registrar",
+      });
+    }
+
+    if (payload.applicationStatus === "Rejected" && updatedEnrollment?.email_address) {
+      await createDirectNotification({
+        title: "Application Status Updated",
+        notificationType: "Application",
+        studentName,
+        studentEmail: updatedEnrollment.email_address,
+        message: `Hello ${studentName}, your application for ${programLabel} has been rejected. Please contact the school office for assistance.`,
+      });
+    }
+
+    if (payload.applicationStatus === "Enrolled") {
+      await createStaffNotification({
+        recipientRole: "admin",
+        enrollmentId,
+        studentId: updatedEnrollment?.student_id || null,
+        title: "Applicant Enrolled",
+        notificationType: "Enrollment",
+        message: `${studentName} has been enrolled by the registrar.`,
+        actionUrl: "/accounts",
+      });
+    }
+  });
+
+  return updatedEnrollment;
 }
 
 export async function moveRejectedEnrollmentToTrash(payload) {

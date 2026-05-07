@@ -1,16 +1,19 @@
 import db from "../config/db.js";
 import { notFound } from "../utils/httpError.js";
-import { findEnrollmentApplicantDetails } from "./studentService.js";
 import { isEmailDeliveryConfigured, sendEmail } from "./email.service.js";
 
 const notificationColumnDefinitions = {
   notification_id: "INT AUTO_INCREMENT PRIMARY KEY",
   enrollment_id: "INT NULL",
   student_id: "INT NULL",
-  student_email: "VARCHAR(255) NOT NULL",
+  student_email: "VARCHAR(255) NULL",
+  recipient_email: "VARCHAR(255) NULL",
+  recipient_role: "VARCHAR(50) NULL",
+  recipient_type: "VARCHAR(30) NOT NULL DEFAULT 'student'",
   title: "VARCHAR(255) NOT NULL",
   notification_type: "VARCHAR(100) NOT NULL",
   message: "TEXT NOT NULL",
+  action_url: "VARCHAR(255) NULL",
   appointment_date: "DATE NULL",
   appointment_time: "VARCHAR(20) NULL",
   includes_soft_copy: "TINYINT(1) NOT NULL DEFAULT 0",
@@ -476,10 +479,14 @@ async function ensureNotificationsTableShape() {
       notification_id INT AUTO_INCREMENT PRIMARY KEY,
       enrollment_id INT NULL,
       student_id INT NULL,
-      student_email VARCHAR(255) NOT NULL,
+      student_email VARCHAR(255) NULL,
+      recipient_email VARCHAR(255) NULL,
+      recipient_role VARCHAR(50) NULL,
+      recipient_type VARCHAR(30) NOT NULL DEFAULT 'student',
       title VARCHAR(255) NOT NULL,
       notification_type VARCHAR(100) NOT NULL,
       message TEXT NOT NULL,
+      action_url VARCHAR(255) NULL,
       appointment_date DATE NULL,
       appointment_time VARCHAR(20) NULL,
       includes_soft_copy TINYINT(1) NOT NULL DEFAULT 0,
@@ -502,6 +509,11 @@ async function ensureNotificationsTableShape() {
     }
   }
 
+  const studentEmailColumn = existingColumns.find((column) => column.Field === "student_email");
+  if (studentEmailColumn && studentEmailColumn.Null === "NO") {
+    await db.query("ALTER TABLE notifications MODIFY COLUMN student_email VARCHAR(255) NULL");
+  }
+
   // Older deployments may still have a required legacy type_id column.
   // The current app no longer writes to it, so relax the column to keep inserts working.
   if (
@@ -517,6 +529,7 @@ async function ensureNotificationsTableShape() {
 
 export async function createScheduleNotification(payload) {
   await ensureNotificationsTableShape();
+  const { findEnrollmentApplicantDetails } = await import("./studentService.js");
   const profile = await findEnrollmentApplicantDetails(payload.enrollmentId);
 
   if (!profile) {
@@ -547,9 +560,12 @@ export async function createScheduleNotification(payload) {
       enrollment_id,
       student_id,
       student_email,
+      recipient_email,
+      recipient_type,
       title,
       notification_type,
       message,
+      action_url,
       appointment_date,
       appointment_time,
       includes_soft_copy,
@@ -559,10 +575,11 @@ export async function createScheduleNotification(payload) {
       is_read,
       created_at,
       updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NOW(), NOW())`,
+    ) VALUES (?, ?, ?, ?, 'student', ?, ?, ?, '/notifications', ?, ?, ?, ?, ?, ?, 0, NOW(), NOW())`,
     [
       payload.enrollmentId,
       profile.student_id || payload.studentId || null,
+      payload.studentEmail,
       payload.studentEmail,
       notificationTitle,
       notificationType,
@@ -619,9 +636,12 @@ export async function createDirectNotification(payload) {
       enrollment_id,
       student_id,
       student_email,
+      recipient_email,
+      recipient_type,
       title,
       notification_type,
       message,
+      action_url,
       appointment_date,
       appointment_time,
       includes_soft_copy,
@@ -631,8 +651,9 @@ export async function createDirectNotification(payload) {
       is_read,
       created_at,
       updated_at
-    ) VALUES (NULL, NULL, ?, ?, ?, ?, ?, NULL, 0, NULL, ?, ?, 0, NOW(), NOW())`,
+    ) VALUES (NULL, NULL, ?, ?, 'student', ?, ?, ?, '/notifications', ?, NULL, 0, NULL, ?, ?, 0, NOW(), NOW())`,
     [
+      payload.studentEmail,
       payload.studentEmail,
       payload.title,
       notificationType,
@@ -674,6 +695,58 @@ export async function createDirectNotification(payload) {
   };
 }
 
+export async function createStaffNotification(payload = {}) {
+  await ensureNotificationsTableShape();
+
+  const recipientRole = String(payload.recipientRole || "").trim().toLowerCase();
+  const recipientEmail = String(payload.recipientEmail || "").trim().toLowerCase() || null;
+
+  if (!recipientRole && !recipientEmail) {
+    throw new Error("recipientRole or recipientEmail is required for staff notification.");
+  }
+
+  const [result] = await db.query(
+    `INSERT INTO notifications (
+      enrollment_id,
+      student_id,
+      student_email,
+      recipient_email,
+      recipient_role,
+      recipient_type,
+      title,
+      notification_type,
+      message,
+      action_url,
+      appointment_date,
+      appointment_time,
+      includes_soft_copy,
+      soft_copy_payload,
+      email_delivery_status,
+      email_delivery_message,
+      is_read,
+      created_at,
+      updated_at
+    ) VALUES (?, ?, NULL, ?, ?, 'staff', ?, ?, ?, ?, NULL, NULL, 0, NULL, 'skipped', 'Staff inbox notification only.', 0, NOW(), NOW())`,
+    [
+      payload.enrollmentId || null,
+      payload.studentId || null,
+      recipientEmail,
+      recipientRole || null,
+      payload.title || "System Notification",
+      payload.notificationType || "System",
+      payload.message || "",
+      payload.actionUrl || "/staff-notifications",
+    ]
+  );
+
+  return {
+    notificationId: result.insertId,
+    title: payload.title || "System Notification",
+    type: payload.notificationType || "System",
+    message: payload.message || "",
+  };
+}
+
 export async function listNotificationsByEmail(email) {
   await ensureNotificationsTableShape();
   const [rows] = await db.query(
@@ -682,9 +755,13 @@ export async function listNotificationsByEmail(email) {
       enrollment_id,
       student_id,
       student_email,
+      recipient_email,
+      recipient_role,
+      recipient_type,
       title,
       notification_type,
       message,
+      action_url,
       appointment_date,
       appointment_time,
       includes_soft_copy,
@@ -695,9 +772,50 @@ export async function listNotificationsByEmail(email) {
       created_at,
       updated_at
     FROM notifications
-    WHERE student_email = ?
+    WHERE student_email = ? OR recipient_email = ?
     ORDER BY created_at DESC`,
-    [email]
+    [email, email]
+  );
+
+  return rows;
+}
+
+export async function listStaffNotifications({ email, role } = {}) {
+  await ensureNotificationsTableShape();
+  const normalizedEmail = String(email || "").trim().toLowerCase();
+  const normalizedRole = String(role || "").trim().toLowerCase();
+
+  const [rows] = await db.query(
+    `SELECT
+      notification_id,
+      enrollment_id,
+      student_id,
+      student_email,
+      recipient_email,
+      recipient_role,
+      recipient_type,
+      title,
+      notification_type,
+      message,
+      action_url,
+      appointment_date,
+      appointment_time,
+      includes_soft_copy,
+      soft_copy_payload,
+      email_delivery_status,
+      email_delivery_message,
+      is_read,
+      created_at,
+      updated_at
+    FROM notifications
+    WHERE recipient_type = 'staff'
+      AND (
+        (? <> '' AND recipient_email = ?)
+        OR (? <> '' AND recipient_role = ?)
+        OR (? IN ('superadmin', 'super admin') AND recipient_role IN ('superadmin', 'super admin'))
+      )
+    ORDER BY created_at DESC`,
+    [normalizedEmail, normalizedEmail, normalizedRole, normalizedRole, normalizedRole]
   );
 
   return rows;
@@ -727,9 +845,45 @@ export async function markAllNotificationsRead(email) {
   );
 }
 
+export async function markAllStaffNotificationsRead({ email, role } = {}) {
+  await ensureNotificationsTableShape();
+  const normalizedEmail = String(email || "").trim().toLowerCase();
+  const normalizedRole = String(role || "").trim().toLowerCase();
+
+  await db.query(
+    `UPDATE notifications
+    SET is_read = 1, updated_at = NOW()
+    WHERE recipient_type = 'staff'
+      AND is_read = 0
+      AND (
+        (? <> '' AND recipient_email = ?)
+        OR (? <> '' AND recipient_role = ?)
+        OR (? IN ('superadmin', 'super admin') AND recipient_role IN ('superadmin', 'super admin'))
+      )`,
+    [normalizedEmail, normalizedEmail, normalizedRole, normalizedRole, normalizedRole]
+  );
+}
+
 export async function clearNotificationsByEmail(email) {
   await ensureNotificationsTableShape();
   await db.query("DELETE FROM notifications WHERE student_email = ?", [email]);
+}
+
+export async function clearStaffNotifications({ email, role } = {}) {
+  await ensureNotificationsTableShape();
+  const normalizedEmail = String(email || "").trim().toLowerCase();
+  const normalizedRole = String(role || "").trim().toLowerCase();
+
+  await db.query(
+    `DELETE FROM notifications
+    WHERE recipient_type = 'staff'
+      AND (
+        (? <> '' AND recipient_email = ?)
+        OR (? <> '' AND recipient_role = ?)
+        OR (? IN ('superadmin', 'super admin') AND recipient_role IN ('superadmin', 'super admin'))
+      )`,
+    [normalizedEmail, normalizedEmail, normalizedRole, normalizedRole, normalizedRole]
+  );
 }
 
 export async function deleteNotification(notificationId) {

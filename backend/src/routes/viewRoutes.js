@@ -101,6 +101,7 @@ adminPages.forEach(page => {
 });
 
 router.get("/registrar", requireRoles("registrar", "superadmin", "super admin"), serve('registrar', 'registrar'));
+router.get("/staff-notifications", requireRoles("admin", "registrar", "superadmin", "super admin"), serve('staff', 'notifications'));
 
 // --- SUPERADMIN ---
 router.get("/superadmin", requireRoles("superadmin", "super admin"), serve('superadmin', 'superadmin'));

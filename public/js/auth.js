@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
       '/profile',
       '/enrollment-form',
       '/notifications',
+      '/staff-notifications',
       '/registrar',
       '/dashboard',
       '/accounts',
@@ -106,6 +107,10 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
+    if (hasValidSession && ['admin', 'registrar', 'superadmin', 'super admin'].includes(role)) {
+      installStaffNotificationBell();
+    }
+
     // For homepage, require login unless in guest mode
     if (currentPath === '/' && !hasValidSession && !guestMode) {
       window.location.replace('/login');
@@ -124,6 +129,61 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 });
+
+function installStaffNotificationBell() {
+  const navbar = document.querySelector('.app-header .navbar-nav.ms-auto');
+  if (!navbar || navbar.querySelector('[data-staff-notification-link]')) {
+    return;
+  }
+
+  const userMenu = navbar.querySelector('.user-menu');
+  const item = document.createElement('li');
+  item.className = 'nav-item';
+  item.innerHTML = `
+    <a class="nav-link position-relative" href="/staff-notifications" data-staff-notification-link title="Notification inbox">
+      <i class="fa-regular fa-bell"></i>
+      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" data-staff-notification-badge></span>
+    </a>
+  `;
+
+  if (userMenu) {
+    navbar.insertBefore(item, userMenu);
+  } else {
+    navbar.prepend(item);
+  }
+
+  refreshStaffNotificationBadge();
+}
+
+async function refreshStaffNotificationBadge() {
+  const badge = document.querySelector('[data-staff-notification-badge]');
+  if (!badge) {
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/notifications/staff');
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || 'Unable to load staff notifications.');
+    }
+
+    const unreadCount = (Array.isArray(result.data) ? result.data : []).filter((notification) =>
+      notification?.is_read !== 1 && String(notification?.is_read).toLowerCase() !== 'true'
+    ).length;
+
+    if (unreadCount > 0) {
+      badge.textContent = unreadCount > 9 ? '9+' : String(unreadCount);
+      badge.classList.remove('d-none');
+    } else {
+      badge.textContent = '';
+      badge.classList.add('d-none');
+    }
+  } catch (error) {
+    badge.textContent = '';
+    badge.classList.add('d-none');
+  }
+}
 
 // ======================
 // LOGOUT FUNCTION

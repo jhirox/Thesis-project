@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Staff Notifications</title>
+    <link rel="icon" href="/assets/images/logo.png" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="/vendor/adminlte/css/adminlte.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body class="layout-fixed sidebar-expand-lg bg-body-tertiary page-staff-notifications">
+    <div class="app-wrapper">
+      <nav class="app-header navbar navbar-expand bg-primary-subtle shadow" data-bs-theme="dark">
+        <div class="container-fluid">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="staffNotificationsBackLink">
+                <i class="fa-solid fa-arrow-left me-2"></i>Back
+              </a>
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link active position-relative" href="/staff-notifications" data-staff-notification-link>
+                <i class="fa-regular fa-bell"></i>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="sign-out">
+                <i class="fa-solid fa-right-from-bracket me-1"></i>Logout
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <main class="app-main bg-primary-subtle text-white">
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-8">
+                <h3 class="mb-1">Notification Inbox</h3>
+                <p class="text-white-50 mb-0">System alerts for applications, approvals, registrar updates, and account activity.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="app-content">
+          <div class="staff-notification-shell mx-4 mb-4">
+            <div class="staff-notification-toolbar">
+              <div>
+                <h5 class="fw-bold mb-1">Inbox</h5>
+                <p class="text-white-50 mb-0" id="staffNotificationCount">Loading notifications...</p>
+              </div>
+              <div class="staff-notification-actions">
+                <button class="btn btn-outline-light btn-sm" type="button" id="staffMarkAllReadBtn">
+                  <i class="fa-solid fa-check-double me-1"></i>Mark all as read
+                </button>
+                <button class="btn btn-outline-danger btn-sm" type="button" id="staffClearBtn">
+                  <i class="fa-solid fa-trash me-1"></i>Clear
+                </button>
+              </div>
+            </div>
+
+            <div class="staff-notification-tabs" role="tablist">
+              <button class="staff-notification-tab is-active" type="button" data-staff-filter="all">All</button>
+              <button class="staff-notification-tab" type="button" data-staff-filter="unread">Unread</button>
+              <button class="staff-notification-tab" type="button" data-staff-filter="application">Applications</button>
+              <button class="staff-notification-tab" type="button" data-staff-filter="registrar">Registrar</button>
+            </div>
+
+            <div id="staffNotificationsList" class="staff-notification-list">
+              <div class="text-center text-white-50 py-5">Loading notifications...</div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      let staffNotifications = [];
+      let staffFilter = "all";
+
+      function getSessionRole() {
+        try {
+          const session = JSON.parse(localStorage.getItem("sessionUser") || "{}");
+          return String(session?.user?.role || session?.role || "").trim().toLowerCase();
+        } catch {
+          return "";
+        }
+      }
+
+      function getRoleHome() {
+        const role = getSessionRole();
+        if (role === "registrar") return "/registrar";
+        if (role === "superadmin" || role === "super admin") return "/superadmin";
+        return "/dashboard";
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function isRead(notification) {
+        return notification?.is_read === 1 || String(notification?.is_read).toLowerCase() === "true";
+      }
+
+      function formatDate(value) {
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return "Just now";
+        return date.toLocaleString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+        });
+      }
+
+      function getFilteredNotifications() {
+        if (staffFilter === "unread") {
+          return staffNotifications.filter((item) => !isRead(item));
+        }
+        if (staffFilter === "application") {
+          return staffNotifications.filter((item) => String(item.notification_type || "").toLowerCase().includes("application"));
+        }
+        if (staffFilter === "registrar") {
+          return staffNotifications.filter((item) => {
+            const type = String(item.notification_type || "").toLowerCase();
+            const title = String(item.title || "").toLowerCase();
+            return type.includes("registrar") || title.includes("registrar") || type.includes("enrollment");
+          });
+        }
+        return staffNotifications;
+      }
+
+      function renderStaffNotifications() {
+        const list = document.getElementById("staffNotificationsList");
+        const count = document.getElementById("staffNotificationCount");
+        if (!list || !count) return;
+
+        const filtered = getFilteredNotifications();
+        const unreadCount = staffNotifications.filter((item) => !isRead(item)).length;
+        count.textContent = `${staffNotifications.length} notification(s), ${unreadCount} unread`;
+
+        if (!filtered.length) {
+          list.innerHTML = `
+            <div class="staff-notification-empty">
+              <i class="fa-regular fa-bell-slash"></i>
+              <h5>No notifications</h5>
+              <p>You're all caught up for this view.</p>
+            </div>
+          `;
+          return;
+        }
+
+        list.innerHTML = filtered.map((notification) => {
+          const unread = !isRead(notification);
+          const actionUrl = notification.action_url || getRoleHome();
+          return `
+            <article class="staff-notification-item ${unread ? "is-unread" : ""}" data-id="${escapeHtml(notification.notification_id)}">
+              <div class="staff-notification-icon">
+                <i class="fa-regular ${unread ? "fa-envelope" : "fa-envelope-open"}"></i>
+              </div>
+              <div class="staff-notification-content">
+                <div class="staff-notification-heading">
+                  <h6>${escapeHtml(notification.title || "Notification")}</h6>
+                  <span>${escapeHtml(formatDate(notification.created_at))}</span>
+                </div>
+                <p>${escapeHtml(notification.message || "")}</p>
+                <div class="staff-notification-meta">
+                  <span>${escapeHtml(notification.notification_type || "System")}</span>
+                  ${unread ? "<span>Unread</span>" : "<span>Read</span>"}
+                </div>
+              </div>
+              <div class="staff-notification-item-actions">
+                <a class="btn btn-sm btn-outline-info" href="${escapeHtml(actionUrl)}">Open</a>
+                ${unread ? '<button class="btn btn-sm btn-outline-light btn-staff-read" type="button">Mark read</button>' : ""}
+                <button class="btn btn-sm btn-outline-danger btn-staff-delete" type="button">Delete</button>
+              </div>
+            </article>
+          `;
+        }).join("");
+      }
+
+      async function loadStaffNotifications() {
+        const response = await fetch("/api/notifications/staff");
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || "Unable to load notifications.");
+        }
+        staffNotifications = Array.isArray(result.data) ? result.data : [];
+        renderStaffNotifications();
+      }
+
+      async function markNotificationRead(id) {
+        await fetch(`/api/notifications/${encodeURIComponent(id)}/read`, { method: "PATCH" });
+        staffNotifications = staffNotifications.map((item) =>
+          String(item.notification_id) === String(id) ? { ...item, is_read: 1 } : item
+        );
+        renderStaffNotifications();
+      }
+
+      async function deleteNotification(id) {
+        await fetch(`/api/notifications/${encodeURIComponent(id)}`, { method: "DELETE" });
+        staffNotifications = staffNotifications.filter((item) => String(item.notification_id) !== String(id));
+        renderStaffNotifications();
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("staffNotificationsBackLink")?.setAttribute("href", getRoleHome());
+        document.querySelectorAll("[data-staff-filter]").forEach((button) => {
+          button.addEventListener("click", () => {
+            staffFilter = button.dataset.staffFilter || "all";
+            document.querySelectorAll("[data-staff-filter]").forEach((tab) => tab.classList.remove("is-active"));
+            button.classList.add("is-active");
+            renderStaffNotifications();
+          });
+        });
+
+        document.getElementById("staffMarkAllReadBtn")?.addEventListener("click", async () => {
+          await fetch("/api/notifications/read-all", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ recipientType: "staff" }),
+          });
+          staffNotifications = staffNotifications.map((item) => ({ ...item, is_read: 1 }));
+          renderStaffNotifications();
+        });
+
+        document.getElementById("staffClearBtn")?.addEventListener("click", async () => {
+          if (!window.confirm("Clear all staff notifications for your role?")) return;
+          await fetch("/api/notifications", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ recipientType: "staff" }),
+          });
+          staffNotifications = [];
+          renderStaffNotifications();
+        });
+
+        document.getElementById("staffNotificationsList")?.addEventListener("click", async (event) => {
+          const item = event.target.closest("[data-id]");
+          if (!item) return;
+          const id = item.dataset.id;
+          if (event.target.closest(".btn-staff-read")) {
+            await markNotificationRead(id);
+          }
+          if (event.target.closest(".btn-staff-delete")) {
+            await deleteNotification(id);
+          }
+        });
+
+        loadStaffNotifications().catch((error) => {
+          console.error(error);
+          document.getElementById("staffNotificationsList").innerHTML = `
+            <div class="alert alert-danger mb-0">${escapeHtml(error.message || "Unable to load notifications.")}</div>
+          `;
+        });
+      });
+    </script>
+    <script src="/js/auth.js"></script>
+  </body>
+</html>
