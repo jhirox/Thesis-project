@@ -3211,8 +3211,9 @@
         scheduleModalOrigin = "record";
         const detailModal = bootstrap.Modal.getInstance(studentDetailsModalEl);
         const scheduleModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('scheduleAppointmentModal'));
+        const isDetailModalOpen = Boolean(detailModal && studentDetailsModalEl?.classList.contains("show"));
 
-        if (detailModal) {
+        if (isDetailModalOpen) {
           // Blur the active element to prevent focus retention on hidden modal
           if (document.activeElement) {
             document.activeElement.blur();
