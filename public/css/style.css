@@ -2668,6 +2668,49 @@ span .icon:hover {
   height: 42px;
 }
 
+.account-student-modal {
+  background-color: #12395b;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.account-student-modal .modal-header,
+.account-student-modal .modal-footer {
+  background: transparent;
+}
+
+.account-student-modal .text-muted {
+  color: rgba(219, 231, 255, 0.72) !important;
+}
+
+.account-student-modal .form-label {
+  color: rgba(255, 255, 255, 0.88);
+  font-weight: 600;
+}
+
+.account-student-modal__control {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  color: #ffffff !important;
+}
+
+.account-student-modal__control:focus {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(110, 168, 254, 0.75) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.2);
+}
+
+.account-student-modal__control:read-only {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: rgba(255, 255, 255, 0.78) !important;
+}
+
+.account-student-modal__control option {
+  background: #12395b;
+  color: #ffffff;
+}
+
 .account-action-cell {
   width: 1%;
   min-width: 12.5rem;
