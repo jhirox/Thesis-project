@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       title: { text: "" },
       xAxis: {
-        categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
+        categories: [""],
         labels: { style: { color: "#ffffff" } },
       },
       yAxis: {
@@ -38,27 +38,27 @@ document.addEventListener("DOMContentLoaded", () => {
       series: [
         {
           name: "Total Applications",
-          data: [1247, 1310, 1450, 1390, 1520, 1600, 1750, 1820],
+          data: [1820],
           color: "#2196f3",
         },
         {
           name: "Approved",
-          data: [790, 860, 950, 900, 1000, 1040, 1130, 1180],
+          data: [1180],
           color: "#4caf50",
         },
         {
           name: "Pending",
-          data: [320, 310, 340, 330, 350, 380, 420, 450],
+          data: [450],
           color: "#ff9800",
         },
         {
           name: "Rejected",
-          data: [77, 80, 90, 80, 90, 100, 110, 90],
+          data: [90],
           color: "#f44336",
         },
         {
           name: "Enrolled",
-          data: [60, 60, 70, 80, 80, 80, 90, 100],
+          data: [100],
           color: "#9c27b0",
         },
       ],
