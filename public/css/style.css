@@ -2668,6 +2668,55 @@ span .icon:hover {
   height: 42px;
 }
 
+.page-acc #overview-pagination,
+.page-acc #active-pagination,
+.page-acc #inactive-pagination {
+  justify-content: center;
+}
+
+.accounts-pagination-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+}
+
+.accounts-pagination-nav {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.accounts-pagination-nav .pagination {
+  gap: 0.45rem !important;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.accounts-pagination-nav .page-item {
+  margin: 0 0.12rem !important;
+}
+
+.accounts-pagination-nav .page-link {
+  min-width: 2.4rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 0.7rem;
+  text-align: center;
+}
+
+.accounts-pagination-nav .page-item:first-child .page-link,
+.accounts-pagination-nav .page-item:last-child .page-link {
+  border-radius: 0.7rem !important;
+}
+
+.accounts-pagination-nav .page-item.disabled .page-link {
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: rgba(255, 255, 255, 0.55) !important;
+  opacity: 1;
+}
+
 .account-student-modal {
   background-color: #12395b;
   border: 1px solid rgba(255, 255, 255, 0.12);

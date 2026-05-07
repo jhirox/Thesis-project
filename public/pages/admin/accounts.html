@@ -1504,6 +1504,9 @@
 
         // Create pagination HTML
         let paginationHtml = `
+          <div class="accounts-pagination-stack">
+            <nav class="accounts-pagination-nav" aria-label="Accounts pagination">
+              <ul class="pagination pagination-sm mb-0">
           <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
             <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" data-page="${currentPage - 1}" data-table="${tableId}" aria-label="Previous">
               <span aria-hidden="true">&laquo;</span>
@@ -1560,9 +1563,12 @@
             <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" data-page="${currentPage + 1}" data-table="${tableId}" aria-label="Next">
               <span aria-hidden="true">&raquo;</span>
             </a>
-          </li>`;
+          </li>
+              </ul>
+            </nav>
+          </div>`;
 
-        paginationContainer.querySelector('.pagination').innerHTML = paginationHtml;
+        paginationContainer.innerHTML = paginationHtml;
 
         // Add click event listeners
         paginationContainer.querySelectorAll('.page-link').forEach(link => {
