@@ -2705,6 +2705,13 @@ span .icon:hover {
   text-align: center;
 }
 
+.accounts-pagination-nav .page-item.active .page-link {
+  background: #1b74ff !important;
+  border-color: #1b74ff !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 20px rgba(27, 116, 255, 0.22);
+}
+
 .accounts-pagination-nav .page-item:first-child .page-link,
 .accounts-pagination-nav .page-item:last-child .page-link {
   border-radius: 0.7rem !important;
