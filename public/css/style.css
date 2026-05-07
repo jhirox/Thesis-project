@@ -2875,13 +2875,13 @@ span .icon:hover {
 }
 
 .evaluation-pagination-nav .pagination {
-  gap: 0.45rem;
+  gap: 0.45rem !important;
   flex-wrap: wrap;
   justify-content: center;
 }
 
 .evaluation-pagination-nav .page-item {
-  margin: 0 0.12rem;
+  margin: 0 0.12rem !important;
 }
 
 .evaluation-pagination-nav .page-link {
