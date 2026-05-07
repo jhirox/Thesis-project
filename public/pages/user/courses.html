@@ -557,10 +557,14 @@
       // Search + filter
       const searchEl = document.getElementById("courseSearch");
       const filterEl = document.getElementById("programFilter");
-      searchEl.addEventListener("input", applyFilters);
-      filterEl.addEventListener("change", applyFilters);
+      if (searchEl && filterEl) {
+        searchEl.addEventListener("input", applyFilters);
+        filterEl.addEventListener("change", applyFilters);
+      }
 
       function applyFilters() {
+        if (!searchEl || !filterEl) return;
+
         const q = searchEl.value.toLowerCase().trim();
         const filter = filterEl.value;
         const cards = document.querySelectorAll("#coursesGrid .col");
