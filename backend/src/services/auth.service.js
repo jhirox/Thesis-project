@@ -18,6 +18,18 @@ class AuthService {
     if (!columnNames.has("updated_at")) {
       await db.query("ALTER TABLE users ADD COLUMN updated_at DATETIME NULL AFTER created_date");
     }
+
+    if (!columnNames.has("last_login_at")) {
+      await db.query("ALTER TABLE users ADD COLUMN last_login_at DATETIME NULL AFTER updated_at");
+    }
+
+    if (!columnNames.has("auto_deactivated_at")) {
+      await db.query("ALTER TABLE users ADD COLUMN auto_deactivated_at DATETIME NULL AFTER last_login_at");
+    }
+
+    if (!columnNames.has("auto_deactivated_reason")) {
+      await db.query("ALTER TABLE users ADD COLUMN auto_deactivated_reason VARCHAR(255) NULL AFTER auto_deactivated_at");
+    }
   }
 
   async findRoleId(roleName) {
@@ -270,6 +282,8 @@ class AuthService {
 
   // ... signup method ...
   async signup(email, password) {
+    await this.ensureStaffAccountShape();
+
     // 1. Get role (Can be cached in memory if it doesn't change often)
     const [roleRows] = await db.query(
       "SELECT id FROM role WHERE role_name IN ('user', 'student') ORDER BY FIELD(role_name, 'user', 'student') LIMIT 1"
@@ -311,6 +325,16 @@ class AuthService {
 
     const isValid = await bcrypt.compare(password, user.passkey);
     if (!isValid) throw new Error('Invalid credentials');
+
+    await db.query(
+      `UPDATE users
+       SET last_login_at = NOW(),
+           updated_at = NOW(),
+           auto_deactivated_at = NULL,
+           auto_deactivated_reason = NULL
+       WHERE user_id = ?`,
+      [user.user_id]
+    );
 
     // 3. Token Generation
     const token = jwt.sign(

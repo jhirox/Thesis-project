@@ -2810,6 +2810,29 @@ span .icon:hover {
   width: auto;
 }
 
+.account-status-stack {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.account-activity-badge {
+  font-size: 0.72rem;
+  padding: 0.28rem 0.55rem;
+}
+
+.account-activity-badge--dormant {
+  background: #ffc107;
+  color: #18213a;
+}
+
+.account-activity-badge--auto {
+  background: #dc3545;
+  color: #ffffff;
+}
+
 .account-action-icon {
   width: 2.5rem;
   height: 2.5rem;

@@ -1208,6 +1208,8 @@
         return {
           row,
           studentId: row.dataset.studentId || "",
+          activityStatus: row.dataset.activityStatus || "",
+          inactivityDays: row.dataset.inactivityDays || "",
           photoSrc: photo?.getAttribute("src") || "/assets/images/lancephoto.png",
           photoAlt: photo?.getAttribute("alt") || "Student photo",
           name: row.querySelector(".fw-semibold")?.textContent?.trim() || "",
@@ -1215,7 +1217,7 @@
           course: cells[1]?.textContent?.trim() || "",
           studentType: cells[2]?.textContent?.trim() || "",
           lastLogin: cells[3]?.textContent?.trim() || "",
-          status,
+          status: row.dataset.status || status,
         };
       }
 
@@ -1234,7 +1236,9 @@
         document.getElementById("accountDetailsCourse").textContent = account.course;
         document.getElementById("accountDetailsType").textContent = account.studentType;
         document.getElementById("accountDetailsLastLogin").textContent = account.lastLogin;
-        document.getElementById("accountDetailsStatus").textContent = account.status;
+        document.getElementById("accountDetailsStatus").textContent = [account.status, account.activityStatus]
+          .filter((value) => value && value !== "Current")
+          .join(" - ") || account.status;
         updateStatusActionButton(document.getElementById("accountDetailsStatusButton"), account.status);
       }
 
@@ -1356,8 +1360,12 @@
           cells[3].textContent = nextAccount.lastLogin;
         }
         if (cells[4]) {
-          cells[4].innerHTML = buildStatusBadge(nextAccount.status);
+          cells[4].innerHTML = buildStatusBadge(nextAccount);
         }
+
+        row.dataset.status = nextAccount.status;
+        row.dataset.activityStatus = nextAccount.activityStatus || "Current";
+        row.dataset.inactivityDays = nextAccount.inactivityDays || 0;
 
         updateStatusActionButton(row.querySelector(".btn-toggle-account-status"), nextAccount.status);
       }
@@ -1381,12 +1389,21 @@
         button.classList.add(isInactive ? (isModalButton ? "btn-success" : "btn-outline-success") : (isModalButton ? "btn-warning" : "btn-outline-warning"));
       }
 
-      function buildStatusBadge(status) {
+      function buildStatusBadge(accountOrStatus) {
+        const account = typeof accountOrStatus === "object" ? accountOrStatus : { status: accountOrStatus };
+        const status = account.status || "Active";
+        const activityStatus = account.activityStatus || "Current";
+        const inactivityDays = Number(account.inactivityDays || 0);
         const isInactive = status.toLowerCase() === "inactive";
         const badgeClass = isInactive ? "status-inactive bg-secondary" : "status-active bg-success";
         const label = isInactive ? "Inactive" : "Active";
+        const activityBadge = activityStatus === "Dormant"
+          ? `<span class="status-badge account-activity-badge account-activity-badge--dormant" title="${escapeHtml(inactivityDays)} day(s) without login">Dormant 1y+</span>`
+          : activityStatus === "Auto Deactivated"
+            ? `<span class="status-badge account-activity-badge account-activity-badge--auto" title="${escapeHtml(inactivityDays)} day(s) without login">Auto Deactivated</span>`
+            : "";
 
-        return `<span class="status-badge ${badgeClass}">${label}</span>`;
+        return `<span class="account-status-stack"><span class="status-badge ${badgeClass}">${label}</span>${activityBadge}</span>`;
       }
 
       function findAccountRowsByEmail(email) {
@@ -1426,6 +1443,8 @@
         const fullName = student.full_name || [student.first_name, student.middle_name, student.last_name, student.suffix]
           .filter(Boolean)
           .join(" ");
+        const activityStatus = student.account_activity_status || "Current";
+        const inactivityDays = Number(student.inactivity_days || 0);
 
         return {
           studentId: student.student_id || "",
@@ -1433,7 +1452,9 @@
           email: student.email_address || "",
           course: student.program_code || student.program_name || "Not assigned",
           studentType: student.student_type || student.year_level || "Not set",
-          lastLogin: formatAccountDate(student.updated_at || student.created_date),
+          lastLogin: formatAccountDate(student.last_login_at),
+          activityStatus,
+          inactivityDays,
           status,
           photoSrc: student.photo || "/assets/images/lancephoto.png",
           photoAlt: `${fullName || "Student"} photo`,
@@ -1598,7 +1619,13 @@
         const borderClass = index === accountData.length - 1 ? "" : "border-bottom border-secondary-subtle";
 
         return `
-          <tr class="${borderClass}" data-student-id="${escapeHtml(account.studentId)}">
+          <tr
+            class="${borderClass}"
+            data-student-id="${escapeHtml(account.studentId)}"
+            data-status="${escapeHtml(account.status)}"
+            data-activity-status="${escapeHtml(account.activityStatus || "Current")}"
+            data-inactivity-days="${escapeHtml(account.inactivityDays || 0)}"
+          >
             <td class="px-4 py-3">
               <div class="d-flex align-items-center">
                 <img
@@ -1615,7 +1642,7 @@
             <td class="px-4 py-3 fw-semibold">${escapeHtml(account.course)}</td>
             <td class="px-4 py-3 fw-semibold">${escapeHtml(account.studentType)}</td>
             <td class="px-4 py-3 fw-semibold">${escapeHtml(account.lastLogin)}</td>
-            <td class="px-4 py-3">${buildStatusBadge(account.status)}</td>
+            <td class="px-4 py-3">${buildStatusBadge(account)}</td>
             <td class="px-4 py-3 text-center account-action-cell">
               <div class="account-actions account-actions--buttons justify-content-center">
                 <button class="btn btn-outline-light btn-sm btn-view-account" type="button">View</button>
@@ -1766,9 +1793,10 @@
           }
 
           const statusText = cells[4]?.textContent?.trim().toLowerCase() || "";
+          const storedStatus = row.dataset.status?.trim().toLowerCase() || statusText;
           uniqueAccounts.set(email, {
             email,
-            status: statusText.includes("inactive") ? "inactive" : "active",
+            status: storedStatus.includes("inactive") ? "inactive" : "active",
             lastLogin: cells[3]?.textContent?.trim() || "",
           });
         });

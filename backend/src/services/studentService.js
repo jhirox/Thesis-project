@@ -69,7 +69,47 @@ async function ensureStudentAccountSchema() {
     await db.query("ALTER TABLE users ADD COLUMN updated_at DATETIME NULL AFTER created_date");
   }
 
+  if (!columnNames.has("last_login_at")) {
+    await db.query("ALTER TABLE users ADD COLUMN last_login_at DATETIME NULL AFTER updated_at");
+  }
+
+  if (!columnNames.has("auto_deactivated_at")) {
+    await db.query("ALTER TABLE users ADD COLUMN auto_deactivated_at DATETIME NULL AFTER last_login_at");
+  }
+
+  if (!columnNames.has("auto_deactivated_reason")) {
+    await db.query("ALTER TABLE users ADD COLUMN auto_deactivated_reason VARCHAR(255) NULL AFTER auto_deactivated_at");
+  }
+
   studentAccountSchemaReady = true;
+}
+
+async function applyDormantStudentAccountPolicy() {
+  const [autoDeactivateResult] = await db.query(`
+    UPDATE users u
+    INNER JOIN role r ON r.id = u.role_id
+    SET
+      u.is_active = 0,
+      u.auto_deactivated_at = NOW(),
+      u.auto_deactivated_reason = 'No login activity for 2 years',
+      u.updated_at = NOW()
+    WHERE LOWER(r.role_name) IN ('user', 'student')
+      AND u.is_active = 1
+      AND COALESCE(u.last_login_at, u.created_date) <= DATE_SUB(NOW(), INTERVAL 2 YEAR)
+  `);
+
+  if (autoDeactivateResult.affectedRows > 0) {
+    await db.query(`
+      UPDATE students s
+      INNER JOIN users u ON LOWER(u.email) = LOWER(s.email_address)
+      SET
+        s.is_active = 0,
+        s.updated_at = NOW()
+      WHERE u.auto_deactivated_reason = 'No login activity for 2 years'
+        AND u.auto_deactivated_at IS NOT NULL
+        AND s.is_active = 1
+    `);
+  }
 }
 
 async function ensureRegistrarApprovalDraftsTableShape() {
@@ -358,6 +398,7 @@ export async function findEnrollmentApplicantDetails(id) {
 
 export async function findStudents(query) {
   await ensureStudentAccountSchema();
+  await applyDormantStudentAccountPolicy();
 
   const { limit, offset } = normalizePagination(query, { defaultLimit: 25, maxLimit: 100 });
   const { course, status, search } = query;
@@ -403,6 +444,15 @@ export async function findStudents(query) {
       s.contact_number,
       COALESCE(s.profile_photo_url, u.profile_image, '/assets/images/lancephoto.png') AS photo,
       CASE WHEN u.is_active = 1 THEN 'Active' ELSE 'Inactive' END AS enrollment_status,
+      u.last_login_at,
+      u.auto_deactivated_at,
+      u.auto_deactivated_reason,
+      CASE
+        WHEN u.is_active = 0 AND u.auto_deactivated_at IS NOT NULL THEN 'Auto Deactivated'
+        WHEN u.is_active = 1 AND COALESCE(u.last_login_at, u.created_date) <= DATE_SUB(NOW(), INTERVAL 1 YEAR) THEN 'Dormant'
+        ELSE 'Current'
+      END AS account_activity_status,
+      DATEDIFF(NOW(), COALESCE(u.last_login_at, u.created_date)) AS inactivity_days,
       e.enrollment_id,
       e.queue_number,
       e.year_level,
@@ -643,8 +693,14 @@ export async function updateStudentStatus(payload) {
 
     if (payload.email) {
       const [userResult] = await connection.query(
-        "UPDATE users SET is_active = ?, updated_at = NOW() WHERE email = ?",
-        [isActive, payload.email]
+        `UPDATE users
+        SET
+          is_active = ?,
+          auto_deactivated_at = CASE WHEN ? = 1 THEN NULL ELSE auto_deactivated_at END,
+          auto_deactivated_reason = CASE WHEN ? = 1 THEN NULL ELSE auto_deactivated_reason END,
+          updated_at = NOW()
+        WHERE email = ?`,
+        [isActive, isActive, isActive, payload.email]
       );
       affectedRows += userResult.affectedRows;
     }
@@ -696,9 +752,11 @@ export async function updateStudentAccount(payload) {
         SET email = ?,
             full_name = ?,
             is_active = ?,
+            auto_deactivated_at = CASE WHEN ? = 1 THEN NULL ELSE auto_deactivated_at END,
+            auto_deactivated_reason = CASE WHEN ? = 1 THEN NULL ELSE auto_deactivated_reason END,
             updated_at = NOW()
         WHERE user_id = ?`,
-        [payload.email, payload.fullName, isActive, userTarget.user_id]
+        [payload.email, payload.fullName, isActive, isActive, isActive, userTarget.user_id]
       );
     }
 
