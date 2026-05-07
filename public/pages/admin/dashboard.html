@@ -299,7 +299,7 @@
                   <div
                     class="d-flex justify-content-between align-items-center"
                   >
-                    <h6>Approved Today</h6>
+                    <h6>Approved</h6>
                     <span class="material-symbols-outlined text-success"
                       >check_circle</span
                     >
@@ -320,7 +320,7 @@
                   <div
                     class="d-flex justify-content-between align-items-center"
                   >
-                    <h6>Rejected Today</h6>
+                    <h6>Rejected</h6>
                     <span class="material-symbols-outlined text-danger"
                       >warning</span
                     >
@@ -610,16 +610,14 @@
               enrollment.application_status === "Submitted" ||
               enrollment.application_status === "Under Review",
           ).length;
-          const approvedToday = enrollments.filter(
+          const approvedApplications = enrollments.filter(
             (enrollment) =>
-              (enrollment.application_status === "Approved" ||
-                enrollment.application_status === "Enrolled") &&
-              isToday(enrollment.updated_at),
+              enrollment.application_status === "Approved" ||
+              enrollment.application_status === "Enrolled",
           ).length;
-          const rejectedToday = enrollments.filter(
+          const rejectedApplications = enrollments.filter(
             (enrollment) =>
-              enrollment.application_status === "Rejected" &&
-              isToday(enrollment.updated_at),
+              enrollment.application_status === "Rejected",
           ).length;
 
           document.querySelector(".card-total h3").textContent =
@@ -627,9 +625,9 @@
           document.querySelector(".card-pending h3").textContent =
             pendingReview.toLocaleString();
           document.querySelector(".card-approved h3").textContent =
-            approvedToday.toLocaleString();
+            approvedApplications.toLocaleString();
           document.querySelector(".card-rejected h3").textContent =
-            rejectedToday.toLocaleString();
+            rejectedApplications.toLocaleString();
 
           updateDashboardTrendCards(enrollments);
         }
@@ -674,28 +672,24 @@
               enrollment.application_status === "Under Review",
           ).length;
 
-          const currentApprovedToday = enrollments.filter(
+          const currentWeekApproved = currentWeekApplications.filter(
             (enrollment) =>
               (enrollment.application_status === "Approved" ||
-                enrollment.application_status === "Enrolled") &&
-              isToday(enrollment.updated_at),
+                enrollment.application_status === "Enrolled"),
           ).length;
-          const previousApprovedSameDay = enrollments.filter(
+          const previousWeekApproved = previousWeekApplications.filter(
             (enrollment) =>
               (enrollment.application_status === "Approved" ||
-                enrollment.application_status === "Enrolled") &&
-              isDaysAgo(enrollment.updated_at, 7),
+                enrollment.application_status === "Enrolled"),
           ).length;
 
-          const currentRejectedToday = enrollments.filter(
+          const currentWeekRejected = currentWeekApplications.filter(
             (enrollment) =>
-              enrollment.application_status === "Rejected" &&
-              isToday(enrollment.updated_at),
+              enrollment.application_status === "Rejected",
           ).length;
-          const previousRejectedSameDay = enrollments.filter(
+          const previousWeekRejected = previousWeekApplications.filter(
             (enrollment) =>
-              enrollment.application_status === "Rejected" &&
-              isDaysAgo(enrollment.updated_at, 7),
+              enrollment.application_status === "Rejected",
           ).length;
 
           if (totalTrendElement) {
@@ -712,14 +706,14 @@
           }
           if (approvedTrendElement) {
             approvedTrendElement.innerHTML = buildTrendMarkup(
-              currentApprovedToday,
-              previousApprovedSameDay,
+              currentWeekApproved,
+              previousWeekApproved,
             );
           }
           if (rejectedTrendElement) {
             rejectedTrendElement.innerHTML = buildTrendMarkup(
-              currentRejectedToday,
-              previousRejectedSameDay,
+              currentWeekRejected,
+              previousWeekRejected,
             );
           }
         }
