@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const role = String(parsedSessionUser?.user?.role || parsedSessionUser?.role || '').trim().toLowerCase();
     const roleHome = {
       admin: '/dashboard',
-      registrar: '/registrar/dashboard',
+      registrar: '/registrar',
       superadmin: '/superadmin/dashboard',
       'super admin': '/superadmin/dashboard',
       user: '/profile',
