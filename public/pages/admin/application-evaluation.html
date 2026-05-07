@@ -1912,7 +1912,7 @@
         const endItem = Math.min(currentStudentPage * ITEMS_PER_PAGE, totalItems);
 
         let paginationHtml = `
-          <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex justify-content-end align-items-center">
             <div class="text-muted">
               Showing ${startItem} to ${endItem} of ${totalItems} entries
             </div> <br>
@@ -1997,10 +1997,10 @@
         const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
         let paginationHtml = `
-          <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex justify-content-end align-items-center">
             <div class="text-muted">
               Showing ${startItem} to ${endItem} of ${totalItems} entries
-            </div> <br>
+            </div>
             <nav aria-label="Application pagination">
               <ul class="pagination pagination-sm mb-0">
         `;
