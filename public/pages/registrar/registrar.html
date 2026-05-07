@@ -256,6 +256,24 @@
         <!--end::App Content Header-->
         <!--begin::App Content-->
         <div class="app-content">
+          <div class="tabs-container mx-4 registrar-tabs-container" aria-label="Registrar record views">
+            <button class="tab-btn active" type="button" data-registrar-status-tab="">
+              All Records
+            </button>
+            <button class="tab-btn" type="button" data-registrar-status-tab="Pending">
+              Pending
+            </button>
+            <button class="tab-btn" type="button" data-registrar-status-tab="Approved">
+              Approved
+            </button>
+            <button class="tab-btn" type="button" data-registrar-status-tab="Rejected">
+              Rejected
+            </button>
+            <button class="tab-btn" type="button" data-registrar-status-tab="Trash">
+              Rejected Trash
+            </button>
+          </div>
+
           <!-- Filters Row -->
           <div class="px-4 py-3 mb-3">
             <div class="card p-4 bg-primary-subtle shadow">
@@ -301,6 +319,7 @@
                     <option>Pending</option>
                     <option>Approved</option>
                     <option>Rejected</option>
+                    <option>Trash</option>
                   </select>
                 </div>
                 <!-- <div class="col-12 col-sm-6 col-lg-3 d-flex align-items-end">
@@ -1356,6 +1375,7 @@
       const filterCourseInput = document.getElementById("filter-course");
       const filterSemesterInput = document.getElementById("filter-year");
       const filterStatusInput = document.getElementById("filter-status");
+      const registrarStatusTabs = document.querySelectorAll("[data-registrar-status-tab]");
 
       let registrarRecords = [];
       let activeStudentRecord = null;
@@ -1869,30 +1889,43 @@
         `).join("");
       }
 
-      function getFilteredRecords() {
+      function recordMatchesRegistrarFilters(record = {}) {
         const query = (filterSearchInput?.value || "").trim().toLowerCase();
         const course = (filterCourseInput?.value || "").trim().toLowerCase();
         const semester = (filterSemesterInput?.value || "").trim().toLowerCase();
+
+        const studentId = String(record.student_id || "").toLowerCase();
+        const fullName = String(record.full_name || "").toLowerCase();
+        const program = String(record.program_label || "").toLowerCase();
+        const recordSemester = String(record.year_label || "").toLowerCase();
+
+        if (query && !studentId.includes(query) && !fullName.includes(query)) {
+          return false;
+        }
+        if (course && program !== course) {
+          return false;
+        }
+        if (semester && recordSemester !== semester) {
+          return false;
+        }
+
+        return true;
+      }
+
+      function getFilteredRecords() {
         const status = (filterStatusInput?.value || "").trim().toLowerCase();
 
         return registrarRecords.filter((record) => {
-          if (isRejectedTrashRecord(record)) {
-            return false;
-          }
-
-          const studentId = String(record.student_id || "").toLowerCase();
-          const fullName = String(record.full_name || "").toLowerCase();
-          const program = String(record.program_label || "").toLowerCase();
-          const recordSemester = String(record.year_label || "").toLowerCase();
           const recordStatus = String(record.registrar_status || "").toLowerCase();
+          const isTrashRecord = isRejectedTrashRecord(record);
 
-          if (query && !studentId.includes(query) && !fullName.includes(query)) {
+          if (!recordMatchesRegistrarFilters(record)) {
             return false;
           }
-          if (course && program !== course) {
-            return false;
+          if (status === "trash") {
+            return isTrashRecord && recordStatus === "rejected";
           }
-          if (semester && recordSemester !== semester) {
+          if (isTrashRecord) {
             return false;
           }
           if (status) {
@@ -1908,6 +1941,15 @@
         });
       }
 
+      function syncRegistrarStatusTabs() {
+        const selectedStatus = (filterStatusInput?.value || "").trim().toLowerCase();
+
+        registrarStatusTabs.forEach((tab) => {
+          const tabStatus = String(tab.dataset.registrarStatusTab || "").trim().toLowerCase();
+          tab.classList.toggle("active", tabStatus === selectedStatus);
+        });
+      }
+
       function applyFilters() {
         const records = getFilteredRecords();
         const selectedStatus = (filterStatusInput?.value || "").trim().toLowerCase();
@@ -1916,8 +1958,10 @@
         const rejectedRecords = records.filter((record) => String(record.registrar_status || "").toLowerCase() === "rejected");
         const rejectedTrashRecords = registrarRecords.filter((record) =>
           isRejectedTrashRecord(record) &&
-          String(record.registrar_status || "").toLowerCase() === "rejected"
+          String(record.registrar_status || "").toLowerCase() === "rejected" &&
+          recordMatchesRegistrarFilters(record)
         );
+        syncRegistrarStatusTabs();
         renderExportRecords();
 
         pendingRecordsSection?.classList.remove("d-none");
@@ -1946,6 +1990,14 @@
           renderRejectedTrashRecords(rejectedTrashRecords);
           pendingRecordsSection?.classList.add("d-none");
           approvedRecordsSection?.classList.add("d-none");
+          return;
+        }
+
+        if (selectedStatus === "trash") {
+          renderRejectedTrashRecords(records);
+          pendingRecordsSection?.classList.add("d-none");
+          approvedRecordsSection?.classList.add("d-none");
+          rejectedRecordsSection?.classList.add("d-none");
           return;
         }
 
@@ -2797,6 +2849,13 @@
       filterCourseInput?.addEventListener("change", applyFilters);
       filterSemesterInput?.addEventListener("change", applyFilters);
       filterStatusInput?.addEventListener("change", applyFilters);
+      registrarStatusTabs.forEach((tab) => {
+        tab.addEventListener("click", function () {
+          if (!filterStatusInput) return;
+          filterStatusInput.value = tab.dataset.registrarStatusTab || "";
+          applyFilters();
+        });
+      });
 
       window.addEventListener("focus", refreshRegistrarRecordsSilently);
       document.addEventListener("visibilitychange", () => {
