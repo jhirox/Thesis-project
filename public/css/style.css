@@ -2847,6 +2847,50 @@ span .icon:hover {
   overflow-x: hidden;
 }
 
+#student-table-pagination,
+#approved-pagination,
+#enrolled-pagination,
+#pending-pagination,
+#rejected-pagination {
+  justify-content: center;
+}
+
+.evaluation-pagination-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+}
+
+.evaluation-pagination-summary {
+  width: 100%;
+  text-align: center;
+}
+
+.evaluation-pagination-nav {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.evaluation-pagination-nav .pagination {
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.evaluation-pagination-nav .page-item {
+  margin: 0 0.12rem;
+}
+
+.evaluation-pagination-nav .page-link {
+  min-width: 2.4rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 0.7rem;
+  text-align: center;
+}
+
 .queue-toolbar {
   display: flex;
   align-items: center;
