@@ -591,14 +591,14 @@
           real.style.transition = 'opacity 0.15s ease, visibility 0.15s ease';
         }
 
-        // Reveal both skeleton-hidden state and real content immediately
+        // Reveal both skeleton and real content after a short delay (slower than before)
         setTimeout(function () {
           hideSkeleton();
           if (real) {
             real.style.visibility = 'visible';
             real.style.opacity = '1';
           }
-        }, 50);
+        }, 600);
       });
 
       // Fallback: hide skeleton after 2 seconds regardless
