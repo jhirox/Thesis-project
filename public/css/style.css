@@ -3215,6 +3215,56 @@ span .icon:hover {
   transform: translateY(-1px);
 }
 
+.queue-filter-row {
+  display: grid;
+  grid-template-columns: minmax(9rem, auto) repeat(3, minmax(11rem, 1fr)) auto;
+  gap: 0.75rem;
+  align-items: end;
+  margin: 0.25rem 0 1rem;
+  padding: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.queue-filter-status,
+.queue-filter-field {
+  min-width: 0;
+}
+
+.queue-filter-status {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  min-height: 4.55rem;
+}
+
+.queue-filter-label,
+.queue-filter-field span {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.queue-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.queue-filter-row .form-select,
+.queue-filter-row .form-control {
+  min-height: 2.45rem;
+}
+
+.queue-filter-reset {
+  min-height: 2.45rem;
+  white-space: nowrap;
+}
+
 #queue-pagination .pagination {
   gap: 0.45rem;
   flex-wrap: wrap;
@@ -3395,6 +3445,14 @@ span .icon:hover {
   .queue-filter-btn {
     width: 100%;
     flex-basis: 100%;
+  }
+
+  .queue-filter-row {
+    grid-template-columns: 1fr;
+  }
+
+  .queue-filter-status {
+    min-height: auto;
   }
 
   .queue-card {

@@ -330,16 +330,46 @@
                     placeholder="Search by student name or application ID"
                     class="form-control queue-search"
                   />
-                  <!-- <select class="form-select">
-                    <option>Filter by Status</option>
-                    <option>Pending</option>
-                    <option>Under Review</option>
-                    <option>Completed</option>
-                  </select> -->
-                  <button class="btn btn-primary queue-filter-btn" data-bs-toggle="modal" data-bs-target="#filterModal">Filter
-                    <i class="fa-solid fa-filter"></i>
-                  </button>
                 </div>
+              </div>
+
+              <div class="queue-filter-row" aria-label="Application filters">
+                <div class="queue-filter-status" aria-label="Status filter">
+                  <span class="queue-filter-label">Status</span>
+                  <span class="badge bg-warning text-dark">Submitted</span>
+                  <input type="hidden" id="filterStatus" value="submitted" />
+                </div>
+                <label class="queue-filter-field" for="filterCourse">
+                  <span>Course</span>
+                  <select class="form-select" id="filterCourse">
+                    <option value="">All Courses</option>
+                    <option value="bscs">BSCS</option>
+                    <option value="bsba fm">BSBA FM</option>
+                    <option value="bsba hrdm">BSBA HRDM</option>
+                    <option value="bsba mkt">BSBA MKT</option>
+                    <option value="beed">BEED</option>
+                    <option value="bsed eng">BSED ENG</option>
+                    <option value="bsed fil">BSED FIL</option>
+                    <option value="bsed math">BSED MATH</option>
+                    <option value="bscrim">BSCRIM</option>
+                  </select>
+                </label>
+                <label class="queue-filter-field" for="filterWaitTime">
+                  <span>Wait Time</span>
+                  <select class="form-select" id="filterWaitTime">
+                    <option value="">All Wait Times</option>
+                    <option value="0-3">0-3 days</option>
+                    <option value="3-7">3-7 days</option>
+                    <option value="7+">7+ days</option>
+                  </select>
+                </label>
+                <label class="queue-filter-field" for="filterDate">
+                  <span>Submitted Date</span>
+                  <input type="date" class="form-control" id="filterDate">
+                </label>
+                <button type="button" class="btn btn-outline-light queue-filter-reset" id="resetQueueFilters">
+                  Reset
+                </button>
               </div>
 
               <div id="queue-cards-list">
@@ -401,62 +431,6 @@
       <!--end::Footer-->
     </div>
     <!--end::App Wrapper-->
-
-    <!-- Filter Modal -->
-    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-primary-subtle text-white">
-          <div class="modal-header border-bottom border-secondary-subtle">
-            <h1 class="modal-title fs-5" id="filterModalLabel">Filter Applications</h1>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <div class="mb-3">
-              <label for="filterStatus" class="form-label">Status</label>
-              <select class="form-select" id="filterStatus">
-                <option value="">All Status</option>
-                <option value="submitted">Submitted</option>
-                <option value="review">Under Review</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label for="filterCourse" class="form-label">Course</label>
-              <select class="form-select" id="filterCourse">
-                <option value="">All Courses</option>
-                <option value="bscs">BSCS</option>
-                <option value="bsba fm">BSBA FM</option>
-                <option value="bsba hrdm">BSBA HRDM</option>
-                <option value="bsba mkt">BSBA MKT</option>
-                <option value="beed">BEED</option>
-                <option value="bsed eng">BSED ENG</option>
-                <option value="bsed fil">BSED FIL</option>
-                <option value="bsed math">BSED MATH</option>
-                <option value="bscrim">BSCRIM</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label for="filterWaitTime" class="form-label">Wait Time</label>
-              <select class="form-select" id="filterWaitTime">
-                <option value="">All Wait Times</option>
-                <option value="0-3">0-3 days</option>
-                <option value="3-7">3-7 days</option>
-                <option value="7+">7+ days</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label for="filterDate" class="form-label">Submitted Date</label>
-              <input type="date" class="form-control" id="filterDate">
-            </div>
-          </div>
-          <div class="modal-footer border-top border-secondary-subtle">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
 
     <!-- Student Details Modal -->
     <div class="modal fade" id="studentDetailsModal" tabindex="-1" aria-labelledby="studentDetailsModalLabel" aria-hidden="true">
@@ -998,18 +972,20 @@
       }
 
       function applyFilters() {
-        currentQueuePage = 1; // Reset to first page when applying filters
+        currentQueuePage = 1;
         renderQueueCards(getFilteredQueueApplications(), currentQueuePage, ITEMS_PER_PAGE);
-        
-        // Close the modal
-        const modal = bootstrap.Modal.getInstance(document.getElementById('filterModal'));
-        if (modal) {
-          // Blur the active element to prevent focus retention on hidden modal
-          if (document.activeElement) {
-            document.activeElement.blur();
-          }
-          modal.hide();
-        }
+      }
+
+      function resetQueueFilters() {
+        const filterCourse = document.getElementById('filterCourse');
+        const filterWaitTime = document.getElementById('filterWaitTime');
+        const filterDate = document.getElementById('filterDate');
+
+        if (filterCourse) filterCourse.value = '';
+        if (filterWaitTime) filterWaitTime.value = '';
+        if (filterDate) filterDate.value = '';
+
+        applyFilters();
       }
 
       function buildStudentName(student = {}) {
@@ -1384,9 +1360,13 @@ function getDisplayValue(value, fallback = "Not set") {
         loadQueueData();
 
         document.querySelector('.queue-search')?.addEventListener('input', () => {
-          currentQueuePage = 1; // Reset to first page when searching
-          renderQueueCards(getFilteredQueueApplications(), currentQueuePage, ITEMS_PER_PAGE);
+          applyFilters();
         });
+
+        document.getElementById('filterCourse')?.addEventListener('change', applyFilters);
+        document.getElementById('filterWaitTime')?.addEventListener('change', applyFilters);
+        document.getElementById('filterDate')?.addEventListener('change', applyFilters);
+        document.getElementById('resetQueueFilters')?.addEventListener('click', resetQueueFilters);
 
         setTimeout(() => {
           const skeleton = document.getElementById("page-skeleton");
