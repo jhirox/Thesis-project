@@ -400,6 +400,19 @@
                 </div>
 
                 <div class="student-filter-bar__field">
+                  <label for="studentTypeFilter" class="form-label">Type of Student</label>
+                  <select id="studentTypeFilter" class="form-select">
+                    <option value="">All Types</option>
+                    <option value="New Regular Enrollee">New Regular Enrollee</option>
+                    <option value="Existing Regular">Existing Regular</option>
+                    <option value="Irregular Student">Irregular Student</option>
+                    <option value="College Transferee">College Transferee</option>
+                    <option value="Re-Entry / iCare">Re-Entry / iCare</option>
+                    <option value="Uniting Student / CPTP">Uniting Student / CPTP</option>
+                  </select>
+                </div>
+
+                <div class="student-filter-bar__field">
                   <label for="studentStatusFilter" class="form-label">Status</label>
                   <select id="studentStatusFilter" class="form-select">
                     <option value="">All Status</option>
@@ -804,11 +817,13 @@
 
       function getFilteredApplications() {
         const course = document.getElementById('studentCourseFilter')?.value;
+        const studentType = document.getElementById('studentTypeFilter')?.value;
         const status = document.getElementById('studentStatusFilter')?.value;
         const search = document.getElementById('studentSearchInput')?.value.trim().toLowerCase();
 
         return allApplications.filter((application) => {
           const applicationCourse = (application.program_code || application.program_name || '').toLowerCase();
+          const applicationStudentType = application.student_type || '';
           const applicationStatus = application.application_status || '';
           const applicationId = String(application.queue_number || `ENR-${application.enrollment_id}` || '').toLowerCase();
           const applicantName = (
@@ -817,10 +832,11 @@
           ).toLowerCase();
 
           const matchesCourse = !course || applicationCourse.includes(course.toLowerCase());
+          const matchesStudentType = !studentType || applicationStudentType === studentType;
           const matchesStatus = !status || applicationStatus === status;
           const matchesSearch = !search || applicantName.includes(search) || applicationId.includes(search);
 
-          return matchesCourse && matchesStatus && matchesSearch;
+          return matchesCourse && matchesStudentType && matchesStatus && matchesSearch;
         });
       }
 

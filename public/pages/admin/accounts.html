@@ -392,8 +392,12 @@
                       onchange="filterTable()"
                     >
                       <option value="">All Types</option>
-                      <option value="Regular">Regular</option>
-                      <option value="Irregular">Irregular</option>
+                      <option value="New Regular Enrollee">New Regular Enrollee</option>
+                      <option value="Existing Regular">Existing Regular</option>
+                      <option value="Irregular Student">Irregular Student</option>
+                      <option value="College Transferee">College Transferee</option>
+                      <option value="Re-Entry / iCare">Re-Entry / iCare</option>
+                      <option value="Uniting Student / CPTP">Uniting Student / CPTP</option>
                     </select>
                   </div>
                   <div class="col-md-2">
@@ -608,8 +612,12 @@
                       onchange="filterTableActive()"
                     >
                       <option value="">All Types</option>
-                      <option value="Regular">Regular</option>
-                      <option value="Irregular">Irregular</option>
+                      <option value="New Regular Enrollee">New Regular Enrollee</option>
+                      <option value="Existing Regular">Existing Regular</option>
+                      <option value="Irregular Student">Irregular Student</option>
+                      <option value="College Transferee">College Transferee</option>
+                      <option value="Re-Entry / iCare">Re-Entry / iCare</option>
+                      <option value="Uniting Student / CPTP">Uniting Student / CPTP</option>
                     </select>
                   </div>
                   <div class="col-md-2">
@@ -788,8 +796,12 @@
                       onchange="filterTableInactive()"
                     >
                       <option value="">All Types</option>
-                      <option value="Regular">Regular</option>
-                      <option value="Irregular">Irregular</option>
+                      <option value="New Regular Enrollee">New Regular Enrollee</option>
+                      <option value="Existing Regular">Existing Regular</option>
+                      <option value="Irregular Student">Irregular Student</option>
+                      <option value="College Transferee">College Transferee</option>
+                      <option value="Re-Entry / iCare">Re-Entry / iCare</option>
+                      <option value="Uniting Student / CPTP">Uniting Student / CPTP</option>
                     </select>
                   </div>
                   <div class="col-md-3">
@@ -986,8 +998,12 @@
                 <div class="col-md-6">
                   <label for="accountEditType" class="form-label">Type of Student</label>
                   <select class="form-select account-student-modal__control" id="accountEditType" required>
-                    <option value="Regular">Regular</option>
-                    <option value="Irregular">Irregular</option>
+                    <option value="New Regular Enrollee">New Regular Enrollee</option>
+                    <option value="Existing Regular">Existing Regular</option>
+                    <option value="Irregular Student">Irregular Student</option>
+                    <option value="College Transferee">College Transferee</option>
+                    <option value="Re-Entry / iCare">Re-Entry / iCare</option>
+                    <option value="Uniting Student / CPTP">Uniting Student / CPTP</option>
                   </select>
                 </div>
                 <div class="col-md-6">
@@ -1027,6 +1043,7 @@
     <script>
       let selectedAccountEmail = "";
       let accountData = [];
+      let filteredAccountData = [];
       let currentOverviewPage = 1;
       let currentActivePage = 1;
       let currentInactivePage = 1;
@@ -1213,7 +1230,7 @@
               ? { ...storedAccount, status: nextStatus }
               : storedAccount
           );
-          renderAccountTables(accountData);
+          applyAccountFilters({ resetPages: false });
         } catch (error) {
           console.error("Account status update failed:", error);
           alert(error.message || "Unable to update account status.");
@@ -1299,6 +1316,73 @@
         });
       }
 
+      function getAccountFilterValues(section = "overview") {
+        const suffix = section === "overview" ? "" : section.charAt(0).toUpperCase() + section.slice(1);
+
+        return {
+          section,
+          search: document.getElementById(`searchInput${suffix}`)?.value.trim().toLowerCase() || "",
+          course: document.getElementById(`courseFilter${suffix}`)?.value.trim() || "",
+          studentType: document.getElementById(`studentTypeFilter${suffix}`)?.value.trim() || "",
+        };
+      }
+
+      function accountMatchesFilters(account, filters) {
+        const haystack = `${account.name} ${account.email} ${account.studentId}`.toLowerCase();
+        const matchesSearch = !filters.search || haystack.includes(filters.search);
+        const matchesCourse = !filters.course || account.course === filters.course;
+        const matchesStudentType = !filters.studentType || account.studentType === filters.studentType;
+        const matchesSection =
+          filters.section === "active"
+            ? account.status.toLowerCase() === "active"
+            : filters.section === "inactive"
+              ? account.status.toLowerCase() === "inactive"
+              : true;
+
+        return matchesSearch && matchesCourse && matchesStudentType && matchesSection;
+      }
+
+      function applyAccountFilters({ section = getActiveAccountSection(), resetPages = true } = {}) {
+        const filters = getAccountFilterValues(section);
+        filteredAccountData = accountData.filter((account) => accountMatchesFilters(account, filters));
+
+        if (resetPages) {
+          currentOverviewPage = 1;
+          currentActivePage = 1;
+          currentInactivePage = 1;
+        }
+
+        renderAccountTables(filteredAccountData);
+      }
+
+      function getActiveAccountSection() {
+        return document.querySelector(".content-page:not(.d-none)")?.id || "overview";
+      }
+
+      function clearAccountFilters(section = "overview") {
+        const suffix = section === "overview" ? "" : section.charAt(0).toUpperCase() + section.slice(1);
+        ["searchInput", "courseFilter", "studentTypeFilter"].forEach((id) => {
+          const input = document.getElementById(`${id}${suffix}`);
+          if (input) {
+            input.value = "";
+          }
+        });
+
+        applyAccountFilters({ section });
+      }
+
+      window.applyAccountFilters = applyAccountFilters;
+      window.clearAccountFilters = clearAccountFilters;
+
+      if (typeof window.showPage === "function" && !window.showPage.__accountsFilterAware) {
+        const originalShowPage = window.showPage;
+        window.showPage = function showAccountPage(page) {
+          originalShowPage(page);
+          applyAccountFilters({ section: page });
+        };
+        window.showPage.__accountsFilterAware = true;
+      }
+
       async function loadAccountsFromApi() {
         setAccountTablesLoading();
 
@@ -1315,10 +1399,11 @@
           currentOverviewPage = 1;
           currentActivePage = 1;
           currentInactivePage = 1;
-          renderAccountTables(accountData);
+          applyAccountFilters({ resetPages: false });
         } catch (error) {
           console.error("Unable to load accounts:", error);
           accountData = [];
+          filteredAccountData = [];
           renderAccountTableError(error.message || "Unable to load student accounts.");
         }
       }
@@ -1494,7 +1579,7 @@
                   currentInactivePage = page;
                   break;
               }
-              renderAccountTables(accountData);
+              renderAccountTables(filteredAccountData);
             }
           });
         });

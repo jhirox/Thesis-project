@@ -4,6 +4,7 @@ import { buildStoredFileUrl } from "../config/uploadStorage.js";
 import {
   registrarApprovalDraftSchema,
   rejectedEnrollmentTrashSchema,
+  studentAccountFilterSchema,
   submitEnrollmentSchema,
   updateEnrollmentStatusSchema,
   updateStudentAccountSchema,
@@ -33,7 +34,8 @@ const applySelfServiceStudentScope = (req, payload = {}) => {
 };
 
 export const getStudents = asyncHandler(async (req, res) => {
-  const result = await studentService.findStudents(req.query);
+  const filters = studentAccountFilterSchema.parse(req.query);
+  const result = await studentService.findStudents(filters);
 
   res.status(200).json({
     success: true,
