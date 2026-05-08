@@ -527,7 +527,7 @@
               </div>
 
               <!-- Pagination -->
-              <div id="student-table-pagination" class="d-flex justify-content-center mt-3"></div>
+              <div id="student-table-pagination" class="d-flex justify-content-center mt-3" style="display: none;"></div>
             </div>
           </div>
 
@@ -1947,15 +1947,14 @@
 
         paginationContainer.style.display = 'block';
 
-        const startItem = (currentStudentPage - 1) * ITEMS_PER_PAGE + 1;
-        const endItem = Math.min(currentStudentPage * ITEMS_PER_PAGE, totalItems);
+        // Calculate pagination range (matches Accounts active/disabled logic)
+        const itemsPerPage = ITEMS_PER_PAGE;
+        const startItem = (currentStudentPage - 1) * itemsPerPage + 1;
+        const endItem = Math.min(currentStudentPage * itemsPerPage, totalItems);
 
         let paginationHtml = `
-          <div class="evaluation-pagination-stack">
-            <div class="evaluation-pagination-summary text-muted">
-              Showing ${startItem} to ${endItem} of ${totalItems} entries
-            </div>
-            <nav class="evaluation-pagination-nav" aria-label="Application pagination">
+          <div class="accounts-pagination-stack">
+            <nav class="accounts-pagination-nav" aria-label="All Applications pagination">
               <ul class="pagination pagination-sm mb-0">
         `;
 
@@ -2006,10 +2005,10 @@
         paginationContainer.innerHTML = paginationHtml;
 
         // Add event listeners
-        paginationContainer.querySelectorAll('.page-link').forEach(link => {
-          link.addEventListener('click', (e) => {
+        paginationContainer.querySelectorAll('.page-link').forEach((link) => {
+          link.addEventListener('click', function (e) {
             e.preventDefault();
-            const pageNum = parseInt(link.getAttribute('data-page'));
+            const pageNum = parseInt(this.getAttribute('data-page'));
             if (pageNum && pageNum >= 1 && pageNum <= totalPages) {
               currentStudentPage = pageNum;
               renderStudentTable(getFilteredApplications());
