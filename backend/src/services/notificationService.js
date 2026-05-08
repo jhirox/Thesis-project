@@ -455,16 +455,15 @@ function buildEmailHtml({ profile, appointmentDate, appointmentTime, customMessa
   `;
 }
 
-function buildDirectEmailHtml({ title, studentName, message, notificationType, appointmentDate }) {
+function buildDirectEmailHtml({ title, studentName, message, notificationType }) {
   return `
     <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #1f2937;">
       <h2 style="margin-bottom: 12px;">${title}</h2>
       <p>Hello ${studentName || "Student"},</p>
       <p>${message}</p>
       ${notificationType ? `<p><strong>Type:</strong> ${notificationType}</p>` : ""}
-      ${appointmentDate ? `<p><strong>Date:</strong> ${appointmentDate}</p>` : ""}
       <p>Thank you.</p>
-      <p><strong>QEC Registrar</strong></p>
+      <p><strong>QEC Admin Office</strong></p>
     </div>
   `;
 }
@@ -651,14 +650,13 @@ export async function createDirectNotification(payload) {
       is_read,
       created_at,
       updated_at
-    ) VALUES (NULL, NULL, ?, ?, 'student', ?, ?, ?, '/notifications', ?, NULL, 0, NULL, ?, ?, 0, NOW(), NOW())`,
+    ) VALUES (NULL, NULL, ?, ?, 'student', ?, ?, ?, '/notifications', NULL, NULL, 0, NULL, ?, ?, 0, NOW(), NOW())`,
     [
       payload.studentEmail,
       payload.studentEmail,
       payload.title,
       notificationType,
       payload.message,
-      payload.appointmentDate || null,
       initialEmailDeliveryStatus,
       initialEmailDeliveryMessage,
     ]
@@ -674,7 +672,6 @@ export async function createDirectNotification(payload) {
           studentName: payload.studentName,
           message: payload.message,
           notificationType,
-          appointmentDate: payload.appointmentDate,
         }),
       })
     : {
