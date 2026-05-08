@@ -30,7 +30,6 @@ export const createDirectNotificationSchema = z.object({
   studentName: optionalTrimmedString,
   studentEmail: trimmedString.email("A valid student email is required"),
   message: trimmedString.min(1, "message is required"),
-  appointmentDate: optionalTrimmedString,
 });
 
 export const listNotificationsSchema = z.object({

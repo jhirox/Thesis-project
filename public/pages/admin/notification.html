@@ -479,13 +479,6 @@
                     <!--end::Col-->
 
                     <!--begin::Col-->
-                    <div class="col-md-6">
-                      <label for="scheduleDate" class="fw-semibold mb-2">Schedule Date</label>
-                      <input type="text" class="form-control custom-input" id="scheduleDate" placeholder="dd/mm/yyyy" readonly="" aria-label="dd/mm/yyyy">
-                    </div>
-                    <!--end::Col-->
-
-                    <!--begin::Col-->
                     <div class="col-md-12">
                       <label class="message fw-semibold fs-5 mt-3 pb-2">Message</label>
                       <textarea
@@ -911,7 +904,6 @@
       const sendNowBtn = document.querySelector("#sendNotification .btn-dark.custom-btn");
       const draftTableBody = document.querySelector("#sendNotification table tbody");
       const draftEmailField = document.getElementById("studentEmail");
-      const scheduleDateField = document.getElementById("scheduleDate");
       const NOTIFICATION_DRAFTS_KEY = "notificationPageDrafts";
 
       let editingRow = null;
@@ -945,7 +937,6 @@
           type: row.cells[2]?.innerText || "",
           message: row.cells[3]?.innerText || "",
           studentEmail: row.dataset.studentEmail || "",
-          scheduleDate: row.dataset.scheduleDate || "",
           createdAt: row.dataset.createdAt || new Date().toISOString(),
         };
       }
@@ -986,7 +977,6 @@
           {
             id: draft.id,
             studentEmail: draft.studentEmail,
-            scheduleDate: draft.scheduleDate,
             createdAt: draft.createdAt,
             skipPersist: true,
           }
@@ -1017,9 +1007,8 @@
         return selectedType === "Select notifications type" ? "" : selectedType;
       }
 
-      async function sendNotificationToServer({ title, student, type, message, studentEmail, appointmentDate }) {
+      async function sendNotificationToServer({ title, student, type, message, studentEmail }) {
         const targetEmail = (studentEmail || draftEmailField?.value || "").trim();
-        const targetAppointmentDate = (appointmentDate || scheduleDateField?.value || "").trim();
 
         if (!targetEmail) {
           throw new Error("Please enter the student's email address.");
@@ -1035,7 +1024,6 @@
             studentName: student,
             studentEmail: targetEmail,
             message,
-            appointmentDate: targetAppointmentDate || null,
           }),
         });
 
@@ -1116,7 +1104,6 @@
         const row = draftTableBody.insertRow();
         row.dataset.draftId = options.id || createLocalId("draft");
         row.dataset.studentEmail = options.studentEmail || draftEmailField?.value.trim() || "";
-        row.dataset.scheduleDate = options.scheduleDate || scheduleDateField?.value.trim() || "";
         row.dataset.createdAt = options.createdAt || new Date().toISOString();
 
         [title, student, type, message].forEach((value) => {
@@ -1147,9 +1134,6 @@
         if (draftEmailField) {
           draftEmailField.value = row.dataset.studentEmail || "";
         }
-        if (scheduleDateField) {
-          scheduleDateField.value = row.dataset.scheduleDate || "";
-        }
         editingRow = row;
         setDraftButtonMode(true);
 
@@ -1175,7 +1159,6 @@
         const type = getSelectedNotificationType();
         const message = messageField.value.trim();
         const studentEmail = draftEmailField?.value.trim() || "";
-        const scheduleDate = scheduleDateField?.value.trim() || "";
 
         if (!title || !student || !type || !message) {
           alert("Please fill out all fields before saving.");
@@ -1189,12 +1172,11 @@
           editingRow.cells[2].innerText = type;
           editingRow.cells[3].innerText = message;
           editingRow.dataset.studentEmail = studentEmail;
-          editingRow.dataset.scheduleDate = scheduleDate;
           editingRow = null;
           setDraftButtonMode(false);
         } else {
           // Add new draft
-          addDraftRow(title, student, type, message, { studentEmail, scheduleDate });
+          addDraftRow(title, student, type, message, { studentEmail });
         }
 
         persistDraftTable();
@@ -1258,7 +1240,6 @@
         const type = row.cells[2].innerText;
         const message = row.cells[3].innerText;
         const studentEmail = row.dataset.studentEmail || "";
-        const appointmentDate = row.dataset.scheduleDate || "";
 
         if (!shouldProceedWithSend(student)) {
           return;
@@ -1272,7 +1253,7 @@
         }
 
         try {
-          const delivery = await sendNotificationToServer({ title, student, type, message, studentEmail, appointmentDate });
+          const delivery = await sendNotificationToServer({ title, student, type, message, studentEmail });
           alert(delivery.emailDeliveryStatus === "sent"
             ? `Notification emailed to ${student}.`
             : `Notification saved, but email status is ${delivery.emailDeliveryStatus || "unknown"}: ${delivery.emailDeliveryMessage || "No delivery message."}`);

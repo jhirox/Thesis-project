@@ -353,11 +353,17 @@
                 <div class="row g-3 mb-3">
                   <div class="col-sm-6">
                     <div class="border rounded-3 p-3 h-100 bg-light">
+                      <p class="text-muted small mb-1">Type</p>
+                      <p class="mb-0 fw-semibold" id="notificationViewType">General</p>
+                    </div>
+                  </div>
+                  <div class="col-sm-6 notification-appointment-detail">
+                    <div class="border rounded-3 p-3 h-100 bg-light">
                       <p class="text-muted small mb-1">Appointment Date</p>
                       <p class="mb-0 fw-semibold" id="notificationViewDate">Not set</p>
                     </div>
                   </div>
-                  <div class="col-sm-6">
+                  <div class="col-sm-6 notification-appointment-detail">
                     <div class="border rounded-3 p-3 h-100 bg-light">
                       <p class="text-muted small mb-1">Appointment Time</p>
                       <p class="mb-0 fw-semibold" id="notificationViewTime">Not set</p>
@@ -1217,6 +1223,13 @@
         return notification.includes_soft_copy ? "border-primary" : "border-secondary";
       }
 
+      function isAppointmentNotification(notification = {}) {
+        return Boolean(
+          notification.includes_soft_copy ||
+          String(notification.notification_type || "").toLowerCase() === "appointment"
+        );
+      }
+
       function getFilteredNotifications() {
         if (activeFilter === "unread") {
           return notificationsState.filter(isNotificationUnread);
@@ -1252,36 +1265,46 @@
         }
 
         emptyState.style.display = "none";
-        list.innerHTML = notifications.map((notification) => `
-          <div class="card shadow-sm border ${getImportantClass(notification)} mb-3 notification-item ${isNotificationRead(notification) ? "" : "unread"}" data-id="${notification.notification_id}">
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-start gap-3">
-                <div class="flex-grow-1">
-                  <div class="d-flex align-items-center gap-2 mb-2">
-                    <h5 class="mb-0 fw-bold">${escapeHtml(notification.title)}</h5>
-                    ${isNotificationRead(notification) ? "" : '<span class="badge bg-primary">New</span>'}
+        list.innerHTML = notifications.map((notification) => {
+          const isAppointment = isAppointmentNotification(notification);
+          const appointmentDetails = isAppointment
+            ? `
+              <div>Date: ${escapeHtml(notification.appointment_date || "Not set")}</div>
+              <div>Time: ${escapeHtml(notification.appointment_time || "Not set")}</div>
+              ${notification.includes_soft_copy ? "<div>Soft copy of enrollment form included.</div>" : ""}
+            `
+            : "";
+
+          return `
+            <div class="card shadow-sm border ${getImportantClass(notification)} mb-3 notification-item ${isNotificationRead(notification) ? "" : "unread"}" data-id="${notification.notification_id}">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start gap-3">
+                  <div class="flex-grow-1">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                      <h5 class="mb-0 fw-bold">${escapeHtml(notification.title)}</h5>
+                      ${isNotificationRead(notification) ? "" : '<span class="badge bg-primary">New</span>'}
+                    </div>
+                    <p class="mb-2 text-muted">${escapeHtml(truncateNotificationMessage(notification.message))}</p>
+                    <div class="small text-muted">
+                      <div>Type: ${escapeHtml(notification.notification_type || "General")}</div>
+                      ${appointmentDetails}
+                      <div>Email delivery: ${escapeHtml(notification.email_delivery_status || "pending")}</div>
+                      ${notification.email_delivery_status === "failed" && notification.email_delivery_message
+                        ? `<div>Email issue: ${escapeHtml(notification.email_delivery_message)}</div>`
+                        : ""}
+                      <div>Received: ${escapeHtml(formatNotificationDate(notification.created_at))}</div>
+                    </div>
                   </div>
-                  <p class="mb-2 text-muted">${escapeHtml(truncateNotificationMessage(notification.message))}</p>
-                  <div class="small text-muted">
-                    <div>Date: ${escapeHtml(notification.appointment_date || "Not set")}</div>
-                    <div>Time: ${escapeHtml(notification.appointment_time || "Not set")}</div>
-                    <div>Email delivery: ${escapeHtml(notification.email_delivery_status || "pending")}</div>
-                    ${notification.email_delivery_status === "failed" && notification.email_delivery_message
-                      ? `<div>Email issue: ${escapeHtml(notification.email_delivery_message)}</div>`
-                      : ""}
-                    ${notification.includes_soft_copy ? "<div>Soft copy of enrollment form included.</div>" : ""}
-                    <div>Received: ${escapeHtml(formatNotificationDate(notification.created_at))}</div>
+                  <div class="d-flex flex-column gap-2">
+                    <button class="btn btn-outline-secondary btn-sm" onclick="viewNotification(${notification.notification_id})">View</button>
+                    ${isNotificationRead(notification) ? "" : `<button class="btn btn-outline-primary btn-sm" onclick="markNotificationAsRead(${notification.notification_id})">Mark read</button>`}
+                    <button class="btn btn-outline-danger btn-sm" onclick="removeNotification(${notification.notification_id})">Remove</button>
                   </div>
-                </div>
-                <div class="d-flex flex-column gap-2">
-                  <button class="btn btn-outline-secondary btn-sm" onclick="viewNotification(${notification.notification_id})">View</button>
-                  ${isNotificationRead(notification) ? "" : `<button class="btn btn-outline-primary btn-sm" onclick="markNotificationAsRead(${notification.notification_id})">Mark read</button>`}
-                  <button class="btn btn-outline-danger btn-sm" onclick="removeNotification(${notification.notification_id})">Remove</button>
                 </div>
               </div>
             </div>
-          </div>
-        `).join("");
+          `;
+        }).join("");
       }
 
       async function loadNotifications() {
@@ -1329,10 +1352,12 @@
         activeNotificationForView = notification;
         const payload = parseSoftCopyPayload(notification);
         const hasSoftCopy = Boolean(notification.includes_soft_copy && payload);
+        const isAppointment = isAppointmentNotification(notification);
         const filename = hasSoftCopy ? buildSoftCopyFilename(notification, payload) : "";
 
         document.getElementById("notificationViewTitle").textContent = notification.title || "Notification";
         document.getElementById("notificationViewMessage").textContent = notification.message || "No message available.";
+        document.getElementById("notificationViewType").textContent = notification.notification_type || "General";
         document.getElementById("notificationViewDate").textContent = notification.appointment_date || "Not set";
         document.getElementById("notificationViewTime").textContent = notification.appointment_time || "Not set";
         document.getElementById("notificationViewDeliveryStatus").textContent = notification.email_delivery_message
@@ -1341,19 +1366,27 @@
         document.getElementById("notificationViewReceived").textContent = formatNotificationDate(notification.created_at);
         document.getElementById("notificationViewMeta").textContent = notification.is_read
           ? "This message has already been opened or marked as read."
-          : "This is a new notification.";
+          : isAppointment
+            ? "Review your appointment notice and attached enrollment form, if available."
+            : "Review the full message from the admin office.";
         document.getElementById("notificationSoftCopyStatus").textContent = hasSoftCopy
           ? "A soft copy of the enrollment form is attached to this notification."
           : "No soft copy is attached to this notification.";
 
         const filenameLabel = document.getElementById("notificationSoftCopyFilename");
         const downloadButton = document.getElementById("downloadSoftCopyBtn");
+        const softCopySection = document.getElementById("notificationSoftCopySection");
+        document.querySelectorAll(".notification-appointment-detail").forEach((element) => {
+          element.classList.toggle("d-none", !isAppointment);
+        });
 
         if (hasSoftCopy) {
+          softCopySection.classList.remove("d-none");
           filenameLabel.textContent = `File: ${filename}`;
           filenameLabel.classList.remove("d-none");
           downloadButton.classList.remove("d-none");
         } else {
+          softCopySection.classList.toggle("d-none", !isAppointment);
           filenameLabel.textContent = "";
           filenameLabel.classList.add("d-none");
           downloadButton.classList.add("d-none");
