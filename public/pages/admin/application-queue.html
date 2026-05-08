@@ -333,14 +333,15 @@
                 </div>
               </div>
 
-              <div class="queue-filter-row" aria-label="Application filters">
-                <div class="queue-filter-status" aria-label="Status filter">
-                  <span class="queue-filter-label">Status</span>
-                  <span class="badge bg-warning text-dark">Submitted</span>
-                  <input type="hidden" id="filterStatus" value="submitted" />
+              <form id="queue-filter-bar" class="student-filter-bar queue-filter-bar mb-3">
+                <div class="student-filter-bar__field">
+                  <label for="filterStatus" class="form-label">Status</label>
+                  <select class="form-select" id="filterStatus">
+                    <option value="submitted">Submitted</option>
+                  </select>
                 </div>
-                <label class="queue-filter-field" for="filterCourse">
-                  <span>Course</span>
+                <div class="student-filter-bar__field">
+                  <label for="filterCourse" class="form-label">Course</label>
                   <select class="form-select" id="filterCourse">
                     <option value="">All Courses</option>
                     <option value="bscs">BSCS</option>
@@ -353,24 +354,29 @@
                     <option value="bsed math">BSED MATH</option>
                     <option value="bscrim">BSCRIM</option>
                   </select>
-                </label>
-                <label class="queue-filter-field" for="filterWaitTime">
-                  <span>Wait Time</span>
+                </div>
+                <div class="student-filter-bar__field">
+                  <label for="filterWaitTime" class="form-label">Wait Time</label>
                   <select class="form-select" id="filterWaitTime">
                     <option value="">All Wait Times</option>
                     <option value="0-3">0-3 days</option>
                     <option value="3-7">3-7 days</option>
                     <option value="7+">7+ days</option>
                   </select>
-                </label>
-                <label class="queue-filter-field" for="filterDate">
-                  <span>Submitted Date</span>
+                </div>
+                <div class="student-filter-bar__field">
+                  <label for="filterDate" class="form-label">Submitted Date</label>
                   <input type="date" class="form-control" id="filterDate">
-                </label>
-                <button type="button" class="btn btn-outline-light queue-filter-reset" id="resetQueueFilters">
-                  Reset
-                </button>
-              </div>
+                </div>
+                <div class="student-filter-bar__actions">
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-filter me-2"></i>Apply
+                  </button>
+                  <button type="button" class="btn btn-outline-light" id="resetQueueFilters">
+                    <i class="fa-solid fa-rotate-left me-2"></i>Reset
+                  </button>
+                </div>
+              </form>
 
               <div id="queue-cards-list">
                 <div class="card p-3 mb-3 queue-card">
@@ -1363,6 +1369,10 @@ function getDisplayValue(value, fallback = "Not set") {
           applyFilters();
         });
 
+        document.getElementById('queue-filter-bar')?.addEventListener('submit', (event) => {
+          event.preventDefault();
+          applyFilters();
+        });
         document.getElementById('filterCourse')?.addEventListener('change', applyFilters);
         document.getElementById('filterWaitTime')?.addEventListener('change', applyFilters);
         document.getElementById('filterDate')?.addEventListener('change', applyFilters);
