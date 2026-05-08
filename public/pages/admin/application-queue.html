@@ -324,14 +324,6 @@
                 <div class="col-lg-3 col-md-4 queue-toolbar-title">
                   <h2 class="mb-0">Queue Management</h2>
                 </div>
-                <div class="col-lg-9 col-md-8 queue-toolbar-actions">
-                  <input
-                    type="text"
-                    placeholder="Search by student name or application ID"
-                    class="form-control queue-search"
-                    aria-label="Search by student name or application ID"
-                  />
-                </div>
               </div>
 
               <form id="queue-filter-bar" class="student-filter-bar queue-filter-bar mb-3">
@@ -603,7 +595,7 @@
         const course = document.getElementById('filterCourse')?.value.trim().toLowerCase() || '';
         const waitTime = document.getElementById('filterWaitTime')?.value || '';
         const date = document.getElementById('filterDate')?.value || '';
-        const search = document.querySelector('.queue-search')?.value.trim().toLowerCase() || '';
+        const search = '';
 
         return queueApplications
           .filter((application) => isPendingReviewStatus(application.application_status))
@@ -1360,10 +1352,6 @@ function getDisplayValue(value, fallback = "Not set") {
 
       document.addEventListener("DOMContentLoaded", () => {
         loadQueueData();
-
-        document.querySelector('.queue-search')?.addEventListener('input', () => {
-          applyFilters();
-        });
 
         document.getElementById('queue-filter-bar')?.addEventListener('submit', (event) => {
           event.preventDefault();

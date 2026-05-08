@@ -3181,12 +3181,6 @@ span .icon:hover {
   min-width: 0;
 }
 
-.queue-search {
-  flex: 0 1 22rem;
-  min-width: 0;
-  max-width: 22rem;
-}
-
 .queue-filter-btn {
   flex: 0 0 auto;
   display: inline-flex;
@@ -3395,7 +3389,6 @@ span .icon:hover {
     flex-wrap: wrap;
   }
 
-  .queue-search,
   .queue-filter-btn {
     width: 100%;
     flex-basis: 100%;
