@@ -586,28 +586,16 @@
               const registrarMain = doc.querySelector("main.app-main");
               const registrarBody = registrarMain ? registrarMain : doc.body;
 
-              // Extract markup for the registrar main section only.
+              // Extract scripts-less markup.
               actualContent.innerHTML = registrarBody.innerHTML;
 
-              // Update visible title/breadcrumb area if needed.
-              const breadcrumbActive = document.querySelector('.breadcrumb-item.active[aria-current="page"]');
-              if (breadcrumbActive) breadcrumbActive.textContent = 'Registrar';
-
-              // Hide Super Admin page skeleton wrapper (keep sidebar/nav as-is).
+              // Re-attach auth handlers & hide skeleton
               const skeleton = document.getElementById("page-skeleton");
               if (skeleton) skeleton.style.display = "none";
 
-              // Registrar user must not navigate to other pages: we keep the sidebar
-              // rendered by Super Admin but disable clicks to other nav links.
-              // (Only the current page module stays accessible.)
-              document.querySelectorAll('aside.app-sidebar a.nav-link').forEach((link) => {
-                const href = link.getAttribute('href') || '';
-                const isRegistrarModule = href === '#';
-                if (!isRegistrarModule) {
-                  link.style.pointerEvents = 'none';
-                  link.style.opacity = '0.65';
-                }
-              });
+              // Fix: hide any superadmin-only modals/tables already in memory.
+              // Registrar modals are embedded in registrar markup; if they include script-based initialization,
+              // they may require additional wiring.
             } catch (error) {
               console.error("Unable to load registrar module inline:", error);
               actualContent.innerHTML = `<div class="alert alert-danger m-3">Unable to load Registrar module.</div>`;
