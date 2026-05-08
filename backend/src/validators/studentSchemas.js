@@ -13,6 +13,39 @@ const optionalTrimmedString = z.preprocess(
   z.string().nullable()
 ).optional().transform((value) => value ?? null);
 
+const optionalQueryString = z.preprocess(
+  (value) => {
+    if (value === undefined || value === null) {
+      return undefined;
+    }
+
+    const normalized = String(value).trim();
+    return normalized === "" ? undefined : normalized;
+  },
+  z.string().max(100)
+).optional();
+
+const optionalPaginationNumber = z.preprocess(
+  (value) => {
+    if (value === undefined || value === null || String(value).trim() === "") {
+      return undefined;
+    }
+
+    return Number.parseInt(String(value), 10);
+  },
+  z.number().int().nonnegative()
+).optional();
+
+export const studentAccountFilterSchema = z.object({
+  search: optionalQueryString,
+  course: optionalQueryString,
+  studentType: optionalQueryString,
+  status: z.enum(["Active", "Inactive"]).optional(),
+  limit: optionalPaginationNumber,
+  offset: optionalPaginationNumber,
+  page: optionalPaginationNumber,
+});
+
 export const submitEnrollmentSchema = z.object({
   firstName: trimmedString.min(1, "firstName is required"),
   middleName: optionalTrimmedString,

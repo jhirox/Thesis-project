@@ -45,3 +45,40 @@ export function normalizePagination(query, { defaultLimit = 25, maxLimit = 100 }
 
   return { limit, offset };
 }
+
+export function buildStudentAccountFilterQuery(filters = {}) {
+  const clauses = [];
+  const values = [];
+
+  if (filters.course) {
+    clauses.push("(p.program_code = ? OR p.program_name = ?)");
+    values.push(filters.course, filters.course);
+  }
+
+  if (filters.studentType) {
+    clauses.push("st.type_name = ?");
+    values.push(filters.studentType);
+  }
+
+  if (filters.status) {
+    clauses.push(`${studentStatusSql("u")} = ?`);
+    values.push(filters.status);
+  }
+
+  if (filters.search) {
+    clauses.push(`(
+      ${fullNameSql("s")} LIKE ?
+      OR u.full_name LIKE ?
+      OR u.email LIKE ?
+      OR CAST(s.student_id AS CHAR) LIKE ?
+    )`);
+
+    const searchValue = `%${filters.search}%`;
+    values.push(searchValue, searchValue, searchValue, searchValue);
+  }
+
+  return {
+    whereClause: clauses.length ? `AND ${clauses.join(" AND ")}` : "",
+    values,
+  };
+}

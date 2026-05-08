@@ -5,6 +5,7 @@ import ApplicationQueue from "../models/ApplicationQueue.js";
 import Lookup from "../models/Lookup.js";
 import { createDirectNotification, createStaffNotification } from "./notificationService.js";
 import {
+  buildStudentAccountFilterQuery,
   fullNameSql,
   latestEnrollmentJoinSql,
   normalizePagination,
@@ -284,10 +285,12 @@ export async function findEnrollments(query) {
       s.suffix,
       CONCAT(s.first_name, ' ', IFNULL(CONCAT(s.middle_name, ' '), ''), s.last_name, IFNULL(CONCAT(' ', s.suffix), '')) AS full_name,
       p.program_name,
-      p.program_code
+      p.program_code,
+      st.type_name AS student_type
     FROM enrollments e
     LEFT JOIN students s ON e.student_id = s.student_id
     LEFT JOIN programs p ON e.program_id = p.program_id
+    LEFT JOIN student_types st ON e.student_type_id = st.type_id
     WHERE ${trashFilter}
     ORDER BY e.created_at DESC
     LIMIT ? OFFSET ?`,
@@ -437,32 +440,7 @@ export async function findStudents(query) {
   await applyDormantStudentAccountPolicy();
 
   const { limit, offset } = normalizePagination(query, { defaultLimit: 25, maxLimit: 100 });
-  const { course, status, search } = query;
-  const filters = [];
-  const values = [];
-
-  if (course) {
-    filters.push("(p.program_code = ? OR p.program_name = ?)");
-    values.push(course, course);
-  }
-
-  if (status) {
-    filters.push(`CASE WHEN u.is_active = 1 THEN 'Active' ELSE 'Inactive' END = ?`);
-    values.push(status);
-  }
-
-  if (search) {
-    filters.push(`(
-      ${fullNameSql("s")} LIKE ?
-      OR u.full_name LIKE ?
-      OR u.email LIKE ?
-      OR CAST(s.student_id AS CHAR) LIKE ?
-    )`);
-    const searchValue = `%${search}%`;
-    values.push(searchValue, searchValue, searchValue, searchValue);
-  }
-
-  const whereClause = filters.length ? `AND ${filters.join(" AND ")}` : "";
+  const { whereClause, values } = buildStudentAccountFilterQuery(query);
 
   const [data] = await db.query(
     `SELECT
