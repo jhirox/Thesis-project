@@ -330,6 +330,13 @@
           <button
             class="tab-btn"
             type="button"
+            onclick="showPage('pending')"
+          >
+            Pending Review
+          </button>
+          <button
+            class="tab-btn"
+            type="button"
             onclick="showPage('approved')"
           >
             Approved
@@ -340,13 +347,6 @@
             onclick="showPage('enrolled')"
           >
             Enrolled
-          </button>
-          <button
-            class="tab-btn"
-            type="button"
-            onclick="showPage('pending')"
-          >
-            Pending Review
           </button>
           <button
             class="tab-btn"
@@ -1156,7 +1156,7 @@
             </tr>
           `;
           // Hide pagination
-          const paginationId = tableBodyId.replace('-body', '-pagination');
+          const paginationId = getStatusPaginationId(tableBodyId.replace('-body', ''));
           const paginationContainer = document.getElementById(paginationId);
           if (paginationContainer) {
             paginationContainer.style.display = 'none';
@@ -1197,6 +1197,10 @@
 
         // Render pagination
         renderApplicationPagination(tableBodyId.replace('-body', ''), totalItems, totalPages, page, itemsPerPage);
+      }
+
+      function getStatusPaginationId(tablePrefix) {
+        return `${String(tablePrefix || '').replace('-applications', '')}-pagination`;
       }
 
       function buildStatusBadge(status) {
@@ -1944,7 +1948,7 @@
       }
 
       function renderApplicationPagination(tablePrefix, totalItems, totalPages, currentPage, itemsPerPage) {
-        const paginationId = `${tablePrefix}-pagination`;
+        const paginationId = getStatusPaginationId(tablePrefix);
         const paginationContainer = document.getElementById(paginationId);
         if (!paginationContainer) {
           return;
