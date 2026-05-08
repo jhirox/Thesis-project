@@ -329,17 +329,13 @@
                     type="text"
                     placeholder="Search by student name or application ID"
                     class="form-control queue-search"
+                    aria-label="Search by student name or application ID"
                   />
                 </div>
               </div>
 
               <form id="queue-filter-bar" class="student-filter-bar queue-filter-bar mb-3">
-                <div class="student-filter-bar__field">
-                  <label for="filterStatus" class="form-label">Status</label>
-                  <select class="form-select" id="filterStatus">
-                    <option value="submitted">Submitted</option>
-                  </select>
-                </div>
+                <input type="hidden" id="filterStatus" value="submitted" />
                 <div class="student-filter-bar__field">
                   <label for="filterCourse" class="form-label">Course</label>
                   <select class="form-select" id="filterCourse">
