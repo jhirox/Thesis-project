@@ -24,7 +24,7 @@
   </head>
   <body class="page-shell page-course">
     <!-- SKELETON LOADING SCREEN -->
-    <div id="skeleton-screen" class="skeleton-screen">
+    <div id="skeleton-screen" class="skeleton-screen" style="opacity: 1;" >
       <div class="container-fluid p-0 d-flex h-100">
         <!-- Skeleton Sidebar -->
         <div class="skeleton-sidebar-wrapper d-none d-md-flex flex-column align-items-center flex-shrink-0 p-3">
@@ -121,7 +121,7 @@
         </div>
       </div>
     </div>
-    <div class="container-fluid p-0 d-flex h-100">
+    <div class="container-fluid p-0 d-flex h-100" id="realContent">
       <!-- SIDEBAR -->
       <div
         id="bdSidebar"
@@ -583,11 +583,33 @@
 
       // Hide skeleton on DOMContentLoaded
       document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(hideSkeleton, 800); // Show skeleton for 800ms
+        // Hide real content until skeleton is removed
+        const real = document.getElementById('realContent');
+        if (real) {
+          real.style.visibility = 'hidden';
+          real.style.opacity = '0';
+          real.style.transition = 'opacity 0.15s ease, visibility 0.15s ease';
+        }
+
+        // Reveal both skeleton and real content after a short delay (slower than before)
+        setTimeout(function () {
+          hideSkeleton();
+          if (real) {
+            real.style.visibility = 'visible';
+            real.style.opacity = '1';
+          }
+        }, 600);
       });
 
       // Fallback: hide skeleton after 2 seconds regardless
-      setTimeout(hideSkeleton, 2000);
+      setTimeout(function(){
+        hideSkeleton();
+        const real = document.getElementById('realContent');
+        if (real) {
+          real.style.visibility = 'visible';
+          real.style.opacity = '1';
+        }
+      }, 2000);
     </script>
 
     <script>
