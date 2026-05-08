@@ -490,20 +490,22 @@
 
                 <!-- Pagination for Approved -->
                 <div id="approved-pagination" class="d-flex justify-content-center mt-3" style="display: none;">
-                  <nav aria-label="Approved applications pagination">
-                    <ul class="pagination pagination-sm">
-                      <li class="page-item">
-                        <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" aria-label="Previous">
-                          <span aria-hidden="true">&laquo;</span>
-                        </a>
-                      </li>
-                      <li class="page-item">
-                        <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" aria-label="Next">
-                          <span aria-hidden="true">&raquo;</span>
-                        </a>
-                      </li>
-                    </ul>
-                  </nav>
+                  <div class="evaluation-pagination-stack">
+                    <nav class="evaluation-pagination-nav" aria-label="Approved applications pagination">
+                      <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item">
+                          <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                          </a>
+                        </li>
+                        <li class="page-item">
+                          <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                          </a>
+                        </li>
+                      </ul>
+                    </nav>
+                  </div>
                 </div>
               </div>
             </div>
@@ -539,20 +541,22 @@
 
                 <!-- Pagination for Enrolled -->
                 <div id="enrolled-pagination" class="d-flex justify-content-center mt-3" style="display: none;">
-                  <nav aria-label="Enrolled applications pagination">
-                    <ul class="pagination pagination-sm">
-                      <li class="page-item">
-                        <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" aria-label="Previous">
-                          <span aria-hidden="true">&laquo;</span>
-                        </a>
-                      </li>
-                      <li class="page-item">
-                        <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" aria-label="Next">
-                          <span aria-hidden="true">&raquo;</span>
-                        </a>
-                      </li>
-                    </ul>
-                  </nav>
+                  <div class="evaluation-pagination-stack">
+                    <nav class="evaluation-pagination-nav" aria-label="Enrolled applications pagination">
+                      <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item">
+                          <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                          </a>
+                        </li>
+                        <li class="page-item">
+                          <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                          </a>
+                        </li>
+                      </ul>
+                    </nav>
+                  </div>
                 </div>
               </div>
             </div>
@@ -586,20 +590,22 @@
 
                 <!-- Pagination for Pending -->
                 <div id="pending-pagination" class="d-flex justify-content-center mt-3" style="display: none;">
-                  <nav aria-label="Pending applications pagination">
-                    <ul class="pagination pagination-sm">
-                      <li class="page-item">
-                        <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" aria-label="Previous">
-                          <span aria-hidden="true">&laquo;</span>
-                        </a>
-                      </li>
-                      <li class="page-item">
-                        <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" aria-label="Next">
-                          <span aria-hidden="true">&raquo;</span>
-                        </a>
-                      </li>
-                    </ul>
-                  </nav>
+                  <div class="evaluation-pagination-stack">
+                    <nav class="evaluation-pagination-nav" aria-label="Pending applications pagination">
+                      <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item">
+                          <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                          </a>
+                        </li>
+                        <li class="page-item">
+                          <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                          </a>
+                        </li>
+                      </ul>
+                    </nav>
+                  </div>
                 </div>
               </div>
             </div>
@@ -636,20 +642,22 @@
 
                <!-- Pagination for Rejected -->
                <div id="rejected-pagination" class="d-flex justify-content-center mt-3" style="display: none;">
-                 <nav aria-label="Rejected applications pagination">
-                   <ul class="pagination pagination-sm">
-                     <li class="page-item">
-                       <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" aria-label="Previous">
-                         <span aria-hidden="true">&laquo;</span>
-                       </a>
-                     </li>
-                     <li class="page-item">
-                       <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" aria-label="Next">
-                         <span aria-hidden="true">&raquo;</span>
-                       </a>
-                     </li>
-                   </ul>
-                 </nav>
+                 <div class="evaluation-pagination-stack">
+                   <nav class="evaluation-pagination-nav" aria-label="Rejected applications pagination">
+                     <ul class="pagination pagination-sm mb-0">
+                       <li class="page-item">
+                         <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" aria-label="Previous">
+                           <span aria-hidden="true">&laquo;</span>
+                         </a>
+                       </li>
+                       <li class="page-item">
+                         <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" aria-label="Next">
+                           <span aria-hidden="true">&raquo;</span>
+                         </a>
+                       </li>
+                     </ul>
+                   </nav>
+                 </div>
                </div>
                </div>
             </div>
@@ -1880,7 +1888,7 @@
         const prevDisabled = currentStudentPage === 1 ? 'disabled' : '';
         paginationHtml += `
           <li class="page-item ${prevDisabled}">
-            <a class="page-link" href="#" data-page="${currentStudentPage - 1}" aria-label="Previous">
+            <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" data-page="${currentStudentPage - 1}" aria-label="Previous">
               <span aria-hidden="true">&laquo;</span>
             </a>
           </li>
@@ -1899,7 +1907,7 @@
           const activeClass = i === currentStudentPage ? 'active' : '';
           paginationHtml += `
             <li class="page-item ${activeClass}">
-              <a class="page-link" href="#" data-page="${i}">${i}</a>
+              <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" data-page="${i}">${i}</a>
             </li>
           `;
         }
@@ -1908,7 +1916,7 @@
         const nextDisabled = currentStudentPage === totalPages ? 'disabled' : '';
         paginationHtml += `
           <li class="page-item ${nextDisabled}">
-            <a class="page-link" href="#" data-page="${currentStudentPage + 1}" aria-label="Next">
+            <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" data-page="${currentStudentPage + 1}" aria-label="Next">
               <span aria-hidden="true">&raquo;</span>
             </a>
           </li>
@@ -1965,7 +1973,7 @@
         const prevDisabled = currentPage === 1 ? 'disabled' : '';
         paginationHtml += `
           <li class="page-item ${prevDisabled}">
-            <a class="page-link" href="#" data-page="${currentPage - 1}" aria-label="Previous">
+            <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" data-page="${currentPage - 1}" aria-label="Previous">
               <span aria-hidden="true">&laquo;</span>
             </a>
           </li>
@@ -1984,7 +1992,7 @@
           const activeClass = i === currentPage ? 'active' : '';
           paginationHtml += `
             <li class="page-item ${activeClass}">
-              <a class="page-link" href="#" data-page="${i}">${i}</a>
+              <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" data-page="${i}">${i}</a>
             </li>
           `;
         }
@@ -1993,7 +2001,7 @@
         const nextDisabled = currentPage === totalPages ? 'disabled' : '';
         paginationHtml += `
           <li class="page-item ${nextDisabled}">
-            <a class="page-link" href="#" data-page="${currentPage + 1}" aria-label="Next">
+            <a class="page-link bg-primary-subtle text-white border-secondary-subtle" href="#" data-page="${currentPage + 1}" aria-label="Next">
               <span aria-hidden="true">&raquo;</span>
             </a>
           </li>
