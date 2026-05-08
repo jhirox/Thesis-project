@@ -333,7 +333,7 @@
 
         <div class="modal fade" id="notificationViewModal" tabindex="-1" aria-labelledby="notificationViewModalLabel" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content border-0 shadow">
+            <div class="modal-content border-0 shadow notification-message-modal">
               <div class="modal-header">
                 <div>
                   <h5 class="modal-title fw-bold" id="notificationViewModalLabel">Notification Details</h5>
@@ -341,59 +341,35 @@
                 </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
-              <div class="modal-body">
-                <div class="mb-3">
-                  <p class="text-muted small mb-1">Title</p>
-                  <h5 class="fw-bold mb-0" id="notificationViewTitle">Notification title</h5>
-                </div>
-                <div class="mb-3">
-                  <p class="text-muted small mb-1">Message</p>
-                  <p class="mb-0" id="notificationViewMessage">Notification message</p>
-                </div>
-                <div class="row g-3 mb-3">
-                  <div class="col-sm-6">
-                    <div class="border rounded-3 p-3 h-100 bg-light">
-                      <p class="text-muted small mb-1">Type</p>
-                      <p class="mb-0 fw-semibold" id="notificationViewType">General</p>
-                    </div>
+              <div class="modal-body notification-message-body">
+                <article class="notification-message-paper">
+                  <div class="notification-message-type" id="notificationViewType">General</div>
+                  <h4 class="notification-message-title" id="notificationViewTitle">Notification title</h4>
+                  <div class="notification-message-meta">
+                    <span id="notificationViewReceived">Not set</span>
+                    <span class="notification-meta-separator">•</span>
+                    <span id="notificationViewDeliveryStatus">Pending</span>
                   </div>
-                  <div class="col-sm-6 notification-appointment-detail">
-                    <div class="border rounded-3 p-3 h-100 bg-light">
-                      <p class="text-muted small mb-1">Appointment Date</p>
-                      <p class="mb-0 fw-semibold" id="notificationViewDate">Not set</p>
-                    </div>
+                  <p class="notification-email-copy-note" id="notificationEmailCopyNote">A copy of this message was also sent to your email.</p>
+                  <div class="notification-message-divider"></div>
+                  <div class="notification-message-text" id="notificationViewMessage">Notification message</div>
+                  <div class="notification-appointment-detail notification-message-note">
+                    <strong>Appointment:</strong>
+                    <span id="notificationViewDate">Not set</span>
+                    <span class="notification-meta-separator">•</span>
+                    <span id="notificationViewTime">Not set</span>
                   </div>
-                  <div class="col-sm-6 notification-appointment-detail">
-                    <div class="border rounded-3 p-3 h-100 bg-light">
-                      <p class="text-muted small mb-1">Appointment Time</p>
-                      <p class="mb-0 fw-semibold" id="notificationViewTime">Not set</p>
-                    </div>
-                  </div>
-                  <div class="col-sm-6">
-                    <div class="border rounded-3 p-3 h-100 bg-light">
-                      <p class="text-muted small mb-1">Delivery Status</p>
-                      <p class="mb-0 fw-semibold text-capitalize" id="notificationViewDeliveryStatus">Pending</p>
-                    </div>
-                  </div>
-                  <div class="col-sm-6">
-                    <div class="border rounded-3 p-3 h-100 bg-light">
-                      <p class="text-muted small mb-1">Received</p>
-                      <p class="mb-0 fw-semibold" id="notificationViewReceived">Not set</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="border rounded-3 p-3 bg-light" id="notificationSoftCopySection">
-                  <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start gap-3">
-                    <div>
-                      <p class="text-muted small mb-1">Soft Copy Attachment</p>
-                      <p class="mb-0 fw-semibold" id="notificationSoftCopyStatus">No soft copy attached.</p>
+                  <div class="notification-attachment-row" id="notificationSoftCopySection">
+                    <div class="notification-attachment-text">
+                      <strong>Soft copy attachment</strong>
+                      <span id="notificationSoftCopyStatus">No soft copy attached.</span>
+                      <span class="d-none" id="notificationSoftCopyFilename"></span>
                     </div>
                     <button type="button" class="btn btn-outline-primary btn-sm d-none" id="downloadSoftCopyBtn">
                       <i class="bi bi-download me-1"></i>Download Soft Copy
                     </button>
                   </div>
-                  <p class="text-muted small mb-0 mt-2 d-none" id="notificationSoftCopyFilename"></p>
-                </div>
+                </article>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -1230,6 +1206,44 @@
         );
       }
 
+      function formatDeliveryLabel(notification = {}) {
+        const status = String(notification.email_delivery_status || "pending").trim().toLowerCase();
+
+        if (status === "sent") {
+          return "Sent to email";
+        }
+        if (status === "queued" || status === "sending") {
+          return "Email copy pending";
+        }
+        if (status === "skipped") {
+          return "Portal only";
+        }
+        if (status === "failed") {
+          return "Email copy failed";
+        }
+
+        return status ? status.charAt(0).toUpperCase() + status.slice(1) : "Pending";
+      }
+
+      function getEmailCopyNote(notification = {}) {
+        const status = String(notification.email_delivery_status || "pending").trim().toLowerCase();
+
+        if (status === "sent") {
+          return "A copy of this message was also sent to your email.";
+        }
+        if (status === "queued" || status === "sending") {
+          return "An email copy is being prepared for delivery.";
+        }
+        if (status === "failed") {
+          return "The portal message was saved, but the email copy could not be sent.";
+        }
+        if (status === "skipped") {
+          return "This message is available here in your student portal.";
+        }
+
+        return "Delivery status will update once the email copy is processed.";
+      }
+
       function getFilteredNotifications() {
         if (activeFilter === "unread") {
           return notificationsState.filter(isNotificationUnread);
@@ -1360,9 +1374,8 @@
         document.getElementById("notificationViewType").textContent = notification.notification_type || "General";
         document.getElementById("notificationViewDate").textContent = notification.appointment_date || "Not set";
         document.getElementById("notificationViewTime").textContent = notification.appointment_time || "Not set";
-        document.getElementById("notificationViewDeliveryStatus").textContent = notification.email_delivery_message
-          ? `${notification.email_delivery_status || "pending"} - ${notification.email_delivery_message}`
-          : notification.email_delivery_status || "pending";
+        document.getElementById("notificationViewDeliveryStatus").textContent = formatDeliveryLabel(notification);
+        document.getElementById("notificationEmailCopyNote").textContent = getEmailCopyNote(notification);
         document.getElementById("notificationViewReceived").textContent = formatNotificationDate(notification.created_at);
         document.getElementById("notificationViewMeta").textContent = notification.is_read
           ? "This message has already been opened or marked as read."

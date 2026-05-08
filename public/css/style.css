@@ -577,6 +577,86 @@ footer .row {
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 }
 
+.page-notifications .notification-message-modal {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.page-notifications .notification-message-body {
+  padding: 0;
+  background: #ffffff;
+}
+
+.page-notifications .notification-message-paper {
+  padding: 1.4rem 1.45rem 1.65rem;
+  color: #2f343b;
+}
+
+.page-notifications .notification-message-type {
+  color: #667085;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.page-notifications .notification-message-title {
+  margin: 0.35rem 0 0.2rem;
+  color: #1f2937;
+  font-size: 1.45rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.page-notifications .notification-message-meta,
+.page-notifications .notification-email-copy-note {
+  color: #667085;
+  font-size: 0.9rem;
+}
+
+.page-notifications .notification-meta-separator {
+  margin: 0 0.35rem;
+  color: #98a2b3;
+}
+
+.page-notifications .notification-email-copy-note {
+  margin: 0.35rem 0 0;
+}
+
+.page-notifications .notification-message-divider {
+  height: 1px;
+  margin: 1.15rem 0;
+  background: #eaecf0;
+}
+
+.page-notifications .notification-message-text {
+  color: #344054;
+  font-size: 1.02rem;
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+.page-notifications .notification-message-note,
+.page-notifications .notification-attachment-row {
+  margin-top: 1rem;
+  color: #475467;
+  font-size: 0.95rem;
+}
+
+.page-notifications .notification-attachment-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eaecf0;
+}
+
+.page-notifications .notification-attachment-text {
+  display: grid;
+  gap: 0.15rem;
+}
+
 .page-profile .or-upload-card {
   background: linear-gradient(180deg, rgba(13, 110, 253, 0.06), rgba(13, 110, 253, 0.02));
   border: 1px dashed rgba(13, 110, 253, 0.35);
